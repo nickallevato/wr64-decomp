@@ -4,23 +4,487 @@
 #include "camera.h"
 #include "libc/math.h"
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB180.s")
+extern RiderStruct D_801C2C70[];
+extern s32 D_800DA9C8[];
+extern s32 D_80226EF0[];
+extern s16 D_800DAB60;
+extern s32 D_800DA9F8;
+extern s32 D_800DA9FC;
+extern s32 D_800DAA08;
+extern s32 D_801CB334;
+extern s16 D_800EAC44[][4];
+extern s32 D_801CB330;
+extern s32 D_801CE704;
+extern s16 D_800DAA00;
+extern s16 D_800EABEC[];
+extern s16 D_800EAC14[][8];
+extern UnkStruct_800DB568 D_800DB58C[];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB4F4.s")
+void func_8004A208(void);
+void func_8009684C(s32 arg0, s32 arg1, s32 arg2);
+void func_800C4998(s32 arg0, s32 arg1);
+void func_801EE040(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
+void func_801EE274(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
+void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
+void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
+void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB91C.s")
+void func_801EB180(void) {
+    s32 pad[2];
+    s32 rider;
+    s32 i;
+    s32 course;
+    s16 unk;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EBD28.s")
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_TITLE_SCREEN;
+    D_801CE638 = 0;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gGameModes = GMODE_TIME_TRIALS;
+    gPlayers = ONE_PLAYER;
+    gRiders = 2;
+    D_800D49B0 = 0x14;
+    gBuoyMisses = 5;
+    D_801CE728[0] = 3;
+    D_800D8178 = 1;
+    D_801CE600 = 0;
+    D_801CE6F8 = 0;
+    D_801CB334 = 0;
+    if (D_800D8240 == 0) {
+        gCourseID = DOLPHIN_PARK;
+    }
+    D_801CE6F0 = 0;
+    D_800DAB68 = 0;
+    D_800DAB0C = 0;
+    if (D_801CB280 & 0x10) {
+        D_800DAB60 = 1;
+    } else {
+        D_800DAB60 = 0;
+    }
+    D_800DAB64 = 0;
+    D_800DAA08 = 0;
+    D_800DA9F8++;
+    if (D_800DA9F8 >= 3) {
+        D_800DA9F8 = 0;
+    }
+    D_800DA9FC++;
+    if (D_800DA9FC >= 4) {
+        D_800DA9FC = 0;
+    }
+    rider = D_800EAC44[D_800DA9FC][0];
+    unk = D_800EAC44[D_800DA9FC][1];
+    for (i = 0; i < gRiders; i++) {
+        D_80192690[i].unkB68 = unk;
+        D_80192690[i].unkB6C = D_800D96A4[gCourseID][unk].unk0;
+        D_80192690[i].unkB70 = D_800D96A4[gCourseID][unk].unk4;
+        D_80192690[i].unkB74 = D_800D96A4[gCourseID][unk].unk8;
+    }
+    D_80192690[D_800D48DC].unkB68 = rider;
+    D_80192690[D_800D48DC].unkB6C = D_800D96A4[gCourseID][rider].unk0;
+    D_80192690[D_800D48DC].unkB70 = D_800D96A4[gCourseID][rider].unk4;
+    D_80192690[D_800D48DC].unkB74 = D_800D96A4[gCourseID][rider].unk8;
+    D_801CE6F4[1] = 0;
+    D_801CE6F4[0] = D_801CE6F4[1];
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_STARTED;
+    func_80096960(1, rider, unk, 0, 0);
+    course = gCourseID;
+    if (course < DOLPHIN_PARK) {
+        course = DOLPHIN_PARK;
+    }
+    if (course >= RIDER_SELECTION) {
+        course = SOUTHERN_ISLAND;
+    }
+    func_8009684C(0x08060000, D_800DB568[course].unk0, D_800DB568[course].unk2);
+    func_8004A208();
+    FadeTransition_SetProps(0, 0, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 5;
+    D_800DA9AC = 1;
+    func_800C21F4(0, 0);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EBFE4.s")
+void func_801EB4F4(void) {
+    s32 i;
+    s32 course;
+    s32 riders[4];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC0D4.s")
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_DEMO;
+    D_801CE638 = 1;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gDifficulty = DIFFICULTY_EXPERT;
+    switch (D_800DA9F8) {
+        case 0:
+            gGameModes = GMODE_CHAMPIONSHIP;
+            gPlayers = ONE_PLAYER;
+            gRiders = 4;
+            D_801CB330 = 2;
+            gCourseID = D_801CB330;
+            riders[0] = D_800EAC44[D_800DA9FC][0];
+            riders[1] = D_800EAC44[D_800DA9FC][1];
+            riders[2] = D_800EAC44[D_800DA9FC][2];
+            riders[3] = D_800EAC44[D_800DA9FC][3];
+            func_80096960(0, riders[0], riders[1], riders[2], riders[3]);
+            D_801CE728[0] = 3;
+            D_801CE6F8 = 1;
+            D_801CE704 = 4;
+            func_800C4998(0, gCourseID);
+            break;
+        case 1:
+            gGameModes = GMODE_STUNT;
+            gPlayers = ONE_PLAYER;
+            gRiders = 1;
+            D_801CB330 = 1;
+            gCourseID = D_801CB330;
+            riders[0] = D_800EAC44[D_800DA9FC][0];
+            riders[2] = riders[1] = riders[3] = 0;
+            func_80096960(0, riders[0], riders[1], riders[2], riders[3]);
+            D_801CE728[0] = 1;
+            D_801CE6F8 = 0;
+            func_800C4998(3, gCourseID);
+            break;
+        default:
+            gGameModes = GMODE_2P_VS;
+            gPlayers = TWO_PLAYERS;
+            gRiders = 2;
+            D_801CB330 = 1;
+            gCourseID = D_801CB330;
+            riders[0] = D_800EAC44[D_800DA9FC][0];
+            riders[1] = D_800EAC44[D_800DA9FC][1];
+            riders[2] = 0;
+            riders[3] = 0;
+            func_80096960(4, riders[0], riders[1], riders[0], riders[1]);
+            D_801CE728[0] = 3;
+            D_800D4970 = 0;
+            D_801CE6F8 = 0;
+            func_800C4998(1, gCourseID);
+            break;
+    }
+    D_800D49B0 = 0x14;
+    gBuoyMisses = 5;
+    D_801CE608.gameMode = gGameModes;
+    D_801CE608.player = gPlayers;
+    D_801CE608.rider = gRiders;
+    D_801CE608.waveLevel = D_800D49B0;
+    D_801CE608.powerMisses = gBuoyMisses;
+    D_801CE608.lapCount = D_801CE728[0];
+    D_801CE608.unk_14 = 0;
+    D_800D8178 = 0;
+    D_801CE600 = 1;
+    D_801CB334 = 0;
+    D_801CE6F0 = 0;
+    D_800DAB68 = 0;
+    for (i = 0; i < gRiders; i++) {
+        D_80192690[i].unkB68 = riders[i];
+        D_80192690[i].unkB6C = D_800D96A4[gCourseID][riders[i]].unk0;
+        D_80192690[i].unkB70 = D_800D96A4[gCourseID][riders[i]].unk4;
+        D_80192690[i].unkB74 = D_800D96A4[gCourseID][riders[i]].unk8;
+    }
+    D_801CE6F4[1] = 0;
+    D_801CE6F4[0] = D_801CE6F4[1];
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_0;
+    course = gCourseID;
+    if (course < DOLPHIN_PARK) {
+        course = DOLPHIN_PARK;
+    }
+    if (course >= RIDER_SELECTION) {
+        course = SOUTHERN_ISLAND;
+    }
+    func_8009684C(0x08060000, D_800DB568[course].unk0, D_800DB568[course].unk2);
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 3;
+    if (gPlayers == TWO_PLAYERS) {
+        gCameraPerspective[1].viewMode = gCameraPerspective->viewMode;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC20C.s")
+void func_801EB91C(void) {
+    s32 rand;
+    s32 rider;
+    s32 course;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC304.s")
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_SATE_COURSE_OVERVIEW;
+    D_801CE638 = 8;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gPlayers = ONE_PLAYER;
+    if (D_800D8240 != 0) {
+        D_801CB330 = D_801C3A10;
+    }
+    D_801CB330 = D_800EAC14[gDifficulty][D_801CB334];
+    gCourseID = D_801CB330;
+    if ((gCourseID == DOLPHIN_PARK) && (D_800DAA00 < 9999)) {
+        D_800DAA00++;
+    }
+    gGameModes = 0xA;
+    D_800D49B0 = D_800EABEC[D_801CB330];
+    gBuoyMisses = 5;
+    if (gCourseID == SUNNY_BEACH) {
+        gRiders = 4;
+    } else if (gCourseID == SUNSET_BAY) {
+        gRiders = 2;
+    } else {
+        gRiders = 1;
+    }
+    gCameraPerspective->viewMode = 5;
+    if ((gCourseID == SUNNY_BEACH) || (gCourseID == 4)) {
+        gRiderGameModes = UNACTIVE_MODE;
+    } else {
+        gRiderGameModes = AI_MODE;
+    }
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_STARTED;
+    D_800D8178 = 1;
+    FadeTransition_SetProps(4, 0, 0);
+    func_801E6A4C(0, 0);
+    D_800DAA08 = 0;
+    rider = D_800DA9B0[D_800D48DC];
+    rand = SysUtils_Rand() & 3;
+    if (rider == rand) {
+        rand = (rand + 1) % 4;
+    }
+    if (D_801CE6F4[0] != 0) {
+        rider += 4;
+    }
+    if (gCourseID == SUNNY_BEACH) {
+        func_80096960(0, rider, D_800DA9B0[1], D_800DA9B0[2], D_800DA9B0[3]);
+    } else {
+        func_80096960(1, rider, rand, 0, 0);
+    }
+    D_80192690[D_800D48DC].unkB68 = D_800DA9B0[D_800D48DC];
+    D_80192690[D_800D48DC].unkB6C = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[0];
+    D_80192690[D_800D48DC].unkB70 = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[1];
+    D_80192690[D_800D48DC].unkB74 = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[2];
+    if (gCourseID == SUNSET_BAY) {
+        D_80192690[D_800D48E0].unkB68 = D_800DA9B0[D_800D48DC];
+    } else {
+        D_80192690[D_800D48E0].unkB68 = D_800DA9B0[D_800D48E0];
+    }
+    D_80192690[D_800D48E0].unkB6C = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[0];
+    D_80192690[D_800D48E0].unkB70 = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[1];
+    D_80192690[D_800D48E0].unkB74 = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[2];
+    D_80192690[2].unkB68 = D_800DA9B0[2];
+    D_80192690[2].unkB6C = D_801CB298[D_80192690[2].unkB68].unk_B[0];
+    D_80192690[2].unkB70 = D_801CB298[D_80192690[2].unkB68].unk_B[1];
+    D_80192690[2].unkB74 = D_801CB298[D_80192690[2].unkB68].unk_B[2];
+    D_80192690[3].unkB68 = D_800DA9B0[3];
+    D_80192690[3].unkB6C = D_801CB298[D_80192690[3].unkB68].unk_B[0];
+    D_80192690[3].unkB70 = D_801CB298[D_80192690[3].unkB68].unk_B[1];
+    D_80192690[3].unkB74 = D_801CB298[D_80192690[3].unkB68].unk_B[2];
+    course = gCourseID;
+    if (course < DOLPHIN_PARK) {
+        course = DOLPHIN_PARK;
+    }
+    if (course >= RIDER_SELECTION) {
+        course = SOUTHERN_ISLAND;
+    }
+    func_8009684C(0x08060000, D_800DB58C[course].unk0, D_800DB58C[course].unk2);
+    func_800C21F4(2, gCourseID);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC3AC.s")
+void func_801EBD28(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_RIDER_SELECT;
+    D_801CE638 = 4;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gGameModes = GMODE_TIME_TRIALS;
+    if (D_801CE608.player == 1) {
+        gPlayers = ONE_PLAYER;
+        gRiders = 1;
+    } else {
+        gPlayers = TWO_PLAYERS;
+        gRiders = 2;
+    }
+    D_800D49B0 = 0xA;
+    gBuoyMisses = 5;
+    D_801CE728[0] = 3;
+    gCourseID = RIDER_SELECTION;
+    if (D_800DA9AC != 0) {
+        D_800DA9C0[0] = 0;
+        D_800DA9C0[1] = 3;
+        D_800DA9C8[0] = D_800DA9C8[1] = 0;
+    }
+    D_80192690[D_800D48DC].unkB68 = D_80226EF0[D_800DA9C0[0]];
+    D_80192690[D_800D48DC].unkB6C = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[0];
+    D_80192690[D_800D48DC].unkB70 = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[1];
+    D_80192690[D_800D48DC].unkB74 = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[2];
+    if (gPlayers == TWO_PLAYERS) {
+        D_80192690[D_800D48E0].unkB68 = D_80226EF0[D_800DA9C0[1]];
+        D_80192690[D_800D48E0].unkB6C = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[0];
+        D_80192690[D_800D48E0].unkB70 = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[1];
+        D_80192690[D_800D48E0].unkB74 = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[2];
+    }
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 2;
+    gGameModeState = GMODE_STATE_STARTED;
+    D_800DAB64 = 0;
+    func_80096960(3, 0, 1, 2, 3);
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 2;
+    gCameraPerspective[1].viewMode = 2;
+    switch (D_801CE608.gameMode) {
+        case GMODE_CHAMPIONSHIP:
+            func_800C21F4(1, 0);
+            break;
+        case GMODE_TIME_TRIALS:
+            func_800C21F4(1, 2);
+            break;
+        case GMODE_STUNT:
+            func_800C21F4(1, 3);
+            break;
+        case GMODE_2P_VS:
+            func_800C21F4(1, 1);
+            break;
+    }
+}
+
+void func_801EBFE4(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_COURSE_SELECT;
+    D_801CE638 = 5;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gCourseID = SUNNY_BEACH;
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 1;
+    if (D_800DA9AC != 0) {
+        D_800DA9D0 = 0;
+    }
+    func_800C21F4(0xA, 0);
+    osViBlack(1);
+}
+
+void func_801EC0D4(void) {
+    s32 i;
+    s32 args[4];
+
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_RACE_RESULTS;
+    D_801CE638 = 9;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gRiderGameModes = 1;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    for (i = 0; i < 4; i++) {
+        args[i] = i;
+    }
+    if (D_801CE6F4[0] != 0) {
+        args[D_800DA9B0[D_800D48DC]] += 4;
+    }
+    func_80096960(2, args[0], args[1], args[2], args[3]);
+    FadeTransition_SetProps(4, 1, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 1;
+    osViBlack(true);
+}
+
+void func_801EC20C(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_TIME_TRIALS_RESULTS;
+    D_801CE638 = 3;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    if (gPrevGameState != GAME_STATE_64) {
+        func_80096960(2, 0, 1, 2, 3);
+        FadeTransition_SetProps(4, 1, 0);
+        func_801E6A4C(0, 0);
+    }
+    gCameraPerspective->viewMode = 1;
+    func_800C21F4(3, 0);
+}
+
+void func_801EC304(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_OPTIONS_MENU;
+    D_801CE638 = 7;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    D_800E5134 = 0;
+    func_800C21F4(9, 0);
+}
+
+void func_801EC3AC(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_OPTIONS_CHANGE_NAMES;
+    D_801CE638 = 0xA;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gPlayers = ONE_PLAYER;
+    gRiders = 1;
+    gCourseID = RIDER_SELECTION;
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 2;
+    gGameModeState = GMODE_STATE_STARTED;
+    D_80192690[D_800D48DC].unkB68 = 0;
+    D_80192690[D_800D48DC].unkB6C = D_800DA950->unk_B[0];
+    D_80192690[D_800D48DC].unkB70 = D_800DA950->unk_B[1];
+    D_80192690[D_800D48DC].unkB74 = D_800DA950->unk_B[2];
+    D_801CE6F4[1] = 0;
+    D_801CE6F4[0] = D_801CE6F4[1];
+    func_80096960(2, 0, 1, 2, 3);
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 2;
+}
 
 void func_801EC500(void) {
     gPrevGameState = gGameState;
@@ -186,13 +650,106 @@ void func_801ECAF4(void) {
     func_800C21F4(8, 0);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ECB98.s")
+void func_801ECB98(void) {
+    s32 i;
+    s32 var_a1;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ECE50.s")
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_CEREMONY;
+    D_801CE638 = 0x15;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gGameModes = GMODE_TIME_TRIALS;
+    gPlayers = ONE_PLAYER;
+    gRiders = 4;
+    D_800D49B0 = 0xA;
+    gBuoyMisses = 5;
+    D_801CE728[0] = 3;
+    gCourseID = GLACIER_COAST;
+    D_800D8178 = 1;
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_STARTED;
+    for (i = 0; i < 4; i++) {
+        D_80192690[i].unkB68 = D_800DA9B0[i];
+        D_80192690[i].unkB6C = D_800D96A4[gCourseID][D_800DA9B0[i]].unk0;
+        D_80192690[i].unkB70 = D_800D96A4[gCourseID][D_800DA9B0[i]].unk4;
+        D_80192690[i].unkB74 = D_800D96A4[gCourseID][D_800DA9B0[i]].unk8;
+    }
+    var_a1 = D_800DA9B0[D_800D48DC];
+    if (D_801CE6F4[0] != 0) {
+        var_a1 += 4;
+    }
+    func_80096960(2, var_a1, D_800DA9B0[1], D_800DA9B0[2], D_800DA9B0[3]);
+    func_8009684C(0x08060000, 3, -1);
+    FadeTransition_SetProps(7, 10, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 8;
+    func_800C21F4(0xB, D_801C2C70[D_800D48DC].lapCount + 1);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ECF18.s")
+void func_801ECE50(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_36;
+    D_801CE638 = 0x12;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    FadeTransition_SetProps(4, 1, 0);
+    func_801E6A4C(0, 0);
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    gCameraPerspective->viewMode = 1;
+    osViBlack(1);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ED004.s")
+void func_801ECF18(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_STUNT_MODE_RESULTS;
+    D_801CE638 = 0x16;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    func_80096960(2, 0, 1, 2, 3);
+    FadeTransition_SetProps(4, 1, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 1;
+    func_800C21F4(3, 0);
+    osViBlack(1);
+}
+
+void func_801ED004(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = 0x39;
+    D_801CE638 = 0x17;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gRiderGameModes = 1;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    gCameraPerspective->viewMode = 1;
+}
 
 f32 func_801ED090(f32 arg0) {
     if ((arg0 < -1.0f) || (arg0 > 1.0f)) {
@@ -539,22 +1096,234 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
+#ifdef NON_MATCHING
+// Score 5846: c and the 1.0f constant get no callee-saved register (frame 0x68, not 0x70), so the products spill.
+void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
+    f32 len;
+    f32 xx;
+    f32 yy;
+    f32 zz;
+    s32 angle;
+    f32 s;
+    f32 c;
+    f32 t;
+
+    len = sqrtf(SQ(x) + SQ(y) + SQ(z));
+    if (len > 0.0f) {
+        x /= len;
+        y /= len;
+        z /= len;
+    }
+    xx = SQ(x);
+    yy = SQ(y);
+    zz = SQ(z);
+    angle = ANGLE_TO_CUSTOM_UNITS(arg1);
+    c = COS(angle);
+    s = SIN(angle);
+    arg0[3][0] = 0.0f;
+    t = 1.0f - c;
+    arg0[3][1] = 0.0f;
+    arg0[3][2] = 0.0f;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][3] = 1.0f;
+    arg0[0][0] = ((1.0f - xx) * c) + xx;
+    arg0[2][1] = (y * z * t) - (x * s);
+    arg0[1][2] = (x * s) + (y * z * t);
+    arg0[1][1] = ((1.0f - yy) * c) + yy;
+    arg0[2][0] = (y * s) + (z * x * t);
+    arg0[0][2] = (z * x * t) - (y * s);
+    arg0[2][2] = ((1.0f - zz) * c) + zz;
+    arg0[1][0] = (x * y * t) - (z * s);
+    arg0[0][1] = (z * s) + (x * y * t);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE040.s")
+#endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE228.s")
+void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
+    MtxF mtx;
 
+    func_801EE040((float (*)[4]) & mtx, arg1, arg2, arg3, arg4);
+
+    _MtxF_to_Mtx(&mtx, arg0);
+}
+
+#ifdef NON_MATCHING
+// Score 4439: ys and zxt stay in registers (the original keeps them on the stack), frame 0x60, not 0x68.
+void func_801EE274(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z, f32 arg5, f32 arg6, f32 arg7) {
+    f32 len;
+    f32 xx;
+    f32 yy;
+    f32 zz;
+    s32 angle;
+    f32 s;
+    f32 c;
+    f32 t;
+    f32 ys;
+    f32 zxt;
+
+    len = sqrtf(SQ(x) + SQ(y) + SQ(z));
+    if (len > 0.0f) {
+        x /= len;
+        y /= len;
+        z /= len;
+    }
+    xx = SQ(x);
+    yy = SQ(y);
+    zz = SQ(z);
+    angle = ANGLE_TO_CUSTOM_UNITS(arg1);
+    s = SIN(angle);
+    c = COS(angle);
+    arg0[3][0] = arg5;
+    arg0[3][1] = arg6;
+    arg0[3][3] = 1.0f;
+    arg0[3][2] = arg7;
+    t = 1.0f - c;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[0][0] = ((1.0f - xx) * c) + xx;
+    arg0[2][1] = (y * z * t) - (x * s);
+    arg0[1][2] = (x * s) + (y * z * t);
+    arg0[1][1] = ((1.0f - yy) * c) + yy;
+    ys = y * s;
+    zxt = z * x * t;
+    arg0[2][0] = ys + zxt;
+    arg0[0][2] = zxt - ys;
+    arg0[2][2] = ((1.0f - zz) * c) + zz;
+    arg0[1][0] = (x * y * t) - (z * s);
+    arg0[0][1] = (z * s) + (x * y * t);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE274.s")
+#endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE46C.s")
+void func_801EE46C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
+    MtxF mtx;
 
+    func_801EE274((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+
+    _MtxF_to_Mtx(&mtx, arg0);
+}
+
+#ifdef NON_MATCHING
+// Score 239: sxsy and cxsy sit 4 bytes lower on the stack, and arg4 is loaded one store later.
+void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    f32 sx;
+    f32 sy;
+    f32 sz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 sxsy;
+    f32 cxsy;
+
+    sx = SIN(ANGLE_TO_CUSTOM_UNITS(arg1));
+    sy = SIN(ANGLE_TO_CUSTOM_UNITS(arg2));
+    sz = SIN(ANGLE_TO_CUSTOM_UNITS(arg3));
+    cx = COS(ANGLE_TO_CUSTOM_UNITS(arg1));
+    cy = COS(ANGLE_TO_CUSTOM_UNITS(arg2));
+    cz = COS(ANGLE_TO_CUSTOM_UNITS(arg3));
+
+    arg0[0][0] = cy * cz;
+    sxsy = sx * sy;
+    arg0[1][0] = (-cx * sz) + (sxsy * cz);
+    cxsy = cx * sy;
+    arg0[2][0] = (sx * sz) + (cxsy * cz);
+    arg0[0][1] = cy * sz;
+    arg0[3][0] = arg4;
+    arg0[1][1] = (cx * cz) + (sxsy * sz);
+    arg0[2][1] = (-sx * cz) + (cxsy * sz);
+    arg0[3][1] = arg5;
+    arg0[0][2] = -sy;
+    arg0[1][2] = sx * cy;
+    arg0[2][2] = cx * cy;
+    arg0[3][2] = arg6;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][3] = 1.0f;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE4D0.s")
+#endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE698.s")
+void func_801EE698(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    MtxF mtx;
 
+    func_801EE4D0((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6);
+
+    _MtxF_to_Mtx(&mtx, arg0);
+}
+
+#ifdef NON_MATCHING
+// Score 275: arg4 is loaded one store later than in the original, which swaps two float registers.
+void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    f32 sx = SIN(ANGLE_TO_CUSTOM_UNITS(arg1));
+    f32 sy = SIN(ANGLE_TO_CUSTOM_UNITS(arg2));
+    f32 sz = SIN(ANGLE_TO_CUSTOM_UNITS(arg3));
+    f32 cx = COS(ANGLE_TO_CUSTOM_UNITS(arg1));
+    f32 cy = COS(ANGLE_TO_CUSTOM_UNITS(arg2));
+    f32 cz = COS(ANGLE_TO_CUSTOM_UNITS(arg3));
+    f32 temp;
+
+    temp = sx * sy;
+    arg0[0][0] = (temp * sz) + (cy * cz);
+    arg0[1][0] = (temp * cz) - (cy * sz);
+    arg0[2][0] = cx * sy;
+    arg0[0][1] = cx * sz;
+    arg0[3][0] = arg4;
+    arg0[1][1] = cx * cz;
+    arg0[2][1] = -sx;
+    arg0[3][1] = arg5;
+    temp = sx * cy;
+    arg0[0][2] = (temp * sz) - (sy * cz);
+    arg0[1][2] = (temp * cz) + (sy * sz);
+    arg0[2][2] = cx * cy;
+    arg0[3][2] = arg6;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][3] = 1.0f;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE6F4.s")
+#endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE8C0.s")
+void func_801EE8C0(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    MtxF mtx;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE91C.s")
+    func_801EE6F4((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6);
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE97C.s")
+    _MtxF_to_Mtx(&mtx, arg0);
+}
+
+void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z) {
+    arg0[0][0] = x;
+    arg0[1][1] = y;
+    arg0[2][2] = z;
+
+    arg0[1][0] = 0.0f;
+    arg0[2][0] = 0.0f;
+    arg0[0][1] = 0.0f;
+    arg0[2][1] = 0.0f;
+    arg0[0][2] = 0.0f;
+    arg0[1][2] = 0.0f;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][0] = 0.0f;
+    arg0[3][1] = 0.0f;
+    arg0[3][2] = 0.0f;
+    arg0[3][3] = 1.0f;
+}
+
+void func_801EE97C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
+    MtxF mtx;
+
+    func_801EE91C((float (*)[4]) & mtx, arg1, arg2, arg3);
+
+    _MtxF_to_Mtx(&mtx, arg0);
+}
