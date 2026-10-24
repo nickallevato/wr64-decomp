@@ -204,7 +204,7 @@ void func_801E1290(void) {
                 letter = D_802287E8[D_802261C4];
                 dist = 750.0f;
                 if (letter == 30) {
-                    if (D_801CE608.gameMode == 4) {
+                    if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
                         D_802261C8 = 5;
                     } else {
                         D_802261C8 = 7;
@@ -360,7 +360,7 @@ void func_801E1BA8(void) {
     }
     D_802261F8 = 0;
     switch (D_801CE608.gameMode) {
-        case 4:
+        case GMODE_CHAMPIONSHIP:
             i = 0;
             if (gDifficulty == DIFFICULTY_NORMAL) {
                 i = 1;
@@ -371,12 +371,12 @@ void func_801E1BA8(void) {
                 }
             }
             break;
-        case 0:
+        case GMODE_TIME_TRIALS:
             if ((D_801C2650 == 1) || (D_801C2654 != 0)) {
                 D_802261F8 = 1;
             }
             break;
-        case 11:
+        case GMODE_STUNT:
             if (D_801C2928 == 1) {
                 D_802261F8 = 1;
             }
@@ -401,7 +401,7 @@ Gfx* func_801E1E8C(Gfx* gdl) {
     if (gGameState == GAME_STATE_64) {
         func_801E2530();
     } else if (D_80228A16 == 1) {
-        if (D_801CE608.gameMode == 4) {
+        if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
             for (i = 0; i < D_801CB334 + 1; i++) {
                 course = D_800EAC14[gDifficulty][i];
                 if ((D_801C2660[course] != 0) || (D_801C2690[course] != 0)) {
@@ -519,11 +519,11 @@ void func_801E2530(void) {
         case 5:
             func_801E2C14();
             sprintf(D_801CE700, "%s", D_802288E8);
-            if (D_801CE608.gameMode == 4) {
+            if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
                 func_801E2B8C(0x42);
-            } else if (D_801CE608.gameMode == 0) {
+            } else if (D_801CE608.gameMode == GMODE_TIME_TRIALS) {
                 func_801EC20C();
-            } else if (D_801CE608.gameMode == 11) {
+            } else if (D_801CE608.gameMode == GMODE_STUNT) {
                 func_801ED004();
             }
             break;
@@ -689,7 +689,7 @@ void func_801E2C14(void) {
         D_802288E8[i] = 0;
         D_800DAB6C = 1;
     }
-    if (D_801CE608.gameMode == 4) {
+    if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
         for (j = 0; j < D_801CB334 + 1; j++) {
             course = D_800EAC14[gDifficulty][j];
             if (D_801C2660[course] != 0) {
@@ -713,7 +713,7 @@ void func_801E2C14(void) {
                 D_801C22C0[course].unk10[i] = 0;
             }
         }
-    } else if (D_801CE608.gameMode == 11) {
+    } else if (D_801CE608.gameMode == GMODE_STUNT) {
         if (D_801C2928 != 0) {
             for (i = 0; i < 4; i++) {
                 D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = D_802288E8[i];
