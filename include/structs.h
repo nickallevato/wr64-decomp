@@ -1279,4 +1279,25 @@ typedef struct UnkStruct_801CE5F8_s {
     Mtx unk1780[1];
 } UnkStruct_801CE5F8;
 
+struct UnkStruct_801C2938 {
+    /* 0x000 */ char pad0[4];
+    /* 0x004 */ s32 unk4;
+    /* 0x008 */ char pad8[0x124];
+    /* 0x12C */ s32 unk12C;
+    /* 0x130 */ char pad130[0x6C];
+    /* 0x19C */ s32 unk19C;
+    /* 0x1A0 */ char pad1A0[0x124];
+    /* 0x2C4 */ s32 unk2C4;
+    /* 0x2C8 */ s32 unk2C8;
+    /* 0x2CC */ char pad2CC[0x20];
+    /* 0x2EC */ s32 unk2EC;
+    /* 0x2F0 */ char pad2F0[4];
+    /* 0x2F4 */ s32 unk2F4;
+    /* 0x2F8 */ char pad2F8[0x20];
+    /* 0x318 */ s32 unk318;
+    /* 0x31C */ char pad31C[0x1C];
+    /* 0x338 */ s32 unk338;
+    /* 0x33C */ char pad33C[0x3C];
+}; /* size = 0x378 */
+
 #endif /* STRUCTS_H */
