@@ -437,7 +437,9 @@ void func_801DFE30(UnkA95D0_Runner* runner, UnkA95D0_Key2* key) {
     func_801DF278(runner->obj, 2, key);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE58.s")
+void func_801DFE58(UnkA95D0_Runner* runner, UnkA95D0_Key2* key) {
+    func_801DF278(runner->obj, 3, key);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE80.s")
 
