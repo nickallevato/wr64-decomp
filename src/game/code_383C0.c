@@ -564,7 +564,7 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
         if (D_801C3B40 != 0) {
             cell = &(0, D_801C3B7C)[(z >> D_801C3B78) | ((x >> D_801C3B70) << D_801C3B68)]; // FAKE (0, ...) as in func_8007F448
         } else {
-            cell = &(0, D_801C3B7C)[(x >> D_801C3B70) | ((z >> D_801C3B78) << D_801C3B60)];
+            cell = &(0, D_801C3B7C)[(x >> D_801C3B70) | ((z >> D_801C3B78) << D_801C3B60)]; // FAKE (0, ...) as above
         }
         list = &D_801C3B80[(u16) *cell];
         while ((idx = *(++list)) != 0) {

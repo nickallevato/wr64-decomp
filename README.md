@@ -151,8 +151,9 @@ requests upstream with code from here.
 - **[LLONSIT/Wave-Race-64](https://github.com/LLONSIT/Wave-Race-64)** and its contributors:
   the original decompilation, the build system and the first ~900 matched functions.
 - **davkdavk**: [LLONSIT/Wave-Race-64#92](https://github.com/LLONSIT/Wave-Race-64/pull/92)
-  matched 132 functions. The 48 this fork didn't already have were ported in
-  ([#1](https://github.com/nickallevato/wr64-decomp/pull/1)), credited in each commit.
+  matched 132 functions. 42 of them were ported into this fork
+  ([#1](https://github.com/nickallevato/wr64-decomp/pull/1)), credited in each commit; the rest
+  this fork already had or had matched on its own.
 - The decomp tooling community: splat, m2c, asm-differ, decomp-permuter, asm-processor and
   ido-static-recomp make all of this possible.
 

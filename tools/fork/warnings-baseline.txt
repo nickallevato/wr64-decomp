@@ -1,4 +1,3 @@
-src/game/code_24270.c: warning: assignment to 'UnkStruct_801AE948 *' {aka 'struct UnkStruct_801AE948_s *'} from incompatible pointer type 'UnkStruct_80198368 *' {aka 'struct UnkStruct_80198368_s *'} [-Wincompatible-pointer-types]
 src/game/code_383C0.c: warning: initialization of 'struct UnkStruct_801AEE20 *' from incompatible pointer type 'UnkStruct_801AEE20 *' {aka 'struct UnkStruct_801AEE20_s *'} [-Wincompatible-pointer-types]
 src/game/code_383C0.c: warning: passing argument 5 of 'func_8007E938' from incompatible pointer type [-Wincompatible-pointer-types]
 src/game/code_383C0.c: warning: passing argument 6 of 'func_8007E938' from incompatible pointer type [-Wincompatible-pointer-types]

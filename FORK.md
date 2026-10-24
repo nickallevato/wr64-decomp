@@ -17,8 +17,9 @@ Remotes: `github` is the public fork (`https://github.com/nickallevato/wr64-deco
 `origin` is the owner's Gitea; `main` is pushed to both, batch branches to `origin`.
 `upstream` is LLONSIT's repository and is fetch-only.
 
-`port/pr92-davkdavk` holds davkdavk's five commits from LLONSIT/Wave-Race-64#92 (closed upstream
-unmerged); see Milestone 3.
+`port/pr92-davkdavk` is the PR branch: it contains davkdavk's five commits from
+LLONSIT/Wave-Race-64#92 (closed upstream unmerged) and everything after them, and points at `5764666`;
+see Milestone 3.
 
 ## Setup (one time)
 
@@ -110,7 +111,7 @@ One function per worktree; every step runs from the worktree root with `. .venv/
 
 **Commit rule.** `FORK.md` and `tools/fork/` changes always get their own commits; a game-code
 commit (`src/`, `include/`, `linker_scripts/`, ...) never includes fork files. A rename or names
-commit stays within one area, the size of one future upstream batch: separate commits for, for
+commit stays within one area: separate commits for, for
 example, the text printer, the popups and the portraits.
 
 A struct or type change that also changes the text of functions already in C (a field split into
@@ -345,9 +346,13 @@ inline while a worker ran. Merges: `1fd16e6`, `3e29f75`, `6862b57`, `7b17b76`, `
 
 ### Count, and the recount
 
-**`tools/progress.py`: 1097 -> 1195 of 1372 (80.0% -> 87.1%): +98 matched.** Milestone 2 closed at
-1197 of 1472; on the recounted scale that is 1097 of 1372 (the numbers below use the new scale;
-1133 is where it stood after the third merge, the first one that carried the recount).
+**`tools/progress.py`: 1072 -> 1170 of 1347 (79.6% -> 86.9%): +98 matched**, measured with the tool as
+it is now (it skips symbols of size 0; see the note after the table). Milestone 2 closed at 1197 of
+1472 on the old scale; the same commit (`8c602c9`, before the code_C6C0.c merge) counts 1072 of 1347
+today. The table below keeps the numbers the batches printed at the time, which still count the 25
+size-0 symbols and so sit 25 above the current tool (1195 of 1372 at the `3789333` merge is 1170 of
+1347 now). 1133 is where it stood after the third merge, the first one
+that carried the recount.
 
 The recount: `code_52CD0.c`'s rodata was a separate blob, and moving it into the C file (a2704f4)
 turned its 100 jump-table labels (`.L8009C304`, ...) from `F` symbols into plain labels.
@@ -366,12 +371,14 @@ the 52CD0 merge is 100 too high in both numbers; from there on the total is 1372
 | `5764666` | 1191 | the PR #92 port, +42 |
 | `3789333` | 1195 | the large functions, +4 |
 
-Note for the next count: `tools/progress.py` also counts 22 absolute linker symbols of size 0
-(`objdump` shows them as `F *ABS*`: `func_802C5B78`, `func_802C5F6C`, ... the raw overlay addresses
-`code_4C750.c` calls, and `func_801ED338`). They have no `.s` file, so they count as matched. The
-true figure is 1173 of 1350. They are left in so the numbers stay comparable; renaming the overlay
-function that sits at such an address (to `CourseSelect_Draw`, say) would lower both numbers by one
-unless the raw symbol is kept, so those five draw functions keep their `func_i*` names.
+Note on the count: until `ef24ff5`, `tools/progress.py` counted every `F` symbol in the ELF,
+including 25 of size 0 that have no `.s` file: 22 `*ABS*` overlay entry addresses (`func_802C5B78`,
+`func_802C5F6C`, ..., the raw addresses `code_4C750.c` calls, and `func_801ED338`) and the three
+microcode `*TextEnd` markers. They counted as matched. The tool now skips every size-0 symbol, so the
+true figure is 1170 of 1347 and the table above, which was taken before that, is 25 high in both
+numbers. The five overlay draw functions that `code_4C750.c` calls by raw address still have their
+`func_i*` names, but not because of the count: renaming them no longer changes it. Nothing in the code
+names them yet.
 
 ### Matched and set aside, by batch
 
@@ -383,7 +390,7 @@ the batch ran; the names commits below renamed many matched ones, and set-asides
 **code_C6C0.c** (31 entries): matched 13: `func_8006977C`, `80067BFC`, `800694B8`, `800683A0`,
 `80067C6C`, `80061708`, `80068538`, `80053C08`, `80069798`, `80067810`, `80061FEC`, `8006719C`,
 `800618F4` (rider part matrices and display lists, the stick rescale, the sphere push-apart, the
-orbit camera). Set aside 18: `80067E40` 1565 / 34400, `800629A8` 1690 / 29800, `80064C0C` 1805 /
+orbit camera). Set aside 18 (scores re-measured alone, also in each note in the source): `80067E40` 1565 / 34400, `800629A8` 1690 / 29800, `80064C0C` 1805 /
 102700, `80061184` 3938, `80063C88` 5762, `8006390C` 6123, `800609EC` 6384, `80065C18` 6824,
 `800624CC` 7832, `800665B0` 9093, `80054130` 9443, `800534AC` 11744, `800687A4` 14274,
 `80051EC0` 19419, `80062E50` 37161, `8005B510` 53675, `80057B24` 82354, `8005DE24` 94453 (the last
@@ -416,7 +423,7 @@ code_43A60.c, code_3AC00.c and code_5480.c): matched 4: `8007C494`, `8007BEA4`, 
 26200, `8007FD80` 530, `8007D2D4` 931, `800890B4` 1285, `8007D614` 4441, `8007B630` 4527,
 `8007B930` 4557, `8007FFA8` 7764, `8004B1B4` 8621, `8007DF4C` 23088. Two older set-asides were
 looked at and left: `80088EA8` (330 in the old note, 225 measured now, with a note; one register
-copy fewer than the original) and `80085510` 4370.
+copy fewer than the original) and `80085510` 4170 / 27700 (upstream's decomp.me score of 105 is on another scale).
 
 **The PR #92 port**: 42 functions, all matched, none set aside (below).
 
@@ -535,7 +542,7 @@ under "Open follow-ups" below.
 
 ### Open follow-ups
 
-- The five overlay draw functions called by raw address from `code_4C750.c` (see the count note);
+- The five overlay draw functions called by raw address from `code_4C750.c` (still `func_i*`; nothing names them yet);
   the `UnkA95D0_*` script runners; the near set-asides: `func_8004D30C` (24), `func_80091DBC` (30,
   needs the file's `.data`), `func_800AB25C` (60), `func_80096048` (60), `func_8007F030` (245),
   `func_8004DAF0` (487), `func_800AFBD0` (666), `func_80067E40` (1565).
@@ -543,7 +550,8 @@ under "Open follow-ups" below.
   (and `struct_800762D0`); `UnkStruct_8004B0F8` and `UnkStruct_80192690`; `D_800DACD0` and
   `D_80227A60` (17 words, `s32` vs `Gfx*`); `D_801C26E8` (several local types, `CourseRecord.time` is
   the stunt score); `camera_unk_1.unk8` (`s32` that holds a float); `GfxPool + 0x185E8` (written as
-  `unk170D8 + 0x151`, a separate 16 x 8-vertex block); `D_80228A78`/`D_103B4D0` locals.
+  `unk170D8 + 0x151`, a separate 16 x 8-vertex block); `D_80228A78`/`D_103B4D0` locals; `UnkStruct_801BFA48` and `UnkStruct_801BFB70`, each defined in both
+  code_2C670.c and code_24B00.c (`UnkStruct_801BFB70.unk0` is `f32` in one and `s32` in the other).
 - The yaml splits for `.data`/`.bss` (water_69D0 at `0x8EE80`, code_5480, code_68A10's bss) will
   conflict with any future change in those ranges.
 - Local macros kept on purpose: `RIDER_CP_TIME` (code_2FB10.c), `gSP1QuadrangleLP` (code_68A10.c),
