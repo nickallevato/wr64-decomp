@@ -48,7 +48,64 @@ extern s32 D_80192498; /* the window radius, N << 6 */
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
 
+extern f32 D_800D4768;
+extern s32 D_800D476C;
+extern s32 D_800D4770;
+extern s32 D_800D4774;
+extern s32 D_800D4778;
+extern f32 D_800D477C;
+extern s32 D_80192460[];
+extern f32 D_801924B4;
+extern f32 D_801924C0;
+extern f32 D_801924CC;
+extern f32 D_801924D0;
+extern s32 D_80223934;
+
+#ifdef NON_MATCHING
+// 20/18500: the D_800D4774 load and the last tc add use other temp registers ($t0/$t4 for $t8/$t3); everything else matches
+void func_8004C998(s32 view, Vtx* skirt) {
+    camera_unk_1* cam;
+    Vtx* arena;
+    s32* idx;
+    s32 i;
+    f32 t;
+    f32 h;
+    f32 r;
+    Vtx* vp;
+
+    if (view != 0) {
+        arena = gGfxPool->unk170D8;
+        cam = &gCameraPerspective[D_80223934];
+    } else {
+        arena = gGfxPool->unk13D68;
+        cam = &gCameraPerspective[D_80223930];
+    }
+    D_801924CC = D_801924B4 / (f32) (D_800D476C << 10);
+    D_801924D0 = D_801924C0 / (f32) (D_800D4770 << 13);
+    h = (f32) gWaterLevel - cam->unk50;
+    if (h == 0.0f) {
+        t = 1.0f;
+    } else {
+        t = (D_800D4768 - cam->unk50) / h;
+    }
+    for (i = 6, idx = &D_80192460[6]; i >= 0; i--, idx--) {
+        vp = &skirt[i];
+        vp->v.ob[0] = arena[*idx].v.ob[0];
+        vp->v.ob[1] = gWaterLevel;
+        vp->v.ob[2] = arena[*idx].v.ob[2];
+        if (i == 0) {
+            r = D_80192498 * D_800D477C;
+            vp->v.ob[0] -= (s32) (r * cam->unkF0);
+            vp->v.ob[2] -= (s32) (r * cam->unkF4);
+        }
+        // FAKE: the (u16) cast brings the score from 50 to 20
+        vp->v.tc[1] = (u16) SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774;
+        vp->v.tc[0] = SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C998.s")
+#endif
 
 /* a wave generator stamped as rows of lines (the arg of func_8004CC7C) */
 typedef struct UnkStruct_8004CC7C_s {
