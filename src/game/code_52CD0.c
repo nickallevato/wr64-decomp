@@ -4713,7 +4713,92 @@ void func_800AAAC8(s32 arg0) {
     }
 }
 
+#ifdef NON_MATCHING
+// Score 680 of 39700: float register allocation in the case 1/2 position and the steering block.
+void func_800AB25C(s32 arg0) {
+    s32 angle;
+    f32 dist;
+
+    if ((gGameModeState == GMODE_STATE_STARTED) && (gCurrentPauseMenuOption == -1)) {
+        if (D_801CF060[arg0].unk7C != 0xFF) {
+            D_801D0758 = D_801CF060[D_801CF060[arg0].unk7C].unk18 - 180.0f;
+            switch (arg0) {
+                case 1:
+                    angle = ((D_801D0758 - 20.0f) / 360.0f) * 4096.0f;
+                    dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
+                    D_801D0754 = (COS(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unkC;
+                    D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
+                    if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
+                        (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 50)) {
+                        D_801CF060[arg0].unk50 = 15;
+                        D_801CF060[arg0].unk54 = 0;
+                    }
+                    if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 16) &&
+                        (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 50)) {
+                        D_801CF060[arg0].unk50 = 16;
+                        D_801CF060[arg0].unk54 = 0;
+                    }
+                    break;
+                case 2:
+                    angle = ((D_801D0758 + 20.0f) / 360.0f) * 4096.0f;
+                    dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
+                    D_801D0754 = (COS(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unkC;
+                    D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
+                    if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
+                        (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 55)) {
+                        D_801CF060[arg0].unk50 = 15;
+                        D_801CF060[arg0].unk54 = 0;
+                    }
+                    if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 16) &&
+                        (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 55)) {
+                        D_801CF060[arg0].unk50 = 16;
+                        D_801CF060[arg0].unk54 = 0;
+                    }
+                    break;
+            }
+            D_801CF060[arg0].unk4C =
+                func_8009D4A8(D_801D0754 - D_801CF060[arg0].unkC, D_801D075C - D_801CF060[arg0].unk14) / 10.0f;
+            if (D_801CF060[arg0].unk4C > 80) {
+                D_801CF060[arg0].unk4C = 80.0f;
+            }
+            D_801D0760 = Math_Normalize_Angle(
+                func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
+                D_801CF060[arg0].unk18);
+            if (D_801D0760 >= 2) {
+                D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
+                if (D_801D0760 > 45.0f) {
+                    D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
+                }
+            }
+            if (D_801D0760 <= -2) {
+                D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
+                if (D_801D0760 < -45.0f) {
+                    D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
+                }
+            }
+            if (FABS(D_801D0760) < 2.0f) {
+                D_801CF060[arg0].unk18 = func_8009D564(
+                    func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
+            }
+            D_801CF060[arg0].unk1C = 0.0f;
+            D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
+            D_801D0764 =
+                ((D_801CF060[arg0].unk4C * ((180 - FABS(D_801D0760)) / 180.0f)) - D_801D0768) * 0.15 + D_801D0768;
+            D_801CF060[arg0].unkC +=
+                (D_801CF060[arg0].unk24 = COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
+            D_801CF060[arg0].unk14 +=
+                (D_801CF060[arg0].unk2C = SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
+            func_800A2B24(arg0);
+            return;
+        }
+        if (D_801CF060[arg0].unk8 == 1) {
+            func_800A52D8(arg0, 200.0f);
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AB25C.s")
+#endif
 
 void func_800AB890(s32 arg0) {
     s32 temp_v1;
