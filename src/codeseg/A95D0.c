@@ -140,6 +140,8 @@ typedef struct UnkA95D0_Runner {
 } UnkA95D0_Runner; // size = 0x38
 
 void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
+void func_800AB95C(s32, s32);
+extern UnkA95D0_Step D_80223F7C[];
 void func_801DF744(UnkA95D0_Obj* obj);
 void func_801DF38C(UnkA95D0_Obj* obj);
 void func_801DF128(UnkA95D0_Obj* obj);
@@ -352,7 +354,14 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC404.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC5A8.s")
+void func_801DC5A8(UnkA95D0_Runner* runner) {
+    s32 index = runner->step - D_80223F7C;
+
+    if (index == 2 && runner->frame == 1) {
+        func_800AB92C();
+        func_800AB95C(1, 0);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC60C.s")
 
