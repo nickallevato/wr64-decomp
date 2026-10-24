@@ -279,7 +279,41 @@ Gfx* func_i1_802C6B38(Gfx* dList) {
     return dList;
 }
 
+#ifdef NON_MATCHING
+// Score 265 of 12500: scroll stays in s5, and the loop guard reads unk_4 by absolute address; the
+// original keeps scroll in s0 for the guard, then moves it to s4 for the loop.
+Gfx* func_i1_802C6BD8(Gfx* dList) {
+    UnkStruct_802C96A8* scroll;
+    s32 i;
+
+    gSPDisplayList(dList++, D_106F628);
+    dList = func_80094338(dList, 0, 22, 197, 276, 20);
+    scroll = &D_802C96A8;
+    if (scroll->unk_0 != 0) {
+        dList = Printer_SetMode(dList, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        gDPPipeSync(dList++);
+        gDPSetScissor(dList++, G_SC_NON_INTERLACE, 30, 20, 290, 218);
+        for (i = 0; i < scroll->unk_4; i++) {
+            if (D_802C96A8.unk_18[i] != -1) {
+                if (GAME_NOT_PAUSED) {
+                    D_802C96A8.unk_C[i] -= 2;
+                }
+                dList = func_801E3EE0(dList, 3, D_802C96A8.unk_18[i], D_802C96A8.unk_C[i], 200, 0);
+            }
+        }
+        if (scroll->unk_C[0] < -scroll->unk_8) {
+            D_802C96A8.unk_0 = 0;
+        }
+    }
+
+    gDPPipeSync(dList++);
+    gDPSetScissor(dList++, G_SC_NON_INTERLACE, 0, 0, 319, 239);
+
+    return dList;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C6BD8.s")
+#endif
 
 void func_i1_802C6DCC(void) {
     s32 i;
