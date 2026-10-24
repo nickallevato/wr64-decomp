@@ -1219,7 +1219,8 @@ typedef struct UnkStruct_80192690 {
 } UnkStruct_80192690;                               /* size = 0x1718 */
 
 typedef struct UnkStruct_801AE948_s {
-    char pad[0x35D0];
+    /* 0x0000 */ s32 unk0;
+    char pad4[0x35CC];
     Lights0 unk35D8[1];
     char pad35E8[0xA18];
     /* 0x4000 */ Mtx unk4000;
@@ -1228,7 +1229,8 @@ typedef struct UnkStruct_801AE948_s {
     /* 0x40C0 */ Mtx unk40C0;
     Mtx unk4100[1];
     Mtx unk4140[1];
-    /* 0x4180 */ char pad4180[0x1040];
+    /* 0x4180 */ char pad4180[0xFC0];
+    /* 0x5140 */ Vtx unk5140[2][4];
     /* 0x51C0 */ Vtx unk51C0[4][0xC0];
     /* 0x81C0 */ Vtx unk81C0[0xC0];
     /* 0x8DC0 */ Vtx unk8DC0[4][16];
@@ -1242,7 +1244,7 @@ typedef struct UnkStruct_801AE948_s {
     /* 0xB280 */ Vtx unkB280[4];
     LookAt unkB2C0[1];
     Hilite unkB2E0[1];
-} UnkStruct_801AE948;
+} UnkStruct_801AE948; /* size = 0xB2F0 */
 
 typedef struct UnkStruct_80069740_s {
     s32 pad[0x10];
@@ -1299,22 +1301,6 @@ typedef struct UnkStruct_menu_buffer_1_s {
     /* 0x24 */ s32 menuY;                           /* the pause cursor's y for option 0 (+15 per option) */
     /* 0x28 */ s32 variant;                         /* type 2: 0 place card, else wide card; type 4: 176 wide */
 } UnkStruct_menu_buffer_1;                          /* size = 0x2C */
-
-typedef struct UnkStruct_80198368_s {
-    /* 0x0000 */ s32 unk0;
-    /* 0x0004 */ char pad4[0x513C];
-    /* 0x5140 */ Vtx unk5140[2][4];
-    /* 0x51C0 */ Vtx unk51C0[4][0xC0];
-    /* 0x81C0 */ Vtx unk81C0[0xC0];
-    /* 0x8DC0 */ Vtx unk8DC0[4][16];                         /* inferred */
-    /* 0x91C0 */ Vtx unk91C0[4][16];                         /* inferred */
-    /* 0x95C0 */ char pad95C0[0x1C00];
-    /* 0xB1C0 */ Vtx unkB1C0[4];
-    /* 0xB200 */ Vtx unkB200[4];
-    /* 0xB240 */ Vtx unkB240[4];
-    /* 0xB280 */ Vtx unkB280[4];
-    /* 0xB2C0 */ char padB2C0[0x30];
-} UnkStruct_80198368;                               /* size = 0xB2F0 */
 
 typedef struct UnkStruct_801C43F8_s {
     Vtx unk0[7];

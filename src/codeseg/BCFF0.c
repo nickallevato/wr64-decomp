@@ -165,7 +165,7 @@ void Hud_BlendColorSets(void) {
 // HUD_Init
 #ifdef NON_MATCHING
 // Score 9945: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
-extern UnkStruct_80198368 D_80198368[];
+extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
 extern s32 D_80228A94;
@@ -200,7 +200,7 @@ void func_801EED70(void) {
     s32 i;
     s32 j;
     s8 flag;
-    UnkStruct_80198368* gfxPool;
+    UnkStruct_801AE948* gfxPool;
     Vtx* d0;
     Vtx* d1;
     Vtx* d2;

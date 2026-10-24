@@ -67,7 +67,7 @@ extern s32 D_800D92B0;
 extern s32 D_800D92B4;
 
 // .bss
-extern UnkStruct_80198368 D_80198368[2];
+extern UnkStruct_801AE948 D_80198368[2];
 extern s32 D_801AE950;
 extern s32 D_801BB120;
 extern UnkStruct_801BB138 gCoursePoints[];

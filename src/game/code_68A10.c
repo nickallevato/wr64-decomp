@@ -171,7 +171,7 @@ extern s32 D_801AE950;
 extern s32 D_80223934;
 
 extern UnkStruct_800E6D90 D_800E6D90[];
-extern UnkStruct_80198368 D_80198368[];
+extern UnkStruct_801AE948 D_80198368[];
 
 // External functions
 f32 Math_FloatRand(f32);
