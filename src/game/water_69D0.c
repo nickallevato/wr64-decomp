@@ -246,8 +246,11 @@ extern s32 D_80192460[];
 extern f32 D_801924CC;
 extern f32 D_801924D0;
 
-#ifdef NON_MATCHING
-// 20/18500: the D_800D4774 load and the last tc add use other temp registers ($t0/$t4 for $t8/$t3); everything else matches
+/*
+ * The seven skirt vertices: copies of the arena vertices D_80192460[0..6] at the water level, with
+ * vertex 0 moved back along the camera direction by D_80192498 * D_800D477C, and texture
+ * coordinates projected towards height D_800D4768 and offset by D_800D4774/D_800D4778.
+ */
 void func_8004C998(s32 view, Vtx* skirt) {
     camera_unk_1* cam;
     Vtx* arena;
@@ -283,14 +286,12 @@ void func_8004C998(s32 view, Vtx* skirt) {
             vp->v.ob[0] -= (s32) (r * cam->unkF0);
             vp->v.ob[2] -= (s32) (r * cam->unkF4);
         }
-        // FAKE: the (u16) cast brings the score from 50 to 20
-        vp->v.tc[1] = (u16) SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774;
-        vp->v.tc[0] = SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778;
+        // FAKE: the masks are no-ops on the 16-bit stores (maybe a real wrap); without them two
+        // temp registers differ
+        vp->v.tc[1] = (SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774) & 0xFFFF;
+        vp->v.tc[0] = (SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778) & 0xFFFF;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C998.s")
-#endif
 
 /* a wave generator stamped as rows of lines (the arg of func_8004CC7C) */
 typedef struct UnkStruct_8004CC7C_s {
