@@ -1,5 +1,14 @@
 #include "common.h"
 
+typedef struct UnkStruct_801BB138_s {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} UnkStruct_801BB138; /* size = 0x18 */
+
 extern struct_801C1F84* D_801C1F80;
 extern struct_801C1F84* D_801C1F84;
 extern struct_801C1F84* D_801C1F88;
@@ -10,8 +19,12 @@ extern s32 D_801BB124;
 extern s32 D_801BB128;
 extern s32 D_801CE638;
 
+extern UnkStruct_801BB138 D_801BB138[];
+extern s32 D_801BC938;
 extern f32 D_801C1CE8;
 extern f32 D_801C1CEC;
+extern f32 D_801C1CF0;
+extern f32 D_801C1CF4;
 extern f32 D_801C1CF8;
 extern f32 D_801C1CFC;
 extern u8 D_801C1D00[];
@@ -225,7 +238,91 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_800735EC.s")
 #endif
 
+#ifdef NON_MATCHING
+// 2265: same loops. In the first loop the original stores the new bounds with lui at and keeps
+// the record's coordinate in fs3; here the stores use the hoisted addresses and the registers differ.
+void func_80073E6C(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 n;
+    s32 count;
+    f32 cellW;
+    f32 cellH;
+    f32 x0;
+    f32 x1;
+    f32 z0;
+    f32 z1;
+    UnkStruct_801BB138* p;
+    s32 type;
+
+    D_801C1CEC = 524287.0f;
+    D_801C1CF4 = -524288.0f;
+    D_801C1CE8 = D_801C1CEC;
+    D_801C1CF0 = D_801C1CF4;
+    for (i = 0, p = D_801BB138; i < D_801BC938; i++, p++) {
+        type = p->unk10;
+        if (type != 5) {
+            p->unk4 = 0.0f;
+        }
+        if (p->unk0 < D_801C1CE8) {
+            D_801C1CE8 = p->unk0;
+        }
+        if (D_801C1CF0 < p->unk0) {
+            D_801C1CF0 = p->unk0;
+        }
+        if (p->unk8 < D_801C1CEC) {
+            D_801C1CEC = p->unk8;
+        }
+        if (D_801C1CF4 < p->unk8) {
+            D_801C1CF4 = p->unk8;
+        }
+        p->unkC = 25.0f;
+        if ((type != 2) && (type != 3) && (type != 4)) {
+            p->unk14 = 0;
+        } else {
+            p->unk14 = 1;
+        }
+    }
+    D_801C1CE8 -= 25.0f;
+    D_801C1CF0 += 25.0f;
+    D_801C1CEC -= 25.0f;
+    D_801C1CF4 += 25.0f;
+    D_801C1CF8 = D_801C1CF0 - D_801C1CE8;
+    D_801C1CFC = D_801C1CF4 - D_801C1CEC;
+    n = 0;
+    cellW = D_801C1CF8 / 4;
+    cellH = D_801C1CFC / 4;
+    for (i = 0; i < 4; i++) {
+        x0 = (i * cellW) + D_801C1CE8;
+        x1 = x0 + cellW;
+        x0 -= 25.0f;
+        x1 += 25.0f;
+        for (j = 0; j < 4; j++) {
+            D_801C1F00[i][j] = n;
+            count = 0;
+            z0 = (j * cellH) + D_801C1CEC;
+            z1 = z0 + cellH;
+            z0 -= 25.0f;
+            z1 += 25.0f;
+            for (k = 0; k < D_801BC938; k++) {
+                if (n < 0x1FF) {
+                    if ((x0 <= D_801BB138[k].unk0) && (D_801BB138[k].unk0 <= x1)) {
+                        if ((z0 <= D_801BB138[k].unk8) && (D_801BB138[k].unk8 <= z1)) {
+                            D_801C1D00[n] = k;
+                            n++;
+                            count++;
+                        }
+                    }
+                }
+            }
+            D_801C1F40[i][j] = count;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_80073E6C.s")
+#endif
 
 s32 func_800741A4(f32 arg0, f32 arg1, u8** arg2) {
     s32 row = (arg0 - D_801C1CE8) / D_801C1CF8 * 4.0f;
