@@ -32,30 +32,15 @@ extern s32 D_801C2690[];
 extern const s16 D_800EAC14[][8];
 extern Mtx D_8011F820;
 extern Gfx D_106F6C0[];
-extern Gfx* D_80226040[];
-extern s32 D_802261F8;
 extern s32 D_802287E0;
 extern s32 D_802287E4;
 extern s32 D_802287E8[];
-extern s8 D_80226130[];
-extern s32 D_80226150[];
-extern s32 D_802261E4;
-extern s32 D_802261E8;
-extern Gfx* D_802261EC[];
 extern s8 D_802288E8[];
 extern u16 D_802288EC;
-extern s32 D_802261C4;
-extern s32 D_802261C8;
-extern f32 D_802261CC;
-extern f32 D_802261D0;
-extern f32 D_802261D4;
-extern s32 D_802261E0;
 extern s16 D_800DAB6C;
 extern s32 D_801C2650;
 extern s32 D_801C2654;
 extern s8 D_801CE700[];
-extern f32 D_802261D8;
-extern s16 D_802261DC;
 // 2 * pi. This copy sits just past the end of this file's split rodata (splat gives
 // 0x80226330 to B17D0's data), so the code names it rather than writing the literal.
 extern f32 D_80226330;
@@ -76,6 +61,46 @@ void func_801E2B8C(s32);
 void func_801E2C14(void);
 void func_801EC20C(void);
 f32 func_801E31A0(void);
+
+// Display lists for the 31 letter-wheel slots: A-Z, '-', '.', ' ', delete and end.
+Gfx* D_80226040[] = {
+    (Gfx*) 0x0808EB68, (Gfx*) 0x08090BA0, (Gfx*) 0x080912B0, (Gfx*) 0x08091818,
+    (Gfx*) 0x08091C40, (Gfx*) 0x080920D8, (Gfx*) 0x080924E0, (Gfx*) 0x0808EE78,
+    (Gfx*) 0x0808F1B0, (Gfx*) 0x08092A90, (Gfx*) 0x0808F3B0, (Gfx*) 0x0808F6E8,
+    (Gfx*) 0x0808F878, (Gfx*) 0x0808FBB0, (Gfx*) 0x08092D80, (Gfx*) 0x08093428,
+    (Gfx*) 0x08093928, (Gfx*) 0x080940A0, (Gfx*) 0x08094608, (Gfx*) 0x08090030,
+    (Gfx*) 0x08094CD0, (Gfx*) 0x0808FE58, (Gfx*) 0x08090248, (Gfx*) 0x080905C0,
+    (Gfx*) 0x080951A8, (Gfx*) 0x080908F8, (Gfx*) 0x0808F2B0, (Gfx*) 0x08095640,
+    (Gfx*) 0x08096248, (Gfx*) 0x08095858, (Gfx*) 0x080969E0,
+};
+
+s8* D_802260BC[] = {
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+    "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+    "U", "V", "W", "X", "Y", "Z", "-", ".", " ",
+};
+
+s8 D_80226130[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-. ";
+
+s32 D_80226150[] = {
+    2, 5, 5, 4, 6, 5, 4, 3, 7, 6, 4, 6, 0, 3, 3,
+    5, 3, 4, 5, 4, 3, 3, 0, 3, 3, 4, 5, 8, 0,
+};
+
+s32 D_802261C4 = 0;
+s32 D_802261C8 = 0;
+f32 D_802261CC = 0.0f;
+f32 D_802261D0 = 0.0f;
+f32 D_802261D4 = 0.0f;
+f32 D_802261D8 = 1.0f;
+s16 D_802261DC = 0;
+s32 D_802261E0 = 0;
+s32 D_802261E4 = 0;
+s32 D_802261E8 = 0;
+Gfx* D_802261EC[] = { (Gfx*) 0x080973D0, (Gfx*) 0x08097428, (Gfx*) 0x08097448 };
+s32 D_802261F8 = 0;
+f32 D_802261FC = 50.0f;
+f32 D_80226200 = -50.0f;
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1290.s")
 
@@ -277,64 +302,6 @@ Gfx* func_801E229C(Gfx* gdl) {
     }
     return gdl;
 }
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226210.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226214.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226218.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022621C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226220.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226224.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226228.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022622C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226230.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226234.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226238.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022623C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226240.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226244.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226248.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022624C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226250.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226254.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226258.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022625C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226260.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226264.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226268.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022626C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226270.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226274.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226278.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_8022627C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226280.s")
 
 void func_801E2530(void) {
     s32 j;

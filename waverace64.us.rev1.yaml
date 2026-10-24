@@ -363,7 +363,7 @@ segments:
     - [0xCAE70, data] # needs splitting
     - [0xF2810, data, codeseg/A95D0]
     - [0xF4540, .rodata, codeseg/A95D0]
-    - [0xF4670, data, codeseg/AF8C0]
+    - [0xF4670, .data, codeseg/AF8C0]
     - [0xF4840, .rodata, codeseg/AF8C0]
     - [0xF4960, data, codeseg/B17D0]
     - [0xF49B0, .rodata, codeseg/B17D0]
