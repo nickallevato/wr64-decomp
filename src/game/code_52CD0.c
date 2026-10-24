@@ -4874,13 +4874,14 @@ void func_800A9D48(s32);
 void func_800AB25C(s32);
 
 #ifdef NON_MATCHING
-// Score 5153 of 46300: frame 0x70 against 0x98; the original keeps the camera pointer on the stack (0x5C) and the list pointer in fp. sp94 is read but never written, as in the original.
+// Score 4743 of 46300: the frame is 0x98 now (with a stack pad), but sp94 sits at 0x58 instead of 0x94 and the camera pointer stays in s8 where the original spills it to 0x5C. sp94 is read but never written, as in the original.
 void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
     UnkStruct_80192690* rider;
     UnkStruct_80192690* rider2;
     camera_unk_1* cam;
     s32 i;
     s32 j;
+    UNUSED s32 pad[10]; // stack pad
     s32 sp94;
 
     rider = &D_80192690[D_800D48DC];
