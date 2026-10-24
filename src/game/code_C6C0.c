@@ -340,6 +340,7 @@ extern UnkStruct_80192690 D_80193D5C[];
 extern u8 D_3000000[];
 extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
+extern s32 D_80154344;
 extern Gfx D_10068B0[];
 
 void func_80098048(s32, s32);
@@ -2130,7 +2131,40 @@ void func_800616B0(s32 arg0) {
     func_80061184(&D_80192690[arg0]);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80061708.s")
+void func_80061708(s32 arg0, s32 arg1) {
+    UnkStruct_80192690* rider = &D_80192690[arg0];
+    f32 scale;
+    f32 x;
+    f32 y;
+    f32 sq;
+    f32 len;
+
+    if (rider->unk1446 < 0) {
+        func_800616B0(arg0);
+        return;
+    }
+    if (arg1 < D_80154344) {
+        rider->unkB50 = gControllers[D_80154330[arg1]];
+    } else {
+        rider->unkB50.button = 0;
+        rider->unkB50.stick_x = rider->unkB50.stick_y = rider->unkB50.button;
+    }
+    rider->unk1578 = 1.0f;
+    func_80061184(rider);
+    x = (rider->unkB5E < 0) ? -rider->unkB5E : rider->unkB5E;
+    y = (rider->unkB5F < 0) ? -rider->unkB5F : rider->unkB5F;
+    sq = SQ(x) + SQ(y);
+    if (sq != 0.0f) {
+        len = sqrtf(sq);
+        if (y < x) {
+            scale = 70.0f / ((70.0f / len) * x);
+        } else {
+            scale = 70.0f / ((70.0f / len) * y);
+        }
+        rider->unkB5E = func_80061644(rider->unkB5E * scale);
+        rider->unkB5F = func_80061644(rider->unkB5F * scale);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800618F4.s")
 
