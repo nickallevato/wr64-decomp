@@ -26,7 +26,9 @@ typedef struct camera_unk_1 {
     /* 0x034 */ f32 unk34;
     /* 0x038 */ f32 unk38;
     /* 0x03C */ f32 unk3C;
-    /* 0x040 */ u8 pad40[0xC];
+    /* 0x040 */ f32 unk40;
+    /* 0x044 */ f32 unk44;
+    /* 0x048 */ f32 unk48;
     /* 0x04C */ f32 unk4C;
     /* 0x050 */ f32 unk50;
     /* 0x054 */ f32 unk54;

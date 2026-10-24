@@ -356,6 +356,14 @@ typedef struct RiderSphere {
 
 #define RIDER_SPHERES(rider) ((RiderSphere*) &(rider)->unk160C)
 
+typedef struct UnkStruct_80192420 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ char pad8[0x14];
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+} UnkStruct_80192420;
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -402,6 +410,16 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern s32 D_800D4924;
+extern u16 D_800D4968;
+extern Vec3f D_80192650;
+extern Vec3f D_80192660;
+extern Vec3f D_80192670;
+extern Vec3f D_80192680;
+extern UnkStruct_80192420 D_80192420;
+extern s32 D_80192498;
+extern f32 D_801C1FB4;
+extern s32 D_800D49AC;
 extern f32 D_801924AC;
 extern f32 D_801924B0;
 extern f32 D_801924B4;
@@ -504,6 +522,13 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_80063C88(s32);
+void func_80064C0C(s32);
+void func_80065C18(s32);
+void func_800C118C(void*);
+void func_800C11CC(void*);
+void func_800BFB84(Vec3f*, Vec3f*, Vec3f*, Vec3f*, u8);
+void func_8004D018(f32, f32, s32, s32, s32);
 void func_8004B0F8(struct UnkStruct_8004B0F8* arg0);
 void func_800624CC(UnkStruct_80192690* arg0);
 void func_800618F4(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
@@ -3618,7 +3643,191 @@ void func_80065C18(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80065C18.s")
 #endif
 
+#ifdef NON_MATCHING
+// Register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 and
+// the nearest rider in saved registers); control flow follows the original.
+void func_800665B0(void) {
+    UnkStruct_80192690* player;
+    UnkStruct_80192690* other;
+    camera_unk_1* cam;
+    s32 i;
+    s32 n;
+    s32 nearest;
+    s32 level;
+    s32 flag;
+    u8 pan;
+    f32 best;
+    f32 dx;
+    f32 dz;
+    f32 dist;
+    f32 lim;
+    f32 r;
+    f32 sx;
+    f32 sz;
+
+    if (D_801CE638 != 21) {
+        for (i = gRiders - 1; i >= 0; i--) {
+            if (i == D_800D48DC) {
+                if ((D_800D4964 != 0) || (gRiderGameModes == AI_MODE)) {
+                    func_800616B0(i);
+                } else {
+                    func_80061708(i, 0);
+                }
+            } else if (i == D_800D48E0) {
+                if ((D_800D4964 != 0) || (gRiderGameModes == AI_MODE) || (gPlayers == ONE_PLAYER)) {
+                    func_800616B0(i);
+                } else {
+                    func_80061708(i, 1);
+                }
+            } else {
+                func_800616B0(i);
+            }
+        }
+    }
+    for (i = gRiders - 1; i >= 0; i--) {
+        func_80063C88(i);
+    }
+    if ((D_801CE638 != 21) && (gRiderGameModes != PAUSE_MODE)) {
+        for (n = D_800D4924; n != 0; n--) {
+            if (D_800D4968 != 0) {
+                func_80061FEC();
+            }
+            for (i = gRiders - 1; i >= 0; i--) {
+                func_80064C0C(i);
+            }
+        }
+    }
+    for (i = gRiders - 1; i >= 0; i--) {
+        func_80065C18(i);
+    }
+    func_80052480(D_800D48DC, (struct UnkStruct_80052480*) &D_80192610);
+    func_800C118C(&D_80192610);
+    if (gPlayers == TWO_PLAYERS) {
+        func_80052480(D_800D48E0, (struct UnkStruct_80052480*) D_80192630);
+        func_800C11CC(D_80192630);
+    } else if (gRiders >= 2) {
+        best = 1e10f;
+        player = &D_80192690[D_800D48DC];
+        for (i = gRiders - 1; i >= 0; i--) {
+            if (i != D_800D48DC) {
+                dx = player->unk44.x - D_80192690[i].unk44.x;
+                dz = player->unk44.z - D_80192690[i].unk44.z;
+                if (SQ(dx) + SQ(dz) < best) {
+                    best = SQ(dx) + SQ(dz);
+                    nearest = i;
+                }
+            }
+        }
+        func_80052480(nearest, (struct UnkStruct_80052480*) D_80192630);
+        func_800C11CC(D_80192630);
+        D_80192650.x = player->unk44.x;
+        D_80192650.y = player->unk44.y;
+        D_80192650.z = player->unk44.z;
+        D_80192660.x = player->unkB78;
+        D_80192660.y = player->unkB7C;
+        D_80192660.z = player->unkB80;
+        other = &D_80192690[nearest];
+        D_80192670.x = other->unk44.x;
+        D_80192670.y = other->unk44.y;
+        D_80192670.z = other->unk44.z;
+        D_80192680.x = other->unkB78;
+        D_80192680.y = other->unkB7C;
+        D_80192680.z = other->unkB80;
+        dx = D_80192670.x - D_80192650.x;
+        dz = D_80192670.z - D_80192650.z;
+        dist = SQ(dx) + SQ(dz);
+        if (dist == 0.0f) {
+            pan = 64;
+        } else {
+            dist = sqrtf(dist);
+            cam = &gCameraPerspective[D_80223930];
+            pan = 127 - (s32) (((((1.0f / dist) * ((cam->unkF4 * dx) - (cam->unkF0 * dz))) + 1.0f) * 63.5f) + 0.5f);
+        }
+        func_800BFB84(&D_80192650, &D_80192670, &D_80192660, &D_80192680, pan);
+    }
+    if (gRiderGameModes != PAUSE_MODE) {
+        r = D_80192498;
+        cam = &gCameraPerspective[D_80223930];
+        sx = D_80192420.unk0 + (r * cam->unkF0);
+        sz = D_80192420.unk4 + (r * cam->unkF4);
+        if (gPlayers == ONE_PLAYER) {
+            player = &D_80192690[D_800D48DC];
+            dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
+            if (dist <= D_801C1FB4) {
+                level = D_800D49B0;
+            } else {
+                lim = D_801C1FB4 + 4000.0f;
+                level = 60;
+                if (D_801924AC < lim) {
+                    lim = D_801924AC;
+                }
+                if (dist < lim) {
+                    level = (((dist - D_801C1FB4) * (f32) (60 - D_800D49B0)) / (lim - D_801C1FB4)) + (f32) D_800D49B0;
+                }
+            }
+            func_8004D018(sx, sz, level, D_800D49AC, 1);
+        } else {
+            flag = 1;
+            dx = sx - D_80192690[D_800D48E0].unk44.x;
+            dz = sz - D_80192690[D_800D48E0].unk44.z;
+            if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
+                flag = 0;
+                func_8004D018(sx, sz, D_800D49B0, D_800D49AC, 1);
+            }
+            cam = &gCameraPerspective[D_80223934];
+            sx = D_80192420.unk1C + (r * cam->unkF0);
+            sz = D_80192420.unk20 + (r * cam->unkF4);
+            dx = sx - D_80192690[D_800D48DC].unk44.x;
+            dz = sz - D_80192690[D_800D48DC].unk44.z;
+            if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
+                func_8004D018(sx, sz, D_800D49B0, D_800D49AC, flag);
+            }
+        }
+    }
+    cam = &gCameraPerspective[D_80223930];
+    cam->unk40 = RIDER_C88(&D_80192690[D_800D48DC])[D_80192690[D_800D48DC].unk1424][7].unk0.x;
+    cam->unk44 = RIDER_C88(&D_80192690[D_800D48DC])[D_80192690[D_800D48DC].unk1424][7].unk0.y;
+    cam->unk48 = RIDER_C88(&D_80192690[D_800D48DC])[D_80192690[D_800D48DC].unk1424][7].unk0.z;
+    cam->unk4 = D_80192690[D_800D48DC].unk44.x;
+    *(f32*) &cam->unk8 = D_80192690[D_800D48DC].unk44.y;
+    cam->unkC = D_80192690[D_800D48DC].unk44.z;
+    cam->unk10 = D_80192690[D_800D48DC].unkB78;
+    cam->unk14 = D_80192690[D_800D48DC].unkB7C;
+    cam->unk18 = D_80192690[D_800D48DC].unkB80;
+    cam->unk1C = D_80192690[D_800D48DC].unk6C;
+    cam->unk20 = D_80192690[D_800D48DC].unk70;
+    cam->unk24 = D_80192690[D_800D48DC].unk74;
+    cam->unk28 = D_80192690[D_800D48DC].unk78;
+    cam->unk2C = D_80192690[D_800D48DC].unk7C;
+    cam->unk30 = D_80192690[D_800D48DC].unk80;
+    cam->unk34 = D_80192690[D_800D48DC].unk84;
+    cam->unk38 = D_80192690[D_800D48DC].unk88;
+    cam->unk3C = D_80192690[D_800D48DC].unk8C;
+    if (gPlayers == TWO_PLAYERS) {
+        cam = &gCameraPerspective[D_80223934];
+        cam->unk40 = RIDER_C88(&D_80192690[D_800D48E0])[D_80192690[D_800D48E0].unk1424][7].unk0.x;
+        cam->unk44 = RIDER_C88(&D_80192690[D_800D48E0])[D_80192690[D_800D48E0].unk1424][7].unk0.y;
+        cam->unk48 = RIDER_C88(&D_80192690[D_800D48E0])[D_80192690[D_800D48E0].unk1424][7].unk0.z;
+        cam->unk4 = D_80192690[D_800D48E0].unk44.x;
+        *(f32*) &cam->unk8 = D_80192690[D_800D48E0].unk44.y;
+        cam->unkC = D_80192690[D_800D48E0].unk44.z;
+        cam->unk10 = D_80192690[D_800D48E0].unkB78;
+        cam->unk14 = D_80192690[D_800D48E0].unkB7C;
+        cam->unk18 = D_80192690[D_800D48E0].unkB80;
+        cam->unk1C = D_80192690[D_800D48E0].unk6C;
+        cam->unk20 = D_80192690[D_800D48E0].unk70;
+        cam->unk24 = D_80192690[D_800D48E0].unk74;
+        cam->unk28 = D_80192690[D_800D48E0].unk78;
+        cam->unk2C = D_80192690[D_800D48E0].unk7C;
+        cam->unk30 = D_80192690[D_800D48E0].unk80;
+        cam->unk34 = D_80192690[D_800D48E0].unk84;
+        cam->unk38 = D_80192690[D_800D48E0].unk88;
+        cam->unk3C = D_80192690[D_800D48E0].unk8C;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800665B0.s")
+#endif
 
 Gfx* func_8006719C(Gfx* gdl, s32 arg1) {
     gSPClearGeometryMode(gdl++, G_CULL_FRONT);
