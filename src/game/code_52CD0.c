@@ -159,6 +159,7 @@ extern Gfx D_800E6CF8[];
 extern s16 D_801CE774;
 extern s16 D_801CE76C;
 extern s16 D_801CE76E;
+extern s16 D_801CE770;
 extern s32 D_801D0738;
 
 //.data
@@ -2052,7 +2053,51 @@ Gfx* func_800A1CFC(Gfx* gdl, s32 arg1) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A2308.s")
+Gfx* func_800A2308(Gfx* gdl, s32 arg1) {
+    UnkStruct_801CE780_unk4** v1;
+    s32 index;
+    UnkStruct_801CE780_unk4* temp_s2;
+    s32 sp90;
+    UNUSED s32 pad[4]; // stack pad (frame 0xA0)
+    s32 var_s3;
+
+    index = D_801CE770;
+
+    v1 = D_801CE780[index].unk4;
+
+    temp_s2 = *v1;
+    if (gCurrentPauseMenuOption == -1) {
+        D_801CF060[arg1].unk78 = (D_801CF060[arg1].unk78 + 1) % temp_s2->unk0;
+    }
+    sp90 = D_801CF0D8[arg1].unk0 % temp_s2->unk0;
+    gSPDisplayList(gdl++, D_800E6CF8);
+    gdl = func_8009D96C(gdl, arg1, 0.1f);
+    var_s3 = temp_s2->unkC[sp90];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk8);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s2->unk8[sp90];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk10);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s2->unk10[sp90];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unkC);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    return gdl;
+}
 
 Gfx* func_800A28F4(Gfx* gdl, s32 arg1) {
     StructVarS0* temp_t0;
