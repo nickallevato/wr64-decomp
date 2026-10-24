@@ -382,7 +382,7 @@ typedef struct RiderStruct {
     /* 0x30C */ char pad30C[4];
     /* 0x310 */ s32 unk310;
     /* 0x314 */ s32 unk314;
-    /* 0x318 */ char pad318[4];
+    /* 0x318 */ s32 unk318;
     /* 0x31C */ s32 unk31C;
     /* 0x320 */ s32 unk320;                         /* inferred */
     /* 0x324 */ char pad324[4];

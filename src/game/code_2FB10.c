@@ -46,7 +46,159 @@ void func_800762D0(struct_800762D0* arg0) {
     }
 }
 
+typedef struct UnkStruct_801C3720 {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ char padC[0xC];
+} UnkStruct_801C3720; /* size = 0x18 */
+
+typedef struct UnkStruct_800D81D4 {
+    /* 0x00 */ f32 x;
+    /* 0x04 */ f32 z;
+} UnkStruct_800D81D4; /* size = 0x8 */
+
+typedef struct UnkStruct_800D8204 {
+    /* 0x00 */ f32 minX;
+    /* 0x04 */ f32 maxX;
+    /* 0x08 */ f32 minZ;
+    /* 0x0C */ f32 maxZ;
+} UnkStruct_800D8204; /* size = 0x10 */
+
+extern UnkStruct_800D81D4 D_800D81D4[];
+extern UnkStruct_800D8204 D_800D8204;
+extern UnkStruct_800D8204 D_800D8214;
+extern UnkStruct_801C3720 D_801C3720[];
+extern f32 D_801C3780;
+extern f32 D_801C3784;
+extern f32 D_801C3788;
+
+void func_800C1904(s32);
+void func_800C1A20(s32);
+
+#ifdef NON_MATCHING
+// 4195: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
+// stack as in the original; the frame is 0x98, not 0x88, and the registers differ.
+void func_80076378(s32 arg0) {
+    s32 best;
+    s32 prev;
+    s32 next;
+    f32 dx0;
+    f32 dz0;
+    f32 dxp;
+    s32 cur;
+    s32 zoneA;
+    s32 zoneB;
+    s32 zoneC;
+    s32 zoneD;
+    f32 bestDist;
+    f32 dzp;
+    f32 dxn;
+    s32 n;
+    s32 i;
+    f32 dzn;
+    s32 wasIn;
+    s32 player;
+    UnkStruct_800D8204* rect;
+    f32 dx;
+    s32 isHuman;
+    RiderStruct* rider;
+    f32 x;
+    f32 z;
+    f32 d;
+    f32 dz;
+
+    if (D_801CE638 == 2) {
+        D_801C3780 = D_801C3720[arg0].unk0;
+        D_801C3784 = 0.0f;
+        D_801C3788 = D_801C3720[arg0].unk8;
+    } else {
+        D_801C3780 = D_80192690[arg0].unk44.x;
+        D_801C3784 = D_80192690[arg0].unk44.y;
+        D_801C3788 = D_80192690[arg0].unk44.z;
+    }
+    isHuman = (arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0));
+    if (D_801CE638 == 1) {
+        rider = &D_801C2938[arg0];
+        cur = rider->unk310;
+        best = cur;
+        x = D_801C3780;
+        z = D_801C3788;
+        prev = D_801AEE20[cur].unkA8;
+        next = D_801AEE20[cur].unkA0;
+        dx0 = D_801AEE20[cur].unk0 - x;
+        dxp = D_801AEE20[prev].unk0 - x;
+        dzp = D_801AEE20[prev].unk8 - z;
+        dz0 = D_801AEE20[cur].unk8 - z;
+        dxn = D_801AEE20[next].unk0 - x;
+        dzn = D_801AEE20[next].unk8 - z;
+        bestDist = (dx0 * dx0) + (dz0 * dz0);
+        d = (dxp * dxp) + (dzp * dzp);
+        if (d < bestDist) {
+            bestDist = d;
+            if (cur && cur && cur) {} // FAKE
+            best = prev;
+        }
+        if (((dxn * dxn) + (dzn * dzn)) < bestDist) {
+            best = next;
+        }
+        func_80074368(x, z, &zoneA, &zoneB);
+        if (cur != best) {
+            func_80074368(D_801AEE20[best].unk0, D_801AEE20[best].unk8, &zoneC, &zoneD);
+            if (((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) ||
+                ((zoneB != -1) && ((zoneB == zoneC) || (zoneB == zoneD)))) {
+                rider->unk310 = best;
+            }
+        }
+    }
+    if (gCourseID == DRAKE_LAKE) {
+        rider = &D_801C2938[arg0];
+        rider->unk318 = 0;
+        n = 6;
+        if (gDifficulty < 2) {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            if (!(D_801C3784 > 40.0f)) {
+                dx = D_801C3780 - D_800D81D4[i].x;
+                dz = D_801C3788 - D_800D81D4[i].z;
+                if (((dx * dx) + (dz * dz)) <= 22500.0f) {
+                    rider->unk318 = 1;
+                    break;
+                }
+            }
+        }
+    }
+    if ((gCourseID == PORT_BLUE) || (gCourseID == TWILIGHT_CITY)) {
+        rider = &D_801C2938[arg0];
+        wasIn = rider->unk31C;
+        if (gCourseID == PORT_BLUE) {
+            rect = &D_800D8204;
+        } else {
+            rect = &D_800D8214;
+        }
+        if ((rect->minX <= D_801C3780) && (D_801C3780 <= rect->maxX) && (rect->minZ <= D_801C3788) &&
+            (D_801C3788 <= rect->maxZ)) {
+            rider->unk31C = 1;
+        } else {
+            rider->unk31C = 0;
+        }
+        if (isHuman && (wasIn != rider->unk31C)) {
+            player = 1;
+            if (arg0 == D_800D48DC) {
+                player = 0;
+            }
+            if (rider->unk31C != 0) {
+                func_800C1904(player);
+            } else {
+                func_800C1A20(player);
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80076378.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_8007687C.s")
 
