@@ -520,7 +520,89 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D628.s")
 #endif
 
+/*
+ * For each of a body's points touching the water (unk1C bit 0), keeps the part of its (unkC, unk14)
+ * velocity along the unit (unk6C, unk74) direction and scales the rest by unk14, and scales unk10
+ * by unk10. Points 0/2, 3/5, 6/7 and 9/10 are tested in pairs.
+ */
+#define WATER_DAMP_POINT(pt)                                                  \
+    vx = (pt)->unkC;                                                          \
+    vz = (pt)->unk14;                                                         \
+    d = (vx * dx) + (vz * dz);                                                \
+    (pt)->unkC = (d * dx * k) + (body->unk14 * vx);                           \
+    (pt)->unk10 *= body->unk10;                                               \
+    (pt)->unk14 = (d * dz * k) + (body->unk14 * vz);
+
+#ifdef NON_MATCHING
+// 3191/36500: the original keeps 1.0f in $fs0 across sqrtf (frame 0x40 with $fs0/$fs1 saved; 0x20 here), so the float registers differ throughout; the per-point blocks match in shape
+void func_8004DAF0(void* arg0) {
+    UnkStruct_80192690* body = arg0;
+    UnkStruct_8004B0F8_1* pt2;
+    f32 dz;
+    UnkStruct_8004B0F8_1* pt;
+    f32 vz;
+    f32 len;
+    f32 inv;
+    f32 d;
+    f32 k;
+    f32 dx;
+    f32 vx;
+
+    dx = body->unk6C;
+    dz = body->unk74;
+    k = 1.0f - body->unk14;
+    len = (dx * dx) + (dz * dz);
+    if (len == 0.0f) {
+        dx = 0.0f;
+        dz = 0.0f;
+    } else {
+        inv = 1.0f / sqrtf(len);
+        dx = body->unk6C * inv;
+        dz = body->unk74 * inv;
+    }
+    pt = &body->unk30[1];
+    if (pt->unk1C & 1) {
+        WATER_DAMP_POINT(pt);
+    }
+    pt = &body->unk30[4];
+    if (pt->unk1C & 1) {
+        WATER_DAMP_POINT(pt);
+    }
+    pt = &body->unk30[8];
+    if (pt->unk1C & 1) {
+        WATER_DAMP_POINT(pt);
+    }
+    pt = &body->unk30[11];
+    if (pt->unk1C & 1) {
+        WATER_DAMP_POINT(pt);
+    }
+    pt = &body->unk30[3];
+    pt2 = &body->unk30[5];
+    if ((pt->unk1C | pt2->unk1C) & 1) {
+        WATER_DAMP_POINT(pt);
+        WATER_DAMP_POINT(pt2);
+    }
+    pt = &body->unk30[6];
+    pt2 = &body->unk30[7];
+    if ((pt->unk1C | pt2->unk1C) & 1) {
+        WATER_DAMP_POINT(pt);
+        WATER_DAMP_POINT(pt2);
+    }
+    pt = &body->unk30[9];
+    pt2 = &body->unk30[10];
+    if ((pt->unk1C | pt2->unk1C) & 1) {
+        WATER_DAMP_POINT(pt);
+        WATER_DAMP_POINT(pt2);
+    }
+    pt2 = &body->unk30[2];
+    if ((body->unk30[0].unk1C | pt2->unk1C) & 1) {
+        body->unk30[0].unk10 *= body->unk10;
+        pt2->unk10 *= body->unk10;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004DAF0.s")
+#endif
 
 #ifdef NON_MATCHING
 // 9025/29700: register allocation; the original keeps arg0 in $t3 and reloads it from the stack after sqrtf, keeps the four integer corner values in saved registers and 1.0f/4096.0f in $fs4/$fs5
