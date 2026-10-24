@@ -60,15 +60,15 @@ extern s32 D_802287AC;
 typedef struct UnkA95D0_Base {
     /* 0x00 */ Vec3f unk0;
     /* 0x0C */ Vec3f unkC;
-    /* 0x18 */ Vec3f unk18;
+    /* 0x18 */ f32 unk18[3];
     /* 0x24 */ f32 unk24[3];
-    /* 0x30 */ u8 pad30[4];
+    /* 0x30 */ f32 unk30;
     /* 0x34 */ f32 unk34;
     /* 0x38 */ f32 unk38;
-    /* 0x3C */ u8 pad3C[4];
-    /* 0x40 */ f32 unk40;
-    /* 0x44 */ f32 unk44;
-    /* 0x48 */ u8 pad48[0x10];
+    /* 0x3C */ f32 unk3C;
+    /* 0x40 */ f32 unk40[2];
+    /* 0x48 */ f32 unk48[2];
+    /* 0x50 */ f32 unk50[2];
 } UnkA95D0_Base; // size = 0x58
 
 typedef struct UnkA95D0_Payload1 {
@@ -443,7 +443,18 @@ void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines
     func_801DEB08(out + 9, &cursors[3], (UnkA95D0_Spline1*) &splines[3]);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEEC4.s")
+void func_801DEEC4(UnkA95D0_Obj* obj) {
+    UnkA95D0_Base* b = &obj->base;
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        b->unk18[i] += (b->unk24[i] - b->unk18[i]) * b->unk30;
+    }
+    b->unk34 += (b->unk38 - b->unk34) * b->unk3C;
+    for (i = 0; i < 2; i++) {
+        b->unk40[i] += (b->unk48[i] - b->unk40[i]) * b->unk50[i];
+    }
+}
 
 void func_801DEF84(UnkA95D0_Obj* obj, UnkA95D0_Base* base, UnkA95D0_Payload1* p) {
     obj->type = 1;
@@ -686,12 +697,12 @@ void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
     cam->unk7C = obj->base.unk0.x;
     cam->unk80 = obj->base.unk0.y;
     cam->unk84 = obj->base.unk0.z;
-    cam->unk70 = obj->base.unk18.x;
-    cam->unk74 = obj->base.unk18.y;
-    cam->unk78 = obj->base.unk18.z;
+    cam->unk70 = obj->base.unk18[0];
+    cam->unk74 = obj->base.unk18[1];
+    cam->unk78 = obj->base.unk18[2];
     cam->unk88 = obj->base.unk34;
-    cam->unk94 = obj->base.unk40;
-    cam->unk98 = obj->base.unk44;
+    cam->unk94 = obj->base.unk40[0];
+    cam->unk98 = obj->base.unk40[1];
 }
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0FF0.s")
