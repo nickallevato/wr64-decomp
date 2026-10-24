@@ -928,7 +928,231 @@ void func_800B2ABC(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B2ABC.s")
 #endif
 
+extern Gfx* D_801AE94C;
+extern s32 D_800D4B00;
+extern u8 D_1047458[];
+extern u8 D_1047C60[];
+extern u8 D_1048468[];
+extern u8 D_1048C70[];
+extern u8 D_1049478[];
+extern u8 D_104D4B8[];
+extern u8 D_104E4C0[];
+extern u8 D_104F4C8[];
+extern u8 D_10504D0[];
+extern Mtx D_2000A40[];
+extern Vtx D_50081C0[];
+
+// A quadrangle as this microcode takes it: G_LINE3D's opcode, the four vertex indices times 5
+// (v3 first).
+#define gSP1QuadrangleLP(pkt, v0, v1, v2, v3)                                                      \
+    {                                                                                              \
+        Gfx* _g = (Gfx*) (pkt);                                                                    \
+        _g->words.w0 = _SHIFTL(G_LINE3D, 24, 8);                                                   \
+        _g->words.w1 =                                                                             \
+            _SHIFTL((v3) * 5, 24, 8) | _SHIFTL((v0) * 5, 16, 8) | _SHIFTL((v1) * 5, 8, 8) | _SHIFTL((v2) * 5, 0, 8); \
+    }
+
+#ifdef NON_MATCHING
+// 19814: same blocks, display-list commands and loops; register allocation and scheduling
+// differ (the original keeps more command words in saved registers).
+void func_800B305C(Gfx** gdl) {
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 n;
+    s32 twoViews;
+    s32 view;
+    u8* tex;
+    Vtx* vtx;
+    Gfx* gdlh;
+
+    D_801D7B38 = osGetTime();
+    // The effects go into their own display list at D_801AE94C, called from here.
+    gSPDisplayList((*gdl)++, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
+    gdlh = D_801AE94C;
+    gSPDisplayList(gdlh++, &D_10514D0);
+    twoViews = (gPlayers == TWO_PLAYERS) && (D_801CE638 == 1);
+    view = D_800DAB2C * 2;
+    gDPSetCombineLERP(gdlh++, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0,
+                      SHADE, 0);
+    gDPSetRenderMode(gdlh++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
+    gSPMatrix(gdlh++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    // The unk0 streaks, one texture of four at a time (chosen by age and slot).
+    for (i = 0; i < D_801D0790; i++) {
+        if (twoViews && (i == D_800DAB2C)) {
+            continue;
+        }
+        D_800E6D60 = &D_801D0798[i];
+        D_800E6D68 = D_801D0798[i].unk0;
+        gDPPipeSync(gdlh++);
+        if (D_800E6D60->unk1C58 != 0) {
+            gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
+        } else {
+            gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
+        }
+        for (k = 1; k != 5; k++) {
+            n = 0;
+            switch (k) {
+                case 1:
+                    tex = D_1047C60;
+                    break;
+                case 2:
+                    tex = D_1048468;
+                    break;
+                case 3:
+                    tex = D_1048C70;
+                    break;
+                case 4:
+                    tex = D_1049478;
+                    break;
+            }
+            gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            for (j = 63; j >= 0; j--) {
+                if (D_800E6D68[j].unk38 != 0) {
+                    D_800E6D64 = &D_800E6D68[j];
+                    if ((((D_800E6D64->unk3C + j) & 3) + 1) == k) {
+                        gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][n], 3, 0);
+                        gSP1Triangle(gdlh++, 0, 1, 2, 0);
+                    }
+                    n += 3;
+                }
+            }
+        }
+    }
+    // The unk1A00 squares, textured by their unk24.
+    for (i = 0; i < D_801D0790; i++) {
+        D_800E6D60 = &D_801D0798[i];
+        D_800E6D78 = D_801D0798[i].unk1A00;
+        gDPPipeSync(gdlh++);
+        if (D_800E6D60->unk1C58 != 0) {
+            gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
+        } else {
+            gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
+        }
+        for (j = 0, n = 0; j < 4; j++) {
+            if (D_800E6D78[j].unk20 != 0) {
+                vtx = &D_5000000->unk8DC0[i + view][n];
+                switch (D_800E6D78[j].unk24) {
+                    case 1:
+                        tex = (u8*) &D_1049C80;
+                        break;
+                    case 2:
+                        tex = (u8*) &D_104A488;
+                        break;
+                    case 3:
+                        tex = (u8*) &D_104AC90;
+                        break;
+                    case 4:
+                        tex = (u8*) &D_104B498;
+                        break;
+                    case 5:
+                        tex = (u8*) &D_104BCA0;
+                        break;
+                    case 6:
+                        tex = (u8*) &D_104C4A8;
+                        break;
+                    default:
+                        tex = (u8*) &D_104CCB0;
+                        break;
+                }
+                n += 4;
+                gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                gSPVertex(gdlh++, vtx, 4, 0);
+                gSP1QuadrangleLP(gdlh++, 0, 1, 2, 3);
+            }
+        }
+    }
+    // The unk1AA0 trails: one animated texture (D_800D4B00) and 7 quads per entry.
+    gDPPipeSync(gdlh++);
+    gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
+    switch (D_800D4B00 & 3) {
+        case 0:
+            tex = D_104D4B8;
+            break;
+        case 1:
+            tex = D_104E4C0;
+            break;
+        case 2:
+            tex = D_104F4C8;
+            break;
+        case 3:
+            tex = D_10504D0;
+            break;
+    }
+    gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 64, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801D0790; i++) {
+        if (twoViews && (i == D_800DAB2C)) {
+            continue;
+        }
+        gSPVertex(gdlh++, D_5000000->unk91C0[i], 16, 0);
+        for (k = 0; k < 7; k++) {
+            gSP1QuadrangleLP(gdlh++, k * 2, k * 2 + 2, k * 2 + 3, k * 2 + 1);
+        }
+    }
+    // The unk1000 triangles of the human's entry, 5 to a vertex load.
+    gDPPipeSync(gdlh++);
+    gDPSetRenderMode(gdlh++, G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
+    gDPLoadTextureBlock(gdlh++, D_1047458, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801D0790; i++) {
+        if (i != D_800D48DC) {
+            continue;
+        }
+        D_800E6D60 = &D_801D0798[i];
+        vtx = D_50081C0;
+        if (D_800E6D60->unk1C58 != 0) {
+            gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
+        } else {
+            gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
+        }
+        n = 0;
+        k = D_800E6D60->unk1C24 / 5;
+        for (j = 0; j < k; j++) {
+            gSPVertex(gdlh++, vtx, 15, 0);
+            vtx += 15;
+            gSP1Triangle(gdlh++, 0, 1, 2, 0);
+            gSP1Triangle(gdlh++, 3, 4, 5, 0);
+            gSP1Triangle(gdlh++, 6, 7, 8, 0);
+            gSP1Triangle(gdlh++, 9, 10, 11, 0);
+            gSP1Triangle(gdlh++, 12, 13, 14, 0);
+        }
+        k = D_800E6D60->unk1C24 % 5;
+        if (k != 0) {
+            gSPVertex(gdlh++, vtx, k * 3, 0);
+            for (j = 0; j < k; j++) {
+                gSP1Triangle(gdlh++, n, n + 1, n + 2, 0);
+                n += 3;
+            }
+        }
+    }
+    func_800AF798(&gdlh);
+    gSPEndDisplayList(gdlh++);
+    D_801AE94C = gdlh;
+    // The time of this and of func_800B2ABC, and the peaks of the human's live record count and
+    // of the display list's size.
+    D_801D7B38 = osGetTime() - D_801D7B38;
+    D_801D7B48 += D_801D7B38;
+    D_801D7B50++;
+    if (D_801D7B38 > D_801D7B40) {
+        D_801D7B40 = D_801D7B38;
+    }
+    if ((D_801D7B18 + D_801D7B38) > D_801D7B58) {
+        D_801D7B58 = D_801D7B18 + D_801D7B38;
+    }
+    if (D_801D7B60 < D_801D0798[D_800D48DC].unk1C20) {
+        D_801D7B60 = D_801D0798[D_800D48DC].unk1C20;
+    }
+    D_801D7B64 = gdlh - (Gfx*) D_801AE948;
+    if (D_801D7B68 < D_801D7B64) {
+        D_801D7B68 = D_801D7B64;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B305C.s")
+#endif
 
 void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5) {
     camera_unk_1* temp_t0;
