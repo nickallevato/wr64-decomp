@@ -206,7 +206,105 @@ Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 arg2, s32 x, s32 y, s32 mode, u8 r0, 
     return func_801E8B24(gdl, font, arg2, x, y);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8B24.s")
+/* Prints time (in ms) as M'SS"mmm in font from (x, y); the separators are the fonts' ' and @ glyphs. */
+Gfx* func_801E8B24(Gfx* gdl, s32 font, s32 time, s32 x, s32 y) {
+    s32 cx;
+    s32 digitW;
+    s32 sep1;
+    s32 sep2;
+    s32 sep1W;
+    s32 sep2W;
+    s32 min;
+    s32 sec10;
+    s32 sec1;
+    s32 ms100;
+    s32 ms10;
+    s32 ms1;
+
+    switch (font) {
+        case 0:
+            digitW = 24;
+            sep1 = 0x25;
+            sep2 = 0x26;
+            sep1W = D_80226D70[0x25];
+            sep2W = D_80226D70[0x26];
+            break;
+        case 1:
+            digitW = 8;
+            sep1 = 0x25;
+            sep2 = 0x26;
+            sep1W = D_80226D98[0x25];
+            sep2W = D_80226D98[0x26];
+            break;
+        case 2:
+            digitW = 10;
+            sep1 = 0x26;
+            sep2 = 0x27;
+            sep1W = D_80226DC4[0x26];
+            sep2W = D_80226DC4[0x27];
+            break;
+        case 3:
+            digitW = 12;
+            sep1 = 0xA;
+            sep2 = 0xB;
+            sep1W = D_80226DF4[0xA];
+            sep2W = D_80226DF4[0xB];
+            break;
+        case 4:
+            digitW = 12;
+            sep1 = 0;
+            sep2 = 0;
+            sep1W = D_80226E00[0];
+            sep2W = D_80226E00[0];
+            break;
+        case 5:
+            digitW = 16;
+            sep1 = 0;
+            sep2 = 0;
+            sep1W = D_80226E0C[0];
+            sep2W = D_80226E0C[0];
+            break;
+    }
+    cx = x;
+    min = (time / 1000 / 60) % 10;
+    gdl = func_801E80B0(gdl, font, min, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += digitW;
+    gdl = func_801E80B0(gdl, font, sep1, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += sep1W;
+    sec10 = ((time / 1000 % 60) / 10) % 10;
+    gdl = func_801E80B0(gdl, font, sec10, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += digitW;
+    sec1 = (time / 1000 % 60) % 10;
+    gdl = func_801E80B0(gdl, font, sec1, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += digitW;
+    gdl = func_801E80B0(gdl, font, sep2, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += sep2W;
+    ms100 = ((time % 1000) / 100) % 10;
+    gdl = func_801E80B0(gdl, font, ms100, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += digitW;
+    ms10 = ((time % 1000) / 10) % 10;
+    gdl = func_801E80B0(gdl, font, ms10, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    cx += digitW;
+    ms1 = (time % 1000) % 10;
+    gdl = func_801E80B0(gdl, font, ms1, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
+                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
+                        D_80228A58[3], D_80228A68[3], 1.0f);
+    return gdl;
+}
 
 /* r0..b3: RGB of the four glyph-quad corners (the recomp passes top, top, bottom, bottom). */
 Gfx* func_801E92FC(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
