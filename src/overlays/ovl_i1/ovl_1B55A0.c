@@ -10,6 +10,8 @@ extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 extern s32 D_802C96A4;
 extern s32 D_800D817C;
+extern Gfx D_106F1B8[];
+extern s16 D_801CE628;
 extern RiderStruct gRiderRaceState[];
 // The asm names this array D_801CE6FC + 0xC; its symbol is in linker_scripts/us/rev1/resolve.txt.
 extern s32 D_801CE708[4];
@@ -23,6 +25,13 @@ s32 Save_EepromWriteHeader(void);
 Gfx* func_80093AFC(Gfx*);
 void func_801EC830(void);
 void func_800C37D4(s32);
+void Camera_HandleCButtons(void);
+Gfx* func_i1_802C6B38(Gfx* dList);
+Gfx* func_i1_802C6BD8(Gfx* dList);
+void func_i1_802C5DF4(void);
+void func_i1_802C6550(void);
+void func_i1_802C63B4(void);
+void func_i1_802C6B00(void);
 void func_i1_802C7570(s32 arg0);
 Gfx* func_i1_802C7E48(Gfx*);
 void func_i1_802C8E70(void);
@@ -104,7 +113,86 @@ void func_i1_802C59E8(s32 arg0) {
     func_800C37D4(arg0);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C5AE4.s")
+Gfx* func_i1_802C5AE4(Gfx* dList) {
+    s32 i;
+
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        if (gGameState == 0x28) {
+            return func_80093C44(dList);
+        }
+    }
+
+    dList = func_8009328C(dList);
+    if (GAME_NOT_PAUSED) {
+        dList = func_801E5554(dList);
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        dList = func_i1_802C6B38(dList);
+    }
+    if ((gCourseID == DOLPHIN_PARK) && (D_801CE608.gameMode == 4) && (D_800DAB64 == 0)) {
+        dList = func_i1_802C6BD8(dList);
+    }
+    if (gPlayers == ONE_PLAYER) {
+        gSPDisplayList(dList++, D_106F168);
+    } else {
+        gSPDisplayList(dList++, D_106F1B8);
+    }
+
+    if (gGameState == 0x28) {
+        Camera_HandleCButtons();
+        func_i1_802C5DF4();
+    } else if (gGameState == 0x29) {
+        func_i1_802C63B4();
+    } else if (gGameState == 0x2A) {
+        func_i1_802C6550();
+    } else if (gGameState == 0x2C) {
+        func_i1_802C6B00();
+    } else if ((gGameState == 0x2B) && (D_80228A16 == 1)) {
+        gCurrentPauseMenuOption = -1;
+        D_801CE628 = 0;
+        switch (D_801CE630) {
+            case 2:
+                GameState_EnterTitleScreen();
+                func_800AD3C4();
+                break;
+
+            case 40:
+                func_8009345C();
+                func_800AD3C4();
+                break;
+
+            case 10:
+                GameState_EnterRiderSelect();
+                func_800AD3C4();
+                break;
+
+            case 20:
+                GameState_EnterCourseSelect();
+                func_800AD3C4();
+                break;
+
+            case 30:
+                if (D_801CB330 == 0) {
+                    D_801CE608.rider = 4;
+                    for (i = 0; i < D_801CE608.rider; i++) {
+                        D_801CB350[D_801CB334][i] = 0;
+                    }
+                    D_801CB334++;
+                } else {
+                    D_801CE6F8 = 1;
+                    D_801CB334 = 0;
+                    if (gDifficulty == DIFFICULTY_NORMAL) {
+                        D_801CB334 = 1;
+                    }
+                }
+                GameState_EnterCourseOverview();
+                func_800AD3C4();
+                break;
+        }
+    }
+    return dList;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C5DF4.s")
 
