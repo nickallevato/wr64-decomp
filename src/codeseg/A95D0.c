@@ -834,7 +834,57 @@ skip:
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DE3CC.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DE690.s")
+f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count) {
+    f32 u;
+    f32 t2;
+    f32 t3;
+    f32 u2;
+    f32 u3;
+    f32 w[4];
+
+    if (seg == 0) {
+        u = 1.0f - t;
+        t2 = t * t;
+        w[0] = u * u * u;
+        t3 = t2 * t;
+        w[1] = ((t3 * 21.0f) / 12.0f) - (t2 * 9.0f * 0.5f) + (t * 3.0f);
+        w[2] = ((-t3 * 11.0f) / 12.0f) + (t2 * 3.0f * 0.5f);
+        w[3] = t3 / 6.0f;
+    } else if (seg == 1) {
+        u = 1.0f - t;
+        t2 = t * t;
+        w[0] = u * u * u * 0.25f;
+        t3 = t2 * t;
+        w[1] = ((t3 * 7.0f) / 12.0f) - (t2 * 5.0f * 0.25f) + (t * 0.25f) + 0.5833333f;
+        w[2] = (-t3 * 0.5f) + (t2 * 0.5f) + (t * 0.5f) + 0.16666667f;
+        w[3] = t3 / 6.0f;
+    } else if ((count < 7) || (seg < (count - 5))) {
+        u = 1.0f - t;
+        t2 = t * t;
+        t3 = t2 * t;
+        w[0] = (u * u * u) / 6.0f;
+        w[1] = ((t3 * 0.5f) - t2) + 0.6666667f;
+        w[2] = (-t3 * 0.5f) + (t2 * 0.5f) + (t * 0.5f) + 0.16666667f;
+        w[3] = t3 / 6.0f;
+    } else if (count == (seg + 5U)) {
+        u = 1.0f - t;
+        u2 = u * u;
+        u3 = u2 * u;
+        w[0] = u3 / 6.0f;
+        w[1] = (-u3 * 0.5f) + (u2 * 0.5f) + (u * 0.5f) + 0.16666667f;
+        w[2] = ((u3 * 7.0f) / 12.0f) - (u2 * 5.0f * 0.25f) + (u * 0.25f) + 0.5833333f;
+        w[3] = t * t * t * 0.25f;
+    } else if (count == (seg + 4U)) {
+        u = 1.0f - t;
+        u2 = u * u;
+        u3 = u2 * u;
+        w[0] = u3 / 6.0f;
+        w[1] = ((-u3 * 11.0f) / 12.0f) + (u2 * 3.0f * 0.5f);
+        w[2] = ((u3 * 21.0f) / 12.0f) - (u2 * 9.0f * 0.5f) + (u * 3.0f);
+        w[3] = t * t * t;
+    }
+    return w[0] * points[seg] + w[1] * points[seg + 1] + w[2] * points[seg + 2] + w[3] * points[seg + 3];
+}
 
 void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count) {
     s32 i;
