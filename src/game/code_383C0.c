@@ -15,14 +15,20 @@ struct UnkStruct_801AEE20 {
     /* 0x000 */ f32 unk0;         /* inferred */
     /* 0x004 */ f32 unk4;         /* inferred */
     /* 0x008 */ f32 unk8;         /* inferred */
-    /* 0x00C */ char padC[0x18];  /* maybe part of unk8[7]? */
+    /* 0x00C */ f32 unkC;
+    /* 0x010 */ f32 unk10;
+    /* 0x014 */ f32 unk14;
+    /* 0x018 */ f32 unk18;
+    /* 0x01C */ f32 unk1C;
+    /* 0x020 */ f32 unk20;
     /* 0x024 */ f32 unk24;        /* inferred */
     /* 0x028 */ f32 unk28;        /* inferred */
     /* 0x02C */ char pad2C[0x10]; /* maybe part of unk28[5]? */
     /* 0x03C */ f32 unk3C;        /* inferred */
     /* 0x040 */ f32 unk40;        /* inferred */
     /* 0x044 */ f32 unk44;        /* inferred */
-    /* 0x048 */ char pad48[0x54]; /* maybe part of unk44[0x16]? */
+    /* 0x048 */ char pad48[0x50];
+    /* 0x098 */ s32 unk98;
     /* 0x09C */ s32 unk9C;        /* inferred */
     /* 0x0A0 */ char padA0[0x24]; /* maybe part of unk9C[0xA]? */
     /* 0x0C4 */ s32 unkC4;        /* inferred */
@@ -142,7 +148,229 @@ void func_8007DBC0(void) {
     }
 }
 
+// Pushes the point (arg1, arg2, arg3) and arg4..arg6 out of the D_801AEE20 entries: a free one (unk9C 0, unkC4 set)
+// is a sphere of radius 62 that is pushed back as well (D_800D49B8 of the depth goes to the rider); a fixed one is two
+// spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
+// (func_8006243C gets the push).
+#ifdef NON_MATCHING
+// Same blocks and calls; register allocation differs: the original saves f20-f30, spills the push (sp+0x48..0x50) and
+// is 0x84 bytes shorter. Score 23088.
+void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
+    UnkStruct_8004B0F8_1* p4 = arg4;
+    UnkStruct_8004B0F8_1* p5 = arg5;
+    UnkStruct_8004B0F8_1* p6 = arg6;
+    struct UnkStruct_801AEE20* e;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 d;
+    f32 len;
+    f32 pen;
+    f32 k;
+    f32 px;
+    f32 py;
+    f32 pz;
+    f32 dot;
+
+    for (e = (struct UnkStruct_801AEE20*) &D_801AEE20[D_801BB120 - 1]; (u32) e >= (u32) D_801AEE20; e--) {
+        if (e->unk9C == 0) {
+            if (e->unkC4 == 0) {
+                continue;
+            }
+            x = arg1 - e->unk0;
+            z = arg3 - e->unk8;
+            d = SQ(x) + SQ(z);
+            if (d > 3844.0f) {
+                continue;
+            }
+            y = arg2 - e->unk4;
+            d += SQ(y);
+            if (d < 3844.0f) {
+                len = sqrtf(d);
+                pen = 62.0f - len;
+                x *= 1.0f / len;
+                y *= 1.0f / len;
+                z *= 1.0f / len;
+                k = pen * D_800D49B8;
+                pen -= k;
+                e->unk0 -= pen * x;
+                e->unk4 -= pen * y;
+                e->unk8 -= pen * z;
+                e->unk3C -= pen * x;
+                e->unk40 -= pen * y;
+                e->unk44 -= pen * z;
+                px = k * x;
+                py = k * y;
+                pz = k * z;
+                dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                if (arg0->unkC38 < dot) {
+                    arg0->unkC38 = dot;
+                    arg0->unk15B4 = x;
+                    arg0->unk15B8 = y;
+                    arg0->unk15BC = z;
+                }
+                p4->unk10 += py;
+                p4->unk14 += pz;
+                p4->unkC += px;
+                p5->unkC += px;
+                p5->unk10 += py;
+                p5->unk14 += pz;
+                p6->unkC += px;
+                p6->unk10 += py;
+                p6->unk14 += pz;
+                func_8006243C(arg0, px, py, pz);
+                return;
+            }
+            continue;
+        }
+        if (e->unk98 == 3) {
+            x = arg1 - e->unkC;
+            z = arg3 - e->unk14;
+            d = SQ(x) + SQ(z);
+            if (d < 8464.0f) {
+                y = arg2 - e->unk10;
+                d += SQ(y);
+                if (d < 8464.0f) {
+                    len = sqrtf(d);
+                    pen = 92.0f - len;
+                    x *= 1.0f / len;
+                    y *= 1.0f / len;
+                    z *= 1.0f / len;
+                    px = x * pen;
+                    py = y * pen;
+                    pz = z * pen;
+                    dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                    if (arg0->unkC3C < dot) {
+                        arg0->unkC3C = dot;
+                        arg0->unk15B4 = x;
+                        arg0->unk15B8 = y;
+                        arg0->unk15BC = z;
+                    }
+                    p4->unk10 += py;
+                    p4->unk14 += pz;
+                    p4->unkC += px;
+                    p5->unkC += px;
+                    p5->unk10 += py;
+                    p5->unk14 += pz;
+                    p6->unkC += px;
+                    p6->unk10 += py;
+                    p6->unk14 += pz;
+                    func_8006243C(arg0, px, py, pz);
+                    return;
+                }
+            }
+            x = arg1 - e->unk18;
+            z = arg3 - e->unk20;
+            d = SQ(x) + SQ(z);
+            if (d < 8464.0f) {
+                y = arg2 - e->unk1C;
+                d += SQ(y);
+                if (d < 8464.0f) {
+                    len = sqrtf(d);
+                    pen = 92.0f - len;
+                    x *= 1.0f / len;
+                    y *= 1.0f / len;
+                    z *= 1.0f / len;
+                    px = x * pen;
+                    py = y * pen;
+                    pz = z * pen;
+                    dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                    if (arg0->unkC3C < dot) {
+                        arg0->unkC3C = dot;
+                        arg0->unk15B4 = x;
+                        arg0->unk15B8 = y;
+                        arg0->unk15BC = z;
+                    }
+                    p4->unk14 += pz;
+                    p4->unk10 += py;
+                    p4->unkC += px;
+                    p5->unkC += px;
+                    p5->unk10 += py;
+                    p5->unk14 += pz;
+                    p6->unkC += px;
+                    p6->unk10 += py;
+                    p6->unk14 += pz;
+                    func_8006243C(arg0, px, py, pz);
+                    return;
+                }
+            }
+            continue;
+        }
+        x = arg1 - e->unkC;
+        z = arg3 - e->unk14;
+        d = SQ(x) + SQ(z);
+        if (d < 3844.0f) {
+            y = arg2 - e->unk10;
+            d += SQ(y);
+            if (d < 3844.0f) {
+                len = sqrtf(d);
+                pen = 62.0f - len;
+                x *= 1.0f / len;
+                y *= 1.0f / len;
+                z *= 1.0f / len;
+                px = x * pen;
+                py = y * pen;
+                pz = z * pen;
+                dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                if (arg0->unkC3C < dot) {
+                    arg0->unkC3C = dot;
+                    arg0->unk15B4 = x;
+                    arg0->unk15B8 = y;
+                    arg0->unk15BC = z;
+                }
+                p4->unk10 += py;
+                p4->unk14 += pz;
+                p4->unkC += px;
+                p5->unkC += px;
+                p5->unk10 += py;
+                p5->unk14 += pz;
+                p6->unkC += px;
+                p6->unk10 += py;
+                p6->unk14 += pz;
+                func_8006243C(arg0, px, py, pz);
+                return;
+            }
+        }
+        x = arg1 - e->unk18;
+        z = arg3 - e->unk20;
+        d = SQ(x) + SQ(z);
+        if (d < 3844.0f) {
+            y = arg2 - e->unk1C;
+            d += SQ(y);
+            if (d < 3844.0f) {
+                len = sqrtf(d);
+                pen = 62.0f - len;
+                x *= 1.0f / len;
+                y *= 1.0f / len;
+                z *= 1.0f / len;
+                px = x * pen;
+                py = y * pen;
+                pz = z * pen;
+                dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                if (arg0->unkC3C < dot) {
+                    arg0->unkC3C = dot;
+                    arg0->unk15B4 = x;
+                    arg0->unk15B8 = y;
+                    arg0->unk15BC = z;
+                }
+                p4->unk14 += pz;
+                p4->unk10 += py;
+                p4->unkC += px;
+                p5->unkC += px;
+                p5->unk10 += py;
+                p5->unk14 += pz;
+                p6->unkC += px;
+                p6->unk10 += py;
+                p6->unk14 += pz;
+                func_8006243C(arg0, px, py, pz);
+                return;
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_383C0/func_8007DF4C.s")
+#endif
 
 void func_8007E8C8(UnkStruct_80192690* arg0) {
     func_8007DF4C(arg0, arg0->unk160C, arg0->unk1610, arg0->unk1614, &arg0->unk90[4], &arg0->unk90[5], &arg0->unk90[3]);
@@ -306,7 +534,94 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
                   (UnkStruct_8007E938*) &arg0->unk90[9]);
 }
 
+// Pushes each of arg1's points out of the collision triangles of its grid cell (the lookup of func_8007F448):
+// removes the velocity into the triangle, records the strongest push and its normal in arg0, and moves arg1's first
+// twelve points out by the depth.
+#ifdef NON_MATCHING
+// Same blocks; float registers differ: the original keeps 0.0f/16.0f in f28/f30 and the point's velocity in f22-f26,
+// and saves one more FP register pair. Score 245.
+void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
+    UnkStruct_801C3B84* tri;
+    UnkStruct_8004B0F8_1* pt;
+    UnkStruct_8004B0F8_1* q;
+    s16* cell;
+    u16* list;
+    s32 x;
+    s32 z;
+    s32 idx;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 d;
+    f32 depth;
+    f32 push;
+    f32 px;
+    f32 py;
+    f32 pz;
+
+    for (pt = &arg1->unk30[arg1->unk28]; (u32) pt >= (u32) arg1->unk30; pt--) {
+        x = (s32) pt->unk0 - D_801C3B44;
+        if ((x < 0) || (x >= D_801C3B4C)) {
+            continue;
+        }
+        z = (s32) pt->unk8 - D_801C3B50;
+        if ((z < 0) || (z >= D_801C3B58)) {
+            continue;
+        }
+        if (D_801C3B40 != 0) {
+            cell = &(0, D_801C3B7C)[(z >> D_801C3B78) | ((x >> D_801C3B70) << D_801C3B68)]; // FAKE (0, ...) as in func_8007F448
+        } else {
+            cell = &(0, D_801C3B7C)[(x >> D_801C3B70) | ((z >> D_801C3B78) << D_801C3B60)];
+        }
+        list = &D_801C3B80[(u16) *cell];
+        while ((idx = *(++list)) != 0) {
+            idx--;
+            tri = &D_801C3B84[idx];
+            dx = tri->unk0 - pt->unk0;
+            dy = tri->unk4 - pt->unk4;
+            dz = tri->unk8 - pt->unk8;
+            if (((tri->unk18 * dx) + (dy * tri->unk1C) + (dz * tri->unk20)) < 0.0f) {
+                continue;
+            }
+            if (((tri->unk24 * dx) + (dy * tri->unk28) + (dz * tri->unk2C)) < 0.0f) {
+                continue;
+            }
+            d = (tri->unk30 * dx) + (dy * tri->unk34) + (dz * tri->unk38);
+            if (d >= 0.0f || d < tri->unk3C) {
+                continue;
+            }
+            depth = (tri->unkC * dx) + (dy * tri->unk10) + (dz * tri->unk14);
+            if (depth < 0.0f || depth > 16.0f) {
+                continue;
+            }
+            push = -pt->unkC * tri->unkC - pt->unk10 * tri->unk10 - pt->unk14 * tri->unk14;
+            if (push <= 0.0f) {
+                continue;
+            }
+            if (arg0->unkC4C < push) {
+                arg0->unkC4C = push;
+                arg0->unk15B4 = tri->unkC;
+                arg0->unk15B8 = tri->unk10;
+                arg0->unk15BC = tri->unk14;
+            }
+            pt->unkC += push * tri->unkC;
+            pt->unk10 += push * tri->unk10;
+            pt->unk14 += push * tri->unk14;
+            px = tri->unkC * depth;
+            py = tri->unk10 * depth;
+            if (!dy) {} // FAKE: found by the permuter, moves the float registers closer
+            pz = tri->unk14 * depth;
+            for (q = arg1->unk30; (u32) q < (u32) &arg1->unk30[12]; q++) {
+                q->unk0 += px;
+                q->unk4 += py;
+                q->unk8 += pz;
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_383C0/func_8007F030.s")
+#endif
 
 f32 func_8007F448(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg5) {
     UnkStruct_801C3B84* temp_a0;

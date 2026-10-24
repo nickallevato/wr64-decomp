@@ -80,7 +80,7 @@ extern OSPfs D_801C3AD0;
 extern u8 D_801C23B0[];
 extern u8 D_800D8290[];
 extern u8 D_801AEBF0[];
-extern u8 D_801AEC18;
+extern UnkStruct_8007CB68_2 D_801AEC18;
 extern UnkStruct_8007B110 D_801AEA8A[];
 extern UnkStruct_8007B110 D_801AEC8A[];
 extern UnkStruct_8007B110 D_801C202C[8][3];
@@ -410,8 +410,105 @@ void func_8007B370(UnkStruct_8007CB68_2* arg) {
     }
 }
 
+extern UnkStruct_func_8007AF78_1 D_801C1FF0[][3];
+extern UnkStruct_func_8007AF78_1 D_801C22C0[];
+extern s32 D_801C24A0[][9];
+
+// Unpacks the EEPROM image into the records (courses 1-8 and the D_801C26E8 table), the four names and the options.
+#ifdef NON_MATCHING
+// Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
+// loop and spills the D_801C22C0 pointer. Score 4527.
+void func_8007B630(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007AFF4((func_8007AFF4_arg0*) D_801AEA18->unk60[i][j], (func_8007AFF4_arg1*) &D_801C1FF0[i + 1][j]);
+        }
+        func_8007AFF4((func_8007AFF4_arg0*) D_801AEA18->unk60[i][j], (func_8007AFF4_arg1*) &D_801C22C0[i + 1]);
+        for (j = 0; j < 2; j++) {
+            D_801C24A0[i + 1][j] = func_8007B2E4((UnkStruct_8007B2E4*) D_801AEA18->unk1A8[i][j]);
+        }
+    }
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007B220((UnkStruct_8007B2BC*) D_801AEA18->unk120[i][j], (UnkStruct_8007B2BC*) &D_801C26E8[i][j]);
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        func_8007B110((Unkstruct_8007B1AC_arg1*) D_801AEA18->unk1D8[i], (UnkStruct_8007B110*) &D_801C23B0[(i + 1) * 0x14]);
+    }
+    for (i = 0; i < 4; i++) {
+        Libc_strncpy(&D_801CB298[i], D_801AEA18->unk10[i], 10);
+        D_801CB298[i].unk_0[10] = 0;
+        for (k = 0; k < 2; k++) {
+            for (j = 0; j < 3; j++) {
+                D_801CB298[(k * 4) + i].unk_B[j] = D_801AEA18->unk38[k][i][j];
+            }
+        }
+    }
+    D_801CB280 = D_801AEA24;
+    for (i = 0; i < 4; i++) {
+        (&D_801CB288)[i] = (s8) D_801AEA18->unk4[4 + i];
+    }
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            D_801CB308[i][j] = (s8) D_801AEA18->unk50[i][j];
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B630.s")
+#endif
+
+// Packs the records, the names and the options (func_8007B31C) into the EEPROM image; the inverse of func_8007B630.
+#ifdef NON_MATCHING
+// Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
+// loop and spills the D_801C22C0 pointer. Score 4557.
+void func_8007B930(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007AF78(&D_801C1FF0[i + 1][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        }
+        func_8007AF78(&D_801C22C0[i + 1], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        for (j = 0; j < 2; j++) {
+            func_8007B2BC(D_801C24A0[i + 1][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+        }
+    }
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007B1AC((Unkstruct_8007B1AC_arg0*) &D_801C26E8[i][j],
+                          (Unkstruct_8007B1AC_arg1*) D_801AEA18->unk120[i][j]);
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        func_8007B09C((UnkStruct_func_8007AF78_1*) &D_801C23B0[(i + 1) * 0x14],
+                      (UnkStruct_func_8007AF78_2*) D_801AEA18->unk1D8[i]);
+    }
+    for (i = 0; i < 4; i++) {
+        Libc_strncpy(D_801AEA18->unk10[i], &D_801CB298[i], 10);
+        for (k = 0; k < 2; k++) {
+            for (j = 0; j < 3; j++) {
+                D_801AEA18->unk38[k][i][j] = D_801CB298[(k * 4) + i].unk_B[j];
+            }
+        }
+    }
+    func_8007B31C();
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            D_801AEA18->unk50[i][j] = D_801CB308[i][j];
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B930.s")
+#endif
 
 void func_8007BBE8() {
 }
@@ -518,7 +615,46 @@ s32 func_8007BE64(void) {
     return func_8007BD20();
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007BEA4.s")
+extern s32 D_800D82B0[];
+extern u8 D_801AEBC0[];
+
+// Copies course's records (the three D_801C1FF0 entries, D_801C22C0, and two D_801C24A0 values) into the
+// EEPROM image and writes the header, the course's unk60 row and its unk1A8 block.
+s32 func_8007BEA4(s32 course) {
+    s32 off;
+    s32 j;
+    s32 i;
+
+    if (D_800D8260 == 0) {
+        return 1;
+    }
+    if ((course <= 0) || (course >= 9)) {
+        return 0;
+    }
+    i = course - 1;
+    for (j = 0; j < 3; j++) {
+        func_8007AF78(&D_801C1FF0[course][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    }
+    func_8007AF78(&D_801C22C0[course], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    for (j = 0; j < 2; j++) {
+        func_8007B2BC(D_801C24A0[course][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+    }
+    func_8007B31C();
+    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+        return 3;
+    }
+    if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA18->unk60[i] - (u32) D_801AEA18) >> 3,
+                          (u8*) D_801AEA18->unk60[i], 0x18) != 0) {
+        return 3;
+    }
+    off = D_800D82B0[i];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &D_801AEA18) + off) >> 3,
+                          (u8*) D_801AEA18->unk1A8 + off, 0x10) != 0) {
+        return 3;
+    }
+    return 0;
+}
 
 s32 func_8007C0B8(s32 arg0) {
     s32 temp_v0;
@@ -619,7 +755,17 @@ s32 func_8007C31C(void) {
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007C494.s")
+s32 func_8007C494(void) {
+    if (D_800D8260 == 0) {
+        return 1;
+    }
+    func_8007B31C();
+    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+        return 3;
+    }
+    return 0;
+}
 
 int func_8007C50C(void) {
     int i;
@@ -648,7 +794,62 @@ int func_8007C50C(void) {
     return SAVE_SUCCESS;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007C604.s")
+// Resets course's records to the defaults (D_800D82F8, D_800D8728) and writes them to the EEPROM.
+s32 func_8007C604(s32 course) {
+    s32 off1;
+    s32 off2;
+    s32 off3;
+    s32 i;
+    s32 j;
+    UnkStruct_func_8007AF78_1* lap;
+
+    i = course - 1;
+    for (j = 0; j < 3; j++) {
+        D_801C1FF0[course][j] = D_800D82F8[i][j];
+    }
+    D_801C22C0[course] = D_800D82F8[i][j];
+    for (j = 0; j < 2; j++) {
+        D_801C24A0[course][j] = D_800D82F8[i][3].unk0 * (j + 1);
+    }
+    lap = (UnkStruct_func_8007AF78_1*) &D_801C23B0[course * 0x14];
+    *lap = *(UnkStruct_func_8007AF78_1*) D_800D8728;
+    for (j = 0; j < 3; j++) {
+        func_8007AF78(&D_801C1FF0[course][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    }
+    func_8007AF78(&D_801C22C0[course], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    for (j = 0; j < 2; j++) {
+        func_8007B2BC(D_801C24A0[course][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+    }
+    func_8007B09C(lap, (UnkStruct_func_8007AF78_2*) D_801AEA18->unk1D8[i]);
+    func_8007B31C();
+    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
+    if (D_800D8260 == 0) {
+        return 1;
+    }
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+        return 3;
+    }
+    if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA18->unk60[i] - (u32) D_801AEA18) >> 3,
+                          (u8*) D_801AEA18->unk60[i], 0x18) != 0) {
+        return 3;
+    }
+    off1 = D_800D826C[course];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) &D_801AEB38 - (uintptr_t) &D_801AEA18) + off1) >> 3,
+                          (u8*) D_801AEA18->unk120 + off1, 0x18) != 0) {
+        return 3;
+    }
+    off2 = D_800D82B0[i];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &D_801AEA18) + off2) >> 3,
+                          (u8*) D_801AEA18->unk1A8 + off2, 0x10) != 0) {
+        return 3;
+    }
+    off3 = *(s32*) &D_800D8290[i * 4];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBF0 - (uintptr_t) &D_801AEA18) + off3) >> 3,
+                          (u8*) D_801AEA18->unk1D8 + off3, 0x10) != 0) {
+        return 3;
+    }
+    return 0;
+}
 
 s32 func_8007C9D4(s32 arg0) {
     s32 temp_v0;
@@ -907,9 +1108,239 @@ static const char devstr51[] = "PFS write error\n";
 static const char devstr52[] = "PFS no delete file\n";
 static const char devstr53[] = "PFS delete error %d\n";
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D2D4.s")
+// The whole 0x200-byte save image, copied as words.
+typedef struct SaveBlock {
+    u32 w[0x80];
+} SaveBlock;
 
+// Reads the save file from the Controller Pak into D_801AEC18, checks its code and checksum, and takes part of it:
+// mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
+// merged records (func_8007CB68). The result is written to the EEPROM.
+#ifdef NON_MATCHING
+// The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 931.
+extern u8 D_801AEA78[];
+
+s32 func_8007D2D4(s32 mode) {
+    s32 n;
+    s32 ret;
+    s32 i;
+    s32 second;
+    s32 fileNo;
+
+    second = 0;
+    ret = Save_PfsIsPlug();
+    if (ret != 0) {
+        return ret;
+    }
+    if (mode >= 0x80) {
+        mode -= 0x80;
+        second = 1;
+    }
+    if (osPfsFindFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, &fileNo) == 0) {
+        ret = osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &D_801AEC18);
+        switch (ret) {
+            case 0:
+                for (i = 0; i < 2; i++) {
+                    if (D_801AEC18.unk4[i - 4] != D_800D8268[i]) {
+                        return 6;
+                    }
+                }
+                if (Save_GenCheckSum((u8*) &D_801AEC18) != D_801AEC18.unk2) {
+                    return 6;
+                }
+                func_8007B930();
+                switch (mode) {
+                    case 0:
+                        // FAKE: UnkStruct_8007CB68_2 is only 2-byte aligned, so a plain struct copy uses lwl/lwr
+                        *(SaveBlock*) D_801AEA18 = *(SaveBlock*) &D_801AEC18;
+                        func_8007B630();
+                        if (func_8007BD20() != 0) {
+                            return 5;
+                        }
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        n = mode - 1;
+                        if (second == 0) {
+                            Libc_strncpy(D_801AEA18->unk10[n], D_801AEC18.unk10[n], 10);
+                        }
+                        for (i = 0; i < 3; i++) {
+                            D_801AEA18->unk38[second][n][i] = D_801AEC18.unk38[0][n][i];
+                        }
+                        func_8007B630();
+                        if (func_8007C31C() != 0) {
+                            return 5;
+                        }
+                        break;
+                    case 5:
+                        func_8007CB68();
+                        func_8007B630();
+                        func_8007B31C();
+                        D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
+                        if (D_800D8260 != 0) {
+                            if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+                                return 3;
+                            }
+                            if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA78 - (u32) D_801AEA18) >> 3, D_801AEA78,
+                                                  0x1A0) != 0) {
+                                return 5;
+                            }
+                            break;
+                        }
+                        return 5;
+                }
+                return 0;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                return 2;
+            default:
+                return ret;
+        }
+    } else {
+        return 4;
+    }
+}
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D2D4.s")
+#endif
+
+// Writes the save image to the Controller Pak file (making it when there is none): mode 0 the whole image, 1-4 name
+// mode - 1 (0x80 added is ignored), 5 the records. When the file is new or its data is bad, the rest of the image
+// starts from the defaults (func_8007B370).
+#ifdef NON_MATCHING
+// Same calls and jump tables; the original places the code that follows the file switch right after its case 0
+// (the new-file case jumps back into it), so blocks are ordered differently and registers differ. Score 4441.
+s32 func_8007D614(s32 mode) {
+    s32 n;
+    s32 ret;
+    s32 fresh;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 fileNo;
+
+    ret = Save_PfsIsPlug();
+    if (ret != 0) {
+        return ret;
+    }
+    if (mode >= 0x80) {
+        mode -= 0x80;
+    }
+    switch (osPfsFindFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, &fileNo)) {
+        case 0:
+            fresh = 0;
+            break;
+        default:
+        case PFS_ERR_NOPACK:
+        case PFS_ERR_NEW_PACK:
+        case PFS_ERR_INCONSISTENT:
+        case PFS_ERR_CONTRFAIL:
+            return 2;
+        case PFS_ERR_INVALID:
+            fresh = 1;
+            switch (osPfsAllocateFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, 0x200, &fileNo)) {
+                case 0:
+                    break;
+                case PFS_DIR_FULL:
+                    return 3;
+                default:
+                case PFS_ERR_NOPACK:
+                case PFS_ERR_NEW_PACK:
+                case PFS_ERR_INCONSISTENT:
+                case PFS_ERR_CONTRFAIL:
+                case PFS_ERR_INVALID:
+                case PFS_ERR_BAD_DATA:
+                case PFS_DATA_FULL:
+                    return 2;
+            }
+            break;
+    }
+    func_8007B930();
+    if ((mode != 0) && (fresh == 0)) {
+        switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &D_801AEC18)) {
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                return 2;
+            default:
+                for (i = 0; i < 2; i++) {
+                    if (D_801AEC18.unk4[i - 4] != D_800D8268[i]) {
+                        fresh = 1;
+                    }
+                }
+                if (Save_GenCheckSum((u8*) &D_801AEC18) != D_801AEC18.unk2) {
+                    fresh = 1;
+                }
+                break;
+        }
+    }
+    if (fresh != 0) {
+        func_8007B370(&D_801AEC18);
+    }
+    switch (mode) {
+        case 0:
+            // FAKE: UnkStruct_8007CB68_2 is only 2-byte aligned, so a plain struct copy uses lwl/lwr
+            *(SaveBlock*) &D_801AEC18 = *(SaveBlock*) D_801AEA18;
+            break;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            n = mode - 1;
+            Libc_strncpy(D_801AEC18.unk10[n], D_801AEA18->unk10[n], 10);
+            for (i = 0; i < 3; i++) {
+                D_801AEC18.unk38[0][n][i] = D_801AEA18->unk38[0][n][i];
+            }
+            break;
+        case 5:
+            for (i = 0; i < 8; i++) {
+                for (j = 0; j < 4; j++) {
+                    for (k = 0; k < 6; k++) {
+                        D_801AEC18.unk60[i][j][k] = D_801AEA18->unk60[i][j][k];
+                    }
+                }
+                for (j = 0; j < 2; j++) {
+                    for (k = 0; k < 3; k++) {
+                        D_801AEC18.unk1A8[i][j][k] = D_801AEA18->unk1A8[i][j][k];
+                    }
+                }
+                for (k = 0; k < 5; k++) {
+                    D_801AEC18.unk1D8[i][k] = D_801AEA18->unk1D8[i][k];
+                }
+            }
+            for (i = 0; i < 9; i++) {
+                for (j = 0; j < 3; j++) {
+                    for (k = 0; k < 5; k++) {
+                        D_801AEC18.unk120[i][j][k] = D_801AEA18->unk120[i][j][k];
+                    }
+                }
+            }
+            break;
+    }
+    D_801AEC18.unk2 = Save_GenCheckSum((u8*) &D_801AEC18);
+    switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_WRITE, 0, 0x200, (u8*) &D_801AEC18)) {
+        case 0:
+            return 0;
+        default:
+        case PFS_ERR_NOPACK:
+        case PFS_ERR_NEW_PACK:
+        case PFS_ERR_INCONSISTENT:
+        case PFS_ERR_CONTRFAIL:
+        case PFS_ERR_INVALID:
+        case PFS_ERR_BAD_DATA:
+            return 2;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D614.s")
+#endif
 
 s32 Save_PfsDeleteFile(void) {
     s32 ret;

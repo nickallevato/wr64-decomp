@@ -11,14 +11,20 @@ typedef struct UnkStruct_801603E0_s {
     /* 0x1C */ s32 unk1C;
 } UnkStruct_801603E0; /* size = 0x20 */
 
-extern UnkStruct_801603E0 D_80160400[];
-extern UnkStruct_801603E0 D_801603E0[];
-extern UnkStruct_801603E0 D_80158520[];
+// .bss
+Vec3f D_80158450[17];
+UnkStruct_801603E0 D_80158520[0x3F6];
+UnkStruct_801603E0 D_801603E0[1];
+UnkStruct_801603E0 D_80160400[1];
+
+// .data
+s32 D_800D4650 = 0;
+s32 D_800D4654 = 0;
+s32 D_800D4658[] = { 0x31493149, 0x310B310B, 0x218B218B, 0x29892989, 0x214D214D, 0x290D290D };
+extern s32 D_800D4610;
 
 extern s32 D_1000140;
 extern s32 D_10001E0;
-extern s32 D_800D4650;
-extern s32 D_800D4658[];
 extern Mtx D_8011F860;
 extern Mtx D_8011F8A0;
 extern s16 D_8011F8AA;
@@ -158,7 +164,118 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
     arg0->unk4C = (f32) (var_f0 / var_f14);
 }
 
+// One step of the point-and-link body: moves each point by its velocity times unkC (saving the old position in
+// D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
+// (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
+#ifdef NON_MATCHING
+// Same loops and calls; register allocation differs (the original keeps the point pointer in s1 throughout, 12 in s5
+// from the start, and other float registers), and its frame is 0x10 smaller. Score 8621.
+void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
+    UnkStruct_8004B0F8_1* pt;
+    UnkStruct_8004B0F8_unk34* link;
+    UnkStruct_8004B0F8_1* b;
+    Vec3f* prev;
+    s32 n;
+    f32 dt;
+    f32 k;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 s;
+    f32 fx;
+    f32 fy;
+    f32 fz;
+    f32 sx;
+    f32 sy;
+    f32 sz;
+    f32 d;
+    f32 count;
+    f32 old;
+    f32 len2;
+    f32 len;
+
+    dt = arg0->unkC;
+    for (pt = &arg0->unk30[arg0->unk28], prev = &D_80158450[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--, prev--) {
+        pt->unk0 = (prev->x = pt->unk0) + (dt * pt->unkC);
+        pt->unk4 = (prev->y = pt->unk4) + (dt * pt->unk10);
+        pt->unk8 = (prev->z = pt->unk8) + (dt * pt->unk14);
+    }
+    k = 0.5f / ((arg0->unk20 * (arg0->unk28 - 1)) + 1.0f);
+    for (n = arg0->unk24; n != 0; n--) {
+        for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
+            pt->unk14 = 0.0f;
+            pt->unk10 = 0.0f;
+            pt->unkC = 0.0f;
+        }
+        for (link = &arg0->unk34[arg0->unk2C]; (u32) link >= (u32) arg0->unk34; link--) {
+            pt = link->unk0;
+            b = link->unk4;
+            dx = b->unk0 - pt->unk0;
+            dy = b->unk4 - pt->unk4;
+            dz = b->unk8 - pt->unk8;
+            s = (link->unk8 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz))) - k;
+            fx = dx * s;
+            fy = dy * s;
+            fz = dz * s;
+            b->unkC += fx;
+            b->unk10 += fy;
+            b->unk14 += fz;
+            pt->unkC -= fx;
+            pt->unk10 -= fy;
+            pt->unk14 -= fz;
+        }
+        for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
+            pt->unk0 += pt->unkC;
+            pt->unk4 += pt->unk10;
+            pt->unk8 += pt->unk14;
+        }
+    }
+    sx = 0.0f;
+    sz = 0.0f;
+    sy = 0.0f;
+    prev = &D_80158450[arg0->unk28];
+    for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--, prev--) {
+        sx += pt->unk0;
+        sy += pt->unk4;
+        sz += pt->unk8;
+        dx = pt->unk0 - prev->x;
+        dy = pt->unk4 - prev->y;
+        dz = pt->unk8 - prev->z;
+        d = (1.0f - pt->unk18) * ((dx * arg0->unk5C) + (dy * arg0->unk60) + (dz * arg0->unk64));
+        pt->unkC = (arg0->unk5C * d) + (pt->unk18 * dx);
+        pt->unk10 = (arg0->unk60 * d) + (pt->unk18 * dy);
+        pt->unk14 = (arg0->unk64 * d) + (pt->unk18 * dz);
+    }
+    count = arg0->unk28 + 1;
+    old = arg0->unk44;
+    arg0->unk44 = sx / count;
+    dx = arg0->unk44 - old;
+    arg0->unk50 = dx;
+    old = arg0->unk48;
+    arg0->unk48 = sy / count;
+    dy = arg0->unk48 - old;
+    arg0->unk54 = dy;
+    old = arg0->unk4C;
+    arg0->unk4C = sz / count;
+    dz = arg0->unk4C - old;
+    arg0->unk58 = dz;
+    len2 = SQ(dx) + SQ(dy) + SQ(dz);
+    if (len2 != 0.0f) {
+        len = sqrtf(len2);
+        arg0->unk68 = len;
+        arg0->unk5C = dx / len;
+        arg0->unk60 = dy / len;
+        arg0->unk64 = dz / len;
+    } else {
+        arg0->unk64 = 0.0f;
+        arg0->unk60 = 0.0f;
+        arg0->unk5C = 0.0f;
+        arg0->unk68 = 0.0f;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_5480/func_8004B1B4.s")
+#endif
 
 void func_8004B680(void) {
 }
@@ -287,4 +404,84 @@ Gfx* func_8004BC40(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_5480/func_8004BC98.s")
+// The grid effect's per-frame update: the controller toggles D_800D467C/D_800D4670 or steers the second centre
+// (D_80160400); otherwise it circles, and every 300 counts it restarts (func_8004B6E0) with a new speed and every
+// seventh time a new fill colour (D_800D4650). Then each of the 0x3F6 cells moves along its offset and its vertex
+// (gGfxPool->unkFE08) follows.
+void func_8004BC98(void) {
+    static s32 D_800D4670 = 0;
+    static s32 D_800D4674 = 0;
+    static f32 D_800D4678 = 6.0f;
+    static u16 D_800D467C = 1;
+    static s32 D_80160420;
+    UnkStruct_801603E0* e;
+    Vtx* v;
+    s32 i;
+    u16 angle;
+    s32 dx;
+    s32 dz;
+    s32 speed;
+    s32 dist;
+    f32 w;
+
+    if (gControllerOne[D_80154330[0]].unk_2 & 0x800) {
+        D_800D467C ^= 1;
+    }
+    if (gControllerOne[D_80154330[0]].unk_2 & 0x10) {
+        func_8004B6E0();
+        D_800D4670 ^= 1;
+    }
+    if (gControllerOne[D_80154330[0]].unk_0 & 0x10) {
+        D_80160400->unk10 = gControllerOne[D_80154330[0]].unk_8 * 5;
+        D_80160400->unk14 = gControllerOne[D_80154330[0]].unk_9 * -5;
+    } else {
+        D_800D4674 += D_800D4610 - D_80160420;
+        D_80160420 = D_800D4610;
+        if (D_800D4674 > 300) {
+            if (++D_800D4654 == 7) {
+                D_800D4650 = ((SysUtils_Rand() & 0xFFFF) * 6) >> 16;
+                D_800D4654 = 0;
+            }
+            D_800D4674 = 0;
+            func_8004B6E0();
+            D_800D4670 ^= 1;
+            if (D_800DAB1C == 1) {
+                D_800D4678 = (((SysUtils_Rand() >> 16) * 50) / 65536.0) + 50.0;
+            } else {
+                D_800D4678 = (((SysUtils_Rand() >> 16) * 5) / 65536.0) + 7.0;
+            }
+        }
+        angle = D_800D4610 * 8;
+        D_80160400->unk10 = gSinTable[(angle + 0x400) & 0xFFF] * D_800D4678;
+        D_80160400->unk14 = gSinTable[(u32) angle & 0xFFF] * D_800D4678; // FAKE: the (u32) cast
+        if (D_800D467C == 0) {
+            D_80160400->unk10 = D_80160400->unk14 = 0;
+        }
+    }
+    D_80160400->unk0 = D_80160400->unk8 + D_80160400->unk10;
+    D_80160400->unk4 = D_80160400->unkC + D_80160400->unk14;
+    // One line: IDO orders the loop setup by source line.
+    e = D_80158520; i = 0; do {
+        v = &gGfxPool->unkFE08[i];
+        dx = D_80160400->unk10;
+        dz = D_80160400->unk14;
+        speed = sqrtf(SQ(dx) + SQ(dz)) + 0.5;
+        dx = D_80160400->unk0 - e->unk8;
+        dz = D_80160400->unk4 - e->unkC;
+        dist = sqrtf(SQ(dx) + SQ(dz)) + 0.5;
+        w = (e->unk1C + e->unk18) * dist;
+        if (w != 0.0f) {
+            w = (f32) (e->unk18 * speed) / w;
+            if (D_800D4670 != 0) {
+                e->unk10 = 0.5 - dx * w;
+                e->unk14 = 0.5 - dz * w;
+            } else {
+                e->unk10 = dx * w + 0.5;
+                e->unk14 = dz * w + 0.5;
+            }
+        }
+        v->v.ob[0] = e->unk0 = e->unk10 + e->unk8;
+        v->v.ob[1] = e->unk4 = e->unk14 + e->unkC;
+        i++;
+    } while (++e != D_801603E0);
+}
