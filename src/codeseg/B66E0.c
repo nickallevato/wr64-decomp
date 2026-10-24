@@ -28,6 +28,10 @@ extern s32 D_80228A48[4]; /* corner colours, set by func_801E946C: red */
 extern s32 D_80228A58[4]; /* green */
 extern s32 D_80228A68[4]; /* blue */
 extern u8 D_7000000[];
+extern u8 D_2000A40[];
+extern Gfx D_106F030[];
+extern Gfx D_106F0A8[];
+extern s32 D_80226E2C;
 
 extern UnkStruct_80228A78 D_80228A78;
 extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 */
@@ -117,7 +121,77 @@ Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
     return func_801E9858(gdl, font, str, x, y);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E946C.s")
+/* Sets the printer mode and the four corner colours, and emits the mode's render setup (display list, combiner, prim colour). */
+Gfx* func_801E946C(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2, u8 r3,
+                   u8 g3, u8 b3) {
+    D_80226E2C = 100;
+    D_80228A44 = mode;
+    gPrinterScaled = 0;
+    // FAKE: one line per corner (as a macro would expand); IDO orders the stores by source line
+    // clang-format off
+    D_80228A48[0] = r0; D_80228A58[0] = g0; D_80228A68[0] = b0;
+    D_80228A48[1] = r1; D_80228A58[1] = g1; D_80228A68[1] = b1;
+    D_80228A48[2] = r2; D_80228A58[2] = g2; D_80228A68[2] = b2;
+    D_80228A48[3] = r3; D_80228A58[3] = g3; D_80228A68[3] = b3;
+    // clang-format on
+    switch (mode) {
+        case 1:
+            gSPDisplayList(gdl++, D_106F030);
+            gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
+            gDPSetPrimColor(gdl++, 0, 0, r0, g0, b0, 255);
+            break;
+        case 2:
+            gSPDisplayList(gdl++, D_106F0A8);
+            gSPMatrix(gdl++, D_7000000, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPMatrix(gdl++, D_2000A40, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 8:
+        case 9:
+            gSPDisplayList(gdl++, D_106F030);
+            gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+            D_80228A78.unk0 = 1;
+            switch (mode) {
+                case 3:
+                    func_801E9D6C();
+                    break;
+                case 4:
+                    func_801EA0B0();
+                    break;
+                case 5:
+                    func_801EA3EC();
+                    break;
+                case 6:
+                    func_801EA730();
+                    break;
+                case 8:
+                    func_801EAA6C();
+                    break;
+                case 9:
+                    func_801EADB0();
+                    break;
+            }
+            gDPSetPrimColor(gdl++, 0, 0, D_80228A78.r, D_80228A78.g, D_80228A78.b, 255);
+            break;
+        case 7:
+            gSPDisplayList(gdl++, D_106F030);
+            gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+            gDPSetPrimColor(gdl++, 0, 0, r0, g0, b0, 255);
+            break;
+        case 10:
+            gSPDisplayList(gdl++, D_106F030);
+            gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+            gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, r0);
+            break;
+        default:
+            gSPDisplayList(gdl++, D_106F030);
+            break;
+    }
+    return gdl;
+}
 
 /* Prints str in font from (x, y) with the mode and colours func_801E946C set; a space (glyph 0xFF) only advances x. */
 Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
