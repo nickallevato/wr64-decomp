@@ -410,6 +410,10 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern Gfx D_10079F0[];
+extern Gfx D_2000000[];
+extern f32 D_800D49A4;
+extern f32 D_800D49A8;
 extern s32 D_800D4924;
 extern u16 D_800D4968;
 extern Vec3f D_80192650;
@@ -522,6 +526,9 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+Gfx* func_80091CD8(Gfx*);
+Gfx* func_8006719C(Gfx*, s32);
+void func_800683A0(s32);
 void func_80063C88(s32);
 void func_80064C0C(s32);
 void func_80065C18(s32);
@@ -4140,7 +4147,151 @@ Gfx* func_80068538(Gfx* gdl) {
     return gdl;
 }
 
+#ifdef NON_MATCHING
+// Register allocation and scheduling differ throughout (the original keeps more of the GBI
+// words in registers); control flow and the display lists follow the original.
+// Distance of rider r in front of camera c, along the camera's view axis.
+#define CAM_DEPTH(c, r)                                                                 \
+    (((c)->unk6C * ((r)->unk44.z - (c)->unk54)) +                                       \
+     ((((r)->unk44.x - (c)->unk4C) * (c)->unk64) + (((r)->unk44.y - (c)->unk50) * (c)->unk68)))
+
+// Near riders: one-cycle, no fog.
+#define RIDER_FOG_OFF(gdl)                                                              \
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);                                               \
+    gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);                 \
+    gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);           \
+    gSPClearGeometryMode(gdl++, G_FOG)
+
+// Far riders: two-cycle with shade fog.
+#define RIDER_FOG_ON(gdl)                                                               \
+    gDPSetCycleType(gdl++, G_CYC_2CYCLE);                                               \
+    gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);                    \
+    gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);                       \
+    gSPSetGeometryMode(gdl++, G_FOG)
+
+// Segment 2 holds two display lists of 0x148 bytes per rider.
+#define RIDER_DL(rider, lod) ((Gfx*) ((u8*) D_2000000 + (rider) * 0x290 + (lod) * 0x148))
+
+Gfx* func_800687A4(Gfx* gdl) {
+    UnkStruct_80192690* rider;
+    camera_unk_1* cam;
+    s32 i;
+    s32 idx;
+    f32 d;
+
+    gSPDisplayList(gdl++, D_10079F0);
+    gdl = func_800916B4(gdl);
+    if (D_801CE64C == 2) {
+        RIDER_FOG_OFF(gdl);
+        if (D_800DAB2C != 0) {
+            idx = D_80192690[D_800D48E0].unkB68;
+            if (D_801CE6F4[1] != 0) {
+                idx += 4;
+            }
+            gdl = func_80067810(gdl, idx, D_800D48E0);
+        } else {
+            idx = D_80192690[D_800D48DC].unkB68;
+            if (D_801CE6F4[0] != 0) {
+                idx += 4;
+            }
+            gdl = func_80067810(gdl, idx, D_800D48DC);
+        }
+    } else if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
+        RIDER_FOG_ON(gdl);
+        gSPDisplayList(gdl++, RIDER_DL(0, 0));
+        if ((D_801CE638 != 8) || (gCourseID == SUNSET_BAY)) {
+            gSPDisplayList(gdl++, RIDER_DL(0, 1));
+        }
+    } else if (gPlayers == TWO_PLAYERS) {
+        RIDER_FOG_OFF(gdl);
+        if (D_800DAB2C != 0) {
+            gSPDisplayList(gdl++, RIDER_DL(1, 1));
+            gDPPipeSync(gdl++);
+            cam = &gCameraPerspective[D_80223934];
+            rider = &D_80192690[D_800D48DC];
+            d = CAM_DEPTH(cam, rider);
+            if (d > 1000.0f) {
+                RIDER_FOG_ON(gdl);
+            } else if (d > 0.0f) {
+                RIDER_FOG_OFF(gdl);
+            }
+            if (D_800D49A8 < d) {
+                gSPDisplayList(gdl++, RIDER_DL(2, 0));
+            } else if (D_800D49A4 < d) {
+                gSPDisplayList(gdl++, RIDER_DL(2, 0));
+            } else if (d > 0.0f) {
+                gSPDisplayList(gdl++, RIDER_DL(1, 0));
+            }
+        } else {
+            gSPDisplayList(gdl++, RIDER_DL(1, 0));
+            gDPPipeSync(gdl++);
+            cam = &gCameraPerspective[D_80223930];
+            rider = &D_80192690[D_800D48E0];
+            d = CAM_DEPTH(cam, rider);
+            if (d > 1000.0f) {
+                RIDER_FOG_ON(gdl);
+            } else if (d > 0.0f) {
+                RIDER_FOG_OFF(gdl);
+            }
+            if (D_800D49A8 < d) {
+                gSPDisplayList(gdl++, RIDER_DL(2, 1));
+            } else if (D_800D49A4 < d) {
+                gSPDisplayList(gdl++, RIDER_DL(2, 1));
+            } else if (d > 0.0f) {
+                gSPDisplayList(gdl++, RIDER_DL(1, 1));
+            }
+        }
+    } else if (D_801CE638 != 21) {
+        gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+        gSPDisplayList(gdl++, RIDER_DL(D_800D48DC, 0));
+        gSPClearGeometryMode(gdl++, G_FOG);
+        for (i = 0; i < gRiders; i++) {
+            if (i != D_800D48DC) {
+                gDPPipeSync(gdl++);
+                rider = &D_80192690[i];
+                if (i == 1) {
+                    gdl = func_80091CD8(gdl);
+                }
+                cam = &gCameraPerspective[D_80223930];
+                d = CAM_DEPTH(cam, rider);
+                if (d > 1000.0f) {
+                    RIDER_FOG_ON(gdl);
+                } else if (d > 0.0f) {
+                    RIDER_FOG_OFF(gdl);
+                } else {
+                    continue;
+                }
+                if (D_800D49A8 < d) {
+                    gSPDisplayList(gdl++, RIDER_DL(i, 1));
+                } else {
+                    gSPDisplayList(gdl++, RIDER_DL(i, 0));
+                }
+            }
+        }
+    } else {
+        RIDER_FOG_ON(gdl);
+        gdl = func_8006719C(gdl, 0);
+        gdl = func_8006719C(gdl, 1);
+        gdl = func_8006719C(gdl, 2);
+        gdl = func_8006719C(gdl, 3);
+    }
+    for (i = 0; i < gRiders; i++) {
+        if (D_80192690[i].unk16CC != 0) {
+            func_800683A0(i);
+        }
+    }
+    return gdl;
+}
+
+#undef CAM_DEPTH
+#undef RIDER_FOG_OFF
+#undef RIDER_FOG_ON
+#undef RIDER_DL
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800687A4.s")
+#endif
 
 s32 func_8006931C(UnkStruct_80192690* arg0, Mtx* arg1) {
     MtxF sp30;
