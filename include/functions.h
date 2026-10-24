@@ -166,6 +166,8 @@ Gfx* func_801E92FC(Gfx*, s32, char*, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, 
 Gfx* func_801E93B4(Gfx*, s32, char*, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, f32);
 Gfx* func_801E946C(Gfx*, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 Gfx* func_801E9858(Gfx*, s32, char*, s32, s32);
+s32 func_801E9B04(s32, s8);
+Gfx* func_801E80B0(Gfx*, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, f32);
 void func_801EC9C8(void);
 void func_801ED004(void);
 void func_i15_802C6CAC(s32);

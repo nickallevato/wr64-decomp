@@ -17,8 +17,16 @@ typedef struct {
 extern u8 D_80226D70[]; /* glyph widths, font 0 */
 extern u8 D_80226D98[]; /* glyph widths, the other fonts */
 extern u8 D_80226DC4[]; /* glyph widths, font 2 */
+extern u8 D_80226DF4[]; /* glyph widths, font 3 */
+extern u8 D_80226E00[]; /* glyph widths, font 4 */
+extern u8 D_80226E0C[]; /* glyph widths, font 5 */
+extern u8 D_80226E18[]; /* glyph widths, font 6 */
 
 extern s32 D_80228A40; /* next free vertex in D_801CE5F8->unk40 */
+extern s32 D_80228A44;    /* printer mode, set by func_801E946C */
+extern s32 D_80228A48[4]; /* corner colours, set by func_801E946C: red */
+extern s32 D_80228A58[4]; /* green */
+extern s32 D_80228A68[4]; /* blue */
 extern u8 D_7000000[];
 
 extern UnkStruct_80228A78 D_80228A78;
@@ -111,7 +119,73 @@ Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E946C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E9858.s")
+/* Prints str in font from (x, y) with the mode and colours func_801E946C set; a space (glyph 0xFF) only advances x. */
+Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
+    s32 glyph;
+    s8* s;
+    s32 penX;
+    s32 pad; // stack pad
+    s32 space;
+    s32 width;
+
+    s = (s8*) str; // FAKE: these two copies give IDO's prologue order
+    penX = x;
+    while (1) {
+        if (*s == 0) {
+            break;
+        }
+        glyph = func_801E9B04(font, *s);
+        switch (font) {
+            case 0:
+                width = D_80226D70[glyph];
+                space = 0x18;
+                break;
+            case 1:
+                width = D_80226D98[glyph];
+                space = 8;
+                break;
+            case 2:
+                width = D_80226DC4[glyph];
+                space = 0xC;
+                break;
+            case 3:
+                width = D_80226DF4[glyph];
+                space = 0xC;
+                break;
+            case 4:
+                width = D_80226E00[glyph];
+                space = 0xC;
+                break;
+            case 5:
+                width = D_80226E0C[glyph];
+                space = 0x10;
+                break;
+            case 6:
+                width = D_80226E18[glyph];
+                space = 0x28;
+                break;
+        }
+        if (glyph == 0xFF) {
+            if (gPrinterScaled) {
+                penX = penX + space * gPrinterScale;
+            } else {
+                penX += space;
+            }
+        } else {
+            gdl = func_801E80B0(gdl, font, glyph, penX, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0],
+                                D_80228A48[1], D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2],
+                                D_80228A68[2], D_80228A48[3], D_80228A58[3], D_80228A68[3],
+                                gPrinterScaled ? gPrinterScale : 1.0f);
+            if (gPrinterScaled) {
+                penX += (s32) (width * gPrinterScale);
+            } else {
+                penX += width;
+            }
+        }
+        s++;
+    }
+    return gdl;
+}
 
 /* Glyph index of character c in font, or 0xFF for a space; 0 for a character the font lacks. */
 s32 func_801E9B04(s32 font, s8 c) {
