@@ -1348,4 +1348,10 @@ struct UnkStruct_801C2938 {
     /* 0x33C */ char pad33C[0x3C];
 }; /* size = 0x378 */
 
+// Seventeen display lists per entry of D_80227A60.
+typedef struct UnkStruct_80227A60 {
+    /* 0x00 */ Gfx* unk0[12];
+    /* 0x30 */ Gfx* unk30[5];
+} UnkStruct_80227A60; /* size = 0x44 */
+
 #endif /* STRUCTS_H */
