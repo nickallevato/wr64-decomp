@@ -1257,10 +1257,12 @@ typedef struct UnkStruct_80198368_s {
 } UnkStruct_80198368;                               /* size = 0xB2F0 */
 
 typedef struct UnkStruct_801C43F8_s {
-    char pad[0xE0];
+    Vtx unk0[7];
+    Vtx unk70[7];
     Vtx unkE0[7];
     Vtx unk150[7];
-    char pad1C0[0x150];
+    Vtx unk1C0[7];
+    char pad230[0xE0];
     Vtx unk310[4];
     char pad350[0x280];
     Mtx unk5D0[1];
