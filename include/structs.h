@@ -87,7 +87,7 @@ typedef struct UnkStruct_801AEE20_s {
     /* 0x060 */ f32 unk60;
     /* 0x064 */ f32 unk64;
     /* 0x068 */ f32 unk68;
-    /* 0x06C */ char pad6C[0x4];
+    /* 0x06C */ f32 unk6C;
     /* 0x070 */ f32 unk70;
     /* 0x074 */ f32 unk74;
     /* 0x078 */ f32 unk78;
