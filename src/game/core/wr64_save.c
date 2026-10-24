@@ -518,7 +518,49 @@ s32 func_8007BE64(void) {
     return func_8007BD20();
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007BEA4.s")
+extern UnkStruct_func_8007AF78_1 D_801C1FF0[][3];
+extern UnkStruct_func_8007AF78_1 D_801C22C0[];
+extern s32 D_801C24A0[][9];
+extern s32 D_800D82B0[];
+extern u8 D_801AEBC0[];
+
+// Copies course's records (the three D_801C1FF0 entries, D_801C22C0, and two D_801C24A0 values) into the
+// EEPROM image and writes the header, the course's unk60 row and its unk1A8 block.
+s32 func_8007BEA4(s32 course) {
+    s32 off;
+    s32 j;
+    s32 i;
+
+    if (D_800D8260 == 0) {
+        return 1;
+    }
+    if ((course <= 0) || (course >= 9)) {
+        return 0;
+    }
+    i = course - 1;
+    for (j = 0; j < 3; j++) {
+        func_8007AF78(&D_801C1FF0[course][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    }
+    func_8007AF78(&D_801C22C0[course], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    for (j = 0; j < 2; j++) {
+        func_8007B2BC(D_801C24A0[course][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+    }
+    func_8007B31C();
+    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+        return 3;
+    }
+    if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA18->unk60[i] - (u32) D_801AEA18) >> 3,
+                          (u8*) D_801AEA18->unk60[i], 0x18) != 0) {
+        return 3;
+    }
+    off = D_800D82B0[i];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &D_801AEA18) + off) >> 3,
+                          (u8*) D_801AEA18->unk1A8 + off, 0x10) != 0) {
+        return 3;
+    }
+    return 0;
+}
 
 s32 func_8007C0B8(s32 arg0) {
     s32 temp_v0;
