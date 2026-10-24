@@ -1,9 +1,18 @@
 #include "common.h"
 
+extern s32 D_801CB288[];
+extern s32 D_801CB334;
+
 extern s16 D_i5_802C7A00;
 extern s32 D_802C7B00;
 extern s32 D_802C7B08;
 extern s32 D_802C7B0C;
+
+s32 func_8007C494(void);
+Gfx* func_i5_802C5DC0(Gfx*);
+void func_i5_802C6CC4(void);
+void GameState_EnterCeremony(void);
+void GameState_EnterCourseOverview(void);
 
 void func_800C3E4C(void);
 void func_801EC944(void);
@@ -21,7 +30,49 @@ void func_i5_802C5800(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5A98.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5C1C.s")
+Gfx* func_i5_802C5C1C(Gfx* gdl) {
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        if (gGameState == 0x34) {
+            osViBlack(false);
+            return func_80093C44(gdl);
+        }
+    }
+
+    gdl = func_80093F78(gdl);
+    D_800DAB2C = 0;
+    gdl = func_800949B8(gdl, gCourseID);
+    gdl = func_8008FB74(gdl);
+    gdl = Draw_WaterEffects(gdl);
+    gdl = func_i5_802C5DC0(gdl);
+
+    if (gGameState == 0x34) {
+        func_i5_802C6CC4();
+    } else if (D_80228A16 == 1) {
+        if (D_801CE630 == 0x66) {
+            GameState_EnterCeremony();
+        } else if (D_801CE630 == 0x1E) {
+            D_801CB334++;
+            if (D_800DAB68 != 0) {
+                if (D_801CB288[3] < D_801CB334) {
+                    D_801CB288[3] = D_801CB334;
+                }
+            } else {
+                if (D_801CB288[gDifficulty] < D_801CB334) {
+                    D_801CB288[gDifficulty] = D_801CB334;
+                }
+            }
+            GameState_EnterCourseOverview();
+        } else {
+            func_801EB180();
+        }
+    }
+
+    if (D_801CE638 != 9) {
+        func_8007C494();
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5DC0.s")
 
