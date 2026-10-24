@@ -19,6 +19,12 @@ extern s32 D_802261F8;
 extern s32 D_802287E0;
 extern s32 D_802287E4;
 extern s32 D_802287E8[];
+extern s8 D_80226130[];
+extern s32 D_80226150[];
+extern s32 D_802261E4;
+extern s32 D_802261E8;
+extern Gfx* D_802261EC[];
+extern s8 D_802288E8[];
 
 s32 func_8007BEA4(s32);
 s32 func_8007C204(s32);
@@ -114,7 +120,43 @@ Gfx* func_801E2058(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E229C.s")
+Gfx* func_801E229C(Gfx* gdl) {
+    s32 mode;
+    s32 i;
+    s32 j;
+    s32 offset;
+    s8 str[2];
+
+    if (D_802261E8 == 0) {
+        return gdl;
+    }
+    gSPDisplayList(gdl++, D_106F628);
+    gdl = func_80094338(gdl, 0, 0x36, 0x20, 0xD3, 0x18);
+    gdl = func_80094338(gdl, 0, 0x65, 0xB1, 0x75, 0x1C);
+    for (i = 0; i < 3; i++) {
+        mode = (i == D_802261E4) ? 6 : 0;
+        gdl = func_801E946C(gdl, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        gSPDisplayList(gdl++, D_802261EC[i]);
+    }
+    gdl = func_801E946C(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    gdl = func_801E3EE0(gdl, 2, 0x1D, 0x48, 0x23, 0);
+    for (i = 0; i < 3; i++) {
+        str[1] = 0;
+        str[0] = D_802288E8[i];
+        for (j = 0; j < 29; j++) {
+            if (str[0] == D_80226130[j]) {
+                break;
+            }
+        }
+        if (j == 29) {
+            offset = 0;
+        } else {
+            offset = D_80226150[j];
+        }
+        gdl = func_801E9858(gdl, 0, (char*) str, i * 26 + offset + 0x7A, 0xB4);
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/D_80226210.s")
 
