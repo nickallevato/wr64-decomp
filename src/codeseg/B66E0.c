@@ -318,7 +318,31 @@ void func_801EA730(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EAA6C.s")
+/* Colour cycle for D_80228A78 by phase: pink (255, 128, 255) -> magenta -> red -> magenta -> pink. */
+void func_801EAA6C(void) {
+    switch (D_80228A78.unk2) {
+        case 0:
+            D_80228A78.r = 255;
+            D_80228A78.g = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 128.0f) / D_80228A78.unk8);
+            D_80228A78.b = 255;
+            break;
+        case 1:
+            D_80228A78.r = 255;
+            D_80228A78.g = 0;
+            D_80228A78.b = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            break;
+        case 2:
+            D_80228A78.r = 255;
+            D_80228A78.g = 0;
+            D_80228A78.b = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            break;
+        case 3:
+            D_80228A78.r = 255;
+            D_80228A78.g = (u32) ((D_80228A78.unk4 * 128.0f) / D_80228A78.unk8);
+            D_80228A78.b = 255;
+            break;
+    }
+}
 
 /* Sets D_80228A78's colour from its phase and timer: red and blue ramp 128 -> 255 in phases 0 and 2, back in 1 and 3. */
 void func_801EADB0(void) {
