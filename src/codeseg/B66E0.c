@@ -67,6 +67,17 @@ void func_801EAF78(void) {
     D_80228A78 = D_80226E30;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EAFB4.s")
+void func_801EAFB4(void) {
+    if (D_80228A78.unk0 != 0) {
+        D_80228A78.unk4++;
+        if (D_80228A78.unk4 >= D_80228A78.unk8) {
+            D_80228A78.unk4 = 0;
+            D_80228A78.unk2++;
+            if (D_80228A78.unk2 == 4) {
+                D_80228A78.unk2 = 0;
+            }
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EB00C.s")
