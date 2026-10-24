@@ -1,128 +1,162 @@
-[![Discord Invitation](https://discordapp.com/api/guilds/1355614626657861753/widget.png?style=banner2 'Wave Race 64')](https://discord.gg/gK5HSJp49G)
+<div align="center">
 
+# 🌊 Wave Race 64: Matching Decompilation
 
-# Wave Race 64
-A early decompilation of a game with many waves!
+**The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-# Progress (Static) 
-- Game Code
-<p align="left">
-    <a href="" alt="WR64_Total_Functions">
-        <img src="https://img.shields.io/badge/Functions%20889%2F1365-65.71%25-blue" /></a>
-</p>
+![functions](https://img.shields.io/badge/functions-1137%20%2F%201372-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-82.9%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-51.8%25-4fc9b8?style=for-the-badge)
+![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
-- Assets
-<p align="left">
-    <a href="" alt="Assets">
-        <img src="https://img.shields.io/badge/TODO-red" /></a>
-  
-</p>
+*US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
 
-```diff
-- Important info -
+</div>
 
-* This project is very early so for now you can't make any kind of modification, well maybe I'll focus on it soon ;).
+---
 
-* Obviously you need the original rom of the USA Version of Wave Race 64, I am not responsible for which methods you get it.
+## What is this?
 
-* About regionalization, currently I am only decompiling the US version, for now I am not interested in the European or Japanese version, maybe I will do it later but for now it's not a priority
+Wave Race 64 (Nintendo EAD, 1996) shipped as a compiled MIPS binary. This project turns that
+binary back into C source. Compiled with the same compiler Nintendo used (IDO 5.3), that source
+produces **exactly the same ROM**, down to the last byte. Every build ends with a SHA-1 check
+against the original, so a single wrong instruction fails the build.
 
+Why bother? A matching source tree is the foundation for everything else: understanding how the
+water simulation really works, fixing bugs, native ports, and mods far beyond what patching a
+binary allows.
+
+This repository is a fork of [LLONSIT/Wave-Race-64](https://github.com/LLONSIT/Wave-Race-64),
+which did the groundwork: the ROM split, the build system and the first ~900 functions. This fork
+continues from there. See [Credits](#credits) and [How this fork is made](#how-this-fork-is-made).
+
+## Progress
+
+Counted by `tools/progress.py` on `main`. A function counts only when it is C and the ROM still matches.
+
+| Area | What's in it | Matched | |
+|---|---|--:|---|
+| `src/libultra` | Nintendo's N64 OS library | 184 / 184 | `████████████████████` 100% |
+| `src/audio` | sequence and sound playback | 223 / 228 | `███████████████████▌` 97.8% |
+| `src/codeseg` | HUD, menus, text printer, popups, fades | 192 / 219 | `█████████████████▌░░` 87.7% |
+| `src/sys` | boot, threads, memory | 31 / 37 | `████████████████▊░░░` 83.8% |
+| `src/game` | race logic, riders, camera, water | 415 / 501 | `████████████████▌░░░` 82.8% |
+| other | loose segments | 42 / 53 | `███████████████▊░░░░` 79.2% |
+| `src/overlays` | courses and menu screens | 50 / 150 | `██████▋░░░░░░░░░░░░░` 33.3% |
+| **Total** | | **1137 / 1372** | **82.9%** |
+
+Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
+assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
+builds with those attempts, so most of the game can already be read and changed as C.
+
+### Roadmap
+
+- [x] Toolchain and a proven byte-exact rebuild
+- [x] HUD, menus, text and popups (`src/codeseg`)
+- [ ] Race, riders, camera and water (`src/game`): **in progress**
+- [ ] Courses and menu screens (`src/overlays`)
+- [ ] The last of the system, audio and loose-segment code
+- [ ] Names, structs and documentation everywhere: the "readable" half of the job
+
+## Building
+
+You need your own copy of the game: **Wave Race 64 (USA) (Rev 1)**, `.z64` byte order,
+SHA-1 `508dfc2d4caa42b6f6de5263d0aed5e44ac7966a`. It is not included here and never will be.
+
+### Requirements (Linux or WSL)
+
+- `make`, `gcc`, `git`
+- MIPS binutils (`binutils-mips-linux-gnu` on Debian/Ubuntu)
+- Python 3 with `venv`
+
+### Steps
+
+```bash
+git clone https://github.com/nickallevato/wr64-decomp.git
+cd wr64-decomp
+git submodule update --init --recursive
+
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r tools/splat/requirements.txt GitPython colour capstone
+
+make toolchain                       # builds the IDO 5.3 static recompilation and n64crc
+cp /path/to/your/wave_race_64.z64 baserom.us.rev1.z64
+make init                            # extract + build
 ```
 
-# Dependencies
-
-- Installing the required dependencies
-
-### Dependencies List
-
-* Capstone
-* pip3
-* Python
-* mips-binutils
-* Qemu Irix (Optional)
-
-## Linux
-
-#### Debian/Ubuntu or Wsl Ubuntu
-
-- To install the first 3 dependencies would be:
-
- `apt-get update ; apt-get install libcapstone-dev python3-pip build-essential`
-
-* Installing Qemu Irix (optional)
-
-
-
-`wget https://github.com/n64decomp/qemu-irix/releases/download/v2.11-deb/qemu-irix-2.11.0-2169-g32ab296eef_amd64.deb && sudo dpkg -i qemu-irix-*.deb`
-
-
-- Installing the binutils 
-
-```diff
-- Warning -
-
-* This point can become something complicated for certain users, so it is recommended to follow the instructions well
-```
-
-* First clone the binutils repo
-
-
-`git clone https://github.com/tj90241/n64chain`
-
-* After cloning the repository and assuming that you're not in the n64chain directory, would be the following
-
-`cd n64chain/tools && bash build-posix64-toolchain.sh binutils`
-
-* Then you need the binutils in your `$PATH`
-
-`echo 'PATH=$PATH:/path/to/n64chain/tools/bin; export PATH' >> ~/.bashrc ; source ~/.bashrc`
-
-
-# Building
-
-
-- Cloning the repo
-
-``git clone https://github.com/LLONSIT/Wave-Race-64.git --recursive``
-
-- installing the splat dependencies and building some tools
- 
- `make dependencies`
-
-
-```diff
-- Warning -
-
-* If you cloned the repository without submodules do make extract and then make dependencies and make extract again
+A good build ends with:
 
 ```
+waverace64.us.rev1.z64: OK
+```
 
-- Copy the WaveRace 64 USA REV 1 ROM to ``baserom.us.rev1.z64``
+`make NON_MATCHING=1` also builds the not-yet-matching C. The ROM then differs, which is expected.
+Run `make clean` before going back to a normal build.
 
-Assuming that you cloned the repository with --recursive
+## How matching works
 
-- Run ``make extract ; make``
+```mermaid
+flowchart LR
+    A[assembly function] --> B[m2c draft]
+    B --> C[hand-written C]
+    C --> D{./diff<br/>score 0?}
+    D -- no --> E[restructure / permuter]
+    E --> C
+    D -- yes --> F{full build<br/>SHA-1 OK?}
+    F -- no --> C
+    F -- yes --> G[commit ✔]
+    D -. over time cap .-> H[keep as NON_MATCHING,<br/>note what differs]
+```
 
+The tools:
 
-### Some opts
+- [splat](https://github.com/ethteck/splat) splits the ROM into assembly, data and assets.
+- [m2c](https://github.com/matt-kempster/m2c) writes a first C draft from the assembly.
+- [asm-differ](https://github.com/simonlindholm/asm-differ) (`./diff <func>`) compares our compiled function with the original, instruction by instruction.
+- [decomp-permuter](https://github.com/simonlindholm/decomp-permuter) tries thousands of equivalent rewrites when a function is almost right.
+- [ido-static-recomp](https://github.com/decompals/ido-static-recomp) runs Nintendo's original IRIX compiler natively.
+- `tools/fork/check.sh` is the one-command proof: a full build, the ROM hash, and a warnings check.
 
-- If you want to build the repo without ido5.3_recomp, only with qemu_irix
+**[FORK.md](FORK.md)** covers the full workflow: a worktree per function, the commit rules, the
+NON_MATCHING convention, and what each milestone learned.
 
+## Layout
 
+```
+src/
+├── libultra/   N64 OS library (complete)
+├── sys/        boot, threads, memory, DMA
+├── audio/      sound and music
+├── codeseg/    HUD, menus, text, popups
+├── game/       race, riders, camera, water simulation (water_69D0.c), save data
+└── overlays/   per-course and per-screen code, loaded on demand
+include/        structs, prototypes, globals
+asm/, bin/      generated from your ROM by `make extract` (not in git)
+tools/fork/     this fork's matching scripts
+```
 
-`make USE_QEMU_IRIX=1`
+## How this fork is made
 
-## Project Structure
-	
-	Wave Race 64
-	├── asm: Assembler files (TODO: Remaining segments to classify)
-	│   ├── libultra: Liubltra Hand written assembly files
-	│   └── asm_nonmatchings: Functions that have not yet been matched either from libultra or from the game
-	├── assets: Binary blobs from the game (Extracted by your own copy from the game)
-	├── build: build output directory
-	├── include: header files, things like the structs or variables are here
-	├── src: C source code for game
-	│   ├── os: Libultra files
-	│   └── core: DMA code
-	|   └── overlays: Game overlays
-	└── tools: build tools
+This fork is written with heavy AI assistance from Anthropic's Claude, directed and reviewed by
+the maintainer. Every matched function passes the same strict test as any other: the ROM must
+rebuild with an identical SHA-1. Nothing is counted on the word of a tool or a model.
+
+The upstream project does not accept AI-generated contributions. This fork is therefore
+**independent, and is not affiliated with or endorsed by upstream**. Please don't open pull
+requests upstream with code from here.
+
+## Credits
+
+- **[LLONSIT/Wave-Race-64](https://github.com/LLONSIT/Wave-Race-64)** and its contributors:
+  the original decompilation, the build system and the first ~900 matched functions.
+- **davkdavk**: [LLONSIT/Wave-Race-64#92](https://github.com/LLONSIT/Wave-Race-64/pull/92)
+  matched 132 functions. The ones this fork didn't already have are being ported in, credited
+  in each commit.
+- The decomp tooling community: splat, m2c, asm-differ, decomp-permuter, asm-processor and
+  ido-static-recomp make all of this possible.
+
+## Legal
+
+This repository contains no ROM data and no Nintendo assets. You must supply your own legally
+obtained copy of the game. Wave Race 64 is © Nintendo. This is an unofficial, non-commercial
+preservation and research project.
