@@ -79,7 +79,7 @@ Gfx* func_801E5554(Gfx* gdl) {
                                                 (slot->x + 160) << 2, (slot->y + row + 5) << 2, G_TX_RENDERTILE,
                                                 0, 0, 1 << 10, 1 << 10);
                         } else {
-                            gdl = func_801E8800(gdl, 160, 6, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                            gdl = Printer_DrawQuad(gdl, 160, 6, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                                 0xFF, 0xFF, 0xFF, 0xFF, 1.0f);
                         }
                         row += 5;
@@ -109,7 +109,7 @@ Gfx* func_801E5554(Gfx* gdl) {
                                                     G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
                             } else {
                                 h = (off == 204 * 25) ? 4 : 6;
-                                gdl = func_801E8800(gdl, 204, h, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                gdl = Printer_DrawQuad(gdl, 204, h, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                                     0xFF, 0xFF, 0xFF, 0xFF, 1.0f);
                             }
                             off += 204 * 5;
@@ -129,7 +129,7 @@ Gfx* func_801E5554(Gfx* gdl) {
                                                     (slot->x + 80) << 2, (slot->y + row + 2) << 2,
                                                     G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
                             } else {
-                                gdl = func_801E8800(gdl, 80, h, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                gdl = Printer_DrawQuad(gdl, 80, h, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                                     0xFF, 0xFF, 0xFF, 0xFF, 1.0f);
                             }
                             row += 2;

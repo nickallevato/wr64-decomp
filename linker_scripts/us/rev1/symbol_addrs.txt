@@ -65,7 +65,7 @@ Draw_WaterEffects = 0x80090F58;
 gVIsPerFrame = 0x800D461C;
 UnusedPrintFontDL = 0x10144F8;
 //Fix build
-D_80228A78 = 0x80228A78;
+gPrinterColorCycle = 0x80228A78;
 D_80227E98 = 0x80227E98;
 D_80228058 = 0x80228058;
 
@@ -166,8 +166,21 @@ D_80151BE0 = 0x80151BE0; //defined:true
 gCurrentPauseMenuOptionCount = 0x801CE626; //defined:true
 D_801FC840 = 0x801FC840; //defined:true
 
+gPrinterWidthsFont0 = 0x80226D70;
+gPrinterWidthsFont1 = 0x80226D98;
+gPrinterWidthsFont2 = 0x80226DC4;
+gPrinterWidthsFont3 = 0x80226DF4;
+gPrinterWidthsFont4 = 0x80226E00;
+gPrinterWidthsFont5 = 0x80226E0C;
+gPrinterWidthsFont6 = 0x80226E18;
 gPrinterScale = 0x80226E24;
 gPrinterScaled = 0x80226E28;
+gPrinterLastFont = 0x80226E2C;
+gPrinterColorCycleInit = 0x80226E30;
+gPrinterMode = 0x80228A44;
+gPrinterCornerR = 0x80228A48;
+gPrinterCornerG = 0x80228A58;
+gPrinterCornerB = 0x80228A68;
 gPortraitFaces = 0x80227978;
 gPortraitBob = 0x802279A4;
 gPortraitPos = 0x80228D28;

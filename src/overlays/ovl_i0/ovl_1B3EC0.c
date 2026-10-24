@@ -31,7 +31,7 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
     if (D_i0_802C6BC4 != 0) {
         char buf[10];
 
-        arg0 = func_801E946C(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        arg0 = Printer_SetMode(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
         sprintf(buf, "%8XH", D_801519D4);
         arg0 = func_801E9858(arg0, 1, buf, 0x1C, 0x28);
         sprintf(buf, "%dKB", (s32) D_801519D4 / 1024);
@@ -39,7 +39,7 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
     }
     if (D_i0_802C6BEC != 0) {
         arg0 = func_i0_802C6AE4(
-            func_801E946C(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
+            Printer_SetMode(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
     }
     if (D_i0_802C6BC8 < 0x14) {
         D_i0_802C6BC8 = D_i0_802C6BC8 + 1;
@@ -77,7 +77,7 @@ void func_i0_802C6878(void) {
     D_802C6EE4 = D_800DA9D8;
     D_802C6EE0 = 0;
 
-    func_801EAF78();
+    Printer_ResetColorCycle();
     func_801E6A4C(0, 0);
     func_801E6A4C(3, 0);
     func_801E6A4C(3, 1);

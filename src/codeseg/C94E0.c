@@ -121,7 +121,7 @@ void func_801FAEB8(Gfx** gdlp) {
                         y = 150;
                     }
                 }
-                gdl = func_801E93B4(gdl, 0, D_802279F8, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
+                gdl = Printer_PrintScaled(gdl, 0, D_802279F8, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
                 sprintf((char*) D_80228CF8, D_802279FC, rider->lapCount);
                 gdl = func_801E9858(gdl, 0, (char*) D_80228CF8, x + w, y);
             } else {
@@ -140,7 +140,7 @@ void func_801FAEB8(Gfx** gdlp) {
                         y = 150;
                     }
                 }
-                gdl = func_801E9858(func_801E93B4(gdl, 0, D_80227A00, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
+                gdl = func_801E9858(Printer_PrintScaled(gdl, 0, D_80227A00, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
                                                   g1, b1, scale),
                                     0, D_80227A08, x + w, y);
             }
@@ -337,12 +337,12 @@ void func_801FB514(Gfx** gdlp) {
     }
     if (D_80228A94 != 0) {
         D_80228A94--;
-        gdl = func_801E92FC(func_801E92FC(gdl, 0, D_80227A0C, 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
+        gdl = Printer_Print(Printer_Print(gdl, 0, D_80227A0C, 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
                             D_80227A14, 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     if ((D_80227740 != 0) && (D_801C26E4 != 0)) {
         sprintf((char*) D_80228CF8, D_80227A1C, D_801C26E4);
-        gdl = func_801E92FC(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     *gdlp = gdl;
 }
