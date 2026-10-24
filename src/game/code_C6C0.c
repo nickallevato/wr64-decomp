@@ -2236,6 +2236,8 @@ void func_80069740(UnkStruct_80069740* arg0, UnkStruct_80069740* arg1) {
     *arg0 = *arg1;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8006977C.s")
+void func_8006977C(void* arg0, s32 arg1) {
+    *(Vec3f*) arg0 = *(Vec3f*) arg1;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80069798.s")
