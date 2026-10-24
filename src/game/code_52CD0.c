@@ -3532,62 +3532,20 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 57270 of 259500: far off in registers and scheduling; m2c's structure with named D_801CF060 fields. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
+// Score 50659 of 259500: far off in registers and scheduling. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
     camera_unk_1* cam;
     f32 sp4C;
     f32 sp48;
-    UnkStruct_801AEE20* var_s1_2;
     StructVarS0* lead;
-    UnkStruct_801AEE20* var_s1;
-    f32 temp_fa0_2;
-    f32 temp_fa0_3;
-    f32 temp_fa0_4;
-    f32 temp_fa1_2;
-    f32 temp_fa1_3;
-    f32 temp_ft0_2;
-    f32 temp_ft4;
-    f32 temp_ft5;
-    f32 temp_ft5_2;
-    f32 temp_ft5_3;
-    f32 temp_ft5_4;
-    f32 temp_ft5_5;
-    f32 temp_ft5_6;
-    f32 temp_fv0_2;
-    f32 temp_fv0_3;
-    f32 temp_fv0_4;
-    f32 temp_fv0_5;
-    f32 temp_fv0_6;
-    f32 temp_fv1;
-    f32 temp_fv1_2;
-    f32 temp_fv1_3;
-    f32 temp_fv1_4;
-    f32 temp_fv1_5;
-    f32 temp_fv1_6;
-    s32 temp_ft0;
-    s32 temp_ft1;
-    s32 temp_ft1_2;
-    s32 temp_ft1_3;
-    s32 temp_ft1_4;
-    s32 temp_ft1_5;
-    s32 temp_ft1_6;
-    s32 temp_ft2_2;
-    s32 temp_ft2_3;
-    s32 temp_ft3;
-    s32 temp_ft3_2;
-    s32 temp_hi;
-    s32 temp_t9;
-    s32 temp_v0_6;
-    s32 var_s0;
-    s32 var_s0_2;
-    s32 var_s0_3;
-    s32 var_s0_4;
-    s32 var_s3;
-    s32 var_s3_2;
+    f32 x;
+    f32 diff;
+    s32 t;
     UnkStruct_801CE780_unk4_unk4* node;
-    s32 temp_ft1_7;
-    f32 temp_ft5_7;
-    f32 temp_ft5_8;
+    s32 angle;
+    s32 i;
+    s32 best;
+    UnkStruct_801AEE20* p;
 
     cam = &gCameraPerspective[D_80223930];
     node = (UnkStruct_801CE780_unk4_unk4*) func_8009D6B0(D_801CF060[arg0].unk0, D_801CF060[arg0].unk74,
@@ -3603,10 +3561,10 @@ void func_800A68A4(s32 arg0) {
     }
     D_801D0668.unk_0 = func_8009D4A8(D_801CF060[arg0].unk64 - D_801D06BC, D_801CF060[arg0].unk6C - D_801D06C4) / 100.0f;
     D_801D0668.unk_6 = ((func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) / 90.0f) * 120.0f);
-    temp_ft0 = (s32) ((D_801CF060[arg0].unk18 / 360.0f) * 4096.0f);
+    angle = (s32) ((D_801CF060[arg0].unk18 / 360.0f) * 4096.0f);
     D_801CF060[arg0].unk34 = 0.0f;
-    D_801CF060[arg0].unk30 = gSinTable[(temp_ft0 + 0x400) & 0xFFF];
-    D_801CF060[arg0].unk38 = gSinTable[temp_ft0 & 0xFFF];
+    D_801CF060[arg0].unk30 = COS(angle);
+    D_801CF060[arg0].unk38 = SIN(angle);
     if ((gGameModeState == GMODE_STATE_STARTED) && (gCurrentPauseMenuOption == -1)) {
         if ((D_801CF060[arg0].unk74 == 0) &&
             (func_8009D4DC(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) > 2500.0f)) {
@@ -3617,51 +3575,50 @@ void func_800A68A4(s32 arg0) {
             D_801D0758 = lead->unk18 - 180.0f;
             switch (arg0) { /* irregular */
                 case 1:
-                    temp_ft2_2 = (s32) (((D_801D0758 - 30.0f) / 360.0f) * 4096.0f);
-                    D_801D0754 = (gSinTable[(temp_ft2_2 + 0x400) & 0xFFF] * 150.0f) + lead->unkC;
-                    D_801D075C = (gSinTable[temp_ft2_2 & 0xFFF] * 150.0f) + lead->unk14;
+                    angle = (s32) (((D_801D0758 - 30.0f) / 360.0f) * 4096.0f);
+                    D_801D0754 = (COS(angle) * 150.0f) + lead->unkC;
+                    D_801D075C = (SIN(angle) * 150.0f) + lead->unk14;
                     break;
                 case 2:
-                    temp_ft1 = (s32) (((D_801D0758 + 30.0f) / 360.0f) * 4096.0f);
-                    D_801D0754 = (gSinTable[(temp_ft1 + 0x400) & 0xFFF] * 200.0f) + lead->unkC;
-                    D_801D075C = (gSinTable[temp_ft1 & 0xFFF] * 200.0f) + lead->unk14;
+                    angle = (s32) (((D_801D0758 + 30.0f) / 360.0f) * 4096.0f);
+                    D_801D0754 = (COS(angle) * 200.0f) + lead->unkC;
+                    D_801D075C = (SIN(angle) * 200.0f) + lead->unk14;
                     break;
                 case 3:
-                    temp_ft1_2 = (s32) ((D_801D0758 / 360.0f) * 4096.0f);
-                    D_801D0754 = (gSinTable[(temp_ft1_2 + 0x400) & 0xFFF] * 220.0f) + lead->unkC;
-                    D_801D075C = (gSinTable[temp_ft1_2 & 0xFFF] * 220.0f) + lead->unk14;
+                    angle = (s32) ((D_801D0758 / 360.0f) * 4096.0f);
+                    D_801D0754 = (COS(angle) * 220.0f) + lead->unkC;
+                    D_801D075C = (SIN(angle) * 220.0f) + lead->unk14;
                     break;
             }
-            temp_fv1 = func_8009D4A8(D_801D0754 - D_801CF060[arg0].unkC, D_801D075C - D_801CF060[arg0].unk14) / 10.0f;
-            D_801CF060[arg0].unk4C = temp_fv1;
-            if (temp_fv1 > 80.0f) {
+            D_801CF060[arg0].unk4C =
+                func_8009D4A8(D_801D0754 - D_801CF060[arg0].unkC, D_801D075C - D_801CF060[arg0].unk14) / 10.0f;
+            if (D_801CF060[arg0].unk4C > 80.0f) {
                 D_801CF060[arg0].unk4C = 80.0f;
             }
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
-            temp_fv1_2 = D_801D0760;
-            if (temp_fv1_2 >= 2.0f) {
+            diff = D_801D0760;
+            if (diff >= 2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
                 if (D_801D0760 > 45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
                 }
             }
-            if (temp_fv1_2 <= -2.0f) {
+            if (diff <= -2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
                 if (D_801D0760 < -45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
                 }
             }
-            if (FABS(temp_fv1_2) < 2.0f) {
+            if (FABS(diff) < 2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(
                     func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
             }
-            temp_fv0_2 = Math_Normalize_Angle(
-                (f32) (((f64) Math_Normalize_Angle((temp_fv1_2 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                       (f64) D_801CF060[arg0].unk1C));
-            D_801CF060[arg0].unk1C = temp_fv0_2;
-            if (temp_fv0_2 > 45.0f) {
+            D_801CF060[arg0].unk1C =
+                Math_Normalize_Angle((f32) (((f64) Math_Normalize_Angle((diff / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
+                                            (f64) D_801CF060[arg0].unk1C));
+            if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
             if (D_801CF060[arg0].unk1C < -45.0f) {
@@ -3672,48 +3629,43 @@ void func_800A68A4(s32 arg0) {
             D_801D0764 =
                 (f32) (((f64) ((D_801CF060[arg0].unk4C * ((180.0f - FABS(D_801D0760)) / 180.0f)) - D_801D0768) * 0.15) +
                        (f64) D_801D0768);
-            temp_ft1_3 = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
-            temp_ft5 = gSinTable[(temp_ft1_3 + 0x400) & 0xFFF] * D_801D0764;
-            D_801CF060[arg0].unk24 = temp_ft5;
-            temp_ft5_2 = gSinTable[temp_ft1_3 & 0xFFF] * D_801D0764;
-            D_801CF060[arg0].unkC += temp_ft5;
-            D_801CF060[arg0].unk2C = temp_ft5_2;
-            D_801CF060[arg0].unk14 += temp_ft5_2;
+            angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+            D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
+            D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             func_800A2B24(arg0);
         }
         if (D_801CF060[arg0].unk8 == 1) {
             D_801D0754 = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
-            temp_ft0_2 = func_8004D30C(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) +
+            D_801D0758 = func_8004D30C(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) +
                          (D_801B2F20[D_801CF060[arg0].unk9C].unk4 - 20.0f);
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
-            D_801D0758 = temp_ft0_2;
-            temp_fa0_2 = D_801D06BC;
-            if ((temp_fa0_2 > 0.0f) && (D_801D06C4 < -4000.0f)) {
+            x = D_801D06BC;
+            if ((x > 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = 7000.0f;
                 D_801D075C = -2650.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((temp_fa0_2 <= 0.0f) && (D_801D06C4 < -4000.0f)) {
+            if ((x <= 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = -7000.0f;
                 D_801D075C = -2650.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((temp_fa0_2 > 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
+            if ((x > 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
                 D_801D0754 = 5600.0f;
                 D_801D075C = 0.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((temp_fa0_2 <= 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
+            if ((x <= 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
                 D_801D0754 = -5600.0f;
                 D_801D075C = 2000.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((temp_fa0_2 > 3300.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 1000.0f)) {
+            if ((x > 3300.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 1000.0f)) {
                 D_801D0754 = 5000.0f;
                 D_801D075C = 1000.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((temp_fa0_2 <= -3700.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 2000.0f)) {
+            if ((x <= -3700.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 2000.0f)) {
                 D_801D0754 = -5000.0f;
                 D_801D075C = 2500.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
@@ -3721,43 +3673,39 @@ void func_800A68A4(s32 arg0) {
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
-            temp_fv1_3 = D_801D0760;
-            if (temp_fv1_3 >= 2.0f) {
+            diff = D_801D0760;
+            if (diff >= 2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
                 if (D_801D0760 > 45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
                 }
             }
-            if (temp_fv1_3 <= -2.0f) {
+            if (diff <= -2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
                 if (D_801D0760 < -45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
                 }
             }
-            if (FABS(temp_fv1_3) < 2.0f) {
+            if (FABS(diff) < 2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(
                     func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
             }
-            temp_fv0_3 = Math_Normalize_Angle(
-                (f32) (((f64) Math_Normalize_Angle((temp_fv1_3 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                       (f64) D_801CF060[arg0].unk1C));
-            D_801CF060[arg0].unk1C = temp_fv0_3;
-            if (temp_fv0_3 > 45.0f) {
+            D_801CF060[arg0].unk1C =
+                Math_Normalize_Angle((f32) (((f64) Math_Normalize_Angle((diff / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
+                                            (f64) D_801CF060[arg0].unk1C));
+            if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
             if (D_801CF060[arg0].unk1C < -45.0f) {
                 D_801CF060[arg0].unk1C = -45.0f;
             }
-            temp_fv1_4 = D_801CF060[arg0].unk10;
             D_801CF060[arg0].unk1C = func_8009D564(D_801CF060[arg0].unk1C);
-            D_801CF060[arg0].unk10 = (f32) ((f64) temp_fv1_4 + (0.03 * (f64) (D_801D0758 - temp_fv1_4)));
+            D_801CF060[arg0].unk10 += 0.03 * (D_801D0758 - D_801CF060[arg0].unk10);
             D_801D076C = 0.2f;
             D_801D0770 = func_8009D4A8(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4);
             if (D_801D0770 < 1000.0f) {
-                D_801D076C = (f32) (((f64) (((gSinTable[(D_800E62C4 * 2) & 0xFFF] * 200.0f) + (1000.0f - D_801D0770)) /
-                                            1000.0f) *
-                                     1.5) +
-                                    0.2);
+                D_801D076C =
+                    (f32) (((f64) (((SIN(D_800E62C4 * 2) * 200.0f) + (1000.0f - D_801D0770)) / 1000.0f) * 1.5) + 0.2);
             }
             if (D_801B2F20[D_801CF060[arg0].unk9C - 1].unk98 == 9) {
                 D_801D076C = 1.0f;
@@ -3771,13 +3719,9 @@ void func_800A68A4(s32 arg0) {
                         0.15) +
                        (f64) D_801D0768);
             if (D_801CF060[arg0].unk68 < func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
-                temp_ft3 = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
-                temp_ft5_3 = gSinTable[(temp_ft3 + 0x400) & 0xFFF] * D_801D0764;
-                D_801CF060[arg0].unk24 = temp_ft5_3;
-                D_801CF060[arg0].unkC += temp_ft5_3;
-                temp_ft5_4 = gSinTable[temp_ft3 & 0xFFF] * D_801D0764;
-                D_801CF060[arg0].unk2C = temp_ft5_4;
-                D_801CF060[arg0].unk14 += temp_ft5_4;
+                angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+                D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
+                D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             } else {
                 D_801CF060[arg0].unkC += D_801CF060[arg0].unk24;
                 D_801CF060[arg0].unk14 += D_801CF060[arg0].unk2C;
@@ -3793,21 +3737,20 @@ void func_800A68A4(s32 arg0) {
                         D_801CF060[arg0].unk50 = 3;
                         D_801CF060[arg0].unk54 = 0;
                         func_800C1EB8(2);
-                        temp_t9 = D_800E62D0 + 1;
-                        D_800E62D0 = temp_t9;
-                        if (temp_t9 == 3) {
+                        D_800E62D0++;
+                        if (D_800E62D0 == 3) {
                             D_801CF060[1].unk0 = 6;
                             if (D_800E62D4 <= 0) {
                                 D_800E62D4 = 1;
                             }
                         }
-                        if (temp_t9 == 5) {
+                        if (D_800E62D0 == 5) {
                             D_801CF060[2].unk0 = 6;
                             if (D_800E62D4 < 2) {
                                 D_800E62D4 = 2;
                             }
                         }
-                        if (temp_t9 == 7) {
+                        if (D_800E62D0 == 7) {
                             D_801CF060[3].unk0 = 6;
                             if (D_800E62D4 < 3) {
                                 D_800E62D4 = 3;
@@ -3819,14 +3762,14 @@ void func_800A68A4(s32 arg0) {
                 if (D_801B2F20[D_801CF060[arg0].unk9C - 1].unk98 == 9) {
                     D_801CF060[arg0].unk74 = 0;
                     D_801CF060[arg0].unk78 = 0;
-                    temp_hi = (s16) D_800DAA00 % 9;
-                    if ((temp_hi >= 0) && (temp_hi < 3)) {
+                    t = (s16) D_800DAA00 % 9;
+                    if ((t >= 0) && (t < 3)) {
                         D_801CF060[arg0].unk50 = 0x11;
                     }
-                    if ((temp_hi >= 3) && (temp_hi < 6)) {
+                    if ((t >= 3) && (t < 6)) {
                         D_801CF060[arg0].unk50 = 3;
                     }
-                    if ((temp_hi >= 6) && (temp_hi < 9)) {
+                    if ((t >= 6) && (t < 9)) {
                         D_801CF060[arg0].unk50 = 4;
                     }
                     D_801CF060[arg0].unk54 = 0;
@@ -3840,22 +3783,16 @@ void func_800A68A4(s32 arg0) {
                 (func_8009D4DC(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4) > 4000000.0f)) {
                 D_801CF060[arg0].unk8 = 5;
                 D_801CF060[arg0].unk50 = 0;
-                var_s3 = -1;
-                var_s0 = 0;
+                best = -1;
                 D_801D0754 = 2e9f;
-                if (D_801BB124 > 0) {
-                    var_s1 = D_801AEE20;
-                    do {
-                        D_801D0758 = func_8009D4DC(D_801D06BC - var_s1->unk0, D_801D06C4 - var_s1->unk8);
-                        if ((D_801D0758 < D_801D0754) && (var_s1->unkC0 < 2)) {
-                            var_s3 = var_s0;
-                            D_801D0754 = D_801D0758;
-                        }
-                        var_s0 += 1;
-                        var_s1++;
-                    } while (var_s0 < D_801BB124);
+                for (i = 0, p = D_801AEE20; i < D_801BB124; i++, p++) {
+                    D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
+                    if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
+                        best = i;
+                        D_801D0754 = D_801D0758;
+                    }
                 }
-                D_801CF060[arg0].unk9C = var_s3;
+                D_801CF060[arg0].unk9C = best;
             }
             D_801D0754 = cam->unk4C - D_801CF060[arg0].unkC;
             D_801D0758 = cam->unk54 - D_801CF060[arg0].unk14;
@@ -3868,9 +3805,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                temp_ft1_4 = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (gSinTable[(temp_ft1_4 + 0x400) & 0xFFF] * 200.0f) + cam->unk4C;
-                D_801CF060[arg0].unk14 = (gSinTable[temp_ft1_4 & 0xFFF] * 200.0f) + cam->unk54;
+                angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->unk4C;
+                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->unk54;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
@@ -3883,11 +3820,11 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unkA4 = 0;
             D_800E62D0 = 0;
             D_801D0764 = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
-            temp_ft1_5 = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-            D_801D0754 = (gSinTable[(temp_ft1_5 + 0x400) & 0xFFF] * 600.0f) + D_801D06BC;
+            angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+            D_801D0754 = (COS(angle) * 600.0f) + D_801D06BC;
             D_801D0760 = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
-            D_801D0758 = (gSinTable[temp_ft1_5 & 0xFFF] * 600.0f) + D_801D06C4;
+            D_801D0758 = (SIN(angle) * 600.0f) + D_801D06C4;
             if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D075C = 7000.0f;
                 D_801D0760 = -2650.0f;
@@ -3923,41 +3860,39 @@ void func_800A68A4(s32 arg0) {
             if (Math_Normalize_Angle(D_801D0760 - D_801D0764) < -90.0f) {
                 D_801D0760 = func_8009D564(D_801D0764 - 90.0f);
             }
-            temp_ft3_2 = (s32) ((D_801D0760 / 360.0f) * 4096.0f);
-            D_801D0754 += gSinTable[(temp_ft3_2 + 0x400) & 0xFFF] * D_801D0768;
-            D_801D075C = (gSinTable[temp_ft3_2 & 0xFFF] * D_801D0768) + D_801D0758;
+            angle = (s32) ((D_801D0760 / 360.0f) * 4096.0f);
+            D_801D0754 += COS(angle) * D_801D0768;
+            D_801D075C = (SIN(angle) * D_801D0768) + D_801D0758;
             D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
             if (D_801CF060[arg0].unk74 != 5) {
-                temp_fv1_5 = D_801D0760;
-                if (temp_fv1_5 >= 2.0f) {
+                diff = D_801D0760;
+                if (diff >= 2.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
                     if (D_801D0760 > 45.0f) {
                         D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
                     }
                 }
-                if (temp_fv1_5 <= -2.0f) {
+                if (diff <= -2.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
                     if (D_801D0760 < -45.0f) {
                         D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
                     }
                 }
-                if (FABS(temp_fv1_5) < 2.0f) {
+                if (FABS(diff) < 2.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(
                         func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
                 }
             }
-            temp_fv1_6 = D_801CF060[arg0].unk10;
-            D_801CF060[arg0].unk10 = (f32) ((f64) temp_fv1_6 + (0.03 * (f64) (D_801D0758 - temp_fv1_6)));
+            D_801CF060[arg0].unk10 += 0.03 * (D_801D0758 - D_801CF060[arg0].unk10);
             D_801D076C = D_801D06D4 / D_801D0724;
             D_801D0770 = func_8009D4A8(D_801CF060[arg0].unkC - D_801D0754, D_801CF060[arg0].unk14 - D_801D075C);
             if (D_801D0770 < 2000.0f) {
                 D_801D076C = (f32) (((f64) (D_801D0770 / 2000.0f) * 1.2) + (f64) D_801D076C);
             }
-            if ((D_801CF060[arg0].unk74 == 5) &&
-                ((temp_v0_6 = D_801CF060[arg0].unk78, (temp_v0_6 == 0x23)) || (temp_v0_6 == 0x2D)) &&
+            if ((D_801CF060[arg0].unk74 == 5) && ((D_801CF060[arg0].unk78 == 35) || (D_801CF060[arg0].unk78 == 45)) &&
                 (gGameModes == GMODE_CHAMPIONSHIP)) {
                 D_801D0668.unk_8 = 0xA;
             }
@@ -3977,11 +3912,10 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk50 = 0;
             }
             if (D_801CF060[arg0].unk74 != 5) {
-                temp_fv0_4 = Math_Normalize_Angle(
+                D_801CF060[arg0].unk1C = Math_Normalize_Angle(
                     (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
                            (f64) D_801CF060[arg0].unk1C));
-                D_801CF060[arg0].unk1C = temp_fv0_4;
-                if (temp_fv0_4 > 45.0f) {
+                if (D_801CF060[arg0].unk1C > 45.0f) {
                     D_801CF060[arg0].unk1C = 45.0f;
                 }
                 if (D_801CF060[arg0].unk1C < -45.0f) {
@@ -4000,36 +3934,27 @@ void func_800A68A4(s32 arg0) {
                 (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.0f) * D_801D0724 * D_801D076C) - D_801D0768) *
                         0.15) +
                        (f64) D_801D0768);
-            temp_fa0_3 = D_801CF060[arg0].unkC;
-            temp_fa1_2 = D_801CF060[arg0].unk14;
-            D_801D0754 = temp_fa0_3;
+            D_801D0754 = D_801CF060[arg0].unkC;
             D_801D0758 = D_801CF060[arg0].unk10;
-            D_801D075C = temp_fa1_2;
-            if (D_801CF060[arg0].unk68 < func_8004D30C(temp_fa0_3, temp_fa1_2)) {
-                temp_ft1_6 = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
-                temp_ft5_5 = gSinTable[(temp_ft1_6 + 0x400) & 0xFFF] * D_801D0764;
-                D_801CF060[arg0].unk24 = temp_ft5_5;
-                D_801CF060[arg0].unkC += temp_ft5_5;
-                temp_ft5_6 = gSinTable[temp_ft1_6 & 0xFFF] * D_801D0764;
-                D_801CF060[arg0].unk2C = temp_ft5_6;
-                D_801CF060[arg0].unk14 += temp_ft5_6;
+            D_801D075C = D_801CF060[arg0].unk14;
+            if (D_801CF060[arg0].unk68 < func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
+                angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+                D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
+                D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             } else {
                 D_801CF060[arg0].unkC += D_801CF060[arg0].unk24;
                 D_801CF060[arg0].unk14 += D_801CF060[arg0].unk2C;
             }
-            var_s0_2 = 0;
-            do {
-                temp_fv0_5 = (f32) var_s0_2;
+            for (i = 0; i < 8; i++) {
                 D_801D076C =
-                    ((((D_801CF060[arg0].unk30 * 500.0f) + D_801CF060[arg0].unkC) - D_801D0754) * 0.125f * temp_fv0_5) +
+                    ((((D_801CF060[arg0].unk30 * 500.0f) + D_801CF060[arg0].unkC) - D_801D0754) * 0.125f * (f32) i) +
                     D_801D0754;
                 D_801D0770 = D_801CF060[arg0].unk10 - 10.0f;
-                D_801D0774 = ((((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C) * 0.125f *
-                              temp_fv0_5) +
-                             D_801D075C;
+                D_801D0774 =
+                    ((((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C) * 0.125f * (f32) i) +
+                    D_801D075C;
                 sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                var_s0_2 += 1;
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
@@ -4038,32 +3963,26 @@ void func_800A68A4(s32 arg0) {
                     D_801CF060[arg0].unk28 = 0.0f;
                     D_801CF060[arg0].unk2C = 0.0f;
                 }
-            } while (var_s0_2 < 8);
+            }
             func_800A2B24(arg0);
             D_801D0754 = func_8009D4A8(D_801CF060[arg0].unkC - D_801B2F20[D_801CF060[arg0].unk9C].unk0,
                                        D_801CF060[arg0].unk14 - D_801B2F20[D_801CF060[arg0].unk9C].unk8);
-            var_s3_2 = -1;
+            best = -1;
             if ((D_801D0754 < 1000.0f) && (D_801D06D4 > 11.0f)) {
                 D_801CF060[arg0].unk8 = 1;
                 D_801CF060[arg0].unk50 = 0;
                 D_801CF060[arg0].unk9C = D_801B2F20[D_801CF060[arg0].unk9C].unkA0;
             }
             if (D_801D0754 > 3000.0f) {
-                var_s0_3 = 0;
                 D_801D0754 = 2e9f;
-                if (D_801BB124 > 0) {
-                    var_s1_2 = D_801B2F20;
-                    do {
-                        D_801D0758 = func_8009D4DC(D_801D06BC - var_s1_2->unk0, D_801D06C4 - var_s1_2->unk8);
-                        if ((D_801D0758 < D_801D0754) && (var_s1_2->unkC0 < 2)) {
-                            var_s3_2 = var_s0_3;
-                            D_801D0754 = D_801D0758;
-                        }
-                        var_s0_3 += 1;
-                        var_s1_2++;
-                    } while (var_s0_3 < D_801BB124);
+                for (i = 0, p = D_801B2F20; i < D_801BB124; i++, p++) {
+                    D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
+                    if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
+                        best = i;
+                        D_801D0754 = D_801D0758;
+                    }
                 }
-                D_801CF060[arg0].unk9C = var_s3_2;
+                D_801CF060[arg0].unk9C = best;
             }
             D_801D0754 = cam->unk4C - D_801CF060[arg0].unkC;
             D_801D0758 = cam->unk54 - D_801CF060[arg0].unk14;
@@ -4076,9 +3995,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                temp_ft2_3 = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (gSinTable[(temp_ft2_3 + 0x400) & 0xFFF] * 200.0f) + cam->unk4C;
-                D_801CF060[arg0].unk14 = (gSinTable[temp_ft2_3 & 0xFFF] * 200.0f) + cam->unk54;
+                angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->unk4C;
+                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->unk54;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
@@ -4086,18 +4005,17 @@ void func_800A68A4(s32 arg0) {
             }
         } else if (D_801CF060[arg0].unk8 == 13) {
             D_801D0754 = Math_Normalize_Angle(D_801CF060[arg0].unk8C - D_801CF060[arg0].unk18);
-            temp_ft4 = D_801D0754;
-            if (temp_ft4 >= 10.0f) {
+            diff = D_801D0754;
+            if (diff >= 10.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 10.0f);
             }
-            if (temp_ft4 <= -10.0f) {
+            if (diff <= -10.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 10.0f);
             }
-            temp_fv0_6 = Math_Normalize_Angle(
+            D_801CF060[arg0].unk1C = Math_Normalize_Angle(
                 (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
                        (f64) D_801CF060[arg0].unk1C));
-            D_801CF060[arg0].unk1C = temp_fv0_6;
-            if (temp_fv0_6 > 45.0f) {
+            if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
             if (D_801CF060[arg0].unk1C < -45.0f) {
@@ -4112,25 +4030,17 @@ void func_800A68A4(s32 arg0) {
             if (FABS(D_801D0754) < 10.0f) {
                 D_801CF060[arg0].unk8 = 5;
             }
-            temp_fa0_4 = D_801CF060[arg0].unkC;
-            temp_fa1_3 = D_801CF060[arg0].unk14;
-            D_801D0754 = temp_fa0_4;
+            D_801D0754 = D_801CF060[arg0].unkC;
             D_801D0758 = D_801CF060[arg0].unk10;
-            D_801D075C = temp_fa1_3;
-            var_s0_4 = 0;
-            temp_ft1_7 = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
-            temp_ft5_7 = gSinTable[(temp_ft1_7 + 0x400) & 0xFFF] * D_801D076C;
-            D_801CF060[arg0].unk24 = temp_ft5_7;
-            D_801CF060[arg0].unkC = temp_fa0_4 + temp_ft5_7;
-            temp_ft5_8 = gSinTable[temp_ft1_7 & 0xFFF] * D_801D076C;
-            D_801CF060[arg0].unk2C = temp_ft5_8;
-            D_801CF060[arg0].unk14 = temp_fa1_3 + temp_ft5_8;
-            do {
+            D_801D075C = D_801CF060[arg0].unk14;
+            angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+            D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D076C);
+            D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D076C);
+            for (i = 0; i < 4; i++) {
                 D_801D0770 = D_801CF060[arg0].unk10 - 20.0f;
-                D_801D076C = ((D_801CF060[arg0].unk14 - D_801D075C) * 0.25f * (f32) var_s0_4) + D_801D075C;
+                D_801D076C = ((D_801CF060[arg0].unk14 - D_801D075C) * 0.25f * (f32) i) + D_801D075C;
                 sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                var_s0_4 += 1;
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
@@ -4139,7 +4049,7 @@ void func_800A68A4(s32 arg0) {
                     D_801CF060[arg0].unk28 *= 0.5f;
                     D_801CF060[arg0].unk2C *= 0.5f;
                 }
-            } while (var_s0_4 != 4);
+            }
         }
     }
 }
