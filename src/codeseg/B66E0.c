@@ -1,14 +1,14 @@
 #include "common.h"
 
-extern f32 gPrinterScale;   /* glyph scale, set by func_801E93B4 */
-extern s16 gPrinterScaled;  /* 1 while the scaled printer is in use; func_801E93B4 leaves it set */
+extern f32 gPrinterScale;  /* glyph scale, set by func_801E93B4 */
+extern s16 gPrinterScaled; /* 1 while the scaled printer is in use; func_801E93B4 leaves it set */
 
 typedef struct {
-    /* 0x00 */ s16 unk0;  /* nonzero: func_801EAFB4 steps unk2 */
-    /* 0x02 */ s16 unk2;  /* 0..3, advanced every unk8 frames */
-    /* 0x04 */ s32 unk4;  /* frame counter */
-    /* 0x08 */ s32 unk8;  /* frames per step */
-    /* 0x0C */ s16 r; /* prim colour, set by func_801E946C */
+    /* 0x00 */ s16 unk0; /* nonzero: func_801EAFB4 steps unk2 */
+    /* 0x02 */ s16 unk2; /* 0..3, advanced every unk8 frames */
+    /* 0x04 */ s32 unk4; /* frame counter */
+    /* 0x08 */ s32 unk8; /* frames per step */
+    /* 0x0C */ s16 r;    /* prim colour for modes 3-9: set by the colour cycles, read by func_801E946C */
     /* 0x0E */ s16 g;
     /* 0x10 */ s16 b;
     /* 0x12 */ s16 unk12;
@@ -22,7 +22,7 @@ extern u8 D_80226E00[]; /* glyph widths, font 4 */
 extern u8 D_80226E0C[]; /* glyph widths, font 5 */
 extern u8 D_80226E18[]; /* glyph widths, font 6 */
 
-extern s32 D_80228A40; /* next free vertex in D_801CE5F8->unk40 */
+extern s32 D_80228A40;    /* next free vertex in D_801CE5F8->unk40 */
 extern s32 D_80228A44;    /* printer mode, set by func_801E946C */
 extern s32 D_80228A48[4]; /* corner colours, set by func_801E946C: red */
 extern s32 D_80228A58[4]; /* green */
@@ -31,10 +31,10 @@ extern u8 D_7000000[];
 extern u8 D_2000A40[];
 extern Gfx D_106F030[];
 extern Gfx D_106F0A8[];
-extern s32 D_80226E2C; /* font of the last glyph drawn */
-extern u8 D_1033CB8[]; /* glyph textures, font 0 (IA8, 24x20) */
-extern u8 D_10387C0[]; /* font 1 (IA8, 8x8) */
-extern u8 D_1039248[]; /* font 2 (IA8, 16x12) */
+extern s32 D_80226E2C;  /* font of the last glyph drawn */
+extern u8 D_1033CB8[];  /* glyph textures, font 0 (IA8, 24x20) */
+extern u8 D_10387C0[];  /* font 1 (IA8, 8x8) */
+extern u8 D_1039248[];  /* font 2 (IA8, 16x12) */
 extern u32 D_103B4D0[]; /* fonts 3 and 4 (RGBA32, 12x16) */
 extern u32 D_103D8D8[]; /* font 5 (RGBA32, 16x20) */
 
@@ -145,9 +145,10 @@ Gfx* func_801E80B0(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0,
     return gdl;
 }
 
-/* Draws a w x h quad at (x, y), scaled, with corner colours r0..b3 (Gouraud), from the D_801CE5F8->unk40 vertex pool. */
-Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2,
-                   u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
+/* Draws a w x h quad at (x, y), scaled, with corner colours r0..b3 (Gouraud), from the D_801CE5F8->unk40
+ * vertex pool. */
+Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2,
+                   u8 r3, u8 g3, u8 b3, f32 scale) {
     Vtx* vtx;
     s32 i;
 
@@ -198,12 +199,12 @@ Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8
     return gdl;
 }
 
-/* Sets the printer's mode and corner colours, then has func_801E8B24 print arg2 (the time-trial best times) at (x, y). */
-Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 arg2, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+/* Sets the printer's mode and corner colours, then prints time (ms, as M'SS"mmm) at (x, y); the time-trial best
+ * times use it. */
+Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 time, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
                    u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
-    gdl = func_801E946C(gdl, mode, (s32) r0, (s32) g0, (s32) b0, (s32) r1, (s32) g1, (s32) b1,
-                        (s32) r2, (s32) g2, (s32) b2, (s32) r3, (s32) g3, (s32) b3);
-    return func_801E8B24(gdl, font, arg2, x, y);
+    gdl = func_801E946C(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    return func_801E8B24(gdl, font, time, x, y);
 }
 
 /* Prints time (in ms) as M'SS"mmm in font from (x, y); the separators are the fonts' ' and @ glyphs. */
@@ -310,8 +311,7 @@ Gfx* func_801E8B24(Gfx* gdl, s32 font, s32 time, s32 x, s32 y) {
 Gfx* func_801E92FC(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
                    u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
     gPrinterScale = 1.0f;
-    gdl = func_801E946C(gdl, mode, (s32) r0, (s32) g0, (s32) b0, (s32) r1, (s32) g1, (s32) b1,
-                        (s32) r2, (s32) g2, (s32) b2, (s32) r3, (s32) g3, (s32) b3);
+    gdl = func_801E946C(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     gPrinterScaled = 0;
     return func_801E9858(gdl, font, str, x, y);
 }
@@ -320,15 +320,15 @@ Gfx* func_801E92FC(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
 Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
                    u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
     gPrinterScale = scale;
-    gdl = func_801E946C(gdl, mode, (s32) r0, (s32) g0, (s32) b0, (s32) r1, (s32) g1, (s32) b1,
-                        (s32) r2, (s32) g2, (s32) b2, (s32) r3, (s32) g3, (s32) b3);
+    gdl = func_801E946C(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     gPrinterScaled = 1;
     return func_801E9858(gdl, font, str, x, y);
 }
 
-/* Sets the printer mode and the four corner colours, and emits the mode's render setup (display list, combiner, prim colour). */
-Gfx* func_801E946C(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2, u8 r3,
-                   u8 g3, u8 b3) {
+/* Sets the printer mode and the four corner colours, and emits the mode's render setup (display list, combiner,
+ * prim colour). */
+Gfx* func_801E946C(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2, u8 r3, u8 g3,
+                   u8 b3) {
     D_80226E2C = 100;
     D_80228A44 = mode;
     gPrinterScaled = 0;
@@ -451,10 +451,10 @@ Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
                 penX += space;
             }
         } else {
-            gdl = func_801E80B0(gdl, font, glyph, penX, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0],
-                                D_80228A48[1], D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2],
-                                D_80228A68[2], D_80228A48[3], D_80228A58[3], D_80228A68[3],
-                                gPrinterScaled ? gPrinterScale : 1.0f);
+            gdl =
+                func_801E80B0(gdl, font, glyph, penX, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0],
+                              D_80228A48[1], D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2],
+                              D_80228A48[3], D_80228A58[3], D_80228A68[3], gPrinterScaled ? gPrinterScale : 1.0f);
             if (gPrinterScaled) {
                 penX += (s32) (width * gPrinterScale);
             } else {
@@ -697,7 +697,8 @@ void func_801EAA6C(void) {
     }
 }
 
-/* Sets D_80228A78's colour from its phase and timer: red and blue ramp 128 -> 255 in phases 0 and 2, back in 1 and 3. */
+/* Colour cycle for D_80228A78 by phase: red and blue ramp 128 -> 255 in phases 0 and 2, back in 1 and 3 (green
+ * stays 255). */
 void func_801EADB0(void) {
     s32 c;
     s32 c2;
