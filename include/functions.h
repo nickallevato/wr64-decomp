@@ -129,6 +129,7 @@ void func_80098190(void);
 void SysMain_Thread(void* entry);
 void func_80047FFC(s32 arg0, s32 arg1, s32 arg2, s32* arg3, s32* arg4, s32* arg5);
 s32 Math_TwoLineSegmentsIntersect(f32 ax, f32 ay, f32 bx, f32 by, f32 cx, f32 cy);
+s32 Math_Rand(s32 arg0);
 void func_800AF43C(f32, f32, f32);
 void func_800B4788(s32, f32, f32, f32, f32, f32, f32);
 void func_80095CE8(u8*, s32);

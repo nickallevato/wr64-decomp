@@ -310,7 +310,9 @@ typedef struct RiderStruct {
     /* 0x19C */ s32 unk19C;
     /* 0x1A0 */ char pad1A0[0x124];
     /* 0x2C4 */ s32 unk2C4;
-    /* 0x2C8 */ char pad2C8[0x24];
+    /* 0x2C8 */ s32 unk2C8;
+    /* 0x2CC */ s32 unk2CC;
+    /* 0x2D0 */ char pad2D0[0x1C];
     /* 0x2EC */ s32 unk2EC;
     /* 0x2F0 */ char pad2F0[4];
     /* 0x2F4 */ s32 unk2F4;
@@ -861,7 +863,12 @@ typedef struct UnkStruct_80192690 {
     /* 0x0B80 */ f32 unkB80;
     /* 0x0B84 */ char padB84[0xC];                  /* maybe part of unkB80[4]? */
     /* 0x0B90 */ f32 unkB90;
-    /* 0x0B94 */ char padB94[0x5C];                 /* maybe part of unkB90[0x18]? */
+    /* 0x0B94 */ char padB94[4];
+    /* 0x0B98 */ f32 unkB98;
+    /* 0x0B9C */ char padB9C[0x20];
+    /* 0x0BBC */ f32 unkBBC;
+    /* 0x0BC0 */ f32 unkBC0;
+    /* 0x0BC4 */ char padBC4[0x2C];
     /* 0x0BF0 */ f32 unkBF0;
     /* 0x0BF4 */ f32 unkBF4;
     /* 0x0BF8 */ char padBF8[4];

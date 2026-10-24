@@ -125,7 +125,59 @@ void func_801EF3C4(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F2060.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F23A0.s")
+void func_801F23A0(void) {
+    s32 i;
+    UnkStruct_80192690* p;
+    RiderStruct* rider;
+    f32 lo;
+    f32 range;
+    f32 f;
+    s32 diff;
+    s32 dist;
+    s32 step;
+
+    for (i = 0; i < gRiders; i++) {
+        p = &D_80192690[i];
+        rider = &D_801C2938[i];
+        f = p->unkBBC - p->unkBC0;
+        lo = p->unkBC0 - f / 5.0f;
+        range = (f * 6.0f) / 5.0f;
+        f = p->unkB98;
+        if (lo <= p->unkB98) {
+            if (range > 0.0f) {
+                f = (p->unkB98 - lo) / range;
+            }
+            if (f < 0.0f) {
+                f = 0.0f;
+            }
+            if (f > 1.0f) {
+                f = 1.0f;
+            }
+            rider->unk2CC = f * 180.0f;
+            rider->unk2CC += Math_Rand(3) * 2 - 2;
+            if (rider->unk2CC > 180) {
+                rider->unk2CC = 180;
+            }
+        } else {
+            rider->unk2CC = (p->unkB98 / lo) * 36.0f;
+        }
+        step = rider->unk2CC; // FAKE: step holds the target first, for the register allocation
+        diff = step - rider->unk2C8;
+        dist = (diff >= 0) ? diff : -diff;
+        step = dist / 4;
+        if (step < 2) {
+            step = 2;
+        }
+        if (rider->unk2C8 < rider->unk2CC && step > 4) {
+            step = 4;
+        }
+        if (dist <= step) {
+            rider->unk2C8 = rider->unk2CC;
+        } else {
+            rider->unk2C8 += ((diff == 0) ? 0 : (diff > 0) ? 1 : -1) * step;
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F25E0.s")
 
