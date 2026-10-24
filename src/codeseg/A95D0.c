@@ -834,7 +834,84 @@ skip:
     func_801E11B4(gGfxPool, cam);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DE3CC.s")
+void func_801DE3CC(void) {
+    s32 i;
+    s32 mode;
+    u16* buttons;
+    f32 rate;
+    f32 viewY;
+    UnkA95D0_Payload5* p;
+
+    for (i = 0; i < gPlayers; i++) {
+        mode = gCameraPerspective[i].unkEC;
+        p = &D_80227E98[i].u.p5;
+        buttons = &gControllerOne[D_80154330[i]].unk_2;
+        rate = 0.2f;
+        if (*buttons & 3) {
+            gCameraPerspective[i].unkF8 ^= 1;
+            if (gCameraPerspective[i].unkF8) {
+                AudioGeneral_PlaySound(0x11, i);
+            } else {
+                AudioGeneral_PlaySound(0x16, i);
+            }
+        }
+        p->unk80 = gCameraPerspective[i].unkF8;
+        if (*buttons & 8) {
+            mode++;
+        }
+        if (*buttons & 4) {
+            mode--;
+        }
+        if (mode < 0) {
+            mode = 3;
+            rate = 0.3f;
+        } else if (mode >= 4) {
+            mode = 0;
+            rate = 0.3f;
+        }
+        if (gCameraPerspective[i].unkEC < mode) {
+            AudioGeneral_PlaySound(0x1D, i);
+        } else if (mode < gCameraPerspective[i].unkEC) {
+            AudioGeneral_PlaySound(0x1E, i);
+        }
+        p->unk48[2].rate = rate;
+        p->unk48[0].rate = rate;
+        D_80227E98[i].base.unk3C = rate;
+        D_80227E98[i].base.unk38 = D_80223940[mode];
+        p->unk48[0].target = D_80223950[mode];
+        p->unk48[2].target = D_80223960[mode];
+        if (mode == gCameraPerspective[i].unkEC) {
+            rate = 0.07f;
+        }
+        switch (D_80192690[i].unkC54) {
+            case 23:
+            case 24:
+                rate = 0.15f;
+            case 25:
+                if (mode >= 2) {
+                    viewY = 10.0f;
+                } else {
+                    viewY = 0.0f;
+                }
+                break;
+            case 7:
+                if (D_80192690[i].unkC58 < 0x38) {
+                    viewY = 0.0f;
+                } else {
+                    viewY = D_80223970[mode];
+                }
+                break;
+            default:
+                viewY = D_80223970[mode];
+                // FAKE: an empty statement here keeps IDO from merging this case with case 7's else.
+                do {
+                } while (0);
+                break;
+        }
+        gCameraPerspective[i].unkEC = mode;
+        gCameraPerspective[i].camViewY += (viewY - gCameraPerspective[i].camViewY) * rate;
+    }
+}
 
 f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count) {
     f32 u;
