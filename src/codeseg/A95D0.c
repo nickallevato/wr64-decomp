@@ -1714,9 +1714,40 @@ void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
     cam->unk98 = obj->base.unk40[1];
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0FF0.s")
+void func_801E0FF0(camera_unk_1* cam) {
+    f32 a;
+    f32 b;
+    f32 c;
+    f32 mag;
+    f32 t;
 
-
+    a = cam->unk7C - cam->unk4C;
+    b = cam->unk80 - cam->unk50;
+    c = cam->unk84 - cam->unk54;
+    cam->unk64 = a;
+    cam->unk68 = b;
+    cam->unk6C = c;
+    mag = sqrtf(SQ(a) + SQ(b) + SQ(c));
+    cam->unk64 /= mag;
+    cam->unk68 /= mag;
+    cam->unk6C /= mag;
+    mag = sqrtf(SQ(cam->unk64) + SQ(cam->unk6C));
+    cam->unkF0 = cam->unk64 / mag;
+    cam->unkF4 = cam->unk6C / mag;
+    t = SQ(cam->unk64) + SQ(cam->unk68) + SQ(cam->unk6C);
+    t = -(cam->unk64 * cam->unk70 + cam->unk68 * cam->unk74 + cam->unk6C * cam->unk78) / t;
+    cam->unk70 += cam->unk64 * t;
+    cam->unk74 += cam->unk68 * t;
+    cam->unk78 += cam->unk6C * t;
+    mag = sqrtf(SQ(cam->unk70) + SQ(cam->unk74) + SQ(cam->unk78));
+    cam->unk70 /= mag;
+    cam->unk74 /= mag;
+    cam->unk78 /= mag;
+    b = cam->unk4C - cam->unk7C;
+    c = cam->unk54 - cam->unk84;
+    cam->unk8C = sqrtf(SQ(b) + SQ(c));
+    cam->unk90 = cam->unk50 - cam->unk80;
+}
 
 void func_801E11B4(GfxPool* pool, camera_unk_1* cam) {
     func_800481E0(&pool->unkE008[cam->unkE8], &cam->unkE4, cam->unk88, 4.0f / 3.0f, cam->unk9C, cam->unkA0,
