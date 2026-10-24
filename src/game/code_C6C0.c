@@ -695,61 +695,64 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 }
 
 // Fun float functions
-#ifdef NON_EQUIVALENT
-void func_800534AC(f32* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8,
-                   f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
-    f32 temp_fv0;
-    f32 temp_ft3;
-    f32 temp_fa0;
-    f32 temp_fa1;
-    f32 temp_ft4;
-    f32 temp_ft5;
-    f32 temp_fs0;
-    f32 temp_fs1;
-    f32 temp_fs2;
-    f32 temp_fv1;
-    f32 temp_ft1;
+#ifdef NON_MATCHING
+// Float register allocation differs: the original keeps arg9/arg13 (later px/py/pz) in fs0-fs2 and has a
+// 0x70 frame; this version spills more (frame 0x88). Control flow and arithmetic order match.
+void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
+                   f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 mx;
+    f32 my;
+    f32 mz;
+    f32 ex;
+    f32 ey;
+    f32 ez;
+    f32 px;
+    f32 py;
+    f32 pz;
+    f32 len;
+    f32 t;
 
-    temp_fv1 = arg6 - arg3;
-    temp_fa0 = arg7 - arg4;
-    temp_fa1 = arg8 - arg5;
-    temp_ft4 = SQ(temp_fv1) + SQ(temp_fa0) + SQ(temp_fa1);
-    if (!(temp_ft4 < 9.99)) {
-        temp_fv0 = ((0.5 / temp_ft4) * ((arg9 - arg10) + temp_ft4));
-        temp_ft4 = (temp_fv0 * temp_fv1) + arg3;
-        temp_fv1 = (temp_ft4 - arg3);
-        temp_ft5 = (temp_fv0 * temp_fa0) + arg4;
-        temp_fa0 = temp_ft5 - arg4;
-        temp_ft1 = (temp_fv0 * temp_fa1) + arg5;
-        temp_fa1 = temp_ft1 - arg5;
-
-        temp_ft4 = ((arg9 - SQ(temp_fv1)) - SQ(temp_fa0)) - SQ(temp_fa1);
-        if (!(temp_ft4 <= 0.0f)) {
-            return;
-        }
-
-        temp_ft4 = (arg12 * temp_fa1) - (arg13 * temp_fa0);
-        temp_ft5 = (arg13 * temp_fv1) - (arg11 * temp_fa1);
-        temp_ft3 = (arg11 * temp_fa0) - (arg12 * temp_fv1);
-
-        temp_fs0 = (temp_fa1 * temp_ft4) - (temp_fv1 * temp_ft3);
-        temp_fs1 = (temp_fv1 * temp_ft5) - (temp_fa0 * temp_ft4);
-        temp_fs2 = (temp_fa0 * temp_ft3) - (temp_fa1 * temp_ft5);
-
-        temp_fv1 = SQ(temp_fs2) + SQ(temp_fs0) + SQ(temp_fs1);
-        if (temp_fv1 != 0.0f) {
-            temp_fv0 = sqrtf(temp_ft4 / temp_fv1);
-            *arg0 = (temp_fv0 * temp_fs2) + temp_ft4;
-            *arg1 = (temp_fv0 * temp_fs0) + temp_ft5;
-            *arg2 = (temp_fv0 * temp_fs1) + temp_ft1;
-            return;
+    dx = arg6 - arg3;
+    dy = arg7 - arg4;
+    dz = arg8 - arg5;
+    len = SQ(dx) + SQ(dy) + SQ(dz);
+    if (!(len < 1e-06)) {
+        t = (0.5 / len) * ((arg9 - arg10) + len);
+        mx = (t * dx) + arg3;
+        ex = mx - arg3;
+        my = (t * dy) + arg4;
+        ey = my - arg4;
+        mz = (t * dz) + arg5;
+        ez = mz - arg5;
+        t = ((arg9 - SQ(ex)) - SQ(ey)) - SQ(ez);
+        if (!(t <= 0.0f)) {
+            cx = (arg12 * dz) - (arg13 * dy);
+            cy = (arg13 * dx) - (arg11 * dz);
+            cz = (arg11 * dy) - (arg12 * dx);
+            px = (dy * cz) - (dz * cy);
+            py = (dz * cx) - (dx * cz);
+            pz = (dx * cy) - (dy * cx);
+            len = SQ(px) + SQ(py) + SQ(pz);
+            if (len != 0.0f) {
+                t = sqrtf(t / len);
+                arg0->unk0.x = (t * px) + mx;
+                *arg1 = (t * py) + my;
+                *arg2 = (t * pz) + mz;
+                return;
+            }
         }
     }
     arg9 = sqrtf(arg9);
-    temp_ft4 = arg9 / (arg9 + sqrtf(arg10));
-    *arg0 = (temp_ft4 * temp_fv1) + arg3;
-    *arg1 = (temp_ft4 * temp_fa0) + arg4;
-    *arg2 = (temp_ft4 * temp_fa1) + arg5;
+    t = arg9 / (arg9 + sqrtf(arg10));
+    arg0->unk0.x = (t * dx) + arg3;
+    *arg1 = (t * dy) + arg4;
+    *arg2 = (t * dz) + arg5;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800534AC.s")
