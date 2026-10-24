@@ -512,7 +512,7 @@ typedef struct StructVarS0 {
     f32 unk3C;
     f32 unk40;
     f32 unk44;
-    s32 unk48;
+    f32 unk48;
     f32 unk4C;
     s32 unk50;
     s32 unk54;
