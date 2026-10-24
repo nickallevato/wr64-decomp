@@ -73,6 +73,8 @@ extern s32 D_800DABA0[];
 extern s32 D_800DABC0[];
 extern UnkStruct_800DACD0 D_800DACD0[];
 extern s32 D_801CE73C;
+extern DmaEntry D_800DABD0[];
+extern DmaEntry D_800DB330[];
 extern UnkStruct_801CE740 D_801CE740[];
 
 extern DmaEntry* D_800DC0E4[];
@@ -976,7 +978,334 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
+#ifdef NON_MATCHING
+// Score 13817 of 134600, 2 instructions short: register allocation from the start of the function; the original
+// stores to D_801CE740[i].unk2 in cases 0 and 2 through lui/%lo of each element (here through one base register),
+// and keeps count/models/rider in other stack slots.
+// D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
+#define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
+
+void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 i;
+    s32 rider;
+    s32 count;
+    s32 models;
+    s32 offset;
+    DmaEntry* src;
+    DmaEntry* dst;
+    s16 alts[8];
+    s32 mode;
+    s32* dl;
+
+    for (i = 0; i < 8; i++) {
+        D_801CE740[i].unk2 = 1;
+    }
+    D_801CE760[1] = -1;
+    D_801CE760[0] = -1;
+    D_801CE73C = arg0;
+    switch (arg0) {
+        case 0:
+            models = 7;
+            D_801CE740[0].unk2 = 0;
+            count = 4;
+            break;
+        case 1:
+            D_801CE740[1].unk2 = 0;
+            models = 2;
+            count = 2;
+            D_801CE740[0].unk2 = D_801CE740[1].unk2;
+            break;
+        case 2:
+            D_801CE740[0].unk2 = 0;
+            D_801CE740[1].unk2 = 0;
+            D_801CE740[2].unk2 = 0;
+            D_801CE740[3].unk2 = 0;
+            models = 4;
+            count = 4;
+            break;
+        case 3:
+            for (i = 0; i < 8; i++) {
+                D_801CE740[i].unk2 = 0;
+            }
+            models = 8;
+            count = 8;
+            break;
+        case 4:
+            D_801CE740[1].unk2 = 0;
+            models = 6;
+            count = 4;
+            D_801CE740[0].unk2 = D_801CE740[1].unk2;
+            break;
+    }
+    for (i = 0; i < count; i++) {
+        dst = &D_800DB330[i];
+        switch (i % 4) {
+            case 0:
+                rider = arg1;
+                break;
+            case 1:
+                rider = arg2;
+                break;
+            case 2:
+                rider = arg3;
+                break;
+            case 3:
+                rider = arg4;
+                break;
+        }
+        if (rider < 0) {
+            rider = 0;
+        }
+        src = &D_800DABD0[rider];
+        if (i >= 4) {
+            rider += 4;
+            src += 4;
+        }
+        D_801CE740[i].rider = rider;
+        if (D_801CE740[i].unk2 != 0) {
+            rider += 8;
+            src += 8;
+        }
+        *dst = *src;
+        dst->flag = 4;
+        if ((D_801CE73C == 3) || (D_801CE73C == 2)) {
+            dst->offset = D_800DABA0[i];
+        } else if (D_801CE73C == 4) {
+            dst->offset = D_800DABC0[i];
+        } else {
+            dst->offset = D_800DAB90[i];
+        }
+    }
+    dst[1].segRomStart = 0;
+    dst[1].segRomEnd = 0;
+    dst[1].flag = 0;
+    dst[1].offset = 0;
+    for (i = 0; i < 8; i++) {
+        alts[i] = 0;
+    }
+    mode = arg0;
+    switch (arg0) {
+        case 0:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3 + 1);
+            D_80227A60[2] = MODEL(D_801CE740[1].rider * 3 + 2);
+            D_80227A60[3] = MODEL(D_801CE740[2].rider * 3 + 1);
+            D_80227A60[4] = MODEL(D_801CE740[2].rider * 3 + 2);
+            D_80227A60[5] = MODEL(D_801CE740[3].rider * 3 + 1);
+            D_80227A60[6] = MODEL(D_801CE740[3].rider * 3 + 2);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+                alts[2] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+                alts[2] = 2;
+            }
+            if (D_801CE740[2].rider == 2) {
+                alts[3] = 1;
+                alts[4] = 1;
+            } else if (D_801CE740[2].rider == 6) {
+                alts[3] = 2;
+                alts[4] = 2;
+            }
+            if (D_801CE740[3].rider == 2) {
+                alts[6] = 1;
+                alts[5] = 1;
+            } else if (D_801CE740[3].rider == 6) {
+                alts[6] = 2;
+                alts[5] = 2;
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    if (i == 0) {
+                        D_801CE760[0] = i;
+                    } else {
+                        D_801CE760[0] = (i * 2) - 1;
+                    }
+                } else if (D_801CE740[i].rider == 6) {
+                    if (i == 0) {
+                        D_801CE760[1] = i;
+                    } else {
+                        D_801CE760[1] = (i * 2) - 1;
+                    }
+                }
+            }
+            break;
+        case 1:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+        case 2:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3);
+            D_80227A60[2] = MODEL(D_801CE740[2].rider * 3);
+            D_80227A60[3] = MODEL(D_801CE740[3].rider * 3);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+            }
+            if (D_801CE740[2].rider == 2) {
+                alts[2] = 1;
+            } else if (D_801CE740[2].rider == 6) {
+                alts[2] = 2;
+            }
+            if (D_801CE740[3].rider == 2) {
+                alts[3] = 1;
+            } else if (D_801CE740[3].rider == 6) {
+                alts[3] = 2;
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+        case 4:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3);
+            D_80227A60[2] = MODEL(D_801CE740[2].rider * 3 + 1);
+            D_80227A60[3] = MODEL(D_801CE740[3].rider * 3 + 1);
+            D_80227A60[4] = MODEL(D_801CE740[2].rider * 3 + 2);
+            D_80227A60[5] = MODEL(D_801CE740[3].rider * 3 + 2);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+            }
+            if (D_801CE740[2].rider == 2) {
+                alts[2] = 1;
+                alts[4] = 1;
+            } else if (D_801CE740[2].rider == 6) {
+                alts[2] = 2;
+                alts[4] = 2;
+            }
+            if (D_801CE740[3].rider == 2) {
+                alts[3] = 1;
+                alts[5] = 1;
+            } else if (D_801CE740[3].rider == 6) {
+                alts[3] = 2;
+                alts[5] = 2;
+            }
+            for (i = 0; i < 2; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+        case 3:
+            for (i = 0; i < models; i++) {
+                D_80227A60[i] = MODEL(D_801CE740[i].rider * 3);
+                if (D_801CE740[i].rider == 2) {
+                    alts[i] = 1;
+                } else if (D_801CE740[i].rider == 6) {
+                    alts[i] = 2;
+                }
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+    }
+    for (i = 0; i < models; i++) {
+        switch (mode) {
+            case 0:
+                if (i == 0) {
+                    offset = D_800DAB90[0];
+                } else {
+                    offset = D_800DAB90[(i - 1) / 2 + 1];
+                }
+                break;
+            case 1:
+                offset = D_800DAB90[i];
+                break;
+            case 4:
+                if (i < 4) {
+                    offset = D_800DABC0[i];
+                } else if (i == 4) {
+                    offset = D_800DABC0[2];
+                } else {
+                    offset = D_800DABC0[3];
+                }
+                break;
+            case 2:
+            case 3:
+                offset = D_800DABA0[i];
+                break;
+        }
+        dl = (s32*) &D_80227A60[i]; // the 17 display lists as offsets
+        dl[0] += offset;
+        dl[1] += offset;
+        dl[2] += offset;
+        dl[3] += offset;
+        dl[4] += offset;
+        dl[5] += offset;
+        dl[6] += offset;
+        dl[7] += offset;
+        dl[8] += offset;
+        dl[9] += offset;
+        dl[10] += offset;
+        dl[11] += offset;
+        if (alts[i] != 0) {
+            dl[12] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[13] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[14] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[15] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[16] += offset;
+        }
+    }
+}
+#undef MODEL
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096960.s")
+#endif
 
 void func_80097E68(void) {
     DmaTransfer* transfer = D_800DAB38;
