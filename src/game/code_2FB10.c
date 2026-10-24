@@ -176,4 +176,332 @@ void func_80078264(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_800783AC.s")
 
+// A course record (0x14 bytes): the time, the rider (D_800DA9B0[0]), the flag drawn as "C"
+// or "N" (D_801CB32C), the difficulty, and the initials.
+typedef struct UnkStruct_801C1FF0 {
+    /* 0x00 */ s32 time;
+    /* 0x04 */ s32 rider;
+    /* 0x08 */ s32 flag;
+    /* 0x0C */ s32 difficulty;
+    /* 0x10 */ s8 name[4];
+} UnkStruct_801C1FF0; /* size = 0x14 */
+
+// A stunt record (0x10 bytes), as B17D0's CourseRecord.
+typedef struct UnkStruct_801C26E8 {
+    /* 0x00 */ s32 score;
+    /* 0x04 */ s32 rider;
+    /* 0x08 */ s32 flag;
+    /* 0x0C */ s8 name[4];
+} UnkStruct_801C26E8; /* size = 0x10 */
+
+typedef struct UnkStruct_80228AE0 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ char pad4[0x18];
+} UnkStruct_80228AE0; /* size = 0x1C */
+
+extern UnkStruct_801C1FF0 D_801C1FF0[][3];
+extern UnkStruct_801C1FF0 D_801C22C0[];
+extern UnkStruct_801C1FF0 D_801C23B0[];
+extern s32 D_801C24A0[][9];
+extern UnkStruct_801C26E8 D_801C26E8[][3];
+extern s32 D_801C1FD8;
+extern s32 D_801C1FDC;
+extern s32 D_801C2650;
+extern s32 D_801C2654;
+extern s32 D_801C2660[];
+extern s32 D_801C2690[];
+extern s32 D_801C3990[];
+extern s32 D_801C39CC;
+extern u64 D_801C3A08;
+extern s16 D_801CE628;
+extern UnkStruct_80228AE0 D_80228AE0[4];
+extern s32 D_80228A9C;
+
+void func_80076378(s32);
+void func_8007687C(s32);
+void func_800783AC(s32);
+void func_800C3EF4(s32);
+void func_801EF504(void);
+void func_801F0E7C(void);
+void func_801F23A0(void);
+void func_801F8DD0(void);
+void func_801F9EA0(void);
+void func_801FC39C(void);
+void Hud_UpdateStartCountdown(void);
+void Hud_UpdateOffCourseCountdown(void);
+
+// The checkpoint time of a rider for a lap and checkpoint. The original indexes unk1A4 with
+// the lap minus 2 (row 0 is the time at the start of lap 2).
+#define RIDER_CP_TIME(rider, lap, cp) ((rider)->unk1A4[(lap) - 2][cp])
+
+#ifdef NON_MATCHING
+// 11395: same blocks and calls. Register allocation differs throughout; the original spills the
+// gGameModes value to the stack across the calls, keeps the D_800D48DC address in a register
+// in the gap loops; this C is 4 instructions longer.
+void func_80079528(void) {
+    s32 i;
+    s32 j;
+    s32 allClear;
+    s32 place;
+    s32 time;
+    s32 other;
+    s32 tmp;
+    RiderStruct* rider;
+    RiderStruct* rider2;
+
+    D_801C3A08 = osGetTime();
+    if (gCurrentPauseMenuOption != -1) {
+        return;
+    }
+    if (gGameModes == GMODE_STUNT) {
+        for (i = 0; i < gRiders; i++) {
+            func_80076378(i);
+            func_800783AC(i);
+        }
+        allClear = true;
+        for (i = 0; i < 4; i++) {
+            if (D_80228AE0[i].unk0 != 0) {
+                allClear = false;
+                break;
+            }
+        }
+        // A new stunt record.
+        if ((D_801C1FD8 == 0) && (D_801C2938[D_800D48DC].unk2F4 != 0) && (D_801CE638 == 1) && (D_801CE600 == 0) &&
+            (D_801C39CC == 0) && allClear) {
+            D_801C1FD8 = 1;
+            D_801C2928 = 0;
+            for (i = 0; i < 3; i++) {
+                if (D_801C26E8[gCourseID][i].score < D_801C26D0) {
+                    D_801C2928 = i + 1;
+                    for (j = 2; j > i; j--) {
+                        D_801C26E8[gCourseID][j] = D_801C26E8[gCourseID][j - 1];
+                    }
+                    D_801C26E8[gCourseID][i].score = D_801C26D0;
+                    D_801C26E8[gCourseID][i].rider = D_800DA9B0[0];
+                    D_801C26E8[gCourseID][i].flag = D_801CB32C;
+                    break;
+                }
+            }
+        }
+    } else {
+        for (i = 0; i < gRiders; i++) {
+            func_80076378(i);
+            func_8007687C(i);
+        }
+        // Riders who finished at once: the earlier unk19C gets the better unk32C, and a tie
+        // goes to the rider ahead ("simultaneously goal").
+        if ((D_801CE638 == 1) && (gGameModes == GMODE_CHAMPIONSHIP)) {
+            for (i = 0; i < gRiders; i++) {
+                rider = &D_801C2938[i];
+                if ((rider->unk2F4 != 0) && (rider->unk2EC == 0) && (rider->unk304 == 0)) {
+                    rider->unk304 = 1;
+                    for (j = 0; j < gRiders; j++) {
+                        rider2 = &D_801C2938[j];
+                        if ((rider2->unk2F4 != 0) && (rider2->unk2EC == 0) && (j != i)) {
+                            if ((rider->unk32C < rider2->unk32C) && (rider->unk19C < rider2->unk19C)) {
+                                tmp = rider->unk32C;
+                                rider->unk32C = rider2->unk32C;
+                                rider2->unk32C = tmp;
+                            } else if ((rider->unk19C == rider2->unk19C) &&
+                                       (rider->racePosition < rider2->racePosition) && (j != D_800D48DC)) {
+                                rider2->unk19C++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // The human's finish with one player: best lap (D_801C22C0), the top three
+        // (D_801C1FF0, with the checkpoint times of a new best in D_801C24A0), or
+        // D_801C23B0 when D_800DAB68 is set.
+        if (D_801C1FD8 == 0) {
+            rider = &D_801C2938[D_800D48DC];
+            if ((rider->unk2F4 != 0) && (D_801CE638 == 1) && (gPlayers == ONE_PLAYER) && (D_801CE600 == 0)) {
+                D_801C1FD8 = 1;
+                if (D_800DAB68 == 0) {
+                    if (rider->unk170 < D_801C22C0[gCourseID].time) {
+                        D_801C22C0[gCourseID].time = rider->unk170;
+                        D_801C22C0[gCourseID].rider = D_800DA9B0[0];
+                        D_801C22C0[gCourseID].flag = D_801CB32C;
+                        D_801C22C0[gCourseID].difficulty = gDifficulty;
+                        D_801C2654 = 1;
+                    }
+                    for (i = 0; i < 3; i++) {
+                        if (rider->unk19C < D_801C1FF0[gCourseID][i].time) {
+                            D_801C2650 = i + 1;
+                            for (j = 2; j > i; j--) {
+                                D_801C1FF0[gCourseID][j] = D_801C1FF0[gCourseID][j - 1];
+                            }
+                            D_801C1FF0[gCourseID][i].time = rider->unk19C;
+                            D_801C1FF0[gCourseID][i].rider = D_800DA9B0[0];
+                            D_801C1FF0[gCourseID][i].flag = D_801CB32C;
+                            D_801C1FF0[gCourseID][i].difficulty = gDifficulty;
+                            if (i + 1 == 1) {
+                                for (j = 0; j < 9; j++) {
+                                    D_801C24A0[gCourseID][j] = rider->unk1A4[j][0];
+                                }
+                            }
+                            break;
+                        }
+                    }
+                } else if (rider->unk19C < D_801C23B0[gCourseID].time) {
+                    D_801C23B0[gCourseID].time = rider->unk19C;
+                    D_801C23B0[gCourseID].rider = D_800DA9B0[0];
+                    D_801C23B0[gCourseID].flag = D_801CB32C;
+                    D_801C23B0[gCourseID].difficulty = gDifficulty;
+                    D_801C2650 = 1;
+                }
+                D_801C2660[gCourseID] = D_801C2650;
+                D_801C2690[gCourseID] = D_801C2654;
+            }
+        }
+    }
+    place = D_801C2938[D_800D48DC].racePosition;
+    // While racing, the places follow unk32C ("rank value adjust").
+    if ((D_801CE638 == 1) && (D_801C1FD4 == 0) && (gGameModeState == GMODE_STATE_STARTED) &&
+        ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_2P_VS))) {
+        for (i = 0; i < gRiders; i++) {
+            D_801C3990[i] = i;
+        }
+        for (i = 0; i < gRiders - 1; i++) {
+            for (j = i + 1; j < gRiders; j++) {
+                if (D_801C2938[D_801C3990[i]].unk32C < D_801C2938[D_801C3990[j]].unk32C) {
+                    tmp = D_801C3990[i];
+                    D_801C3990[i] = D_801C3990[j];
+                    D_801C3990[j] = tmp;
+                }
+            }
+        }
+        for (i = 0; i < gRiders; i++) {
+            D_801C2938[D_801C3990[i]].racePosition = i;
+        }
+    }
+    // A checkpoint gap (unk2FC 10 asks for one): to the rider one place ahead for the
+    // human, or to the human for a rider behind; unk2F8 is the gap, unk300 its timer.
+    if (gGameModes == GMODE_CHAMPIONSHIP) {
+        for (i = 0; i < gRiders; i++) {
+            rider = &D_801C2938[i];
+            if (rider->unk2FC == 10) {
+                time = RIDER_CP_TIME(rider, rider->lapCount, rider->unk164);
+                if ((i == D_800D48DC) && (rider->racePosition > 0)) {
+                    for (j = 0; j < gRiders; j++) {
+                        if (rider->racePosition - 1 == D_801C2938[j].racePosition) {
+                            break;
+                        }
+                    }
+                    other = RIDER_CP_TIME(&D_801C2938[j], rider->lapCount, rider->unk164);
+                    if (other > 0) {
+                        rider->unk2FC = 1;
+                        rider->unk2F8 = time - other;
+                        rider->unk300 = 40;
+                        rider->unk33C = j;
+                        if (rider->racePosition == 1) {
+                            func_800C3EF4(-((rider->unk2F8 + 500) / 1000));
+                        }
+                    } else {
+                        rider->unk2FC = 0;
+                    }
+                } else if ((i != D_800D48DC) && (D_801C2938[D_800D48DC].racePosition < rider->racePosition)) {
+                    other = RIDER_CP_TIME(&D_801C2938[D_800D48DC], rider->lapCount, rider->unk164);
+                    if (other > 0) {
+                        rider->unk2FC = 1;
+                        rider->unk2F8 = time - other;
+                        rider->unk300 = 40;
+                        if ((D_801C2938[D_800D48DC].racePosition == 0) && (rider->racePosition == 1)) {
+                            func_800C3EF4((rider->unk2F8 + 500) / 1000);
+                        }
+                    } else {
+                        rider->unk2FC = 0;
+                    }
+                } else {
+                    rider->unk2FC = 0;
+                }
+            }
+        }
+    } else if (gGameModes == GMODE_2P_VS) {
+        for (i = 0; i < gRiders; i++) {
+            rider = &D_801C2938[i];
+            if (rider->unk2FC == 10) {
+                if (rider->racePosition == 1) {
+                    time = RIDER_CP_TIME(rider, rider->lapCount, rider->unk164);
+                    if (i == D_800D48DC) {
+                        other = RIDER_CP_TIME(&D_801C2938[D_800D48E0], rider->lapCount, rider->unk164);
+                        if (other == 0) {
+                            other = time;
+                        }
+                        rider->unk2FC = 1;
+                        rider->unk2F8 = time - other;
+                        rider->unk300 = 40;
+                        rider2 = &D_801C2938[D_800D48E0];
+                        rider2->unk2FC = 2;
+                        rider2->unk2F8 = time - other;
+                        rider2->unk300 = 40;
+                        func_800C3EF4(-((rider->unk2F8 + 500) / 1000));
+                    } else {
+                        other = RIDER_CP_TIME(&D_801C2938[D_800D48DC], rider->lapCount, rider->unk164);
+                        if (other == 0) {
+                            other = time;
+                        }
+                        rider->unk2FC = 1;
+                        rider->unk2F8 = time - other;
+                        rider->unk300 = 40;
+                        rider2 = &D_801C2938[D_800D48DC];
+                        rider2->unk2FC = 2;
+                        rider2->unk2F8 = time - other;
+                        rider2->unk300 = 40;
+                        func_800C3EF4(-((rider->unk2F8 + 500) / 1000));
+                    }
+                } else {
+                    rider->unk2FC = 0;
+                }
+            }
+        }
+    }
+    if ((gGameModes == GMODE_2P_VS) && (D_801CE638 == 1)) {
+        if (D_801C1FD4 == 0) {
+            rider = &D_801C2938[D_800D48DC];
+            if (rider->unk2F4 != 0) {
+                rider2 = &D_801C2938[D_800D48E0];
+                if (rider2->unk2F4 != 0) {
+                    D_801C1FD4 = 1;
+                    if (rider2->unk19C >= rider->unk19C) {
+                        rider->racePosition = 0;
+                        rider2->racePosition = 1;
+                    } else {
+                        rider->racePosition = 1;
+                        rider2->racePosition = 0;
+                    }
+                }
+            }
+        }
+        if ((D_801C1FD8 == 0) &&
+            ((D_801C2938[D_800D48DC].unk2F4 != 0) || (D_801C2938[D_800D48DC].unk2EC != 0) ||
+             (D_801C2938[D_800D48E0].unk2F4 != 0) || (D_801C2938[D_800D48E0].unk2EC != 0))) {
+            D_801C1FD8 = 1;
+        }
+    }
+    if ((gGameModes == GMODE_CHAMPIONSHIP) && (place != D_801C2938[D_800D48DC].racePosition)) {
+        D_80228A9C = 1;
+    }
+    if ((D_801CE638 == 1) && (gGameModes == GMODE_2P_VS)) {
+        func_80078264();
+    }
+    D_801C3A08 = osGetTime() - D_801C3A08;
+    if ((gGameModes == GMODE_CHAMPIONSHIP) && (D_801C2938[D_800D48DC].unk2F4 != 0) && (D_801C1FDC < 0x7FFFFFFF)) {
+        D_801C1FDC++;
+    }
+    func_801FC39C();
+    func_801EF504();
+    func_801F23A0();
+    if ((D_801C2938[D_800D48DC].unk2EC == 0) &&
+        ((gPlayers != TWO_PLAYERS) || (D_801C2938[D_800D48E0].unk2EC == 0)) && (D_801CE628 == 0)) {
+        Hud_UpdateStartCountdown();
+    }
+    func_801F8DD0();
+    func_801F9EA0();
+    func_801F0E7C();
+    Hud_UpdateOffCourseCountdown();
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80079528.s")
+#endif

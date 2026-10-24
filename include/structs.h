@@ -351,12 +351,16 @@ typedef struct RiderStruct {
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
     /* 0x13C */ s32 unk13C;
-    /* 0x140 */ char pad140[0x2C];
+    /* 0x140 */ char pad140[0x24];
+    /* 0x164 */ s32 unk164;
+    /* 0x168 */ char pad168[0x4];
     /* 0x16C */ s32 unk16C;
-    /* 0x170 */ char pad170[8];
+    /* 0x170 */ s32 unk170;
+    /* 0x174 */ char pad174[0x4];
     /* 0x178 */ s32 unk178[9]; /* lap split times */
     /* 0x19C */ s32 unk19C;
-    /* 0x1A0 */ char pad1A0[0x124];
+    /* 0x1A0 */ char pad1A0[0x4];
+    /* 0x1A4 */ s32 unk1A4[9][8]; /* checkpoint times, per lap */
     /* 0x2C4 */ s32 unk2C4;
     /* 0x2C8 */ s32 unk2C8;
     /* 0x2CC */ s32 unk2CC;
@@ -373,7 +377,7 @@ typedef struct RiderStruct {
     /* 0x2F8 */ s32 unk2F8;
     /* 0x2FC */ s32 unk2FC;
     /* 0x300 */ s32 unk300;
-    /* 0x304 */ char pad304[4];
+    /* 0x304 */ s32 unk304;
     /* 0x308 */ s32 unk308;
     /* 0x30C */ char pad30C[4];
     /* 0x310 */ s32 unk310;
@@ -383,7 +387,7 @@ typedef struct RiderStruct {
     /* 0x320 */ s32 unk320;                         /* inferred */
     /* 0x324 */ char pad324[4];
     /* 0x328 */ s32 unk328;
-    /* 0x32C */ char pad32C[4];
+    /* 0x32C */ f32 unk32C;
     /* 0x330 */ f32 unk330;        /* inferred */
     char pad334[0x4];
     s32 unk338;
