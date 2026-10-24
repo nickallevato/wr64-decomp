@@ -85,8 +85,6 @@ extern s32 D_801C2658;
 extern s32 D_801C26C0[];
 extern s32 D_801C2660[];
 extern s32 D_801C2690[];
-extern s32 D_801C26C4;
-extern s32 D_801C26C8;
 extern s32 D_801C26E0;
 extern s32 D_801C26E4;
 extern s32 D_801C292C;
@@ -119,8 +117,9 @@ extern s32 D_801C3A04;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// 17378: same blocks, loops and calls; register allocation and scheduling differ throughout,
-// and this C is 21 instructions shorter.
+// 12903: same blocks, loops and calls. The original stores D_801C1F94 with lui at in the
+// extent loops and materialises 0.0f twice there; elsewhere register allocation and
+// scheduling differ, and this C is 10 instructions shorter.
 void func_80075310(void) {
     s32 i;
     s32 j;
@@ -140,10 +139,10 @@ void func_80075310(void) {
             for (j = 0; j < 3; j++) {
                 D_801C1FF0[i][j] = D_800D81B0;
             }
+            D_801C22C0[i] = D_800D81B0;
             for (j = 0; j < 9; j++) {
                 D_801C24A0[i][j] = -1;
             }
-            D_801C22C0[i] = D_800D81B0;
             D_801C23B0[i] = D_800D81B0;
         }
         for (i = 9; i < 12; i++) {
@@ -151,19 +150,16 @@ void func_80075310(void) {
                 D_801C26E8[i][j] = D_800D81C4;
             }
         }
-        D_801C26C4 = 2;
-        D_801C26C4 = 3;
-        D_801C26C8 = 1;
-        D_801C26C8 = 0;
+        for (i = 0; i < 4; i++) {
+            D_801C26C0[i] = 3 - i;
+        }
     }
 
     // The course's extent from both buoy tables: the bounding box and the largest |x| or |z|
     // (at least 4096), and from them the map scale.
     D_801C1FC4 = 0;
-    D_801C1FA4 = 32767.0f;
-    D_801C1FA8 = -32768.0f;
-    D_801C1F9C = D_801C1FA4;
-    D_801C1FA0 = D_801C1FA8;
+    D_801C1F9C = D_801C1FA4 = 32767.0f;
+    D_801C1FA0 = D_801C1FA8 = -32768.0f;
     D_801C1F94 = 0.0f;
     for (i = 0; i < D_801BB120; i++) {
         x = D_801AEE20[i].unk24;
