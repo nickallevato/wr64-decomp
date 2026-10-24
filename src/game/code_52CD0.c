@@ -1788,14 +1788,14 @@ void func_8009D5C0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 425 of 17500: the result and the D_801CE780 row pointer swap v0 and a0. In C it must also emit the unreferenced zero word D_800EB54C before its jump tables (see func_8009C2CC's commit).
+// Score 315 of 17500: the result and the D_801CE780 row pointer swap v0 and a0. In C it must also emit the unreferenced zero word D_800EB54C before its jump tables (see func_8009C2CC's commit).
 s32 func_8009D6B0(s32 arg0, s32 arg1, s32 arg2) {
     s32 type = arg0;
-    s32 idx;
     s16 index;
     UnkStruct_801CE780_unk4** pp;
     UnkStruct_801CE780_unk4* p;
     s16 k;
+    s32 idx;
 
     switch (type) {
         case 6:
