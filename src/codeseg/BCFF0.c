@@ -36,12 +36,12 @@ typedef struct UnkStruct_80228C30 {
     /* 0x1C */ char pad1C[0x38];
 } UnkStruct_80228C30; /* size = 0x54 */
 
-typedef struct UnkStruct_80228D28 {
+typedef struct PortraitPos {
     /* 0x00 */ s32 x;
     /* 0x04 */ s32 y;
     /* 0x08 */ char pad8[8];
-    /* 0x10 */ s32 unk10;
-} UnkStruct_80228D28; /* size = 0x14 */
+    /* 0x10 */ s32 bobPhase; /* index into gPortraitBob (& 7) */
+} PortraitPos; /* size = 0x14 */
 
 void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 color);
 Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 value, s32 x, s32 y, s32 mode, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
@@ -83,8 +83,8 @@ extern s32 D_801C1FDC;
 extern s32 D_801C1FE4;
 extern s32 D_801C1FE8;
 extern RiderStruct D_801C2938[];
-extern u8* D_80227978[];
-extern f32 D_802279A4[];
+extern u8* gPortraitFaces[];
+extern f32 gPortraitBob[];
 extern char D_802279E0[];
 extern char D_802279EC[];
 extern s32 D_80228A9C;
@@ -98,7 +98,7 @@ extern s32 D_80228B50;
 extern s32 D_80228B54;
 extern UnkStruct_80228C30 D_80228C30[];
 extern s8 D_80228CF8[5];
-extern UnkStruct_80228D28 D_80228D28[2][4];
+extern PortraitPos gPortraitPos[2][4];
 extern s32 D_80228DC8[];
 extern s32 D_80228DF8;
 
@@ -138,7 +138,7 @@ void func_801F4120(Gfx** gdlp) {
     s32 value;
     s32 color;
     RiderStruct* rider;
-    UnkStruct_80228D28* pos;
+    PortraitPos* pos;
     UnkStruct_80228C30* boost;
     s8* digit;
     s32 x2;
@@ -206,7 +206,7 @@ void func_801F4120(Gfx** gdlp) {
             rider = &D_801C2938[i];
             if (D_801C1FDC >= (rider->racePosition * 10) + 0x28) {
                 color = 1;
-                pos = &D_80228D28[0][i];
+                pos = &gPortraitPos[0][i];
                 x = pos->x + 0xB0;
                 y = pos->y + 0x3F;
                 if (i == D_800D48DC) {
@@ -254,7 +254,7 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gRiders; i++) {
             if (i != D_800D48DC) {
                 rider = &D_801C2938[i];
-                pos = &D_80228D28[0][i];
+                pos = &gPortraitPos[0][i];
                 x = pos->x + 0xBA;
                 y = pos->y + 0x3F;
                 if (rider->unk300 != 0) {
@@ -306,7 +306,7 @@ void func_801F4120(Gfx** gdlp) {
                                     1 << 10, 1 << 10);
                 n += 9;
                 y += 2;
-                gDPLoadTextureBlock(gdl++, D_80227978[D_80192690[rider->unk33C].unkB68], G_IM_FMT_RGBA,
+                gDPLoadTextureBlock(gdl++, gPortraitFaces[D_80192690[rider->unk33C].unkB68], G_IM_FMT_RGBA,
                                     G_IM_SIZ_16b, 20, 20, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP,
                                     G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
                 gSPTextureRectangle(gdl++, n << 2, y << 2, (n + 0x10) << 2, (y + 0x10) << 2, G_TX_RENDERTILE, 0, 0,
@@ -721,7 +721,7 @@ void func_801F9520(Gfx** gdlp) {
     s32 numX;
     s32 numY;
     u8* img;
-    UnkStruct_80228D28* pos;
+    PortraitPos* pos;
     f32 bob;
 
     if (gPlayers == ONE_PLAYER) {
@@ -748,10 +748,10 @@ void func_801F9520(Gfx** gdlp) {
             } else {
                 idx = i;
             }
-            pos = &D_80228D28[player][idx];
+            pos = &gPortraitPos[player][idx];
             x = pos->x + xOff;
             y = pos->y + yOff;
-            bob = D_802279A4[pos->unk10 & 7] * 4.0f;
+            bob = gPortraitBob[pos->bobPhase & 7] * 4.0f;
             y = y - bob;
 
             if (((player == 0) && (idx == D_800D48DC)) || ((player == 1) && (idx == D_800D48E0))) {
@@ -792,7 +792,7 @@ void func_801F9520(Gfx** gdlp) {
             } else {
                 face = 0;
             }
-            gDPLoadTextureBlock(gdl++, D_80227978[D_80192690[idx].unkB68 + face], G_IM_FMT_RGBA, G_IM_SIZ_16b, 20, 20,
+            gDPLoadTextureBlock(gdl++, gPortraitFaces[D_80192690[idx].unkB68 + face], G_IM_FMT_RGBA, G_IM_SIZ_16b, 20, 20,
                                 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
             if (highlight) {

@@ -166,3 +166,8 @@ D_80151BE0 = 0x80151BE0; //defined:true
 gCurrentPauseMenuOptionCount = 0x801CE626; //defined:true
 D_801FC840 = 0x801FC840; //defined:true
 
+gPrinterScale = 0x80226E24;
+gPrinterScaled = 0x80226E28;
+gPortraitPos = 0x80228D28;
+gPortraitBob = 0x802279A4;
+gPortraitFaces = 0x80227978;
