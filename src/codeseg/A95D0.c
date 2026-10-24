@@ -663,7 +663,104 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
     }
 }
 
+#ifdef NON_MATCHING
+// Register allocation differs: the original keeps center on the stack and gSinTable and D_80228190 in s7/fp.
+void func_801DC60C(UnkA95D0_Runner* runner) {
+    UnkA95D0_Payload1* center;
+    s32 i;
+    f32 vec[3];
+    f32 mag;
+    f32 f;
+    f32 g;
+    f32 speed;
+    s32 j;
+    s32 t;
+    u32 r;
+    UnkStruct_801DB0E4_arg0* e;
+
+    center = &runner->obj->u.p1;
+    if (runner->step - D_802241E0 != 2) {
+        return;
+    }
+    D_802287A8 = 24;
+    t = runner->frame - 30;
+    if (runner->frame == 1) {
+        func_800AB92C();
+        for (i = 0; i < 24; i++) {
+            e = &D_80228190[i];
+            e->unk0 = 1;
+            e->unk4 = 0;
+            e->unk8 = SysUtils_Rand() % 10U;
+            f = i;
+            e->unkC[0] = center->unk0[0] - f * 30.0f - (f32) (SysUtils_Rand() % 7U) - 300.0f;
+            r = SysUtils_Rand();
+            g = f / 24.0f;
+            e->unkC[1] = SIN(DEG_TO_BINANG(g * 180.0f)) * ((f32) (SysUtils_Rand() & 0x3F) * 1.2f) +
+                         (center->unk0[1] - (f32) (i * (r & 0x1F)));
+            e->unkC[2] = center->unk0[2] - SIN(DEG_TO_BINANG(g * 180.0f)) * (f32) (SysUtils_Rand() & 0x7F);
+            e->unk14[0] = 0.0f;
+            e->unk14[1] = 0.0f;
+            e->unk14[2] = 1.0f;
+            e->unk24[0] = 0.0f;
+            e->unk24[1] = 1.0f;
+            e->unk24[2] = 0.0f;
+            e->unk30 = 0.1f;
+            if (i == 0) {
+                ((f32*) D_80228120)[i] = 17.0f;
+            } else {
+                ((f32*) D_80228120)[i] =
+                    15.0f + (f32) (SysUtils_Rand() & 3) + sqrtf(g) * (f32) ((SysUtils_Rand() & 3) + 1);
+            }
+        }
+    } else if (t >= 0) {
+        f = t;
+        vec[0] = 4.0f - f * 0.04f;
+        vec[2] = 1.0f;
+        vec[1] = SIN(DEG_TO_BINANG(f / (runner->step->duration - 30) * 180.0f));
+        mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
+        for (j = 0; j < 3; j++) {
+            D_80228190[0].unk14[j] = vec[j] / mag;
+        }
+        for (i = 0; i < 24; i++) {
+            e = &D_80228190[i];
+            speed = ((f32*) D_80228120)[i];
+            e->unk8 = (e->unk8 + (speed > 17.0f) + (speed > 16.0f) + (speed > 18.0f) + 1) % 10;
+            if (i > 0) {
+                for (j = 0; j < 3; j++) {
+                    vec[j] = D_80228190[0].unkC[j] - e->unkC[j];
+                }
+                mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
+                if (mag < 0.1f) {
+                    for (j = 0; j < 3; j++) {
+                        vec[j] = D_80228190[0].unk14[j];
+                    }
+                    mag = 1.0f;
+                }
+                vec[0] = (vec[0] / mag + D_80228190[0].unk14[0] * 7.0f) * 0.125f;
+                vec[1] = (vec[1] / mag + D_80228190[0].unk14[1] * 5.0f) / 6.0f;
+                vec[2] = (vec[2] / mag + D_80228190[0].unk14[2] * 7.0f) * 0.125f;
+                mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
+                for (j = 0; j < 3; j++) {
+                    e->unk14[j] = vec[j] / mag;
+                }
+            }
+            for (j = 0; j < 3; j++) {
+                e->unkC[j] += e->unk14[j] * ((f32*) D_80228120)[i];
+            }
+            vec[0] = center->unk0[0] - e->unkC[0];
+            vec[1] = 1200.0f;
+            vec[2] = 0.0f;
+            mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
+            for (j = 0; j < 3; j++) {
+                e->unk24[j] = vec[j] / mag;
+            }
+            ((f32*) D_80228120)[i] -= 0.018f;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC60C.s")
+#endif
 
 #ifdef NON_MATCHING
 // IDO keeps the D_80228190 and D_802287DC addresses in registers here; the original loads each with its own lui.
