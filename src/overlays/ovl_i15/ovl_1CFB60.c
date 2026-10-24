@@ -13,6 +13,11 @@ extern s32 D_802C6E7C;
 extern s32 D_802C6F20[];
 extern s32 D_802C6F44;
 
+Gfx* func_80091DBC(Gfx*);
+Gfx* func_80093DBC(Gfx*, u16, u16, u16);
+Gfx* func_i15_802C602C(Gfx*);
+void func_i15_802C6C1C(void);
+
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C5800.s")
 
 void func_i15_802C5CE8(void) {
@@ -83,7 +88,30 @@ void func_i15_802C5EE4(s32 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C5F50.s")
+Gfx* func_i15_802C5F50(Gfx* gdl) {
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        if (gGameState == 0x66) {
+            return func_80093DBC(gdl, 255, 255, 255);
+        }
+    }
+
+    D_800DAB2C = 0;
+    gdl = func_80091DBC(gdl);
+    gdl = func_8009328C(gdl);
+    gdl = func_i15_802C602C(gdl);
+
+    if (gGameState == 0x66) {
+        func_i15_802C6C1C();
+    } else if (D_80228A16 == 1) {
+        if (D_801CE630 == 2) {
+            func_801EB180();
+        } else {
+            func_801EC9C8();
+        }
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C602C.s")
 
