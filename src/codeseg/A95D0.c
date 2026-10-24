@@ -227,7 +227,7 @@ extern UnkA95D0_Key5 D_80225BD8;
 void func_801DFD94(UnkA95D0_Runner* runner, UnkA95D0_Step* step);
 void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj);
 void func_801E0FF0(camera_unk_1* cam);
-void func_801E11B4(GfxPool* pool, camera_unk_1* cam);
+void Camera_BuildMatrices(GfxPool* pool, camera_unk_1* cam);
 extern f32 D_80223940[];
 extern f32 D_80223950[];
 extern f32 D_80223960[];
@@ -256,7 +256,7 @@ void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner);
 void func_801DEEC4(UnkA95D0_Obj* obj);
 void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key);
-f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count);
+f32 Spline_EvalClampedBSpline(f32 t, s32 seg, f32* points, s32 count);
 // Degrees to a gSinTable index (4096 steps per turn).
 f32 func_801ED154(f32, f32);
 #define DEG_TO_BINANG(x) ((s32) (((x) * 4096.0f) / 360.0f))
@@ -1072,8 +1072,8 @@ void func_801DDAB8(void* arg0, void* arg1, void* arg2) {
     }
     func_801E0F8C(cam, obj);
     func_801E0FF0(cam);
-    func_801E11B4(&D_8011F8E8[0], cam);
-    func_801E11B4(&D_8011F8E8[1], cam);
+    Camera_BuildMatrices(&D_8011F8E8[0], cam);
+    Camera_BuildMatrices(&D_8011F8E8[1], cam);
 }
 
 void func_801DDE48(void) {
@@ -1092,9 +1092,9 @@ void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner
     UnkA95D0_Step* step;
 
     D_80228108 = gWaterLevel;
-    prevX = cam->unk4C;
-    prevY = cam->unk50;
-    prevZ = cam->unk54;
+    prevX = cam->eyeX;
+    prevY = cam->eyeY;
+    prevZ = cam->eyeZ;
     switch (cam->viewMode) {
         case 1:
             break;
@@ -1204,14 +1204,14 @@ skip:
     func_801E0F8C(cam, obj);
     func_8009CB68();
     func_8009CCE8((UnkStruct_func_8009CCE8*) cam);
-    cam->unk58 = cam->unk4C - prevX;
-    cam->unk5C = cam->unk50 - prevY;
-    cam->unk60 = cam->unk54 - prevZ;
+    cam->unk58 = cam->eyeX - prevX;
+    cam->unk5C = cam->eyeY - prevY;
+    cam->unk60 = cam->eyeZ - prevZ;
     func_801E0FF0(cam);
-    func_801E11B4(gGfxPool, cam);
+    Camera_BuildMatrices(gGfxPool, cam);
 }
 
-void func_801DE3CC(void) {
+void Camera_HandleCButtons(void) {
     s32 i;
     s32 mode;
     u16* buttons;
@@ -1291,7 +1291,7 @@ void func_801DE3CC(void) {
     }
 }
 
-f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count) {
+f32 Spline_EvalClampedBSpline(f32 t, s32 seg, f32* points, s32 count) {
     f32 u;
     f32 t2;
     f32 t3;
@@ -1358,7 +1358,7 @@ void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline) 
     while ((duration = spline->durations[cursor->seg]) == 0) {
         cursor->seg++;
     }
-    *out = func_801DE690((f32) cursor->frame / duration, cursor->seg, spline->points, spline->count);
+    *out = Spline_EvalClampedBSpline((f32) cursor->frame / duration, cursor->seg, spline->points, spline->count);
     if (++cursor->frame >= spline->durations[cursor->seg]) {
         cursor->frame = 0;
         if (++cursor->seg >= spline->count - 3) {
@@ -1374,7 +1374,7 @@ void func_801DEC00(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline) 
         cursor->seg++;
     }
     for (i = 0; i < 3; i++) {
-        out[i] = func_801DE690((f32) cursor->frame / spline->durations[cursor->seg], cursor->seg, spline->points[i],
+        out[i] = Spline_EvalClampedBSpline((f32) cursor->frame / spline->durations[cursor->seg], cursor->seg, spline->points[i],
                                spline->count);
     }
     if (++cursor->frame >= spline->durations[cursor->seg]) {
@@ -2013,15 +2013,15 @@ void func_801E0DB8(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
 }
 
 void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
-    cam->unk4C = obj->base.unkC[0];
-    cam->unk50 = obj->base.unkC[1];
-    cam->unk54 = obj->base.unkC[2];
-    cam->unk7C = obj->base.unk0[0];
-    cam->unk80 = obj->base.unk0[1];
-    cam->unk84 = obj->base.unk0[2];
-    cam->unk70 = obj->base.unk18[0];
-    cam->unk74 = obj->base.unk18[1];
-    cam->unk78 = obj->base.unk18[2];
+    cam->eyeX = obj->base.unkC[0];
+    cam->eyeY = obj->base.unkC[1];
+    cam->eyeZ = obj->base.unkC[2];
+    cam->atX = obj->base.unk0[0];
+    cam->atY = obj->base.unk0[1];
+    cam->atZ = obj->base.unk0[2];
+    cam->upX = obj->base.unk18[0];
+    cam->upY = obj->base.unk18[1];
+    cam->upZ = obj->base.unk18[2];
     cam->unk88 = obj->base.unk34;
     cam->unk94 = obj->base.unk40[0];
     cam->unk98 = obj->base.unk40[1];
@@ -2034,9 +2034,9 @@ void func_801E0FF0(camera_unk_1* cam) {
     f32 mag;
     f32 t;
 
-    a = cam->unk7C - cam->unk4C;
-    b = cam->unk80 - cam->unk50;
-    c = cam->unk84 - cam->unk54;
+    a = cam->atX - cam->eyeX;
+    b = cam->atY - cam->eyeY;
+    c = cam->atZ - cam->eyeZ;
     cam->unk64 = a;
     cam->unk68 = b;
     cam->unk6C = c;
@@ -2048,23 +2048,23 @@ void func_801E0FF0(camera_unk_1* cam) {
     cam->unkF0 = cam->unk64 / mag;
     cam->unkF4 = cam->unk6C / mag;
     t = SQ(cam->unk64) + SQ(cam->unk68) + SQ(cam->unk6C);
-    t = -(cam->unk64 * cam->unk70 + cam->unk68 * cam->unk74 + cam->unk6C * cam->unk78) / t;
-    cam->unk70 += cam->unk64 * t;
-    cam->unk74 += cam->unk68 * t;
-    cam->unk78 += cam->unk6C * t;
-    mag = sqrtf(SQ(cam->unk70) + SQ(cam->unk74) + SQ(cam->unk78));
-    cam->unk70 /= mag;
-    cam->unk74 /= mag;
-    cam->unk78 /= mag;
-    b = cam->unk4C - cam->unk7C;
-    c = cam->unk54 - cam->unk84;
+    t = -(cam->unk64 * cam->upX + cam->unk68 * cam->upY + cam->unk6C * cam->upZ) / t;
+    cam->upX += cam->unk64 * t;
+    cam->upY += cam->unk68 * t;
+    cam->upZ += cam->unk6C * t;
+    mag = sqrtf(SQ(cam->upX) + SQ(cam->upY) + SQ(cam->upZ));
+    cam->upX /= mag;
+    cam->upY /= mag;
+    cam->upZ /= mag;
+    b = cam->eyeX - cam->atX;
+    c = cam->eyeZ - cam->atZ;
     cam->unk8C = sqrtf(SQ(b) + SQ(c));
-    cam->unk90 = cam->unk50 - cam->unk80;
+    cam->unk90 = cam->eyeY - cam->atY;
 }
 
-void func_801E11B4(GfxPool* pool, camera_unk_1* cam) {
-    func_800481E0(&pool->unkE008[cam->unkE8], &cam->unkE4, cam->unk88, 4.0f / 3.0f, cam->unk9C, cam->unkA0,
+void Camera_BuildMatrices(GfxPool* pool, camera_unk_1* cam) {
+    func_800481E0(&pool->unkE008[cam->unkE8], &cam->perspNorm, cam->unk88, 4.0f / 3.0f, cam->unk9C, cam->unkA0,
                   cam->unk94, cam->unk98);
-    func_800484C8(&pool->unkE088[cam->unkE8], &cam->unkA4, cam->unk4C, cam->unk50, cam->unk54, cam->unk7C, cam->unk80,
-                  cam->unk84, cam->unk70, cam->unk74, cam->unk78);
+    func_800484C8(&pool->unkE088[cam->unkE8], &cam->lookAt, cam->eyeX, cam->eyeY, cam->eyeZ, cam->atX, cam->atY,
+                  cam->atZ, cam->upX, cam->upY, cam->upZ);
 }

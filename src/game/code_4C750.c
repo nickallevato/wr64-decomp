@@ -7,8 +7,8 @@ typedef struct UnkStruct_801CB6C8 {
 
 void func_8004BA18(void);
 void func_80051530(void);
-void func_8007BD70(void);
-s32 func_8007BE00(void);
+void Save_EepromProbe(void);
+s32 Save_EepromLoad(void);
 void func_80088EA0(void);
 void func_801DD85C(void);
 void func_80094FE8(void);
@@ -22,7 +22,7 @@ extern s16 D_801CE62A;
 extern s16 D_801CE62E;
 extern u16 D_801CE690;
 extern s16 D_80228A36;
-extern s32 D_80228A40;
+extern s32 gPrinterNextQuadVtx;
 extern u8 D_1008290[];
 extern s32 D_800DA940[];
 extern s32 D_800DA988[][3];
@@ -51,7 +51,7 @@ extern s8 D_801CB400;
 extern s8 D_801CB401;
 extern s32 D_80154344;
 extern s32 D_800DA9DC[];
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 extern s32 D_801CB340[];
 extern s32 D_801CB350[][4];
 extern s16 D_801CE60E;
@@ -177,8 +177,8 @@ void func_80091F50(void) {
     func_80088EA0();
     func_801DD85C();
     func_80094FE8();
-    func_8007BD70();
-    func_8007BE00();
+    Save_EepromProbe();
+    Save_EepromLoad();
 
     temp_t3 = D_801CB280 & 0xC0;
     if (temp_t3 & 0x40) {
@@ -205,7 +205,7 @@ void func_80091F50(void) {
     }
 }
 
-void func_80051238(void);
+void Water_Update(void);
 void func_800665B0(void);
 void func_8006A264(void);
 void func_8006E3A8(void);
@@ -215,10 +215,10 @@ void func_80092938(void);
 void func_800AD418(void);
 void func_800B2ABC(void);
 void func_801DDE48(void);
-void func_801E1290(void);
+void Initials_Update(void);
 void func_801E3250(void);
-void func_801E71A8(void);
-void func_801EAFB4(void);
+void FadeTransition_Update(void);
+void Printer_StepColorCycle(void);
 void func_802C7090(void);
 void func_802C7608(void);
 void func_i3_802C5800(void);
@@ -261,7 +261,7 @@ void func_800922E4(void) {
             func_80086148();
             func_800665B0();
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             if (D_801CE638 != 0x15) {
                 func_8006E3A8();
@@ -283,14 +283,14 @@ void func_800922E4(void) {
         case GAME_STATE_TIME_TRIALS_RESULTS:
         case GAME_STATE_33:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
         case GAME_STATE_50:
         case GAME_STATE_51:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
@@ -299,7 +299,7 @@ void func_800922E4(void) {
             func_80086148();
             func_800665B0();
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_8006E3A8();
             func_800B2ABC();
@@ -308,14 +308,14 @@ void func_800922E4(void) {
         case GAME_STATE_COURSE_SELECT:
         case GAME_STATE_15:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
         case 0x34:
         case 0x35:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
@@ -324,7 +324,7 @@ void func_800922E4(void) {
             func_80086148();
             func_800665B0();
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_8006E3A8();
             func_800B2ABC();
@@ -345,16 +345,16 @@ void func_800922E4(void) {
         case 0x5A:
         case 0x5B:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_802C7090();
             break;
         case 0x64:
         case 0x65:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
-            func_801E1290();
+            Initials_Update();
             break;
         case 0x5:
         case 0x6:
@@ -363,25 +363,25 @@ void func_800922E4(void) {
         case 0x36:
         case 0x37:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             break;
         case 0x38:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
         case 0x39:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_801E3250();
             break;
     }
-    func_801E5470();
-    func_801EAFB4();
-    func_801E71A8();
+    Popup_UpdateAll();
+    Printer_StepColorCycle();
+    FadeTransition_Update();
 }
 
 extern s32 D_800D49B0;
@@ -412,7 +412,7 @@ void func_800926F4(void) {
             func_8008E4B0();
             func_801DDA24();
             func_800AC184();
-            func_800AE7C4();
+            Spray_Init();
             func_800893A8();
             func_8009C968();
 
@@ -559,7 +559,7 @@ Gfx* func_80092CF0(Gfx* dList) {
     D_801CE62E = 0;
     D_801CE62A = 1;
     D_80228A36 = 0;
-    D_80228A40 = 0;
+    gPrinterNextQuadVtx = 0;
 
     //! FAKE:
     switch (gGameState) {
@@ -576,9 +576,9 @@ Gfx* func_80092CF0(Gfx* dList) {
             dList = func_80093F78(dList);
 
             if (func_80093104() != 0) {
-                func_801ECAF4();
+                GameState_EnterBootUp();
             } else {
-                func_801EB180();
+                GameState_EnterTitleScreen();
             }
             break;
 
@@ -726,7 +726,7 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x64:
         case 0x65:
             D_801CE62A = 0;
-            dList = func_801E1E8C(dList);
+            dList = Initials_Draw(dList);
             break;
 
         case 0x66:
@@ -771,11 +771,11 @@ Gfx* func_80092CF0(Gfx* dList) {
 
     D_80228A36 = 1;
 
-    dList = func_801E7908(dList);
+    dList = FadeTransition_Draw(dList);
 
     if (D_801CE62E != 0) {
         D_801CE62E = 0;
-        func_801EB180();
+        GameState_EnterTitleScreen();
     }
 
     if (++D_801CE5FC >= 30000) {
@@ -963,11 +963,11 @@ void func_8009345C(void) {
             for (var_a2 = 0; var_a2 < 4; var_a2++) {
                 D_801CB3F8[var_a2] = 0;
                 D_80192690[var_a2].unkB68 = D_800DA9B0[var_a2];
-                if (var_a2 == D_800D48DC) {
+                if (var_a2 == gPlayer1Rider) {
                     if (D_801CB32C == 0) {
                         var_v1 = &D_800DA950[D_80192690[var_a2].unkB68];
                     } else {
-                        var_v1 = &D_801CB298[D_80192690[var_a2].unkB68];
+                        var_v1 = &gPlayerNames[D_80192690[var_a2].unkB68];
                     }
 
                     D_80192690[var_a2].unkB6C = (s32) var_v1->unk_B[0];
@@ -980,7 +980,7 @@ void func_8009345C(void) {
                 }
             }
 
-            var_a1 = D_800DA9B0[D_800D48DC];
+            var_a1 = D_800DA9B0[gPlayer1Rider];
             if (D_801CE6F4[0] != 0) {
                 var_a1 += 4;
             }
@@ -992,7 +992,7 @@ void func_8009345C(void) {
             if (D_800DAB68 != 0) {
                 gDifficulty = DIFFICULTY_EXPERT;
             }
-            var_a1 = D_800DA9B0[D_800D48DC];
+            var_a1 = D_800DA9B0[gPlayer1Rider];
             if (D_801CE6F4[0] != 0) {
                 var_a1 += 4;
             }
@@ -1005,7 +1005,7 @@ void func_8009345C(void) {
             } else {
                 gDifficulty = DIFFICULTY_EXPERT;
             }
-            var_a1 = D_800DA9B0[D_800D48DC];
+            var_a1 = D_800DA9B0[gPlayer1Rider];
             if (D_801CE6F4[0] != 0) {
                 var_a1 += 4;
             }
@@ -1013,11 +1013,11 @@ void func_8009345C(void) {
             break;
 
         case GMODE_2P_VS:
-            var_a1 = D_800DA9B0[D_800D48DC];
+            var_a1 = D_800DA9B0[gPlayer1Rider];
             if (D_801CE6F4[0] != 0) {
                 var_a1 += 4;
             }
-            var_a2 = D_800DA9B0[D_800D48E0];
+            var_a2 = D_800DA9B0[gPlayer2Rider];
             if (D_801CE6F4[1] != 0) {
                 var_a2 += 4;
             }
@@ -1039,7 +1039,7 @@ void func_8009345C(void) {
 
     func_8009684C(0x08060000, D_800DB568[id].unk0, D_800DB568[id].unk2);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     gCameraPerspective->viewMode = 3;
     if (gPlayers == TWO_PLAYERS) {
@@ -1217,7 +1217,7 @@ Gfx* func_80094200(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     for (var_s1 = 0, var_s2 = arg3 + var_v0 * 4; var_s1 < 5; var_s1++, var_s2 += -var_v0, var_s0 /= 10) {
         sprintf(buf, "%d", var_s0 % 10);
-        arg0 = func_801E9858(arg0, arg1, buf, var_s2, arg4);
+        arg0 = Printer_DrawString(arg0, arg1, buf, var_s2, arg4);
     }
 
     return arg0;
@@ -1361,8 +1361,8 @@ void func_80094ACC(void) {
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < D_801CE60E; j++) {
-            if (i == D_801C2938[j].racePosition) {
-                if (D_801C2938[j].unk2EC) {
+            if (i == gRiderRaceState[j].racePosition) {
+                if (gRiderRaceState[j].finishState) {
                     D_801CB350[D_801CB334][j] = 0;
                 } else {
                     D_801CB350[D_801CB334][j] = D_800EABB0[i];
@@ -1407,7 +1407,7 @@ void func_80094ACC(void) {
             temp2 = D_800DA9DC[j];
 
             if (D_801CB340[temp1] == D_801CB340[temp2]) {
-                if (D_801C2938[temp1].racePosition > D_801C2938[temp2].racePosition) {
+                if (gRiderRaceState[temp1].racePosition > gRiderRaceState[temp2].racePosition) {
                     var_a0 = 1;
                 }
             } else if (D_801CB340[temp1] < D_801CB340[temp2]) {
@@ -1428,7 +1428,7 @@ void func_80094ACC(void) {
                 break;
             }
         }
-        D_801C2938[i].unk338 = j;
+        gRiderRaceState[i].unk338 = j;
     }
 }
 

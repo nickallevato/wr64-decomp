@@ -65,7 +65,7 @@ extern s32 D_800D4B00;
 extern s32 D_801C1FDC;
 extern s32 D_801C1FE4;
 extern s32 D_801C1FE8;
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 extern u8* gPortraitFaces[];
 extern f32 gPortraitBob[];
 extern char D_802279E0[];
@@ -165,12 +165,7 @@ void Hud_BlendColorSets(void) {
 // HUD_Init
 #ifdef NON_MATCHING
 // Score 9945: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
-typedef struct UnkStruct_80228AE0 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ char pad4[0x18];
-} UnkStruct_80228AE0; /* size = 0x1C */
-
-extern UnkStruct_80198368 D_80198368[];
+extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
 extern s32 D_80228A94;
@@ -205,7 +200,7 @@ void func_801EED70(void) {
     s32 i;
     s32 j;
     s8 flag;
-    UnkStruct_80198368* gfxPool;
+    UnkStruct_801AE948* gfxPool;
     Vtx* d0;
     Vtx* d1;
     Vtx* d2;
@@ -248,7 +243,7 @@ void func_801EED70(void) {
         } while (s3 < D_80227788[4]);
     }
     gStartLightsState = 0;
-    D_80228A90 = 60;
+    gStartCountdown = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
         flag = 1;
     } else {
@@ -283,18 +278,18 @@ void func_801EED70(void) {
     D_80228AA0 = 0;
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
-            gPortraitPos[i][j].unkC = D_801C2938[j].racePosition * 24;
+            gPortraitPos[i][j].unkC = gRiderRaceState[j].racePosition * 24;
         }
         for (j = 0; j < gRiders; j++) {
             if (gPlayers == ONE_PLAYER) {
-                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                if (gRiderRaceState[gPlayer1Rider].racePosition < gRiderRaceState[j].racePosition) {
                     gPortraitPos[i][j].unkC += 4;
                 }
             } else if (i == 0) {
-                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                if (gRiderRaceState[gPlayer1Rider].racePosition < gRiderRaceState[j].racePosition) {
                     gPortraitPos[i][j].unkC += 4;
                 }
-            } else if (D_801C2938[D_800D48E0].racePosition < D_801C2938[j].racePosition) {
+            } else if (gRiderRaceState[gPlayer2Rider].racePosition < gRiderRaceState[j].racePosition) {
                 gPortraitPos[i][j].unkC += 4;
             }
         }
@@ -394,12 +389,12 @@ void func_801EF504(void) {
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
             cam = &gCameraPerspective[D_80223930];
-            p = &D_80192690[D_800D48DC];
-            rider = &D_801C2938[D_800D48DC];
+            p = &D_80192690[gPlayer1Rider];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
             cam = &gCameraPerspective[D_80223934];
-            p = &D_80192690[D_800D48E0];
-            rider = &D_801C2938[D_800D48E0];
+            p = &D_80192690[gPlayer2Rider];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
         dirX = cam->unk64;
         dirZ = cam->unk6C;
@@ -410,19 +405,19 @@ void func_801EF504(void) {
         }
         if (rider->unk2F0 != 0) {
             node = &D_801AEE20[rider->unkC];
-        } else if ((rider->unkC == rider->unk310) && (rider->lapCount == rider->unk320)) {
+        } else if ((rider->unkC == rider->nearestRecord) && (rider->lapCount == rider->unk320)) {
             node = &D_801AEE20[rider->unkC];
             if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > 0.0f) {
                 node = &D_801AEE20[node->unkA0];
             }
         } else {
-            node = &D_801AEE20[rider->unk310];
+            node = &D_801AEE20[rider->nearestRecord];
             if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > -256.0f) {
                 node = &D_801AEE20[node->unkA0];
             }
         }
-        dx = node->unk0 - cam->unk4C;
-        dz = node->unk8 - cam->unk54;
+        dx = node->unk0 - cam->eyeX;
+        dz = node->unk8 - cam->eyeZ;
         dist = sqrtf(dx * dx + dz * dz);
         if (dist > 0.0f) {
             dx /= dist;
@@ -458,8 +453,8 @@ void func_801EF504(void) {
             rider->unk2D0 += func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
         }
         if ((fwd < D_80227A28) && (node->unk9C == 1)) {
-            dx = node->unkC - cam->unk4C;
-            dz = node->unk14 - cam->unk54;
+            dx = node->unkC - cam->eyeX;
+            dz = node->unk14 - cam->eyeZ;
             dist = sqrtf(dx * dx + dz * dz);
             if (dist > 0.0f) {
                 dx /= dist;
@@ -468,8 +463,8 @@ void func_801EF504(void) {
             cross = dirX * dz - dirZ * dx;
             dot = dirX * dx + dirZ * dz;
             if (dot < D_80227A2C) {
-                dx = node->unk18 - cam->unk4C;
-                dz = node->unk20 - cam->unk54;
+                dx = node->unk18 - cam->eyeX;
+                dz = node->unk20 - cam->eyeZ;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
                     dx /= dist;
@@ -483,10 +478,10 @@ void func_801EF504(void) {
             }
         }
         show = (dot < D_80227A30) && ((dist > 2048.0f) || !show);
-        if (rider->unk31C != 0) {
+        if (rider->inBox != 0) {
             show = 0;
         }
-        if (func_80074448(cam->unk4C, cam->unk54) != 0) {
+        if (func_80074448(cam->eyeX, cam->eyeZ) != 0) {
             show = 0;
         }
         if (gGameModes == GMODE_STUNT) {
@@ -494,8 +489,8 @@ void func_801EF504(void) {
             obj = D_801BC940;
             if (D_801BFA40 > 0) do {
                 if (obj->unk4C == 8) {
-                    dx = obj->unk0 - cam->unk4C;
-                    dz = obj->unk8 - cam->unk54;
+                    dx = obj->unk0 - cam->eyeX;
+                    dz = obj->unk8 - cam->eyeZ;
                     dist = sqrtf(dx * dx + dz * dz);
                     if (dist > 0.0f) {
                         dx /= dist;
@@ -606,12 +601,12 @@ void Hud_DrawGuideArrow(Gfx** gdlp) {
     gSPPerspNormalize(gdl++, gHudPerspNorm);
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            rider = &D_801C2938[D_800D48DC];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
-            rider = &D_801C2938[D_800D48E0];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
         alpha = rider->unk2DC * 255 / 4;
-        if ((alpha > 0) && (rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+        if ((alpha > 0) && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
             if (gPlayers == ONE_PLAYER) {
                 gSPViewport(gdl++, &D_1014460);
             } else if (i == 0) {
@@ -641,7 +636,7 @@ void Hud_DrawGuideArrow(Gfx** gdlp) {
     gSPViewport(gdl++, &D_1014450);
     gSPMatrix(gdl++, &D_300E008, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, &D_300E088, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
     *gdlp = gdl;
 }
 
@@ -663,14 +658,14 @@ void Hud_UpdateStartCountdown(void) {
                 gStartLightsState = 1;
             }
         } else {
-            if ((D_80228A90 % 15) == 0) {
+            if ((gStartCountdown % 15) == 0) {
                 if (gGameModeState != GMODE_STATE_2) {
-                    AudioGeneral_PlaySound(0x22, (D_80228A90 / 15) - 1);
+                    AudioGeneral_PlaySound(0x22, (gStartCountdown / 15) - 1);
                 } else {
                     AudioGeneral_PlaySound(0x23, 0);
                 }
             }
-            d = D_80228A90 - 15;
+            d = gStartCountdown - 15;
             if (d < 0) {
                 d = -d;
             }
@@ -678,29 +673,29 @@ void Hud_UpdateStartCountdown(void) {
                 for (i = 0; i < gRiders; i++) {
                     if ((D_80192690[i].unkB58 & 0xA000) && (D_80228B58[i] == 0)) {
                         if (d <= 0) {
-                            D_801C2938[i].unk12C = 5;
+                            gRiderRaceState[i].power = 5;
                         } else if (d < 2) {
-                            D_801C2938[i].unk12C = 4;
+                            gRiderRaceState[i].power = 4;
                         } else if (d < 3) {
-                            D_801C2938[i].unk12C = 3;
+                            gRiderRaceState[i].power = 3;
                         } else if (d < 4) {
-                            D_801C2938[i].unk12C = 2;
+                            gRiderRaceState[i].power = 2;
                         } else if (d < 5) {
-                            D_801C2938[i].unk12C = 1;
+                            gRiderRaceState[i].power = 1;
                         }
                         if (d < 5) {
-                            D_801C2938[i].unk314 = 1;
-                            D_801C2938[i].unk28 = 1;
+                            gRiderRaceState[i].unk314 = 1;
+                            gRiderRaceState[i].unk28 = 1;
                         }
                         D_80228B58[i] = 1;
                     }
                 }
             }
-            D_80228A90--;
-            if (D_80228A90 == 15) {
+            gStartCountdown--;
+            if (gStartCountdown == 15) {
                 gGameModeState = GMODE_STATE_2;
                 D_800D817C = 0;
-            } else if (D_80228A90 <= 0) {
+            } else if (gStartCountdown <= 0) {
                 gGameModeState = GMODE_STATE_STARTED;
                 gStartLightsState = 2;
             }
@@ -744,7 +739,7 @@ void Hud_DrawStartLights(Gfx** gdlp) {
     Gfx* gdl;
     MtxF mf;
 
-    n = (D_80228A90 - 1) / 15;
+    n = (gStartCountdown - 1) / 15;
     gdl = *gdlp;
     if (n < 0) {
         n = 0;
@@ -813,7 +808,7 @@ void Hud_DrawStartLights(Gfx** gdlp) {
     }
     gSPMatrix(gdl++, &D_300E008, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, &D_300E088, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
     *gdlp = gdl;
 }
 
@@ -835,9 +830,9 @@ void func_801F0E7C(void) {
 
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            rider = &D_801C2938[D_800D48DC];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
-            rider = &D_801C2938[D_800D48E0];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
         if ((rider->unk28 != 0) && (((m = &gHudMarkers[i])->unk0[0].unk18 == 0) || (rider->unk13C == 0))) {
             gHudMarkerColorFrame = 0;
@@ -846,7 +841,7 @@ void func_801F0E7C(void) {
                 e = &m->unk0[2];
                 if (m->unk0[1].unk18 == 3) {
                     m->unk0[1].unk18 = 0;
-                    rider->unk12C = 1;
+                    rider->power = 1;
                 }
                 m->unk0[2].unk18 = 2;
                 if (gPlayers == ONE_PLAYER) {
@@ -866,14 +861,14 @@ void func_801F0E7C(void) {
                     e->unk0 = 300.0f;
                     e->unk4 = 215.0f;
                 }
-                if (rider->unk12C < 5) {
+                if (rider->power < 5) {
                     e->unk14 = 12;
                 } else {
                     e->unk14 = 0;
                 }
             } else if ((rider->unk28 == 2) && (gBuoyMisses >= rider->unk134)) {
                 m->unk0[0].unk18 = 1;
-                if (rider->unk12C >= 5) {
+                if (rider->power >= 5) {
                     m->unk0[2].unk18 = 0;
                 }
                 if (gPlayers == ONE_PLAYER) {
@@ -895,7 +890,7 @@ void func_801F0E7C(void) {
                 m->unk0[0].unk14 = 16;
                 m->unk0[0].unk8 = (tx - m->unk0[0].unk0) / 8;
                 m->unk0[0].unkC = (ty - m->unk0[0].unk4) / 8;
-                if ((rider->unk12C > 0) && (m->unk0[1].unk18 != 3)) {
+                if ((rider->power > 0) && (m->unk0[1].unk18 != 3)) {
                     m->unk0[1].unk18 = 3;
                     e = &m->unk0[1];
                     if (gPlayers == ONE_PLAYER) {
@@ -935,7 +930,7 @@ void func_801F0E7C(void) {
                     if (e->unk14 < 0) {
                         e->unk18 = 0;
                         if (rider->unk13C != 0) {
-                            func_800762D0((struct_800762D0*) rider);
+                            Rider_SetFinishState((struct_800762D0*) rider);
                         }
                     }
                     break;
@@ -951,11 +946,11 @@ void func_801F0E7C(void) {
                     e->unk14--;
                     if (e->unk14 < 0) {
                         e->unk18 = 0;
-                        rider->unk12C = 0;
+                        rider->power = 0;
                     }
                     break;
                 case 2:
-                    if (rider->unk12C < 5) {
+                    if (rider->power < 5) {
                         e->unk14--;
                         if (e->unk14 < 0) {
                             e->unk18 = 0;
@@ -1075,9 +1070,9 @@ void Hud_DrawMarkers(Gfx** gdlp) {
     gSPMatrix(gdl++, &D_5000000->unk4040, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            rider = &D_801C2938[D_800D48DC];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
-            rider = &D_801C2938[D_800D48E0];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
         for (j = 0; j < 3; j++) {
             if (gHudMarkers[i].unk0[j].unk18 != 0) {
@@ -1092,7 +1087,7 @@ void Hud_DrawMarkers(Gfx** gdlp) {
                         gSPDisplayList(gdl++, D_1014820);
                         break;
                     case 2:
-                        if (rider->unk12C >= 5) {
+                        if (rider->power >= 5) {
                             gSPDisplayList(gdl++, D_1014910);
                         } else {
                             gSPDisplayList(gdl++, D_1014870);
@@ -1123,21 +1118,21 @@ void Hud_UpdateOffCourseCountdown(void) {
     s32 add;
 
     if ((gGameModes == GMODE_2P_VS) &&
-        ((D_801C2938[D_800D48DC].unk2F4 != 0) || (D_801C2938[D_800D48DC].unk2EC != 0) ||
-         (D_801C2938[D_800D48E0].unk2F4 != 0) || (D_801C2938[D_800D48E0].unk2EC != 0))) {
+        ((gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0) ||
+         (gRiderRaceState[gPlayer2Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer2Rider].finishState != 0))) {
         blocked = 1;
     } else {
         blocked = 0;
     }
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            p = &D_80192690[D_800D48DC];
-            rider = &D_801C2938[D_800D48DC];
+            p = &D_80192690[gPlayer1Rider];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
-            p = &D_80192690[D_800D48E0];
-            rider = &D_801C2938[D_800D48E0];
+            p = &D_80192690[gPlayer2Rider];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
-        if ((rider->unk2EC != 0) || (rider->unk2F4 != 0)) {
+        if ((rider->finishState != 0) || (rider->unk2F4 != 0)) {
             continue;
         }
         x = p->unk44.x;
@@ -1159,7 +1154,7 @@ void Hud_UpdateOffCourseCountdown(void) {
                     }
                     rider->unk2E8--;
                 } else if (rider->unk2E8 == 0) {
-                    func_800762D0((struct_800762D0*) rider);
+                    Rider_SetFinishState((struct_800762D0*) rider);
                 }
             }
         } else if (show) {
@@ -1193,13 +1188,13 @@ void func_801F2060(Gfx** gdlp) {
     gdl = *gdlp;
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            p = &D_80192690[D_800D48DC];
-            rider = &D_801C2938[D_800D48DC];
+            p = &D_80192690[gPlayer1Rider];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
-            p = &D_80192690[D_800D48E0];
-            rider = &D_801C2938[D_800D48E0];
+            p = &D_80192690[gPlayer2Rider];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
-        if ((rider->unk2E4 != 0) && (rider->unk2E8 <= D_80228B5C) && (rider->unk2EC == 0) && (rider->unk2F4 == 0)) {
+        if ((rider->unk2E4 != 0) && (rider->unk2E8 <= D_80228B5C) && (rider->finishState == 0) && (rider->unk2F4 == 0)) {
             if (gPlayers == ONE_PLAYER) {
                 y = 90;
             } else if (i == 0) {
@@ -1248,7 +1243,7 @@ void func_801F23A0(void) {
 
     for (i = 0; i < gRiders; i++) {
         p = &D_80192690[i];
-        rider = &D_801C2938[i];
+        rider = &gRiderRaceState[i];
         f = p->unkBBC - p->unkBC0;
         lo = p->unkBC0 - f / 5.0f;
         range = (f * 6.0f) / 5.0f;
@@ -1386,7 +1381,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
         if (style == 0) {
-            rider = &D_801C2938[D_800D48DC];
+            rider = &gRiderRaceState[gPlayer1Rider];
             if (rider->unk2F4 != 0) {
                 lap = rider->lapCount;
             } else {
@@ -1510,7 +1505,7 @@ void func_801F4120(Gfx** gdlp) {
 
     // Lap splits and the total race time.
     if (((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_TIME_TRIALS)) && (gCourseID != DOLPHIN_PARK)) {
-        rider = &D_801C2938[D_800D48DC];
+        rider = &gRiderRaceState[gPlayer1Rider];
         if ((rider->lapCount >= 2) || (D_800D8178 != 0)) {
             n = rider->lapCount - 1;
             y = 0x34;
@@ -1524,59 +1519,59 @@ void func_801F4120(Gfx** gdlp) {
                 n++;
             }
             for (j = 0; j < n; j++) {
-                func_801F25E0(&gdl, D_80228B54 + 0x18, y, rider->unk178[j], 0, (k + j + 1) % 10, 0);
+                func_801F25E0(&gdl, D_80228B54 + 0x18, y, rider->lapTimes[j], 0, (k + j + 1) % 10, 0);
                 y += 10;
             }
         }
-        if ((rider->unk2F4 != 0) || (rider->unk2EC == 2)) {
+        if ((rider->unk2F4 != 0) || (rider->finishState == 2)) {
             i = 0;
         } else {
             i = 1;
         }
-        func_801F25E0(&gdl, D_80228B50 + 0x18, 0x22, rider->unk19C, 1, i, rider->unk16C);
+        func_801F25E0(&gdl, D_80228B50 + 0x18, 0x22, rider->raceTime, 1, i, rider->unk16C);
     } else if (gGameModes == GMODE_2P_VS) {
-        rider = &D_801C2938[D_800D48DC];
+        rider = &gRiderRaceState[gPlayer1Rider];
         if (rider->unk2F4 != 0) {
             i = 0;
         } else {
             i = 1;
         }
-        func_801F25E0(&gdl, 0x18, 0xE, rider->unk19C, 1, i, rider->unk16C);
-        rider = &D_801C2938[D_800D48E0];
+        func_801F25E0(&gdl, 0x18, 0xE, rider->raceTime, 1, i, rider->unk16C);
+        rider = &gRiderRaceState[gPlayer2Rider];
         if (rider->unk2F4 != 0) {
             i = 0;
         } else {
             i = 1;
         }
-        func_801F25E0(&gdl, 0x18, 0x7C, rider->unk19C, 1, i, rider->unk16C);
+        func_801F25E0(&gdl, 0x18, 0x7C, rider->raceTime, 1, i, rider->unk16C);
     }
 
     // Championship: the leader's time and the others' gaps to it, beside the portrait column.
     // k: the leader, value: the leader's time.
     if ((gGameModes == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK) && (D_801C1FDC >= 0x28)) {
         for (k = 0; k < gRiders; k++) {
-            if ((D_801C2938[k].unk2F4 != 0) && (D_801C2938[k].racePosition == 0)) {
+            if ((gRiderRaceState[k].unk2F4 != 0) && (gRiderRaceState[k].racePosition == 0)) {
                 break;
             }
         }
         if (k >= gRiders) {
             k = 0;
         }
-        value = D_801C2938[k].unk19C;
+        value = gRiderRaceState[k].raceTime;
         for (i = 0; i < gRiders; i++) {
-            rider = &D_801C2938[i];
+            rider = &gRiderRaceState[i];
             if (D_801C1FDC >= (rider->racePosition * 10) + 0x28) {
                 color = 1;
                 pos = &gPortraitPos[0][i];
                 x = pos->x + 0xB0;
                 y = pos->y + 0x3F;
-                if (i == D_800D48DC) {
+                if (i == gPlayer1Rider) {
                     color = 2;
                 }
                 if (i == k) {
-                    func_801F25E0(&gdl, x + D_80228B50, y, rider->unk19C, 3, 3, color);
+                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, color);
                 } else if (rider->unk2F4 != 0) {
-                    func_801F25E0(&gdl, x + D_80228B50, y, rider->unk19C - value, 3, 1, color);
+                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime - value, 3, 1, color);
                 }
             }
         }
@@ -1588,12 +1583,12 @@ void func_801F4120(Gfx** gdlp) {
             y = 0xB2;
             if (i == 0) {
                 y = 0x44;
-                rider = &D_801C2938[D_800D48DC];
+                rider = &gRiderRaceState[gPlayer1Rider];
             } else {
-                rider = &D_801C2938[D_800D48E0];
+                rider = &gRiderRaceState[gPlayer2Rider];
             }
-            if (rider->unk300 != 0) {
-                value = rider->unk2F8;
+            if (rider->gapTimer != 0) {
+                value = rider->checkpointGap;
                 color = 2;
                 if (value < 10000) {
                     x = -0xF;
@@ -1602,10 +1597,10 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0;
                 }
-                if (rider->unk2FC == 1) {
+                if (rider->gapRequest == 1) {
                     color = 1;
                 }
-                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->unk2FC, color);
+                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, color);
             }
         }
     }
@@ -1613,13 +1608,13 @@ void func_801F4120(Gfx** gdlp) {
     // Championship: the other riders' lap split popups.
     if ((gGameModes == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK)) {
         for (i = 0; i < gRiders; i++) {
-            if (i != D_800D48DC) {
-                rider = &D_801C2938[i];
+            if (i != gPlayer1Rider) {
+                rider = &gRiderRaceState[i];
                 pos = &gPortraitPos[0][i];
                 x = pos->x + 0xBA;
                 y = pos->y + 0x3F;
-                if (rider->unk300 != 0) {
-                    func_801F25E0(&gdl, x, y, rider->unk2F8, 3, rider->unk2FC, 1);
+                if (rider->gapTimer != 0) {
+                    func_801F25E0(&gdl, x, y, rider->checkpointGap, 3, rider->gapRequest, 1);
                 }
             }
         }
@@ -1628,9 +1623,9 @@ void func_801F4120(Gfx** gdlp) {
     // Championship and time trials: the player's lap split popup, with a portrait (or a record icon).
     // j: how many leading digits the time drops (2 under 10 s, 1 under 60 s).
     if ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_TIME_TRIALS)) {
-        rider = &D_801C2938[D_800D48DC];
-        if (rider->unk300 != 0) {
-            value = rider->unk2F8;
+        rider = &gRiderRaceState[gPlayer1Rider];
+        if (rider->gapTimer != 0) {
+            value = rider->checkpointGap;
             color = 2;
             if (value < 10000) {
                 j = 2;
@@ -1645,10 +1640,10 @@ void func_801F4120(Gfx** gdlp) {
             } else if (j == 2) {
                 x = 0x7F;
             }
-            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->unk2FC == 1)) {
+            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->gapRequest == 1)) {
                 color = 1;
             }
-            func_801F25E0(&gdl, x, 0x7E, value, 3, rider->unk2FC, color);
+            func_801F25E0(&gdl, x, 0x7E, value, 3, rider->gapRequest, color);
             gDPPipeSync(gdl++);
             gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
             // n, y: the icon's position.
@@ -1722,15 +1717,15 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0x88;
                 }
-                n = D_801C2938[D_800D48DC].lapCount;
+                n = gRiderRaceState[gPlayer1Rider].lapCount;
             } else {
                 x = 0xD0;
                 if (i == 0) {
                     y = 0x19;
-                    n = D_801C2938[D_800D48DC].lapCount;
+                    n = gRiderRaceState[gPlayer1Rider].lapCount;
                 } else {
                     y = 0x87;
-                    n = D_801C2938[D_800D48E0].lapCount;
+                    n = gRiderRaceState[gPlayer2Rider].lapCount;
                 }
             }
             if (D_801CE728[0] < n) {
@@ -1749,7 +1744,7 @@ void func_801F4120(Gfx** gdlp) {
         if (gCourseID != DOLPHIN_PARK) {
             HUD_LOAD32(gdl, D_1032B08, 36, 12);
             HUD_RECT(gdl, D_80228B50 + 0x84, 0x15, 36, 12);
-            HUD_LOAD32(gdl, &D_103D8D8[(D_801C2938[D_800D48DC].racePosition + 1) * 0x500], 16, 20);
+            HUD_LOAD32(gdl, &D_103D8D8[(gRiderRaceState[gPlayer1Rider].racePosition + 1) * 0x500], 16, 20);
             x = D_80228B50 + 0x88;
             if (D_80228A9C == 0) {
                 HUD_RECT(gdl, x, 0x22, 16, 20);
@@ -1765,7 +1760,7 @@ void func_801F4120(Gfx** gdlp) {
             gDPPipeSync(gdl++);
             gDPSetCombineLERP(gdl++, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0,
                               TEXEL0, 0, ENVIRONMENT, 0);
-            if (D_801CE704 < D_801C2938[D_800D48DC].racePosition) {
+            if (D_801CE704 < gRiderRaceState[gPlayer1Rider].racePosition) {
                 gDPSetEnvColor(gdl++, D_80228AAC, D_80228AB0, D_80228AB4, 255);
             } else {
                 gDPSetEnvColor(gdl++, 255, 255, 255, 255);
@@ -1810,15 +1805,15 @@ void func_801F4120(Gfx** gdlp) {
         if (gPlayers == ONE_PLAYER) {
             y = 0x22;
             x = D_80228B50 + 0xE1;
-            value = D_80192690[D_800D48DC].unkB90;
+            value = D_80192690[gPlayer1Rider].unkB90;
         } else if (i == 0) {
             x = 0xEC;
             y = 0x19;
-            value = D_80192690[D_800D48DC].unkB90;
+            value = D_80192690[gPlayer1Rider].unkB90;
         } else {
             x = 0xEC;
             y = 0x87;
-            value = D_80192690[D_800D48E0].unkB90;
+            value = D_80192690[gPlayer2Rider].unkB90;
         }
         if (gCourseID == DOLPHIN_PARK) {
             x = 0xE1;
@@ -1916,16 +1911,16 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
                 y = 0xCD;
-                n = D_801C2938[D_800D48DC].unk134;
+                n = gRiderRaceState[gPlayer1Rider].unk134;
                 x = D_80228B54 + 0x38;
             } else {
                 x = 0x18;
                 if (i == 0) {
                     y = 0x68;
-                    n = D_801C2938[D_800D48DC].unk134;
+                    n = gRiderRaceState[gPlayer1Rider].unk134;
                 } else {
                     y = 0xD6;
-                    n = D_801C2938[D_800D48E0].unk134;
+                    n = gRiderRaceState[gPlayer2Rider].unk134;
                 }
             }
             if (boost->unk0[0].unk18 == 1) {
@@ -1955,17 +1950,17 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
                 y = 0xCF;
-                n = D_801C2938[D_800D48DC].unk138;
+                n = gRiderRaceState[gPlayer1Rider].unk138;
                 x = D_80228B54 + 0xBC;
             } else {
                 y = 0x6A;
                 x = 0xBC;
                 if (i == 0) {
                     x = 0xBC;
-                    n = D_801C2938[D_800D48DC].unk138;
+                    n = gRiderRaceState[gPlayer1Rider].unk138;
                 } else {
                     y = 0xD8;
-                    n = D_801C2938[D_800D48E0].unk138;
+                    n = gRiderRaceState[gPlayer2Rider].unk138;
                 }
             }
             for (j = 0; j < 5; j++) {
@@ -2011,12 +2006,12 @@ void func_801F4120(Gfx** gdlp) {
     if (gGameModes == GMODE_STUNT) {
         HUD_LOAD32(gdl, D_1032500, 32, 12);
         HUD_RECT(gdl, 0x8D, 0x16, 32, 12);
-        value = D_801C2938[D_800D48DC].unk2C4;
+        value = gRiderRaceState[gPlayer1Rider].timeLeft;
         k = value % 1000;
         n = value / 1000;
         HUD_DIGIT(gdl, &D_103B4D0[(k / 100) * 0x300], 12, 16, 0xAA, 0x26);
         HUD_DIGIT(gdl, D_103D5D0, 12, 16, 0xA2, 0x23);
-        if ((n >= 6) || (D_801C2938[D_800D48DC].unk2F4 != 0) || (D_801C2938[D_800D48DC].unk2EC != 0)) {
+        if ((n >= 6) || (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
             x = 0x84;
             if (n >= 10) {
                 HUD_DIGIT(gdl, &D_80273D8[(n / 10) * 0x500], 16, 20, x, 0x26);
@@ -2086,18 +2081,18 @@ void func_801F8DD0(void) {
 
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
-            gPortraitPos[i][j].unkC = D_801C2938[j].racePosition * 24;
+            gPortraitPos[i][j].unkC = gRiderRaceState[j].racePosition * 24;
         }
         for (j = 0; j < gRiders; j++) {
             if (gPlayers == ONE_PLAYER) {
-                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                if (gRiderRaceState[gPlayer1Rider].racePosition < gRiderRaceState[j].racePosition) {
                     gPortraitPos[i][j].unkC += 4;
                 }
             } else if (i == 0) {
-                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                if (gRiderRaceState[gPlayer1Rider].racePosition < gRiderRaceState[j].racePosition) {
                     gPortraitPos[i][j].unkC += 4;
                 }
-            } else if (D_801C2938[D_800D48E0].racePosition < D_801C2938[j].racePosition) {
+            } else if (gRiderRaceState[gPlayer2Rider].racePosition < gRiderRaceState[j].racePosition) {
                 gPortraitPos[i][j].unkC += 4;
             }
         }
@@ -2161,16 +2156,16 @@ void func_801F8DD0(void) {
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
             if ((gPortraitPos[i][j].x == gPortraitPos[i][j].unk8) && (gPortraitPos[i][j].y == gPortraitPos[i][j].unkC) && (D_801C1FD4 == 0)) {
-                if ((D_801C2938[j].unk2F4 == 0) && (((i == 0) && (D_801C2938[j].unk320 == D_801C2938[D_800D48DC].unk320) &&
-                                          (D_801C2938[j].racePosition == D_801C2938[D_800D48DC].racePosition + 1)) ||
-                                         ((i == 1) && (D_801C2938[j].unk320 == D_801C2938[D_800D48E0].unk320) &&
-                                          (D_801C2938[j].racePosition == D_801C2938[D_800D48E0].racePosition + 1)))) {
+                if ((gRiderRaceState[j].unk2F4 == 0) && (((i == 0) && (gRiderRaceState[j].unk320 == gRiderRaceState[gPlayer1Rider].unk320) &&
+                                          (gRiderRaceState[j].racePosition == gRiderRaceState[gPlayer1Rider].racePosition + 1)) ||
+                                         ((i == 1) && (gRiderRaceState[j].unk320 == gRiderRaceState[gPlayer2Rider].unk320) &&
+                                          (gRiderRaceState[j].racePosition == gRiderRaceState[gPlayer2Rider].racePosition + 1)))) {
                     if (i == 0) {
-                        me = D_800D48DC;
+                        me = gPlayer1Rider;
                     } else {
-                        me = D_800D48E0;
+                        me = gPlayer2Rider;
                     }
-                    if ((D_801C2938[j].unk310 == D_801C2938[me].unk310) && (gGameModeState == GMODE_STATE_STARTED)) {
+                    if ((gRiderRaceState[j].nearestRecord == gRiderRaceState[me].nearestRecord) && (gGameModeState == GMODE_STATE_STARTED)) {
                         dx = D_80192690[me].unk44.x - D_80192690[j].unk44.x;
                         dz = D_80192690[me].unk44.z - D_80192690[j].unk44.z;
                         dist = sqrtf(dx * dx + dz * dz);
@@ -2263,7 +2258,7 @@ void func_801F9520(Gfx** gdlp) {
             bob = gPortraitBob[pos->bobPhase & 7] * 4.0f;
             y = y - bob;
 
-            if (((player == 0) && (idx == D_800D48DC)) || ((player == 1) && (idx == D_800D48E0))) {
+            if (((player == 0) && (idx == gPlayer1Rider)) || ((player == 1) && (idx == gPlayer2Rider))) {
                 highlight = 1;
             } else {
                 highlight = 0;
@@ -2274,7 +2269,7 @@ void func_801F9520(Gfx** gdlp) {
             gDPSetRenderMode(gdl++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE2);
 
             if (highlight) {
-                if (D_801C2938[idx].unk2F4 == 0) {
+                if (gRiderRaceState[idx].unk2F4 == 0) {
                     img = D_1040FE0;
                 } else {
                     img = D_10420B8;
@@ -2284,7 +2279,7 @@ void func_801F9520(Gfx** gdlp) {
                 gSPTextureRectangle(gdl++, (x - 7) << 2, y << 2, (x + 0x1D) << 2, (y + 0x18) << 2, G_TX_RENDERTILE, 0,
                                     0, 1 << 10, 1 << 10);
             } else {
-                if (D_801C2938[idx].unk2F4 == 0) {
+                if (gRiderRaceState[idx].unk2F4 == 0) {
                     img = D_10416A8;
                 } else {
                     img = D_1041BB0;
@@ -2295,8 +2290,8 @@ void func_801F9520(Gfx** gdlp) {
                                     1 << 10, 1 << 10);
             }
 
-            if (((idx == D_800D48DC) && (D_801CE6F4[0] != 0)) ||
-                ((gPlayers == TWO_PLAYERS) && (idx == D_800D48E0) && (D_801CE6F4[1] != 0))) {
+            if (((idx == gPlayer1Rider) && (D_801CE6F4[0] != 0)) ||
+                ((gPlayers == TWO_PLAYERS) && (idx == gPlayer2Rider) && (D_801CE6F4[1] != 0))) {
                 face = 4;
             } else {
                 face = 0;
@@ -2325,7 +2320,7 @@ void func_801F9520(Gfx** gdlp) {
                 numX = x + 2;
                 numY = y + 2;
             }
-            gDPLoadTextureBlock(gdl++, &D_10387C0[(D_801C2938[idx].racePosition + 1) * 64], G_IM_FMT_IA, G_IM_SIZ_8b, 8,
+            gDPLoadTextureBlock(gdl++, &D_10387C0[(gRiderRaceState[idx].racePosition + 1) * 64], G_IM_FMT_IA, G_IM_SIZ_8b, 8,
                                 8, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(gdl++, numX << 2, numY << 2, (numX + 8) << 2, (numY + 8) << 2, G_TX_RENDERTILE, 0, 0,
@@ -2373,23 +2368,23 @@ void func_801F9EA0(void) {
 
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            me = D_800D48DC;
+            me = gPlayer1Rider;
             cam = &gCameraPerspective[D_80223930];
         } else {
-            me = D_800D48E0;
+            me = gPlayer2Rider;
             cam = &gCameraPerspective[D_80223934];
         }
-        camX = cam->unk4C;
-        camZ = cam->unk54;
+        camX = cam->eyeX;
+        camZ = cam->eyeZ;
         dirX = -cam->unkF0;
         dirZ = -cam->unkF4;
-        dx = cam->unk7C - camX;
-        dz = cam->unk84 - camZ;
+        dx = cam->atX - camX;
+        dz = cam->atZ - camZ;
         sqrtf(dx * dx + dz * dz);
         for (j = 0; j < gRiders; j++) {
             b = &D_80228B88[i][j];
             b->unk10 = 0;
-            if ((j != me) && (D_801C2938[j].racePosition >= D_801C2938[me].racePosition)) {
+            if ((j != me) && (gRiderRaceState[j].racePosition >= gRiderRaceState[me].racePosition)) {
                 p = &D_80192690[j];
                 dx = p->unk44.x - camX;
                 dz = p->unk44.z - camZ;
@@ -2533,7 +2528,7 @@ void func_801FA3C0(Gfx** gdlp) {
                     y = b->unk4 + 206.0f;
                 }
                 if ((gPlayers == TWO_PLAYERS) &&
-                    (((j == D_800D48DC) && (D_801CE6F4[0] != 0)) || ((j == D_800D48E0) && (D_801CE6F4[1] != 0)))) {
+                    (((j == gPlayer1Rider) && (D_801CE6F4[0] != 0)) || ((j == gPlayer2Rider) && (D_801CE6F4[1] != 0)))) {
                     face = 4;
                 }
                 gDPLoadTextureBlock(gdl++, gPortraitFaces[D_80192690[j].unkB68 + face], G_IM_FMT_RGBA, G_IM_SIZ_16b,

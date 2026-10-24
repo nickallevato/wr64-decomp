@@ -60,19 +60,19 @@ typedef struct UnkStruct_8007CB68_1_s {
     s8 unkF;
 } UnkStruct_8007CB68_1;
 
-extern UnkStruct_8007CB68_2 D_801AEA18[];
+extern UnkStruct_8007CB68_2 gSaveImage[];
 extern UnkStruct_8007CB68_2 D_801AEB38;
 
 extern s32 D_800D8264;
 extern OSPfs D_801C3AD0;
-extern s32 D_800D8260;
+extern s32 gSaveEepromPresent;
 extern u8 D_801AEA68;
 extern s32 D_801CB308[1][3];
 extern s32 D_801CB32C;
-extern u8 D_800D8268[1];
-extern s32 D_800D826C[];
-extern UnkStruct_800D8578 D_800D8578[][3];
-extern UnkStruct_800D8578 D_801C26E8[][3];
+extern u8 gSaveCheckCode[1];
+extern s32 gSaveStuntOffsets[];
+extern UnkStruct_800D8578 gDefaultStuntRecords[][3];
+extern UnkStruct_800D8578 gStuntRecords[][3];
 extern s32 D_800D826A;
 extern u8 D_800D82D8;
 extern u8 D_800D82E8;
@@ -80,7 +80,7 @@ extern OSPfs D_801C3AD0;
 extern u8 D_801C23B0[];
 extern u8 D_800D8290[];
 extern u8 D_801AEBF0[];
-extern UnkStruct_8007CB68_2 D_801AEC18;
+extern UnkStruct_8007CB68_2 gSavePakImage;
 extern UnkStruct_8007B110 D_801AEA8A[];
 extern UnkStruct_8007B110 D_801AEC8A[];
 extern UnkStruct_8007B110 D_801C202C[8][3];
@@ -122,15 +122,15 @@ static const char devstr24[] = "EEPROM write error\n";
 
 s32 Save_GenCheckSum(u8*);
 void func_8007BBF0(void);
-s32 func_8007BDB8(void);
+s32 Save_EepromReset(void);
 s32 Save_PfsIsPlug(void);
-void func_8007B370(UnkStruct_8007CB68_2* arg);
+void Save_BuildDefaultImage(UnkStruct_8007CB68_2* arg);
 void func_8007B630(void);
 void func_8007B930(void);
-s32 func_8007BE64(void);
+s32 Save_EepromWriteAll(void);
 
 // Encode?
-s32 func_8007ADD0(s32 arg0) {
+s32 Save_EncodeChar(s32 arg0) {
     if ((arg0 >= 'A') && (arg0 < '[')) {
         return arg0 - 0x40;
     }
@@ -147,7 +147,7 @@ s32 func_8007ADD0(s32 arg0) {
 }
 
 // de-encode?
-s32 func_8007AE30(s32 arg0) {
+s32 Save_DecodeChar(s32 arg0) {
     if ((arg0 > 0) && (arg0 < 0x1B)) {
         return arg0 + '@';
     }
@@ -163,27 +163,27 @@ s32 func_8007AE30(s32 arg0) {
     return 0;
 }
 
-void func_8007AE8C(UnkStruct_func_8007AE8C* arg0, UnkStruct_func_8007AE8C* arg1) {
+void Save_PackInitials(UnkStruct_func_8007AE8C* arg0, UnkStruct_func_8007AE8C* arg1) {
     s32 sp1C;
     s32 sp18;
     s32 temp_t5;
 
-    sp1C = func_8007ADD0(arg1->unk0);
-    sp18 = func_8007ADD0(arg1->unk1);
-    temp_t5 = func_8007ADD0(arg1->unk2);
+    sp1C = Save_EncodeChar(arg1->unk0);
+    sp18 = Save_EncodeChar(arg1->unk1);
+    temp_t5 = Save_EncodeChar(arg1->unk2);
     arg0->unk0 = (((sp1C * 1024) + (sp18 * 32) + temp_t5) >> 8);
     arg0->unk1 = ((sp1C * 1024) + (sp18 * 32) + temp_t5) & 0xFF;
 }
 
-void func_8007AEFC(UnkStruct_8007AEFC* arg0, UnkStruct_8007AEFC* arg1) {
+void Save_UnpackInitials(UnkStruct_8007AEFC* arg0, UnkStruct_8007AEFC* arg1) {
     s32 sp1C = (arg1->unk1 & 0xFF) + ((arg1->unk0 & 0x7F) << 8);
 
-    arg0->unk0 = func_8007AE30((sp1C >> 10) & 0x1F);
-    arg0->unk1 = func_8007AE30((sp1C >> 5) & 0x1F);
-    arg0->unk2 = func_8007AE30(sp1C & 0x1F);
+    arg0->unk0 = Save_DecodeChar((sp1C >> 10) & 0x1F);
+    arg0->unk1 = Save_DecodeChar((sp1C >> 5) & 0x1F);
+    arg0->unk2 = Save_DecodeChar(sp1C & 0x1F);
 }
 
-void func_8007AF78(UnkStruct_func_8007AF78_1* arg0, UnkStruct_func_8007AF78_2* arg1) {
+void Save_PackRecord(UnkStruct_func_8007AF78_1* arg0, UnkStruct_func_8007AF78_2* arg1) {
     s32 temp_t3;
     unsigned char new_var;
     temp_t3 = arg0->unk0;
@@ -192,12 +192,12 @@ void func_8007AF78(UnkStruct_func_8007AF78_1* arg0, UnkStruct_func_8007AF78_2* a
     arg1->unk1 = (s8) new_var;
     new_var = temp_t3;
     arg1->unk2 = new_var ^ 0;
-    func_8007AE8C((UnkStruct_func_8007AE8C*) &arg1->unk3, (UnkStruct_func_8007AE8C*) &arg0->unk10);
+    Save_PackInitials((UnkStruct_func_8007AE8C*) &arg1->unk3, (UnkStruct_func_8007AE8C*) &arg0->unk10);
     arg1->unk3 = (arg1->unk3 ^ (arg0->unkB << 7));
     arg1->unk5 = arg0->unkC;
 }
 
-void func_8007AFF4(func_8007AFF4_arg0* arg0, func_8007AFF4_arg1* arg1) {
+void Save_UnpackRecord(func_8007AFF4_arg0* arg0, func_8007AFF4_arg1* arg1) {
     s32 var_v1;
     u8 temp_t1;
     s32 a3;
@@ -219,24 +219,24 @@ void func_8007AFF4(func_8007AFF4_arg0* arg0, func_8007AFF4_arg1* arg1) {
     temp_t1 >>= 5;
     arg1->unk4 = temp_t1 & 7;
 
-    func_8007AEFC((UnkStruct_8007AEFC*) &arg1->unk10, (UnkStruct_8007AEFC*) &arg0->unk3);
+    Save_UnpackInitials((UnkStruct_8007AEFC*) &arg1->unk10, (UnkStruct_8007AEFC*) &arg0->unk3);
 
     arg1->unk13 = 0;
     arg1->unk8 = (arg0->unk3 >> 7) & 1;
     arg1->unkC = arg0->unk5;
 }
 
-void func_8007B09C(UnkStruct_func_8007AF78_1* arg0, UnkStruct_func_8007AF78_2* arg1) {
+void Save_PackRecord5(UnkStruct_func_8007AF78_1* arg0, UnkStruct_func_8007AF78_2* arg1) {
     s32 temp_t3;
     temp_t3 = arg0->unk0;
     arg1->unk0 = ((((temp_t3) >> 16) & 0xFF) + (arg0->unk7 << 5));
     arg1->unk1 = (temp_t3 >> 8) & 0xFF;
     arg1->unk2 = temp_t3 & 0xFF;
-    func_8007AE8C((UnkStruct_func_8007AE8C*) &arg1->unk3, (UnkStruct_func_8007AE8C*) &arg0->unk10);
+    Save_PackInitials((UnkStruct_func_8007AE8C*) &arg1->unk3, (UnkStruct_func_8007AE8C*) &arg0->unk10);
     arg1->unk3 ^= (arg0->unkB << 7);
 }
 
-void func_8007B110(Unkstruct_8007B1AC_arg1* arg0, UnkStruct_8007B110* arg1) {
+void Save_UnpackRecord5(Unkstruct_8007B1AC_arg1* arg0, UnkStruct_8007B110* arg1) {
     u8 temp_t0 = arg0->unk0;
     u8 temp_a2 = arg0->unk1;
     u8 temp_a3 = arg0->unk2;
@@ -258,13 +258,13 @@ void func_8007B110(Unkstruct_8007B1AC_arg1* arg0, UnkStruct_8007B110* arg1) {
     arg1->unk0 = var_v1;
     arg1->unk4 = temp_t1 & 7;
 
-    func_8007AEFC((UnkStruct_8007AEFC*) ((u8*) arg1 + 0x10), (UnkStruct_8007AEFC*) &arg0->unk3);
+    Save_UnpackInitials((UnkStruct_8007AEFC*) ((u8*) arg1 + 0x10), (UnkStruct_8007AEFC*) &arg0->unk3);
 
     arg1->unk13 = 0;
     arg1->unk8 = (arg0->unk3 >> 7) & 1;
 }
 
-void func_8007B1AC(Unkstruct_8007B1AC_arg0* arg0, Unkstruct_8007B1AC_arg1* arg1) {
+void Save_PackStuntRecord(Unkstruct_8007B1AC_arg0* arg0, Unkstruct_8007B1AC_arg1* arg1) {
     s32 new_var2;
     unsigned short new_var;
     s32 temp_t3;
@@ -278,11 +278,11 @@ void func_8007B1AC(Unkstruct_8007B1AC_arg0* arg0, Unkstruct_8007B1AC_arg1* arg1)
     new_var3 = (s8) temp_t3;
     arg1->unk1 = (new_var2 = temp_t3 >> 8);
     arg1->unk2 = new_var3 & 0xFFFF;
-    func_8007AE8C((UnkStruct_func_8007AE8C*) &arg1->unk3, (UnkStruct_func_8007AE8C*) &arg0->unkC);
+    Save_PackInitials((UnkStruct_func_8007AE8C*) &arg1->unk3, (UnkStruct_func_8007AE8C*) &arg0->unkC);
     arg1->unk3 = (u8) (arg1->unk3 ^ (arg0->unkB << 7));
 }
 
-void func_8007B220(UnkStruct_8007B2BC* arg0, UnkStruct_8007B2BC* arg1) {
+void Save_UnpackStuntRecord(UnkStruct_8007B2BC* arg0, UnkStruct_8007B2BC* arg1) {
     s32 temp_t0 = (u8) arg0->unk0;
     s32 temp_a2 = (u8) arg0->unk1;
     s32 temp_a3 = (u8) arg0->unk2;
@@ -304,13 +304,13 @@ void func_8007B220(UnkStruct_8007B2BC* arg0, UnkStruct_8007B2BC* arg1) {
     dest_s32[0] = var_v1;
     dest_s32[1] = ((u32) temp_t0 >> 5) & 7;
 
-    func_8007AEFC((UnkStruct_8007AEFC*) (dest_u8 + 0xC), (UnkStruct_8007AEFC*) (src_u8 + 3));
+    Save_UnpackInitials((UnkStruct_8007AEFC*) (dest_u8 + 0xC), (UnkStruct_8007AEFC*) (src_u8 + 3));
 
     dest_u8[0xF] = 0;
     dest_s32[2] = (src_u8[3] >> 7) & 1;
 }
 
-void func_8007B2BC(s32 arg0, UnkStruct_8007B2BC* arg1) {
+void Save_Pack24(s32 arg0, UnkStruct_8007B2BC* arg1) {
     if (arg0 < 0) {
         arg0 = 0xFFFFFF;
     }
@@ -320,7 +320,7 @@ void func_8007B2BC(s32 arg0, UnkStruct_8007B2BC* arg1) {
     arg1->unk2 = arg0;
 }
 
-s32 func_8007B2E4(UnkStruct_8007B2E4* arg0) {
+s32 Save_Unpack24(UnkStruct_8007B2E4* arg0) {
     u8 new_var1 = arg0->unk_0;
     u8 new_var2 = arg0->unk_1;
     u8 new_var3 = arg0->unk_2;
@@ -341,7 +341,7 @@ extern s32 D_801CB28C;
 extern s32 D_801CB290;
 extern s32 D_801CB294;
 
-void func_8007B31C(void) {
+void Save_PackOptions(void) {
     D_801AEA24 = D_801CB280;
     D_801AEA20 = (s8) D_801CB288;
     D_801AEA21 = (s8) D_801CB28C;
@@ -349,7 +349,7 @@ void func_8007B31C(void) {
     D_801AEA23 = (s8) D_801CB294;
 }
 
-void func_8007B370(UnkStruct_8007CB68_2* arg) {
+void Save_BuildDefaultImage(UnkStruct_8007CB68_2* arg) {
     u8* var_u8;
     s32 j;
     s32 k;
@@ -364,28 +364,28 @@ void func_8007B370(UnkStruct_8007CB68_2* arg) {
     }
 
     for (i = 0; i < 2; i++) {
-        ((u8*) arg)[i] = D_800D8268[i];
+        ((u8*) arg)[i] = gSaveCheckCode[i];
     }
 
     for (i = 0; i < 8; i++) {
         dst_u32 = (u32*) arg;
         for (j = 0; j < 4; j++) {
-            func_8007AF78(&D_800D82F8[i][j], &arg->unk60[i][j]);
+            Save_PackRecord(&D_800D82F8[i][j], &arg->unk60[i][j]);
         }
 
         for (j = 0; j < 2; j++) {
-            func_8007B2BC(D_800D82F8[i][3].unk0 * (j + 1), &((UnkStruct_8007CB68_2*) dst_u32)->unk1A8[i][j]);
+            Save_Pack24(D_800D82F8[i][3].unk0 * (j + 1), &((UnkStruct_8007CB68_2*) dst_u32)->unk1A8[i][j]);
         }
     }
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007B1AC(&D_800D8578[i][j], &arg->unk120[i][j]);
+            Save_PackStuntRecord(&gDefaultStuntRecords[i][j], &arg->unk120[i][j]);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        func_8007B09C(D_800D8728, (&arg->unk1D8[i]));
+        Save_PackRecord5(D_800D8728, (&arg->unk1D8[i]));
     }
 
     for (i = 0; i < 4; i++) {
@@ -410,14 +410,14 @@ void func_8007B370(UnkStruct_8007CB68_2* arg) {
     }
 }
 
-extern UnkStruct_func_8007AF78_1 D_801C1FF0[][3];
-extern UnkStruct_func_8007AF78_1 D_801C22C0[];
-extern s32 D_801C24A0[][9];
+extern UnkStruct_func_8007AF78_1 gBestTimes[][3];
+extern UnkStruct_func_8007AF78_1 gBestLaps[];
+extern s32 gBestCheckpointTimes[][9];
 
-// Unpacks the EEPROM image into the records (courses 1-8 and the D_801C26E8 table), the four names and the options.
+// Unpacks the EEPROM image into the records (courses 1-8 and the gStuntRecords table), the four names and the options.
 #ifdef NON_MATCHING
 // Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
-// loop and spills the D_801C22C0 pointer. Score 4527.
+// loop and spills the gBestLaps pointer. Score 4527.
 void func_8007B630(void) {
     s32 i;
     s32 j;
@@ -425,37 +425,37 @@ void func_8007B630(void) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007AFF4((func_8007AFF4_arg0*) D_801AEA18->unk60[i][j], (func_8007AFF4_arg1*) &D_801C1FF0[i + 1][j]);
+            Save_UnpackRecord((func_8007AFF4_arg0*) gSaveImage->unk60[i][j], (func_8007AFF4_arg1*) &gBestTimes[i + 1][j]);
         }
-        func_8007AFF4((func_8007AFF4_arg0*) D_801AEA18->unk60[i][j], (func_8007AFF4_arg1*) &D_801C22C0[i + 1]);
+        Save_UnpackRecord((func_8007AFF4_arg0*) gSaveImage->unk60[i][j], (func_8007AFF4_arg1*) &gBestLaps[i + 1]);
         for (j = 0; j < 2; j++) {
-            D_801C24A0[i + 1][j] = func_8007B2E4((UnkStruct_8007B2E4*) D_801AEA18->unk1A8[i][j]);
+            gBestCheckpointTimes[i + 1][j] = Save_Unpack24((UnkStruct_8007B2E4*) gSaveImage->unk1A8[i][j]);
         }
     }
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007B220((UnkStruct_8007B2BC*) D_801AEA18->unk120[i][j], (UnkStruct_8007B2BC*) &D_801C26E8[i][j]);
+            Save_UnpackStuntRecord((UnkStruct_8007B2BC*) gSaveImage->unk120[i][j], (UnkStruct_8007B2BC*) &gStuntRecords[i][j]);
         }
     }
     for (i = 0; i < 8; i++) {
-        func_8007B110((Unkstruct_8007B1AC_arg1*) D_801AEA18->unk1D8[i], (UnkStruct_8007B110*) &D_801C23B0[(i + 1) * 0x14]);
+        Save_UnpackRecord5((Unkstruct_8007B1AC_arg1*) gSaveImage->unk1D8[i], (UnkStruct_8007B110*) &D_801C23B0[(i + 1) * 0x14]);
     }
     for (i = 0; i < 4; i++) {
-        Libc_strncpy(&D_801CB298[i], D_801AEA18->unk10[i], 10);
-        D_801CB298[i].unk_0[10] = 0;
+        Libc_strncpy(&gPlayerNames[i], gSaveImage->unk10[i], 10);
+        gPlayerNames[i].unk_0[10] = 0;
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 3; j++) {
-                D_801CB298[(k * 4) + i].unk_B[j] = D_801AEA18->unk38[k][i][j];
+                gPlayerNames[(k * 4) + i].unk_B[j] = gSaveImage->unk38[k][i][j];
             }
         }
     }
     D_801CB280 = D_801AEA24;
     for (i = 0; i < 4; i++) {
-        (&D_801CB288)[i] = (s8) D_801AEA18->unk4[4 + i];
+        (&D_801CB288)[i] = (s8) gSaveImage->unk4[4 + i];
     }
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            D_801CB308[i][j] = (s8) D_801AEA18->unk50[i][j];
+            D_801CB308[i][j] = (s8) gSaveImage->unk50[i][j];
         }
     }
 }
@@ -463,10 +463,10 @@ void func_8007B630(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B630.s")
 #endif
 
-// Packs the records, the names and the options (func_8007B31C) into the EEPROM image; the inverse of func_8007B630.
+// Packs the records, the names and the options (Save_PackOptions) into the EEPROM image; the inverse of func_8007B630.
 #ifdef NON_MATCHING
 // Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
-// loop and spills the D_801C22C0 pointer. Score 4557.
+// loop and spills the gBestLaps pointer. Score 4557.
 void func_8007B930(void) {
     s32 i;
     s32 j;
@@ -474,35 +474,35 @@ void func_8007B930(void) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007AF78(&D_801C1FF0[i + 1][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+            Save_PackRecord(&gBestTimes[i + 1][j], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
         }
-        func_8007AF78(&D_801C22C0[i + 1], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        Save_PackRecord(&gBestLaps[i + 1], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
         for (j = 0; j < 2; j++) {
-            func_8007B2BC(D_801C24A0[i + 1][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+            Save_Pack24(gBestCheckpointTimes[i + 1][j], (UnkStruct_8007B2BC*) gSaveImage->unk1A8[i][j]);
         }
     }
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007B1AC((Unkstruct_8007B1AC_arg0*) &D_801C26E8[i][j],
-                          (Unkstruct_8007B1AC_arg1*) D_801AEA18->unk120[i][j]);
+            Save_PackStuntRecord((Unkstruct_8007B1AC_arg0*) &gStuntRecords[i][j],
+                          (Unkstruct_8007B1AC_arg1*) gSaveImage->unk120[i][j]);
         }
     }
     for (i = 0; i < 8; i++) {
-        func_8007B09C((UnkStruct_func_8007AF78_1*) &D_801C23B0[(i + 1) * 0x14],
-                      (UnkStruct_func_8007AF78_2*) D_801AEA18->unk1D8[i]);
+        Save_PackRecord5((UnkStruct_func_8007AF78_1*) &D_801C23B0[(i + 1) * 0x14],
+                      (UnkStruct_func_8007AF78_2*) gSaveImage->unk1D8[i]);
     }
     for (i = 0; i < 4; i++) {
-        Libc_strncpy(D_801AEA18->unk10[i], &D_801CB298[i], 10);
+        Libc_strncpy(gSaveImage->unk10[i], &gPlayerNames[i], 10);
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 3; j++) {
-                D_801AEA18->unk38[k][i][j] = D_801CB298[(k * 4) + i].unk_B[j];
+                gSaveImage->unk38[k][i][j] = gPlayerNames[(k * 4) + i].unk_B[j];
             }
         }
     }
-    func_8007B31C();
+    Save_PackOptions();
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            D_801AEA18->unk50[i][j] = D_801CB308[i][j];
+            gSaveImage->unk50[i][j] = D_801CB308[i][j];
         }
     }
 }
@@ -536,26 +536,26 @@ s32 Save_EepromRead(void) {
     s32 var_a1;
     s32 i;
 
-    if (osEepromLongRead(&D_801540D0, 0x0, (u8*) D_801AEA18, 0x200) != 0) {
+    if (osEepromLongRead(&D_801540D0, 0x0, (u8*) gSaveImage, 0x200) != 0) {
         return 2;
     }
 
     for (i = 0, var_a1 = 0; i < 2; i++) {
-        if (D_801AEA18->unk4[i - 4] != D_800D8268[i]) {
+        if (gSaveImage->unk4[i - 4] != gSaveCheckCode[i]) {
             var_a1 = 1;
             break;
         }
     }
 
     if (var_a1 == 0) {
-        temp_v0 = Save_GenCheckSum((u8*) &D_801AEA18);
-        if (temp_v0 != D_801AEA18->unk2) {
+        temp_v0 = Save_GenCheckSum((u8*) &gSaveImage);
+        if (temp_v0 != gSaveImage->unk2) {
             var_a1 = 1;
             func_8007BBF0();
         }
     }
     if (var_a1 != 0) {
-        temp_v0 = func_8007BDB8();
+        temp_v0 = Save_EepromReset();
         if (temp_v0 != 0) {
             return temp_v0;
         }
@@ -563,39 +563,39 @@ s32 Save_EepromRead(void) {
     return 0;
 }
 
-s32 func_8007BD20(void) {
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) &D_801AEA18);
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) &D_801AEA18, 0x200) != 0) {
+s32 Save_EepromWrite(void) {
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) &gSaveImage);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) &gSaveImage, 0x200) != 0) {
         return 3;
     }
     return 0;
 }
 
-extern s32 D_800D8260;
+extern s32 gSaveEepromPresent;
 
-s32 func_8007BD70(void) {
+s32 Save_EepromProbe(void) {
     if (osEepromProbe(&D_801540D0) == 0) {
-        D_800D8260 = 0;
+        gSaveEepromPresent = 0;
         return 1;
     }
-    D_800D8260 = 1;
+    gSaveEepromPresent = 1;
     return 0;
 }
 
-s32 func_8007BDB8(void) {
-    if (D_800D8260 == 0) {
+s32 Save_EepromReset(void) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
-    func_8007B370(&D_801AEA18);
+    Save_BuildDefaultImage(&gSaveImage);
     func_8007B630();
-    return func_8007BD20();
+    return Save_EepromWrite();
 }
 
-s32 func_8007BE00(void) {
+s32 Save_EepromLoad(void) {
     s32 temp_v0;
 
-    if (D_800D8260 == 0) {
-        func_8007B370(&D_801AEA18);
+    if (gSaveEepromPresent == 0) {
+        Save_BuildDefaultImage(&gSaveImage);
         func_8007B630();
         return 1;
     }
@@ -607,25 +607,25 @@ s32 func_8007BE00(void) {
     return 0;
 }
 
-s32 func_8007BE64(void) {
-    if (D_800D8260 == 0) {
+s32 Save_EepromWriteAll(void) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
     func_8007B930();
-    return func_8007BD20();
+    return Save_EepromWrite();
 }
 
 extern s32 D_800D82B0[];
 extern u8 D_801AEBC0[];
 
-// Copies course's records (the three D_801C1FF0 entries, D_801C22C0, and two D_801C24A0 values) into the
+// Copies course's records (the three gBestTimes entries, gBestLaps, and two gBestCheckpointTimes values) into the
 // EEPROM image and writes the header, the course's unk60 row and its unk1A8 block.
-s32 func_8007BEA4(s32 course) {
+s32 Save_EepromWriteCourse(s32 course) {
     s32 off;
     s32 j;
     s32 i;
 
-    if (D_800D8260 == 0) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
     if ((course <= 0) || (course >= 9)) {
@@ -633,34 +633,34 @@ s32 func_8007BEA4(s32 course) {
     }
     i = course - 1;
     for (j = 0; j < 3; j++) {
-        func_8007AF78(&D_801C1FF0[course][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        Save_PackRecord(&gBestTimes[course][j], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
     }
-    func_8007AF78(&D_801C22C0[course], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    Save_PackRecord(&gBestLaps[course], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
     for (j = 0; j < 2; j++) {
-        func_8007B2BC(D_801C24A0[course][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+        Save_Pack24(gBestCheckpointTimes[course][j], (UnkStruct_8007B2BC*) gSaveImage->unk1A8[i][j]);
     }
-    func_8007B31C();
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+    Save_PackOptions();
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) gSaveImage, 0x10) != 0) {
         return 3;
     }
-    if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA18->unk60[i] - (u32) D_801AEA18) >> 3,
-                          (u8*) D_801AEA18->unk60[i], 0x18) != 0) {
+    if (osEepromLongWrite(&D_801540D0, ((u32) gSaveImage->unk60[i] - (u32) gSaveImage) >> 3,
+                          (u8*) gSaveImage->unk60[i], 0x18) != 0) {
         return 3;
     }
     off = D_800D82B0[i];
-    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &D_801AEA18) + off) >> 3,
-                          (u8*) D_801AEA18->unk1A8 + off, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &gSaveImage) + off) >> 3,
+                          (u8*) gSaveImage->unk1A8 + off, 0x10) != 0) {
         return 3;
     }
     return 0;
 }
 
-s32 func_8007C0B8(s32 arg0) {
+s32 Save_EepromWriteStunt(s32 arg0) {
     s32 temp_v0;
     s32 var_v0;
 
-    if (D_800D8260 == 0) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
     if (arg0 >= 9) {
@@ -668,28 +668,28 @@ s32 func_8007C0B8(s32 arg0) {
     }
 
     for (var_v0 = 0; var_v0 < 3; var_v0++) {
-        func_8007B1AC((Unkstruct_8007B1AC_arg0*) &D_801C26E8[arg0][var_v0],
-                      (Unkstruct_8007B1AC_arg1*) D_801AEA18->unk120[arg0][var_v0]);
+        Save_PackStuntRecord((Unkstruct_8007B1AC_arg0*) &gStuntRecords[arg0][var_v0],
+                      (Unkstruct_8007B1AC_arg1*) gSaveImage->unk120[arg0][var_v0]);
     }
 
-    func_8007B31C();
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+    Save_PackOptions();
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) gSaveImage, 0x10) != 0) {
         return 3;
     }
-    temp_v0 = D_800D826C[arg0];
-    if (osEepromLongWrite(&D_801540D0, ((((uintptr_t) &D_801AEB38 - (uintptr_t) &D_801AEA18) + temp_v0)) >> 3,
-                          (u8*) D_801AEA18->unk120 + temp_v0, 0x18) != 0) {
+    temp_v0 = gSaveStuntOffsets[arg0];
+    if (osEepromLongWrite(&D_801540D0, ((((uintptr_t) &D_801AEB38 - (uintptr_t) &gSaveImage) + temp_v0)) >> 3,
+                          (u8*) gSaveImage->unk120 + temp_v0, 0x18) != 0) {
         return 3;
     }
     return 0;
 }
 
-s32 func_8007C204(s32 arg0) {
+s32 Save_EepromWriteRecord5(s32 arg0) {
     s32 sp24[3];
     s32 temp_v0;
 
-    if (D_800D8260 == 0) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
 
@@ -699,69 +699,69 @@ s32 func_8007C204(s32 arg0) {
 
     sp24[0] = arg0 - 1;
 
-    func_8007B09C(&D_801C23B0[arg0 * 0x14], ((u8*) D_801AEA18 + (arg0 * 5) + 0x1D3));
-    func_8007B31C();
+    Save_PackRecord5(&D_801C23B0[arg0 * 0x14], ((u8*) gSaveImage + (arg0 * 5) + 0x1D3));
+    Save_PackOptions();
 
-    D_801AEA18[0].unk2 = Save_GenCheckSum(D_801AEA18);
+    gSaveImage[0].unk2 = Save_GenCheckSum(gSaveImage);
 
-    if (osEepromLongWrite(&D_801540D0, 0, (u8*) D_801AEA18, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, 0, (u8*) gSaveImage, 0x10) != 0) {
         return 3;
     }
 
     temp_v0 = *(s32*) (&D_800D8290[sp24[0] * 4]);
 
-    if (osEepromLongWrite(&D_801540D0, ((u32) (((u8*) D_801AEBF0 - (u8*) D_801AEA18) + temp_v0) >> 3),
-                          (u8*) &D_801AEA18[0] + temp_v0 + 0x1D8, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, ((u32) (((u8*) D_801AEBF0 - (u8*) gSaveImage) + temp_v0) >> 3),
+                          (u8*) &gSaveImage[0] + temp_v0 + 0x1D8, 0x10) != 0) {
         return 3;
     }
 
     return 0;
 }
 
-s32 func_8007C31C(void) {
+s32 Save_EepromWriteNames(void) {
     u8* var_s1;
     s32 var_s2;
     u32 k;
     s32 var_v0;
 
-    if (D_800D8260 == 0) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
 
     var_s1 = &D_801CB308[0];
 
     for (var_s2 = 0; var_s2 < 4; var_s2++) {
-        Libc_strncpy(&D_801AEA28[var_s2 * 10], (&D_801CB298[var_s2]), 10);
+        Libc_strncpy(&D_801AEA28[var_s2 * 10], (&gPlayerNames[var_s2]), 10);
         for (k = 0; k < 2; k++) {
             for (var_v0 = 0; var_v0 < 3; var_v0++) {
-                D_801AEA18->unk38[k][var_s2][var_v0] = D_801CB298[(k * 4) + var_s2].unk_B[var_v0];
+                gSaveImage->unk38[k][var_s2][var_v0] = gPlayerNames[(k * 4) + var_s2].unk_B[var_v0];
             }
         }
     }
 
-    func_8007B31C();
+    Save_PackOptions();
 
-    D_801AEA18->unk2 = Save_GenCheckSum(D_801AEA18);
+    gSaveImage->unk2 = Save_GenCheckSum(gSaveImage);
 
-    if (osEepromLongWrite(&D_801540D0, 0, D_801AEA18, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, 0, gSaveImage, 0x10) != 0) {
         k = 0;
         return 3;
     }
 
-    if (osEepromLongWrite(&D_801540D0, ((u32) (D_801AEA28 - ((u8*) D_801AEA18))) >> 3, D_801AEA28, 0x40) != 0) {
+    if (osEepromLongWrite(&D_801540D0, ((u32) (D_801AEA28 - ((u8*) gSaveImage))) >> 3, D_801AEA28, 0x40) != 0) {
         return 3;
     }
 
     return 0;
 }
 
-s32 func_8007C494(void) {
-    if (D_800D8260 == 0) {
+s32 Save_EepromWriteHeader(void) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
-    func_8007B31C();
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+    Save_PackOptions();
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) gSaveImage, 0x10) != 0) {
         return 3;
     }
     return 0;
@@ -771,23 +771,23 @@ int func_8007C50C(void) {
     int i;
     int j;
 
-    if (D_800D8260 == 0) {
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            D_801AEA18->unk50[i][j] = D_801CB308[i][j];
+            gSaveImage->unk50[i][j] = D_801CB308[i][j];
         }
     }
 
-    func_8007B31C();
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) &D_801AEA18);
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) &D_801AEA18, 16) != 0) {
+    Save_PackOptions();
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) &gSaveImage);
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) &gSaveImage, 16) != 0) {
         return 3;
     }
 
-    if (osEepromLongWrite(&D_801540D0, ((u32) ((u32) &D_801AEA68 - (u32) &D_801AEA18->unk0) >> 3), &D_801AEA68, 16) !=
+    if (osEepromLongWrite(&D_801540D0, ((u32) ((u32) &D_801AEA68 - (u32) &gSaveImage->unk0) >> 3), &D_801AEA68, 16) !=
         0) {
         return 3;
     }
@@ -795,7 +795,7 @@ int func_8007C50C(void) {
 }
 
 // Resets course's records to the defaults (D_800D82F8, D_800D8728) and writes them to the EEPROM.
-s32 func_8007C604(s32 course) {
+s32 Save_EepromResetCourse(s32 course) {
     s32 off1;
     s32 off2;
     s32 off3;
@@ -805,82 +805,82 @@ s32 func_8007C604(s32 course) {
 
     i = course - 1;
     for (j = 0; j < 3; j++) {
-        D_801C1FF0[course][j] = D_800D82F8[i][j];
+        gBestTimes[course][j] = D_800D82F8[i][j];
     }
-    D_801C22C0[course] = D_800D82F8[i][j];
+    gBestLaps[course] = D_800D82F8[i][j];
     for (j = 0; j < 2; j++) {
-        D_801C24A0[course][j] = D_800D82F8[i][3].unk0 * (j + 1);
+        gBestCheckpointTimes[course][j] = D_800D82F8[i][3].unk0 * (j + 1);
     }
     lap = (UnkStruct_func_8007AF78_1*) &D_801C23B0[course * 0x14];
     *lap = *(UnkStruct_func_8007AF78_1*) D_800D8728;
     for (j = 0; j < 3; j++) {
-        func_8007AF78(&D_801C1FF0[course][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        Save_PackRecord(&gBestTimes[course][j], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
     }
-    func_8007AF78(&D_801C22C0[course], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    Save_PackRecord(&gBestLaps[course], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
     for (j = 0; j < 2; j++) {
-        func_8007B2BC(D_801C24A0[course][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+        Save_Pack24(gBestCheckpointTimes[course][j], (UnkStruct_8007B2BC*) gSaveImage->unk1A8[i][j]);
     }
-    func_8007B09C(lap, (UnkStruct_func_8007AF78_2*) D_801AEA18->unk1D8[i]);
-    func_8007B31C();
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
-    if (D_800D8260 == 0) {
+    Save_PackRecord5(lap, (UnkStruct_func_8007AF78_2*) gSaveImage->unk1D8[i]);
+    Save_PackOptions();
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) gSaveImage, 0x10) != 0) {
         return 3;
     }
-    if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA18->unk60[i] - (u32) D_801AEA18) >> 3,
-                          (u8*) D_801AEA18->unk60[i], 0x18) != 0) {
+    if (osEepromLongWrite(&D_801540D0, ((u32) gSaveImage->unk60[i] - (u32) gSaveImage) >> 3,
+                          (u8*) gSaveImage->unk60[i], 0x18) != 0) {
         return 3;
     }
-    off1 = D_800D826C[course];
-    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) &D_801AEB38 - (uintptr_t) &D_801AEA18) + off1) >> 3,
-                          (u8*) D_801AEA18->unk120 + off1, 0x18) != 0) {
+    off1 = gSaveStuntOffsets[course];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) &D_801AEB38 - (uintptr_t) &gSaveImage) + off1) >> 3,
+                          (u8*) gSaveImage->unk120 + off1, 0x18) != 0) {
         return 3;
     }
     off2 = D_800D82B0[i];
-    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &D_801AEA18) + off2) >> 3,
-                          (u8*) D_801AEA18->unk1A8 + off2, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &gSaveImage) + off2) >> 3,
+                          (u8*) gSaveImage->unk1A8 + off2, 0x10) != 0) {
         return 3;
     }
     off3 = *(s32*) &D_800D8290[i * 4];
-    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBF0 - (uintptr_t) &D_801AEA18) + off3) >> 3,
-                          (u8*) D_801AEA18->unk1D8 + off3, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBF0 - (uintptr_t) &gSaveImage) + off3) >> 3,
+                          (u8*) gSaveImage->unk1D8 + off3, 0x10) != 0) {
         return 3;
     }
     return 0;
 }
 
-s32 func_8007C9D4(s32 arg0) {
+s32 Save_EepromResetStunt(s32 arg0) {
     s32 temp_v0;
     s32 var_v0;
 
     for (var_v0 = 0; var_v0 < 3; var_v0++) {
-        D_801C26E8[arg0][var_v0] = D_800D8578[arg0][var_v0];
+        gStuntRecords[arg0][var_v0] = gDefaultStuntRecords[arg0][var_v0];
     }
 
     for (var_v0 = 0; var_v0 < 3; var_v0++) {
-        func_8007B1AC((Unkstruct_8007B1AC_arg0*) &D_801C26E8[arg0][var_v0],
-                      (Unkstruct_8007B1AC_arg1*) D_801AEA18->unk120[arg0][var_v0]);
+        Save_PackStuntRecord((Unkstruct_8007B1AC_arg0*) &gStuntRecords[arg0][var_v0],
+                      (Unkstruct_8007B1AC_arg1*) gSaveImage->unk120[arg0][var_v0]);
     }
 
-    func_8007B31C();
-    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
-    if (D_800D8260 == 0) {
+    Save_PackOptions();
+    gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
+    if (gSaveEepromPresent == 0) {
         return 1;
     }
-    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) gSaveImage, 0x10) != 0) {
         return 3;
     }
-    temp_v0 = D_800D826C[arg0];
-    if (osEepromLongWrite(&D_801540D0, ((((uintptr_t) &D_801AEB38 - (uintptr_t) &D_801AEA18) + temp_v0)) >> 3,
-                          (u8*) D_801AEA18->unk120 + temp_v0, 0x18) != 0) {
+    temp_v0 = gSaveStuntOffsets[arg0];
+    if (osEepromLongWrite(&D_801540D0, ((((uintptr_t) &D_801AEB38 - (uintptr_t) &gSaveImage) + temp_v0)) >> 3,
+                          (u8*) gSaveImage->unk120 + temp_v0, 0x18) != 0) {
         return 3;
     }
     return 0;
 }
 
-void func_8007CB68(void) {
+void Save_MergePakImage(void) {
     s32 i;
     s32 j;
     UnkStruct_8007CB68_1* new_var;
@@ -895,13 +895,13 @@ void func_8007CB68(void) {
     UnkStruct_8007CB68_1 buf_b[3];
     UnkStruct_8007CB68_1 buf_tmp;
 
-    eep = (UnkStruct_8007CB68_2*) D_801AEA18;
+    eep = (UnkStruct_8007CB68_2*) gSaveImage;
     new_var = buf_b;
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007AFF4(((UnkStruct_8007CB68_2*) D_801AEA18)->unk60[i][j], &rec_a[j]);
-            func_8007AFF4(((UnkStruct_8007CB68_2*) (&D_801AEC18))->unk60[i][j], &rec_b[j]);
+            Save_UnpackRecord(((UnkStruct_8007CB68_2*) gSaveImage)->unk60[i][j], &rec_a[j]);
+            Save_UnpackRecord(((UnkStruct_8007CB68_2*) (&gSavePakImage))->unk60[i][j], &rec_b[j]);
         }
 
         changed = 0;
@@ -929,43 +929,43 @@ void func_8007CB68(void) {
         }
 
         for (j = 0; j < 3; j++) {
-            func_8007AF78(&rec_a[j], ((UnkStruct_8007CB68_2*) D_801AEA18)->unk60[i][j]);
+            Save_PackRecord(&rec_a[j], ((UnkStruct_8007CB68_2*) gSaveImage)->unk60[i][j]);
         }
 
         if (changed) {
             for (j = 0; j < 2; j++) {
                 for (k = 0; k < 3; k++) {
-                    ((UnkStruct_8007CB68_2*) D_801AEA18)->unk1A8[i][j][k] =
-                        ((UnkStruct_8007CB68_2*) (&D_801AEC18))->unk1A8[i][j][k];
+                    ((UnkStruct_8007CB68_2*) gSaveImage)->unk1A8[i][j][k] =
+                        ((UnkStruct_8007CB68_2*) (&gSavePakImage))->unk1A8[i][j][k];
                 }
             }
         }
     }
 
     for (i = 0; i < 8; i++) {
-        func_8007AFF4(((UnkStruct_8007CB68_2*) D_801AEA18)->unk60[i][3], &rec_a[0]);
-        func_8007AFF4(((UnkStruct_8007CB68_2*) (&D_801AEC18))->unk60[i][3], &rec_b[0]);
+        Save_UnpackRecord(((UnkStruct_8007CB68_2*) gSaveImage)->unk60[i][3], &rec_a[0]);
+        Save_UnpackRecord(((UnkStruct_8007CB68_2*) (&gSavePakImage))->unk60[i][3], &rec_b[0]);
         if (rec_b[0].unk0 < rec_a[0].unk0) {
             new_var2 = rec_b;
             rec_a[0] = new_var2[0];
         }
-        func_8007AF78(&rec_a[0], ((UnkStruct_8007CB68_2*) D_801AEA18)->unk60[i][3]);
+        Save_PackRecord(&rec_a[0], ((UnkStruct_8007CB68_2*) gSaveImage)->unk60[i][3]);
     }
 
     for (i = 0; i < 8; i++) {
-        func_8007B110(((UnkStruct_8007CB68_2*) D_801AEA18)->unk1D8[i], &rec_a[0]);
-        func_8007B110(((UnkStruct_8007CB68_2*) (&D_801AEC18))->unk1D8[i], &rec_b[0]);
+        Save_UnpackRecord5(((UnkStruct_8007CB68_2*) gSaveImage)->unk1D8[i], &rec_a[0]);
+        Save_UnpackRecord5(((UnkStruct_8007CB68_2*) (&gSavePakImage))->unk1D8[i], &rec_b[0]);
         if (rec_b[0].unk0 < rec_a[0].unk0) {
             new_var2 = rec_b;
             rec_a[0] = new_var2[0];
         }
-        func_8007B09C(&rec_a[0], ((UnkStruct_8007CB68_2*) D_801AEA18)->unk1D8[i]);
+        Save_PackRecord5(&rec_a[0], ((UnkStruct_8007CB68_2*) gSaveImage)->unk1D8[i]);
     }
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 3; j++) {
-            func_8007B220(((UnkStruct_8007CB68_2*) D_801AEA18)->unk120[i][j], &buf_a[j]);
-            func_8007B220(((UnkStruct_8007CB68_2*) (&D_801AEC18))->unk120[i][j], &buf_b[j]);
+            Save_UnpackStuntRecord(((UnkStruct_8007CB68_2*) gSaveImage)->unk120[i][j], &buf_a[j]);
+            Save_UnpackStuntRecord(((UnkStruct_8007CB68_2*) (&gSavePakImage))->unk120[i][j], &buf_b[j]);
         }
 
         for (j = 0; j < 3; j++) {
@@ -989,7 +989,7 @@ void func_8007CB68(void) {
         }
 
         for (j = 0; j < 3; j++) {
-            func_8007B1AC(&buf_a[j], ((UnkStruct_8007CB68_2*) D_801AEA18)->unk120[i][j]);
+            Save_PackStuntRecord(&buf_a[j], ((UnkStruct_8007CB68_2*) gSaveImage)->unk120[i][j]);
         }
     }
 }
@@ -1113,9 +1113,9 @@ typedef struct SaveBlock {
     u32 w[0x80];
 } SaveBlock;
 
-// Reads the save file from the Controller Pak into D_801AEC18, checks its code and checksum, and takes part of it:
+// Reads the save file from the Controller Pak into gSavePakImage, checks its code and checksum, and takes part of it:
 // mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
-// merged records (func_8007CB68). The result is written to the EEPROM.
+// merged records (Save_MergePakImage). The result is written to the EEPROM.
 #ifdef NON_MATCHING
 // The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 931.
 extern u8 D_801AEA78[];
@@ -1137,24 +1137,24 @@ s32 func_8007D2D4(s32 mode) {
         second = 1;
     }
     if (osPfsFindFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, &fileNo) == 0) {
-        ret = osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &D_801AEC18);
+        ret = osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &gSavePakImage);
         switch (ret) {
             case 0:
                 for (i = 0; i < 2; i++) {
-                    if (D_801AEC18.unk4[i - 4] != D_800D8268[i]) {
+                    if (gSavePakImage.unk4[i - 4] != gSaveCheckCode[i]) {
                         return 6;
                     }
                 }
-                if (Save_GenCheckSum((u8*) &D_801AEC18) != D_801AEC18.unk2) {
+                if (Save_GenCheckSum((u8*) &gSavePakImage) != gSavePakImage.unk2) {
                     return 6;
                 }
                 func_8007B930();
                 switch (mode) {
                     case 0:
                         // FAKE: UnkStruct_8007CB68_2 is only 2-byte aligned, so a plain struct copy uses lwl/lwr
-                        *(SaveBlock*) D_801AEA18 = *(SaveBlock*) &D_801AEC18;
+                        *(SaveBlock*) gSaveImage = *(SaveBlock*) &gSavePakImage;
                         func_8007B630();
-                        if (func_8007BD20() != 0) {
+                        if (Save_EepromWrite() != 0) {
                             return 5;
                         }
                         break;
@@ -1164,26 +1164,26 @@ s32 func_8007D2D4(s32 mode) {
                     case 4:
                         n = mode - 1;
                         if (second == 0) {
-                            Libc_strncpy(D_801AEA18->unk10[n], D_801AEC18.unk10[n], 10);
+                            Libc_strncpy(gSaveImage->unk10[n], gSavePakImage.unk10[n], 10);
                         }
                         for (i = 0; i < 3; i++) {
-                            D_801AEA18->unk38[second][n][i] = D_801AEC18.unk38[0][n][i];
+                            gSaveImage->unk38[second][n][i] = gSavePakImage.unk38[0][n][i];
                         }
                         func_8007B630();
-                        if (func_8007C31C() != 0) {
+                        if (Save_EepromWriteNames() != 0) {
                             return 5;
                         }
                         break;
                     case 5:
-                        func_8007CB68();
+                        Save_MergePakImage();
                         func_8007B630();
-                        func_8007B31C();
-                        D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
-                        if (D_800D8260 != 0) {
-                            if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+                        Save_PackOptions();
+                        gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
+                        if (gSaveEepromPresent != 0) {
+                            if (osEepromLongWrite(&D_801540D0, 0U, (u8*) gSaveImage, 0x10) != 0) {
                                 return 3;
                             }
-                            if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA78 - (u32) D_801AEA18) >> 3, D_801AEA78,
+                            if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA78 - (u32) gSaveImage) >> 3, D_801AEA78,
                                                   0x1A0) != 0) {
                                 return 5;
                             }
@@ -1211,7 +1211,7 @@ s32 func_8007D2D4(s32 mode) {
 
 // Writes the save image to the Controller Pak file (making it when there is none): mode 0 the whole image, 1-4 name
 // mode - 1 (0x80 added is ignored), 5 the records. When the file is new or its data is bad, the rest of the image
-// starts from the defaults (func_8007B370).
+// starts from the defaults (Save_BuildDefaultImage).
 #ifdef NON_MATCHING
 // Same calls and jump tables; the original places the code that follows the file switch right after its case 0
 // (the new-file case jumps back into it), so blocks are ordered differently and registers differ. Score 4441.
@@ -1262,7 +1262,7 @@ s32 func_8007D614(s32 mode) {
     }
     func_8007B930();
     if ((mode != 0) && (fresh == 0)) {
-        switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &D_801AEC18)) {
+        switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &gSavePakImage)) {
             case 2:
             case 3:
             case 4:
@@ -1271,61 +1271,61 @@ s32 func_8007D614(s32 mode) {
                 return 2;
             default:
                 for (i = 0; i < 2; i++) {
-                    if (D_801AEC18.unk4[i - 4] != D_800D8268[i]) {
+                    if (gSavePakImage.unk4[i - 4] != gSaveCheckCode[i]) {
                         fresh = 1;
                     }
                 }
-                if (Save_GenCheckSum((u8*) &D_801AEC18) != D_801AEC18.unk2) {
+                if (Save_GenCheckSum((u8*) &gSavePakImage) != gSavePakImage.unk2) {
                     fresh = 1;
                 }
                 break;
         }
     }
     if (fresh != 0) {
-        func_8007B370(&D_801AEC18);
+        Save_BuildDefaultImage(&gSavePakImage);
     }
     switch (mode) {
         case 0:
             // FAKE: UnkStruct_8007CB68_2 is only 2-byte aligned, so a plain struct copy uses lwl/lwr
-            *(SaveBlock*) &D_801AEC18 = *(SaveBlock*) D_801AEA18;
+            *(SaveBlock*) &gSavePakImage = *(SaveBlock*) gSaveImage;
             break;
         case 1:
         case 2:
         case 3:
         case 4:
             n = mode - 1;
-            Libc_strncpy(D_801AEC18.unk10[n], D_801AEA18->unk10[n], 10);
+            Libc_strncpy(gSavePakImage.unk10[n], gSaveImage->unk10[n], 10);
             for (i = 0; i < 3; i++) {
-                D_801AEC18.unk38[0][n][i] = D_801AEA18->unk38[0][n][i];
+                gSavePakImage.unk38[0][n][i] = gSaveImage->unk38[0][n][i];
             }
             break;
         case 5:
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 4; j++) {
                     for (k = 0; k < 6; k++) {
-                        D_801AEC18.unk60[i][j][k] = D_801AEA18->unk60[i][j][k];
+                        gSavePakImage.unk60[i][j][k] = gSaveImage->unk60[i][j][k];
                     }
                 }
                 for (j = 0; j < 2; j++) {
                     for (k = 0; k < 3; k++) {
-                        D_801AEC18.unk1A8[i][j][k] = D_801AEA18->unk1A8[i][j][k];
+                        gSavePakImage.unk1A8[i][j][k] = gSaveImage->unk1A8[i][j][k];
                     }
                 }
                 for (k = 0; k < 5; k++) {
-                    D_801AEC18.unk1D8[i][k] = D_801AEA18->unk1D8[i][k];
+                    gSavePakImage.unk1D8[i][k] = gSaveImage->unk1D8[i][k];
                 }
             }
             for (i = 0; i < 9; i++) {
                 for (j = 0; j < 3; j++) {
                     for (k = 0; k < 5; k++) {
-                        D_801AEC18.unk120[i][j][k] = D_801AEA18->unk120[i][j][k];
+                        gSavePakImage.unk120[i][j][k] = gSaveImage->unk120[i][j][k];
                     }
                 }
             }
             break;
     }
-    D_801AEC18.unk2 = Save_GenCheckSum((u8*) &D_801AEC18);
-    switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_WRITE, 0, 0x200, (u8*) &D_801AEC18)) {
+    gSavePakImage.unk2 = Save_GenCheckSum((u8*) &gSavePakImage);
+    switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_WRITE, 0, 0x200, (u8*) &gSavePakImage)) {
         case 0:
             return 0;
         default:

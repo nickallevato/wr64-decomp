@@ -90,16 +90,6 @@ typedef struct UnkStruct_800DA624_s {
     u8 alpha[3];
 } UnkStruct_800DA624;
 
-typedef struct UnkStruct_80192420_s {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-} UnkStruct_80192420; /* size = 0x1C, as in water_69D0.c */
-
 typedef struct UnkStruct_800DA8B4_s {
     s32 unk0[3];
 } UnkStruct_800DA8B4;
@@ -145,9 +135,9 @@ extern s32 D_800D9898[6];
 extern s32 D_800D98B0[6];
 extern s32 D_800D9914;
 extern f32 D_800DA8B0;
-extern UnkStruct_80192420 D_80192420[];
+extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_80192460[];
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 extern s32 D_80223934;
 extern UnkStruct_800DA8B4 D_800DA8B4;
 extern Vp D_800DA8C0;
@@ -281,8 +271,8 @@ f32 func_8008962C(f32 arg0, f32 arg1, f32 arg2, UnkStruct_8008962C* arg3) {
         if (gCourseID != DOLPHIN_PARK) {
             func_800895A0(&sp80, &sp70, temp_fv1_1, temp_ft4);
         }
-        sp80 += cam->unk4C;
-        sp70 += cam->unk54;
+        sp80 += cam->eyeX;
+        sp70 += cam->eyeZ;
 
         temp_fv0 = ((sp90.mf[0][0] * sp80) + var_ft4 + (sp90.mf[2][0] * sp70)) + sp90.mf[3][0];
         temp_fv1 = ((sp90.mf[0][1] * sp80) + var_ft4 + (sp90.mf[2][1] * sp70)) + sp90.mf[3][1];
@@ -447,9 +437,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     gDPSetTexturePersp(gdl++, G_TP_PERSP);
     p = &D_801C43F8[D_8011F8E0];
     cam = &gCameraPerspective[D_80223930];
-    dx = D_800D98CC - cam->unk4C;
-    dy = D_800D98D0 - cam->unk50;
-    dz = D_800D98D4 - cam->unk54;
+    dx = D_800D98CC - cam->eyeX;
+    dy = D_800D98D0 - cam->eyeY;
+    dz = D_800D98D4 - cam->eyeZ;
     inv = 1.0f / sqrtf((dx * dx) + (dy * dy) + (dz * dz));
     dot = (cam->unk64 * (dx * inv)) + ((dy * inv) * cam->unk68) + ((dz * inv) * cam->unk6C);
     glare = dot * dot;
@@ -469,9 +459,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     if (alpha < 15.0f) {
         alpha = 0.0f;
     }
-    rx = (cam->unk68 * cam->unk78) - (cam->unk6C * cam->unk74);
-    ry = (cam->unk6C * cam->unk70) - (cam->unk64 * cam->unk78);
-    rz = (cam->unk64 * cam->unk74) - (cam->unk68 * cam->unk70);
+    rx = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
+    ry = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
+    rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     func_8004A3C0(&sp240, &sp200, cam->unk64, cam->unk68, cam->unk6C, angle);
     vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
@@ -755,7 +745,7 @@ Gfx* func_8008BD2C(Gfx* gdl) {
     flareAlpha = D_800DA624; // probably a local array initialised from this file's data in the original
     switch (gCourseID) {
         case DOLPHIN_PARK:
-            scale = (gCameraPerspective[D_80223930].unk80 - 20.0f) / 100.0f;
+            scale = (gCameraPerspective[D_80223930].atY - 20.0f) / 100.0f;
             if (scale > 1.0f) {
                 scale = 1.0f;
             }
@@ -1062,27 +1052,27 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     cam = &gCameraPerspective[D_80223930];
     p = &D_801C43F8[D_8011F8E0];
     vtx = p->unk310;
-    x = (cam->unk68 * cam->unk78) - (cam->unk6C * cam->unk74);
-    y = (cam->unk6C * cam->unk70) - (cam->unk64 * cam->unk78);
-    z = (cam->unk64 * cam->unk74) - (cam->unk68 * cam->unk70);
-    vtx[0].v.ob[0] = (s32) (((cam->unk70 * -1.0f) - x) * 48.0f) + D_800D98CC;
-    vtx[0].v.ob[1] = (s32) (((cam->unk74 * -1.0f) - y) * 48.0f) + D_800D98D0;
-    vtx[0].v.ob[2] = (s32) (((cam->unk78 * -1.0f) - z) * 48.0f) + D_800D98D4;
+    x = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
+    y = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
+    z = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
+    vtx[0].v.ob[0] = (s32) (((cam->upX * -1.0f) - x) * 48.0f) + D_800D98CC;
+    vtx[0].v.ob[1] = (s32) (((cam->upY * -1.0f) - y) * 48.0f) + D_800D98D0;
+    vtx[0].v.ob[2] = (s32) (((cam->upZ * -1.0f) - z) * 48.0f) + D_800D98D4;
     vtx[0].v.tc[0] = 0;
     vtx[0].v.tc[1] = 0;
-    vtx[1].v.ob[0] = (s32) ((cam->unk70 - x) * 48.0f) + D_800D98CC;
-    vtx[1].v.ob[1] = (s32) ((cam->unk74 - y) * 48.0f) + D_800D98D0;
-    vtx[1].v.ob[2] = (s32) ((cam->unk78 - z) * 48.0f) + D_800D98D4;
+    vtx[1].v.ob[0] = (s32) ((cam->upX - x) * 48.0f) + D_800D98CC;
+    vtx[1].v.ob[1] = (s32) ((cam->upY - y) * 48.0f) + D_800D98D0;
+    vtx[1].v.ob[2] = (s32) ((cam->upZ - z) * 48.0f) + D_800D98D4;
     vtx[1].v.tc[0] = 0x800;
     vtx[1].v.tc[1] = 0;
-    vtx[2].v.ob[0] = (s32) (((cam->unk70 * -1.0f) + x) * 48.0f) + D_800D98CC;
-    vtx[2].v.ob[1] = (s32) (((cam->unk74 * -1.0f) + y) * 48.0f) + D_800D98D0;
-    vtx[2].v.ob[2] = (s32) (((cam->unk78 * -1.0f) + z) * 48.0f) + D_800D98D4;
+    vtx[2].v.ob[0] = (s32) (((cam->upX * -1.0f) + x) * 48.0f) + D_800D98CC;
+    vtx[2].v.ob[1] = (s32) (((cam->upY * -1.0f) + y) * 48.0f) + D_800D98D0;
+    vtx[2].v.ob[2] = (s32) (((cam->upZ * -1.0f) + z) * 48.0f) + D_800D98D4;
     vtx[2].v.tc[0] = 0;
     vtx[2].v.tc[1] = 0x800;
-    vtx[3].v.ob[0] = (s32) ((cam->unk70 + x) * 48.0f) + D_800D98CC;
-    vtx[3].v.ob[1] = (s32) ((cam->unk74 + y) * 48.0f) + D_800D98D0;
-    vtx[3].v.ob[2] = (s32) ((cam->unk78 + z) * 48.0f) + D_800D98D4;
+    vtx[3].v.ob[0] = (s32) ((cam->upX + x) * 48.0f) + D_800D98CC;
+    vtx[3].v.ob[1] = (s32) ((cam->upY + y) * 48.0f) + D_800D98D0;
+    vtx[3].v.ob[2] = (s32) ((cam->upZ + z) * 48.0f) + D_800D98D4;
     vtx[3].v.tc[0] = 0x800;
     vtx[3].v.tc[1] = 0x800;
 
@@ -1192,27 +1182,27 @@ void func_8008E794(void) {
         var_fa1 *= scale;
     }
     vtx = p->unkE0;
-    vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - D_80192420[0].unk14;
+    vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[0].v.ob[1] = gWaterLevel;
-    vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - D_80192420[0].unk18;
-    vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - D_80192420[0].unk14;
+    vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[1].v.ob[1] = gWaterLevel;
-    vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - D_80192420[0].unk18;
-    vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - D_80192420[0].unk14;
+    vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[2].v.ob[1] = gWaterLevel;
-    vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - D_80192420[0].unk18;
-    vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - D_80192420[0].unk14;
+    vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[3].v.ob[1] = gWaterLevel;
-    vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - D_80192420[0].unk18;
-    vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - D_80192420[0].unk14;
+    vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[4].v.ob[1] = gWaterLevel;
-    vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - D_80192420[0].unk18;
-    vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - D_80192420[0].unk14;
+    vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[5].v.ob[1] = gWaterLevel;
-    vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - D_80192420[0].unk18;
-    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - var_fv1) - D_80192420[0].unk14;
+    vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - var_fv1) - gWaterWindow[0].unk14;
     vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - var_fa1) - D_80192420[0].unk18;
+    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - var_fa1) - gWaterWindow[0].unk18;
     if (gPlayers == TWO_PLAYERS) {
         cam = &gCameraPerspective[D_80223934];
         dirX = cam->unk64;
@@ -1220,27 +1210,27 @@ void func_8008E794(void) {
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
         scale = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
-        vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - D_80192420[1].unk18; // unk18, not unk14, as in the original
+        vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
-        vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - D_80192420[1].unk18;
-        vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - D_80192420[1].unk14;
+        vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[1].v.ob[1] = gWaterLevel;
-        vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - D_80192420[1].unk18;
-        vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - D_80192420[1].unk14;
+        vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[2].v.ob[1] = gWaterLevel;
-        vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - D_80192420[1].unk18;
-        vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - D_80192420[1].unk14;
+        vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[3].v.ob[1] = gWaterLevel;
-        vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - D_80192420[1].unk18;
-        vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - D_80192420[1].unk14;
+        vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[4].v.ob[1] = gWaterLevel;
-        vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - D_80192420[1].unk18;
-        vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - D_80192420[1].unk14;
+        vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[5].v.ob[1] = gWaterLevel;
-        vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - D_80192420[1].unk18;
-        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * scale)) - D_80192420[1].unk14;
+        vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * scale)) - gWaterWindow[1].unk14;
         vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * scale)) - D_80192420[1].unk18;
+        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * scale)) - gWaterWindow[1].unk18;
     }
     if (gPlayers == ONE_PLAYER) {
         switch (gCourseID) {
@@ -1299,7 +1289,7 @@ void func_8008E794(void) {
                     e->unkB4 = cam->unk6C * -1.0f;
                     D_801C3C50 = (struct UnkStruct_801C3C50*) &D_80192690[i];
                     D_801C3C58 = &D_801C3C60[i].unk0;
-                    D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[D_801C2938[i].unk310];
+                    D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[gRiderRaceState[i].nearestRecord];
                     dx = D_801C3C54->unk0 - D_801C3C50->unk44;
                     dz = D_801C3C54->unk8 - D_801C3C50->unk4C;
                     dist = sqrtf((dx * dx) + (dz * dz));
@@ -1415,20 +1405,20 @@ Gfx* func_8008FB74(Gfx* gdl) {
     gSPSegment(gdl++, 0x06, &D_801C43F8[D_8011F8E0]);
     if ((D_801CE638 == 4) || (D_801CE638 == 0xA)) {
         if (D_801CE60C == 1) {
-            gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+            gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
             gSPViewport(gdl++, &D_800DA8F0);
             gDPPipeSync(gdl++);
             gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 161, 96, 290, 215);
         } else {
             switch (D_800DAB2C) {
                 case 0:
-                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
                     gSPViewport(gdl++, &D_800DA900);
                     gDPPipeSync(gdl++);
                     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 27, 96, 156, 215);
                     break;
                 case 1:
-                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].unkE4);
+                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].perspNorm);
                     gSPViewport(gdl++, &D_800DA8F0);
                     gDPPipeSync(gdl++);
                     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 161, 96, 290, 215);
@@ -1436,17 +1426,17 @@ Gfx* func_8008FB74(Gfx* gdl) {
             }
         }
     } else if (gPlayers == ONE_PLAYER) {
-        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
         gSPViewport(gdl++, &D_800DA8C0);
         gDPPipeSync(gdl++);
         gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
     } else if (D_800DAB2C == 0) {
-        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
         gSPViewport(gdl++, &D_800DA8D0);
         gDPPipeSync(gdl++);
         gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 12, 311, 120);
     } else {
-        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].unkE4);
+        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].perspNorm);
         gSPViewport(gdl++, &D_800DA8E0);
         gDPPipeSync(gdl++);
         gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 122, 311, 229);
@@ -1579,7 +1569,7 @@ Gfx* func_8008FB74(Gfx* gdl) {
 }
 
 Gfx* Draw_WaterEffects(Gfx* gdl) {
-    s32 pad;
+    s32 pad; // stack pad
 
     if ((gCourseID == DRAKE_LAKE) && (gPlayers == ONE_PLAYER)) {
         gSPClearGeometryMode(gdl++, G_ZBUFFER | G_TEXTURE_ENABLE | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING |
@@ -1670,7 +1660,7 @@ Gfx* func_800916B4(Gfx* gdl) {
                              D_801CB058[D_800DAB2C].unk10, D_801CB058[D_800DAB2C].unk14, D_801CB058[D_800DAB2C].unk0,
                              D_801CB058[D_800DAB2C].unk4, D_801CB058[D_800DAB2C].unk8, D_801CB058[D_800DAB2C].unkAC,
                              D_801CB058[D_800DAB2C].unkB0, D_801CB058[D_800DAB2C].unkB4);
-    SysUtils_LightsSetSource((Lights1*) &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C], D_801CB058[D_800DAB2C].unkD8,
+    SysUtils_LightsSetSource((Lights1*) &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C], D_801CB058[D_800DAB2C].unkD8,
                              D_801CB058[D_800DAB2C].unkDC, D_801CB058[D_800DAB2C].unkE0, D_801CB058[D_800DAB2C].unkCC,
                              D_801CB058[D_800DAB2C].unkD0, D_801CB058[D_800DAB2C].unkD4, D_801CB058[D_800DAB2C].unkFC,
                              D_801CB058[D_800DAB2C].unk100, D_801CB058[D_800DAB2C].unk104);
@@ -1679,17 +1669,17 @@ Gfx* func_800916B4(Gfx* gdl) {
         if (D_801C3C58->unk78 != 0) {
             gSPNumLights(gdl++, NUMLIGHTS_2);
             gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C].l[0], 1);
-            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].l[0], 2);
-            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 3);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].l[0], 2);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].a, 3);
         } else {
             gSPNumLights(gdl++, NUMLIGHTS_1);
             gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C].l[0], 1);
-            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 2);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].a, 2);
         }
     } else {
         gSPNumLights(gdl++, NUMLIGHTS_1);
-        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].l[0], 1);
-        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 2);
+        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].l[0], 1);
+        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].a, 2);
     }
     gDPPipeSync(gdl++);
     gDPSetFogColor(gdl++, D_801CB058[D_800DAB2C].unk48, D_801CB058[D_800DAB2C].unk4C, D_801CB058[D_800DAB2C].unk50,

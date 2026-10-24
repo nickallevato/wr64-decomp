@@ -47,13 +47,13 @@ extern f32 D_80226330;
 extern f32 D_80228828[];
 extern f32 D_80228868[];
 extern f32 D_802288A8[];
-extern UnkStruct_AF8C0_14 D_801C1FF0[][3];
-extern UnkStruct_AF8C0_14 D_801C22C0[];
+extern UnkStruct_AF8C0_14 gBestTimes[][3];
+extern UnkStruct_AF8C0_14 gBestLaps[];
 extern UnkStruct_AF8C0_14 D_801C23B0[];
-extern UnkStruct_AF8C0_10 D_801C26E8[][3];
+extern UnkStruct_AF8C0_10 gStuntRecords[][3];
 
-s32 func_8007BEA4(s32);
-s32 func_8007C204(s32);
+s32 Save_EepromWriteCourse(s32);
+s32 Save_EepromWriteRecord5(s32);
 void func_8006DE24(Gfx**);
 Gfx* func_80094A44(Gfx*, s32);
 void GameState_EnterViewRecords(void);
@@ -66,8 +66,8 @@ void GameState_EnterTimeTrialsResults(void);
 f32 func_801E31A0(void);
 void func_801E1BA8(void);
 void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
-void func_8004EFB4(f32, f32, s32);
-void func_8004F1EC(f32, f32, s32, s32);
+void Water_StampPoint(f32, f32, s32);
+void Water_StampPointTimed(f32, f32, s32, s32);
 
 // Display lists for the 31 letter-wheel slots: A-Z, '-', '.', ' ', delete and end.
 Gfx* gLetterWheelDLs[] = {
@@ -107,9 +107,9 @@ s32 gInitialsPanelShown = 0;
 Gfx* D_802261EC[] = { (Gfx*) 0x080973D0, (Gfx*) 0x08097428, (Gfx*) 0x08097448 };
 s32 D_802261F8 = 0;
 
-void func_801E1290(void) {
+void Initials_Update(void) {
     static f32 D_802261FC = 50.0f;
-    static f32 D_80226200 = -50.0f;
+    static f32 D_80226200 = -50.0f; // UNUSED: only its .data slot after D_802261FC is needed
     s32 i;
     s32 splash;
     s32 side;
@@ -284,20 +284,20 @@ void func_801E1290(void) {
             }
             if (active == 0) {
                 if (splash == 1) {
-                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], D_802261FC);
+                    Water_StampPoint(posMtx.mf[3][0], posMtx.mf[3][2], D_802261FC);
                 } else if (splash == 2) {
-                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], 0.0f - D_802261FC);
+                    Water_StampPoint(posMtx.mf[3][0], posMtx.mf[3][2], 0.0f - D_802261FC);
                 }
             } else if (i == gLetterWheelCursor) {
                 if (posMtx.mf[3][1] < 0.0f) {
-                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], -50);
+                    Water_StampPoint(posMtx.mf[3][0], posMtx.mf[3][2], -50);
                 }
             } else {
                 side = (posMtx.mf[3][0] >= 0.0f) ? 1 : 0;
                 if (splash == 1) {
-                    func_8004F1EC(D_80228828[i], D_802288A8[i], D_802261FC, side);
+                    Water_StampPointTimed(D_80228828[i], D_802288A8[i], D_802261FC, side);
                 } else if (splash == 2) {
-                    func_8004F1EC(D_80228828[i], D_802288A8[i], 0.0f - D_802261FC, side);
+                    Water_StampPointTimed(D_80228828[i], D_802288A8[i], 0.0f - D_802261FC, side);
                 }
             }
         }
@@ -387,7 +387,7 @@ void func_801E1BA8(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1BA8.s")
 #endif
 
-Gfx* func_801E1E8C(Gfx* gdl) {
+Gfx* Initials_Draw(Gfx* gdl) {
     s32 i;
     s16 course;
 
@@ -406,9 +406,9 @@ Gfx* func_801E1E8C(Gfx* gdl) {
                 course = D_800EAC14[gDifficulty][i];
                 if ((D_801C2660[course] != 0) || (D_801C2690[course] != 0)) {
                     if (D_800DAB68 != 0) {
-                        func_8007C204(course);
+                        Save_EepromWriteRecord5(course);
                     } else {
-                        func_8007BEA4(course);
+                        Save_EepromWriteCourse(course);
                     }
                 }
             }
@@ -501,7 +501,7 @@ Gfx* Initials_DrawPanel(Gfx* gdl) {
         } else {
             offset = gInitialsLetterOffsets[j];
         }
-        gdl = func_801E9858(gdl, 0, (char*) str, i * 26 + offset + 0x7A, 0xB4);
+        gdl = Printer_DrawString(gdl, 0, (char*) str, i * 26 + offset + 0x7A, 0xB4);
     }
     return gdl;
 }
@@ -684,7 +684,7 @@ void Initials_SaveToRecords(void) {
 
     if (gInitialsEntered[0] == 0) {
         for (i = 0; i < 3; i++) {
-            gInitialsEntered[i] = D_801CB298[D_800DA9B0[0]].unk_0[i];
+            gInitialsEntered[i] = gPlayerNames[D_800DA9B0[0]].unk_0[i];
         }
         gInitialsEntered[i] = 0;
         D_800DAB6C = 1;
@@ -697,28 +697,28 @@ void Initials_SaveToRecords(void) {
                     if (D_800DAB68 != 0) {
                         D_801C23B0[course].unk10[i] = gInitialsEntered[i];
                     } else {
-                        D_801C1FF0[course][D_801C2660[course] - 1].unk10[i] = gInitialsEntered[i];
+                        gBestTimes[course][D_801C2660[course] - 1].unk10[i] = gInitialsEntered[i];
                     }
                 }
                 if (D_800DAB68 != 0) {
                     D_801C23B0[course].unk10[i] = 0;
                 } else {
-                    D_801C1FF0[course][D_801C2660[course] - 1].unk10[i] = 0;
+                    gBestTimes[course][D_801C2660[course] - 1].unk10[i] = 0;
                 }
             }
             if (D_801C2690[course] != 0) {
                 for (i = 0; i < 4; i++) {
-                    D_801C22C0[course].unk10[i] = gInitialsEntered[i];
+                    gBestLaps[course].unk10[i] = gInitialsEntered[i];
                 }
-                D_801C22C0[course].unk10[i] = 0;
+                gBestLaps[course].unk10[i] = 0;
             }
         }
     } else if (D_801CE608.gameMode == GMODE_STUNT) {
         if (D_801C2928 != 0) {
             for (i = 0; i < 4; i++) {
-                D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = gInitialsEntered[i];
+                gStuntRecords[gCourseID][D_801C2928 - 1].unkC[i] = gInitialsEntered[i];
             }
-            D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = 0;
+            gStuntRecords[gCourseID][D_801C2928 - 1].unkC[i] = 0;
         }
     } else {
         if (D_801C2660[gCourseID] != 0) {
@@ -726,20 +726,20 @@ void Initials_SaveToRecords(void) {
                 if (D_800DAB68 != 0) {
                     D_801C23B0[gCourseID].unk10[i] = gInitialsEntered[i];
                 } else {
-                    D_801C1FF0[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = gInitialsEntered[i];
+                    gBestTimes[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = gInitialsEntered[i];
                 }
             }
             if (D_800DAB68 != 0) {
                 D_801C23B0[gCourseID].unk10[i] = 0;
             } else {
-                D_801C1FF0[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = 0;
+                gBestTimes[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = 0;
             }
         }
         if (D_801C2690[gCourseID] != 0) {
             for (i = 0; i < 4; i++) {
-                D_801C22C0[gCourseID].unk10[i] = gInitialsEntered[i];
+                gBestLaps[gCourseID].unk10[i] = gInitialsEntered[i];
             }
-            D_801C22C0[gCourseID].unk10[i] = 0;
+            gBestLaps[gCourseID].unk10[i] = 0;
         }
     }
 }

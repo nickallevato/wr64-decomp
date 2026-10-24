@@ -10,17 +10,17 @@ extern u16 D_802C7B06;
 extern s32 D_802C7B08;
 extern s32 D_802C7B0C;
 
-s32 func_8007C494(void);
+s32 Save_EepromWriteHeader(void);
 void func_800C3E4C(void);
 void func_801EC944(void);
 Gfx* func_i5_802C5DC0(Gfx*);
-void func_i5_802C6CC4(void);
+void RaceResults_Update(void);
 void func_i5_802C6F84(s32 arg0);
 void GameState_EnterCeremony(void);
 void GameState_EnterCourseOverview(void);
 
 void func_i5_802C5800(void) {
-    if ((D_801CE63C != 0) && (gGameState == 52)) {
+    if ((D_801CE63C != 0) && (gGameState == GAME_STATE_RACE_RESULTS)) {
         func_80094ACC();
         func_i5_802C5A98();
     }
@@ -64,7 +64,7 @@ void func_i5_802C5850(void) {
 Gfx* func_i5_802C5C1C(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
-        if (gGameState == 0x34) {
+        if (gGameState == GAME_STATE_RACE_RESULTS) {
             osViBlack(false);
             return func_80093C44(gdl);
         }
@@ -77,8 +77,8 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     gdl = Draw_WaterEffects(gdl);
     gdl = func_i5_802C5DC0(gdl);
 
-    if (gGameState == 0x34) {
-        func_i5_802C6CC4();
+    if (gGameState == GAME_STATE_RACE_RESULTS) {
+        RaceResults_Update();
     } else if (D_80228A16 == 1) {
         if (D_801CE630 == 0x66) {
             GameState_EnterCeremony();
@@ -95,19 +95,19 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
             }
             GameState_EnterCourseOverview();
         } else {
-            func_801EB180();
+            GameState_EnterTitleScreen();
         }
     }
 
     if (D_801CE638 != 9) {
-        func_8007C494();
+        Save_EepromWriteHeader();
     }
     return gdl;
 }
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5DC0.s")
 
-void func_i5_802C6CC4(void) {
+void RaceResults_Update(void) {
     s32 playSound = false;
 
     switch (D_801CE640) {

@@ -18,7 +18,7 @@ void func_i3_802C5AE8(void) {
 }
 
 void func_i3_802C5AF0(void) {
-    func_80069798(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_802C7024, &D_80198310, &D_80198350);
+    Camera_SetOrbitMatrices(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_802C7024, &D_80198310, &D_80198350);
 }
 
 Gfx* func_i3_802C5B40(Gfx* arg0) {
@@ -98,6 +98,6 @@ void func_i3_802C6E9C(void) {
     D_i3_802C6FE0 = 1;
 
     FadeTransition_SetProps(5, 0, 20);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     AudioGeneral_PlaySound(58, 0);
 }

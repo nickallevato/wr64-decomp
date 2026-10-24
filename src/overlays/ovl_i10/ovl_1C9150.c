@@ -87,5 +87,5 @@ void func_i10_802C6A00(s32 arg0) {
     gVIsPerFrame = 2;
 
     FadeTransition_SetProps(1, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 }

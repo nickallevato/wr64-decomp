@@ -6,20 +6,9 @@ typedef struct UnkStruct_801C3B90 {
     /* 0x8 */ s32 unk8;
 } UnkStruct_801C3B90; // size = 0xC
 
-// The water window of each view (water_69D0.c has the same layout).
-typedef struct UnkStruct_80192420 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-} UnkStruct_80192420; /* size = 0x1C */
-
 extern s16 D_800D9640[16][2];
 extern UnkStruct_801C3B90 D_801C3B90[16];
-extern UnkStruct_80192420 D_80192420[];
+extern UnkStruct_80192420 gWaterWindow[];
 extern Gfx D_E010F28[];
 extern Mtx D_2000A40[];
 extern u8 D_3000000[];
@@ -58,7 +47,7 @@ void func_8007FD80(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_3A580/func_8007FD80.s")
 #endif
 
-// In Port Blue, draws each D_801C3B90 entry inside the water window (D_80192420[0]) as eight vertices at its angle,
+// In Port Blue, draws each D_801C3B90 entry inside the water window (gWaterWindow[0]) as eight vertices at its angle,
 // on the water height (func_8004D30C), and six triangles.
 #ifdef NON_MATCHING
 // Same blocks and calls; the frame is 0x40 larger, the original keeps ax/az on the stack (sp+0x78/0x74), and the
@@ -86,9 +75,9 @@ Gfx* func_8007FFA8(Gfx* gdl) {
     i = 0;
     p = D_801C3B90;
     do {
-        dx = p->unk0 - D_80192420[0].unk8;
-        dz = p->unk4 - D_80192420[0].unkC;
-        if (!(D_80192420[0].unk10 <= dx * dx + dz * dz)) {
+        dx = p->unk0 - gWaterWindow[0].unk8;
+        dz = p->unk4 - gWaterWindow[0].unkC;
+        if (!(gWaterWindow[0].unk10 <= dx * dx + dz * dz)) {
             c = gSinTable[(p->unk8 + 0x400) & 0xFFF];
             ax = 26.24f * c;
             s = gSinTable[p->unk8 & 0xFFF];

@@ -2,15 +2,6 @@
 #include "rider.h"
 #include "camera.h"
 
-typedef struct UnkStruct_801BB138_s {
-    /* 0x00 */ f32 unk0;
-    /* 0x04 */ f32 unk4;     /* inferred */
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ char padC[4];
-    /* 0x10 */ s32 unk10;    /* inferred */
-    /* 0x14 */ char pad14[4];
-} UnkStruct_801BB138; /* size = 0x18 */
-
 typedef struct UnkStruct_801BFA48_s {
     /* 0x00 */ f32 unk0;  /* inferred */
     /* 0x04 */ f32 unk4;  /* inferred */
@@ -76,10 +67,10 @@ extern s32 D_800D92B0;
 extern s32 D_800D92B4;
 
 // .bss
-extern UnkStruct_80198368 D_80198368[2];
+extern UnkStruct_801AE948 D_80198368[2];
 extern s32 D_801AE950;
 extern s32 D_801BB120;
-extern UnkStruct_801BB138 D_801BB138[];
+extern UnkStruct_801BB138 gCoursePoints[];
 extern s32 D_801BC938;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -107,7 +98,7 @@ extern s32 D_801C0CC0;
 extern s32 D_801C0CC4;
 extern s32 D_801C1FD0;
 extern s32 D_801C292C;
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 extern UnkStruct_801BC940_unk60 D_801BFD78[];
 extern s32 D_801C1FC8;
 extern s32 D_801BB12C;
@@ -118,7 +109,7 @@ extern Vec3f D_800D5408[];
 extern s32 D_801C26C0[];
 
 extern s32 D_10149A0;
-extern s32 D_800D48E0;
+extern s32 gPlayer2Rider;
 extern s32 D_80223934;
 extern s32 D_80228AAC;
 extern s32 D_80228AB0;
@@ -160,8 +151,8 @@ void func_801FB488(s32, s32, s32);
 void func_8006A300(void);
 void func_800B4750(void);
 void func_801EDFFC(s32, f32, f32, f32);
-void func_8004CC7C(UnkStruct_801BFB70*); /* extern */
-void func_8004F520(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5);
+void Water_StampPhasedSine(UnkStruct_801BFB70*); /* extern */
+void Water_StampLine(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5);
 void func_801EE6F4(s32*, f32, f32, f32, f32, f32, f32); /* extern */
 void func_801EDC60(s32*, f32, f32, f32, f32*, f32*, f32*); /* extern */
 void func_80079528(void);                               /* extern */
@@ -219,9 +210,9 @@ void func_8006A748(void) {
     s32 i;
     s32* temp;
 
-    temp_a0 = &D_80192690[D_800D48DC];
-    temp_v1 = &D_801C2938[D_800D48DC];
-    if ((temp_v1->unk2F4 == 0) && (temp_v1->unk2EC == 0)) {
+    temp_a0 = &D_80192690[gPlayer1Rider];
+    temp_v1 = &gRiderRaceState[gPlayer1Rider];
+    if ((temp_v1->unk2F4 == 0) && (temp_v1->finishState == 0)) {
         temp_f26 = temp_a0->unk44.x;
         temp_f28 = temp_a0->unk44.y + 8.0f;
         temp_f30 = temp_a0->unk44.z;
@@ -275,8 +266,8 @@ void func_8006AA58(void) {
     D_801C05AC = 0;
     D_801C05BC = 0;
     camera = &gCameraPerspective[D_80223930];
-    D_801C0C84 = camera->unk4C;
-    D_801C0C88 = camera->unk54;
+    D_801C0C84 = camera->eyeX;
+    D_801C0C88 = camera->eyeZ;
     D_801C0C8C = 700.0f;
 }
 
@@ -414,7 +405,7 @@ void func_8006AC84(s32 arg0, Mtx* arg1) {
         }
     } else {
         if (gRiders == 2) {
-            if (arg0 == D_800D48DC) {
+            if (arg0 == gPlayer1Rider) {
                 var_ft5 = 48.0f;
                 sp8C = -512.0f;
             } else {
@@ -447,7 +438,7 @@ void func_8006AC84(s32 arg0, Mtx* arg1) {
             sp8C = ((f32) arg0 * 80.0f) + -512.0f;
         }
     }
-    if ((gCourseID == RIDER_SELECTION) && (arg0 == D_800D48E0)) {
+    if ((gCourseID == RIDER_SELECTION) && (arg0 == gPlayer2Rider)) {
         var_v1_3 = &D_801B2F20;
     } else {
         var_v1_3 = D_801AEE20;
@@ -490,10 +481,10 @@ void func_8006B334(Gfx** gdl) {
     gdlh = *gdl;
     if (D_800DAB2C == 0) {
         sp144 = &gCameraPerspective[D_80223930];
-        var_v0 = &D_801C2938[D_800D48DC];
+        var_v0 = &gRiderRaceState[gPlayer1Rider];
     } else {
         sp144 = &gCameraPerspective[D_80223934];
-        var_v0 = &D_801C2938[D_800D48E0];
+        var_v0 = &gRiderRaceState[gPlayer2Rider];
     }
     if (var_v0->unk2F4 != 0) {
         return;
@@ -558,9 +549,9 @@ void func_8006B334(Gfx** gdl) {
         temp_ft5 = D_801AEE20[var_v1].unk0;
         temp_fv1 = D_801AEE20[var_v1].unk4 + 128.0f;
         sp160 = D_801AEE20[var_v1].unk8;
-        temp_fa1 = sp144->unk4C - temp_ft5;
-        temp_fv0 = sp144->unk50 - temp_fv1;
-        temp_ft4 = sp144->unk54 - sp160;
+        temp_fa1 = sp144->eyeX - temp_ft5;
+        temp_fv0 = sp144->eyeY - temp_fv1;
+        temp_ft4 = sp144->eyeZ - sp160;
         temp_fv0_2 = sqrtf(SQ(temp_fa1) + SQ(temp_fv0) + SQ(temp_ft4));
         if (temp_fv0_2 > 3000.0f) {
             var_fa0 = temp_fv0_2 / 3000.0f;
@@ -619,9 +610,9 @@ void func_8006B334(Gfx** gdl) {
         temp_ft5 = D_801AEE20[var_t2].unk0;
         temp_fv1 = D_801AEE20[var_t2].unk4 + 128.0f;
         sp160 = D_801AEE20[var_t2].unk8;
-        temp_fa1 = sp144->unk4C - temp_ft5;
-        temp_fv0 = sp144->unk50 - temp_fv1;
-        temp_ft4 = sp144->unk54 - sp160;
+        temp_fa1 = sp144->eyeX - temp_ft5;
+        temp_fv0 = sp144->eyeY - temp_fv1;
+        temp_ft4 = sp144->eyeZ - sp160;
         if ((temp_fa1 != 0.0f) || (temp_ft4 != 0.0f)) {
             var_fv0 = 1.0f;
             var_fv1 = 0.0f;
@@ -668,10 +659,10 @@ void func_8006BE74(Gfx** gdl) {
     gdlh = *gdl;
     if (D_800DAB2C == 0) {
         var_s5 = &gCameraPerspective[D_80223930];
-        sp17C = D_800D48DC;
+        sp17C = gPlayer1Rider;
     } else {
         var_s5 = &gCameraPerspective[D_80223934];
-        sp17C = D_800D48E0;
+        sp17C = gPlayer2Rider;
     }
     sp148 = -var_s5->unk64;
     var_s3 = 0;
@@ -686,11 +677,11 @@ void func_8006BE74(Gfx** gdl) {
     }
     for (var_s4 = 0; var_s4 < gRiders; var_s4++) {
         sp16C[var_s4] = 0;
-        if ((D_800DAB2C == 0) && (var_s4 == D_800D48DC)) {
+        if ((D_800DAB2C == 0) && (var_s4 == gPlayer1Rider)) {
             continue;
         }
-        var_f20 = D_80192690[var_s4].unk44.x - var_s5->unk4C;
-        var_f22 = D_80192690[var_s4].unk44.z - var_s5->unk54;
+        var_f20 = D_80192690[var_s4].unk44.x - var_s5->eyeX;
+        var_f22 = D_80192690[var_s4].unk44.z - var_s5->eyeZ;
         temp_f0_3 = sqrtf(SQ(var_f20) + SQ(var_f22));
         if (temp_f0_3 > 0.0f) {
             var_f20 /= temp_f0_3;
@@ -720,16 +711,16 @@ void func_8006BE74(Gfx** gdl) {
         if ((var_s4 == sp17C) || (D_801C0C90[D_800DAB2C][var_s4] >= 0x1E) || (sp16C[var_s4] == 0)) {
             continue;
         }
-        if ((D_801C2938[sp17C].racePosition < D_801C2938[var_s4].racePosition) || (D_801C2938[var_s4].unk2F4 != 0)) {
+        if ((gRiderRaceState[sp17C].racePosition < gRiderRaceState[var_s4].racePosition) || (gRiderRaceState[var_s4].unk2F4 != 0)) {
             continue;
         }
 
         var_f20 = D_80192690[var_s4].unk44.x;
         temp_f26 = D_80192690[var_s4].unk44.y;
         var_f22 = D_80192690[var_s4].unk44.z;
-        temp_f0 = var_s5->unk4C - var_f20;
-        temp_f2 = var_s5->unk50 - temp_f26;
-        temp_f14 = var_s5->unk54 - var_f22;
+        temp_f0 = var_s5->eyeX - var_f20;
+        temp_f2 = var_s5->eyeY - temp_f26;
+        temp_f14 = var_s5->eyeZ - var_f22;
         temp_f0_3 = sqrtf(SQ(temp_f0) + SQ(temp_f2) + SQ(temp_f14));
         if (temp_f0_3 < 1024.0f) {
             D_801C0C90[D_800DAB2C][var_s4] = 0xFF;
@@ -742,7 +733,7 @@ void func_8006BE74(Gfx** gdl) {
         func_801EE97C(&D_801AE948->unk4140[D_801AE950], temp_f0_3 * 0.0078125f, temp_f0_3 * 0.0078125f,
                       temp_f0_3 * 0.0078125f);
         gSPMatrix(gdlh++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-        gDPLoadTextureBlock(gdlh++, &D_10445C8[D_801C2938[var_s4].racePosition], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0,
+        gDPLoadTextureBlock(gdlh++, &D_10445C8[gRiderRaceState[var_s4].racePosition], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
         gDPSetEnvColor(gdlh++, D_80228AAC, D_80228AB0, D_80228AB4, 0xFF);
@@ -812,22 +803,22 @@ void func_8006C5D8(Gfx** gdl) {
                 continue;
             }
 
-            temp_fs0 = D_801C0C84 - temp_s3->unk4C;
-            temp_fs1 = D_801C0C88 - temp_s3->unk54;
+            temp_fs0 = D_801C0C84 - temp_s3->eyeX;
+            temp_fs1 = D_801C0C88 - temp_s3->eyeZ;
             temp_fv0 = sqrtf(SQ(temp_fs0) + SQ(temp_fs1));
             if (!(D_801C0C8C < temp_fv0)) {
                 continue;
             }
 
-            D_801C0C84 = temp_s3->unk4C;
-            D_801C0C88 = temp_s3->unk54;
+            D_801C0C84 = temp_s3->eyeX;
+            D_801C0C88 = temp_s3->eyeZ;
             D_801C0C8C = func_801ED338(500.0f) + 500.0f;
             D_801C0580[i].unkC = 1;
             temp_fv1 = func_801ED338(1024.0f) - 512.0f;
             temp_f4 = temp_fv1 * var_f24;
-            D_801C0580[i].unk0 = (temp_s3->unk4C + (var_f26 * 2024.0f) + temp_f4);
+            D_801C0580[i].unk0 = (temp_s3->eyeX + (var_f26 * 2024.0f) + temp_f4);
             D_801C0580[i].unk4 = -64.0f;
-            D_801C0580[i].unk8 = (temp_s3->unk54 + (var_f24 * 2024.0f) + (temp_fv1 * sp130));
+            D_801C0580[i].unk8 = (temp_s3->eyeZ + (var_f24 * 2024.0f) + (temp_fv1 * sp130));
             var_s1 = false;
             for (j = 0; D_800D5330[j].unk0 != D_800D5330[j].unk4; j++) {
                 temp_fv0 = D_800D5330[j].unk0;
@@ -843,8 +834,8 @@ void func_8006C5D8(Gfx** gdl) {
                 continue;
             }
         } else {
-            temp_fs0 = D_801C0580[i].unk0 - temp_s3->unk4C;
-            temp_fs1 = D_801C0580[i].unk8 - temp_s3->unk54;
+            temp_fs0 = D_801C0580[i].unk0 - temp_s3->eyeX;
+            temp_fs1 = D_801C0580[i].unk8 - temp_s3->eyeZ;
             temp_fv0 = sqrtf(SQ(temp_fs0) + SQ(temp_fs1));
             if (temp_fv0 > 0.0f) {
                 temp_fs0 /= temp_fv0;
@@ -963,9 +954,9 @@ void func_8006D034(Gfx** gdl) {
         }
 
         if (D_801BC940[var_s2].unk54 == 2) {
-            temp_f12 = var_s5->unk4C - D_801BC940[var_s2].unk0;
-            other = var_s5->unk50 - D_801BC940[var_s2].unk4;
-            temp_f18 = var_s5->unk54 - D_801BC940[var_s2].unk8;
+            temp_f12 = var_s5->eyeX - D_801BC940[var_s2].unk0;
+            other = var_s5->eyeY - D_801BC940[var_s2].unk4;
+            temp_f18 = var_s5->eyeZ - D_801BC940[var_s2].unk8;
             if ((temp_f12 != 0.0f) || (temp_f18 != 0.0f)) {
                 var_f0 = 1.0f;
                 var_f2 = 0.0f;
@@ -1006,13 +997,13 @@ void func_8006D494(Gfx** gdl) {
     gdlh = *gdl;
     cam = &gCameraPerspective[D_80223930];
     if (D_800D5454 == 0) {
-        guLookAtHilite(D_801AE948->unk4100, D_801AE948->unkB2C0, D_801AE948->unkB2E0, cam->unk4C, cam->unk50,
-                       cam->unk54, cam->unk7C, cam->unk80, cam->unk84, cam->unk70, cam->unk74,
-                       cam->unk78, D_801C0C80->unkAC, D_801C0C80->unkB0, D_801C0C80->unkB4, 1.0f, 0.0f, 0.0f, 0x20,
+        guLookAtHilite(D_801AE948->unk4100, D_801AE948->unkB2C0, D_801AE948->unkB2E0, cam->eyeX, cam->eyeY,
+                       cam->eyeZ, cam->atX, cam->atY, cam->atZ, cam->upX, cam->upY,
+                       cam->upZ, D_801C0C80->unkAC, D_801C0C80->unkB0, D_801C0C80->unkB4, 1.0f, 0.0f, 0.0f, 0x20,
                        0x20);
     } else {
-        guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, cam->unk4C, cam->unk50, cam->unk54,
-                        cam->unk7C, cam->unk80, cam->unk84, cam->unk70, cam->unk74, cam->unk78);
+        guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, cam->eyeX, cam->eyeY, cam->eyeZ,
+                        cam->atX, cam->atY, cam->atZ, cam->upX, cam->upY, cam->upZ);
     }
     gSPClearGeometryMode(gdlh++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
     gSPSetGeometryMode(gdlh++, G_ZBUFFER | G_SHADE | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_SHADING_SMOOTH);
@@ -1097,8 +1088,8 @@ void func_8006DE24(Gfx** gdl) {
     gdlh = *gdl;
     temp_v1 = &gCameraPerspective[D_80223930];
 
-    guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, temp_v1->unk4C, temp_v1->unk50, temp_v1->unk54,
-                    temp_v1->unk7C, temp_v1->unk80, temp_v1->unk84, -1.0f, 0.0f, 0.0f);
+    guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, temp_v1->eyeX, temp_v1->eyeY, temp_v1->eyeZ,
+                    temp_v1->atX, temp_v1->atY, temp_v1->atZ, -1.0f, 0.0f, 0.0f);
     gSPClearGeometryMode(gdlh++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
     gSPSetGeometryMode(gdlh++, G_ZBUFFER | G_SHADE | G_LIGHTING | G_TEXTURE_GEN | G_SHADING_SMOOTH);
     gDPPipeSync(gdlh++);
@@ -1210,8 +1201,8 @@ void func_8006E3A8(void) {
         func_8007DBC0();
         if (gCourseID == GLACIER_COAST) {
             for (i = 0; i < D_801BC938; i++) {
-                if (D_801BB138[i].unk10 != 5) {
-                    D_801BB138[i].unk4 = gWaterLevel;
+                if (gCoursePoints[i].unk10 != 5) {
+                    gCoursePoints[i].unk4 = gWaterLevel;
                 }
             }
         }
@@ -1224,12 +1215,12 @@ void func_8006E3A8(void) {
             } else {
                 var_fv0 = 1.0f;
             }
-            func_8004F520(D_801BFA48[i].unk10 * var_fv0, D_801BFA48[i].unk0, D_801BFA48[i].unk4, D_801BFA48[i].unk8,
+            Water_StampLine(D_801BFA48[i].unk10 * var_fv0, D_801BFA48[i].unk0, D_801BFA48[i].unk4, D_801BFA48[i].unk8,
                           D_801BFA48[i].unkC, D_801BFA48[i].unk1C);
         }
 
         for (i = 0; i < D_801BFD70; i++) {
-            func_8004CC7C(&D_801BFB70[i]);
+            Water_StampPhasedSine(&D_801BFB70[i]);
         }
 
         if (gCourseID == TWILIGHT_CITY) {
@@ -1357,12 +1348,12 @@ void func_8006E674(Gfx** gdl) {
     gdlh = *gdl;
     if (D_800DAB2C == 0) {
         cam = &gCameraPerspective[D_80223930];
-        cur = D_801C2938[D_800D48DC].unkC;
-        craft = &D_80192690[D_800D48DC];
+        cur = gRiderRaceState[gPlayer1Rider].unkC;
+        craft = &D_80192690[gPlayer1Rider];
     } else {
         cam = &gCameraPerspective[D_80223934];
-        cur = D_801C2938[D_800D48E0].unkC;
-        craft = &D_80192690[D_800D48E0];
+        cur = gRiderRaceState[gPlayer2Rider].unkC;
+        craft = &D_80192690[gPlayer2Rider];
     }
     D_801C0C80 = &D_801CB058[D_800DAB2C];
     sqrtf((craft->unk6C * craft->unk6C) + (craft->unk74 * craft->unk74));
@@ -1417,8 +1408,8 @@ void func_8006E674(Gfx** gdl) {
             D_801C0840[i] = -1;
             continue;
         }
-        dx = e->unk0 - cam->unk4C;
-        dz = e->unk8 - cam->unk54;
+        dx = e->unk0 - cam->eyeX;
+        dz = e->unk8 - cam->eyeZ;
         d = sqrtf((dx * dx) + (dz * dz));
         if (e->unk9C == 1) {
             lim = (f32) far + (f32) far;
@@ -1447,9 +1438,9 @@ void func_8006E674(Gfx** gdl) {
         }
     }
     for (i = 0; i < D_801BC938; i++) {
-        b = &D_801BB138[i];
-        dx = b->unk0 - cam->unk4C;
-        dz = b->unk8 - cam->unk54;
+        b = &gCoursePoints[i];
+        dx = b->unk0 - cam->eyeX;
+        dz = b->unk8 - cam->eyeZ;
         if ((b->unk10 == 4) || (b->unk10 == 5)) {
             D_801C08C0[i] = -1;
             continue;
@@ -1475,8 +1466,8 @@ void func_8006E674(Gfx** gdl) {
     }
     for (i = 0; i < D_801BFA40; i++) {
         o = &D_801BC940[i];
-        dx = o->unk0 - cam->unk4C;
-        dz = o->unk8 - cam->unk54;
+        dx = o->unk0 - cam->eyeX;
+        dz = o->unk8 - cam->eyeZ;
         d = sqrtf((dx * dx) + (dz * dz));
         if (d < (f32) far) {
             if (d > 0.0f) {
@@ -1506,10 +1497,10 @@ void func_8006E674(Gfx** gdl) {
         if (D_801C08C0[i] < 0) {
             continue;
         }
-        b = &D_801BB138[i];
-        dx = cam->unk4C - b->unk0;
-        dy = cam->unk50 - b->unk4;
-        dz = cam->unk54 - b->unk8;
+        b = &gCoursePoints[i];
+        dx = cam->eyeX - b->unk0;
+        dy = cam->eyeY - b->unk4;
+        dz = cam->eyeZ - b->unk8;
         if ((dx != 0.0f) || (dz != 0.0f)) {
             upY = 1.0f;
             upZ = 0.0f;
@@ -1566,7 +1557,7 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BC938; i++) {
         D_801C0640[i] = -1;
-        if ((D_801BB138[i].unk10 == 0) && (D_801C08C0[i] >= 0)) {
+        if ((gCoursePoints[i].unk10 == 0) && (D_801C08C0[i] >= 0)) {
             D_801C0640[i] = D_801C08C0[i];
             gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
@@ -1589,7 +1580,7 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BC938; i++) {
         D_801C0640[i] = -1;
-        if ((D_801BB138[i].unk10 == 1) && (D_801C08C0[i] >= 0)) {
+        if ((gCoursePoints[i].unk10 == 1) && (D_801C08C0[i] >= 0)) {
             D_801C0640[i] = D_801C08C0[i];
             gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
@@ -1613,7 +1604,7 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BC938; i++) {
         D_801C0640[i] = -1;
-        if (((D_801BB138[i].unk10 == 2) || (D_801BB138[i].unk10 == 3)) && (D_801C08C0[i] >= 0)) {
+        if (((gCoursePoints[i].unk10 == 2) || (gCoursePoints[i].unk10 == 3)) && (D_801C08C0[i] >= 0)) {
             D_801C0640[i] = D_801C08C0[i];
             gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
@@ -1641,9 +1632,9 @@ void func_8006E674(Gfx** gdl) {
             continue;
         }
         if (D_801AEE20[i].unk9C == 0) {
-            dx = cam->unk4C - e->unk0;
-            dy = cam->unk50 - e->unk4;
-            dz = cam->unk54 - e->unk8;
+            dx = cam->eyeX - e->unk0;
+            dy = cam->eyeY - e->unk4;
+            dz = cam->eyeZ - e->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
                 upZ = 0.0f;

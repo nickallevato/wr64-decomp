@@ -4,7 +4,7 @@ extern UnkStruct_menu_buffer_1 gPopupSlotInit;
 
 extern UnkStruct_menu_buffer_1 menu_buffer_1[];
 
-void func_801E5470(void) {
+void Popup_UpdateAll(void) {
     UnkStruct_menu_buffer_1* var_s0;
     s32 i;
 
@@ -41,7 +41,7 @@ extern u32 D_8042008[];
 extern u32 D_8049008[];
 extern u32 D_8058008[];
 extern u32 D_8071008[];
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 
 Gfx* func_801E5554(Gfx* gdl) {
     s32 off;
@@ -119,7 +119,7 @@ Gfx* func_801E5554(Gfx* gdl) {
                         off = 0;
                         row = 0;
                         do {
-                            gDPLoadTextureTile(gdl++, D_8049008 + D_801C2938[D_800D48DC].racePosition * 3200 + off,
+                            gDPLoadTextureTile(gdl++, D_8049008 + gRiderRaceState[gPlayer1Rider].racePosition * 3200 + off,
                                                G_IM_FMT_RGBA, G_IM_SIZ_32b, 80, 0, 0, 0, 79, 2, 0,
                                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                                                G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -202,12 +202,12 @@ void Popup_UpdateCard1(UnkStruct_menu_buffer_1* slot) {
             if (D_801CE608.gameMode == 4) {
                 if (slot->frame >= 11) {
                     slot->type = 0;
-                    func_801E6A4C(2, 0);
+                    Popup_Spawn(2, 0);
                 }
             } else if ((D_801CE608.gameMode == 0) && (slot->frame >= 11)) {
                 slot->type = 0;
                 if (D_801C2650 == 1) {
-                    func_801E6A4C(2, 1);
+                    Popup_Spawn(2, 1);
                 }
             }
             break;
@@ -326,7 +326,7 @@ void Popup_UpdateCard4(UnkStruct_menu_buffer_1* slot) {
             break;
     }
 }
-void func_801E6A4C(u16 kind, u16 param) {
+void Popup_Spawn(u16 kind, u16 param) {
     s32 i;
     s32 idx;
     s32 t3;

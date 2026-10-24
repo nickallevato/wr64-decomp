@@ -9,10 +9,10 @@ extern s32 D_i1_802C950C;
 extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 
-void func_80077F5C(void);
-s32 func_8007BEA4(s32);
-s32 func_8007C204(s32);
-s32 func_8007C494(void);
+void Race_RankUnfinishedRiders(void);
+s32 Save_EepromWriteCourse(s32);
+s32 Save_EepromWriteRecord5(s32);
+s32 Save_EepromWriteHeader(void);
 Gfx* func_80093AFC(Gfx*);
 void func_801EC830(void);
 void func_i1_802C7570(s32 arg0);
@@ -106,7 +106,7 @@ void func_i1_802C63B4(void) {
                         D_801CB334++;
                         GameState_EnterCourseOverview();
                     } else {
-                        func_80077F5C();
+                        Race_RankUnfinishedRiders();
                         GameState_EnterRaceResults();
                     }
                     break;
@@ -117,7 +117,7 @@ void func_i1_802C63B4(void) {
                     break;
 
                 default:
-                    func_801EB180();
+                    GameState_EnterTitleScreen();
                     break;
             }
         } else {
@@ -156,7 +156,7 @@ void func_i1_802C7394(void) {
     gVIsPerFrame = 3;
 
     FadeTransition_SetProps(1, 4, 100);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     D_801CE62A = 0;
 
@@ -219,7 +219,7 @@ void func_i1_802C7570(s32 arg0) {
     D_801CE644 = 0;
     D_800DAB1C = 0;
     gVIsPerFrame = 3;
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     D_80228AA4 = 1;
     func_800C21F4(3, 0);
 }
@@ -247,12 +247,12 @@ Gfx* func_i1_802C7D00(Gfx* dList) {
     func_i1_802C8E70();
 
     if (D_80228A16 == 1) {
-        func_8007C494();
+        Save_EepromWriteHeader();
         if ((D_801C2650 != 0) || (D_801C2654 != 0)) {
             if (D_800DAB68 != 0) {
-                func_8007C204(gCourseID);
+                Save_EepromWriteRecord5(gCourseID);
             } else {
-                func_8007BEA4(gCourseID);
+                Save_EepromWriteCourse(gCourseID);
             }
         }
         GameState_EnterCeremony();
@@ -438,7 +438,7 @@ Gfx* func_i1_802C913C(Gfx* dList) {
             func_i1_802C9380(2);
         }
     } else if (D_80228A16 == 1) {
-        func_801EB180();
+        GameState_EnterTitleScreen();
     }
 
     return dList;
@@ -456,7 +456,7 @@ void func_i1_802C9380(s32 arg0) {
     gVIsPerFrame = 3;
 
     FadeTransition_SetProps(1, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     func_800BFD34();
     func_800BFD68();
 

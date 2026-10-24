@@ -92,7 +92,7 @@ void FadeTransition_SetProps(s32 type, u32 fadeTime, s32 duration) {
     }
 }
 
-void func_801E71A8(void) {
+void FadeTransition_Update(void) {
     FadeTransition* fade = &sCurrentFadeTransitionProps;
 
     if (fade->completed == 1) {
@@ -309,7 +309,7 @@ extern Mtx D_7001300[];
 extern Mtx D_7001340[];
 extern Gfx D_106F5B0[];
 
-Gfx* func_801E7908(Gfx* gdl) {
+Gfx* FadeTransition_Draw(Gfx* gdl) {
     FadeTransition* fade = &sCurrentFadeTransitionProps;
     Gfx** dl;
     Gfx* dl0;

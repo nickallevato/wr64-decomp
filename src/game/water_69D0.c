@@ -1,14 +1,15 @@
 #include "global.h"
 
 #define TWO_OVER_SQRT_3 1.1547005f
-#define DIRLIGHT_DIRECTION (0.57735026f)
+/* 1 / sqrt(3): the water lattice is triangular, a cell at (x, z) is at u = x + z / sqrt(3) along its skewed axis */
+#define INV_SQRT3 (0.57735026f)
 
 typedef struct UnkStruct_80162420_s {
     s16 unk0;
     s16 unk2;
 } UnkStruct_80162420;
 
-extern UnkStruct_80162420 D_80162420[];
+extern UnkStruct_80162420 gWaterField[];
 
 /*
  * The field entry for lattice cell (cu, cv): 384 rows of 128, the row taking the high bits of cu.
@@ -16,18 +17,7 @@ extern UnkStruct_80162420 D_80162420[];
  * scale the row and the column separately, which the original does not do.
  */
 #define WATER_CELL(cu, cv) \
-    ((UnkStruct_80162420*) ((s32) D_80162420 + (((((cv) + ((cu) & ~0x7F) + 0x600) % 384) * 128) + ((cu) & 0x7F)) * 4))
-
-/* 0x1C bytes per view; func_80050F8C writes the window centre here */
-typedef struct UnkStruct_80192420_s {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-} UnkStruct_80192420; /* size = 0x1C */
+    ((UnkStruct_80162420*) ((s32) gWaterField + (((((cv) + ((cu) & ~0x7F) + 0x600) % 384) * 128) + ((cu) & 0x7F)) * 4))
 
 /* the window's cell offsets, 2 bytes a cell */
 typedef struct UnkStruct_80160430_s {
@@ -42,8 +32,8 @@ typedef struct UnkStruct_80160A98_s {
     /* 0x6 */ s16 unk6;
 } UnkStruct_80160A98;
 
-extern UnkStruct_80160430 D_80160430[];
-extern UnkStruct_80160A98 D_80160A98[];
+extern UnkStruct_80160430 gWaterCellLattice[];
+extern UnkStruct_80160A98 gWaterCellOffsets[];
 extern s32 D_80192498; /* the window radius, N << 6 */
 
 /* the file's .data (0x800D4680..0x800D47DF) */
@@ -151,9 +141,9 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
             hv = h * 0.5f;
         }
     }
-    ax = cam->unk70;
-    ay = cam->unk74;
-    az = cam->unk78;
+    ax = cam->upX;
+    ay = cam->upY;
+    az = cam->upZ;
     bx = cam->unk64;
     by = cam->unk68;
     bz = cam->unk6C;
@@ -171,7 +161,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     upy = d * by;
     upz = d * bz;
     r = D_800D4744;
-    s = D_800D4740 - cam->unk50;
+    s = D_800D4740 - cam->eyeY;
     dist = (d * r * 1.732f) / 320.0f;
 
     e = cam->unk98 - hv;
@@ -207,8 +197,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         }
     }
     dist = (r * 0.866f) + dist;
-    px = cam->unk4C + (dist * cam->unkF0);
-    pz = cam->unk54 + (dist * cam->unkF4);
+    px = cam->eyeX + (dist * cam->unkF0);
+    pz = cam->eyeZ + (dist * cam->unkF4);
     k = r * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(px - r);
@@ -234,16 +224,16 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     }
     D_801924C4 = D_801924B4 / (f32) (D_800D4754 << 12);
     D_801924C8 = D_801924C0 / (f32) (D_800D4758 << 11);
-    s = D_800D4740 - cam->unk50;
+    s = D_800D4740 - cam->eyeY;
     if (s == 0.0f) {
         k = 1.0f;
     } else {
-        k = (D_800D4750 - cam->unk50) / s;
+        k = (D_800D4750 - cam->eyeY) / s;
     }
     for (i = 6; i >= 0; i--) {
         vp = &vtx[i];
-        px = vp->v.ob[0] - cam->unk4C;
-        pz = vp->v.ob[2] - cam->unk54;
+        px = vp->v.ob[0] - cam->eyeX;
+        pz = vp->v.ob[2] - cam->eyeZ;
         a = (sqrtf((px * px) + (pz * pz)) * D_800D4738) + D_800D473C;
         if (a < 0.5f) {
             vp->v.cn[3] = 0;
@@ -252,8 +242,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = a + 0.5f;
         }
-        vp->v.tc[0] = SysUtils_Round((cam->unk4C + (k * px)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = SysUtils_Round((cam->unk54 + (k * pz)) / D_801924C8) + D_800D4760;
+        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * px)) / D_801924C4) + D_800D475C;
+        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * pz)) / D_801924C8) + D_800D4760;
     }
 }
 #else
@@ -288,11 +278,11 @@ void func_8004C998(s32 view, Vtx* skirt) {
     }
     D_801924CC = D_801924B4 / (f32) (D_800D476C << 10);
     D_801924D0 = D_801924C0 / (f32) (D_800D4770 << 13);
-    h = (f32) gWaterLevel - cam->unk50;
+    h = (f32) gWaterLevel - cam->eyeY;
     if (h == 0.0f) {
         t = 1.0f;
     } else {
-        t = (D_800D4768 - cam->unk50) / h;
+        t = (D_800D4768 - cam->eyeY) / h;
     }
     for (i = 6, idx = &D_80192460[6]; i >= 0; i--, idx--) {
         vp = &skirt[i];
@@ -306,12 +296,12 @@ void func_8004C998(s32 view, Vtx* skirt) {
         }
         // FAKE: the masks are no-ops on the 16-bit stores (maybe a real wrap); without them two
         // temp registers differ
-        vp->v.tc[1] = (SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774) & 0xFFFF;
-        vp->v.tc[0] = (SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778) & 0xFFFF;
+        vp->v.tc[1] = (SysUtils_Round(((((f32) vp->v.ob[0] - cam->eyeX) * t) + cam->eyeX) / D_801924CC) + D_800D4774) & 0xFFFF;
+        vp->v.tc[0] = (SysUtils_Round(((((f32) vp->v.ob[2] - cam->eyeZ) * t) + cam->eyeZ) / D_801924D0) + D_800D4778) & 0xFFFF;
     }
 }
 
-/* a wave generator stamped as rows of lines (the arg of func_8004CC7C) */
+/* a wave generator stamped as rows of lines (the arg of Water_StampPhasedSine) */
 typedef struct UnkStruct_8004CC7C_s {
     /* 0x00 */ f32 unk0;
     /* 0x04 */ f32 unk4;
@@ -330,7 +320,7 @@ typedef struct UnkStruct_8004CC7C_s {
     /* 0x38 */ s32 unk38;
 } UnkStruct_8004CC7C; /* size = 0x3C */
 
-void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
+void Water_StampPhasedSine(UnkStruct_8004CC7C* arg0) {
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -373,7 +363,7 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
                 pz = z;
                 h = (s32) (SIN(phase) * arg0->unk18) << 8;
                 for (j = 0; j < arg0->unk1C; j++) {
-                    u = (s32) ((DIRLIGHT_DIRECTION * pz) + px) % 24576;
+                    u = (s32) ((INV_SQRT3 * pz) + px) % 24576;
                     v = (s32) (TWO_OVER_SQRT_3 * pz) % 24576;
                     cv = v >> 6;
                     cu = u >> 6;
@@ -402,7 +392,7 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
  * (x + r, z + r) in steps of 64, with r = D_80192498 / 4. The phase, D_800D47C0, advances by step
  * on each call and wraps at period.
  */
-void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
+void Water_StampDiagonalSine(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
     static s32 D_800D47C0 = 0;
     s32 t; // FAKE
     UnkStruct_80162420* p0;
@@ -428,9 +418,9 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
     x -= D_80192498 >> 2;
     z -= D_80192498 >> 2;
     while (x <= end) {
-        u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+        u = (s32) ((INV_SQRT3 * z) + x) % 24576;
         v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
-        t = v >> 6; // FAKE: the copy through t gives the original register choice, as in func_8004F520
+        t = v >> 6; // FAKE: the copy through t gives the original register choice, as in Water_StampLine
         cv = t;
         cu = u >> 6;
         if ((u - (cu * 64)) < (v - (cv * 64))) {
@@ -451,7 +441,7 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
 // 24/19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
 // CU and CV are macros so that IDO keeps them as common subexpressions: as named locals they add
 // stack slots
-#define CU (((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6)
+#define CU (((s32) ((INV_SQRT3 * z) + x) % 24576) >> 6)
 #define CV (((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6)
 f32 func_8004D30C(f32 x, f32 z) {
     s32 du;
@@ -460,7 +450,7 @@ f32 func_8004D30C(f32 x, f32 z) {
     s32 d0;
     s32 d1;
 
-    du = (CU << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576);
+    du = (CU << 6) - ((s32) ((INV_SQRT3 * z) + x) % 24576);
     h00 = WATER_CELL(CU, CV)->unk0 >> 8;
     dv = (CV << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576);
     if (dv < du) {
@@ -503,7 +493,7 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
     for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
-        u = (s32) ((DIRLIGHT_DIRECTION * pt->unk8) + pt->unk0) % 24576;
+        u = (s32) ((INV_SQRT3 * pt->unk8) + pt->unk0) % 24576;
         cu = u >> 6;
         v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
         cv = v >> 6;
@@ -664,7 +654,7 @@ void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
     for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
-        u = (s32) ((DIRLIGHT_DIRECTION * pt->unk8) + pt->unk0) % 24576;
+        u = (s32) ((INV_SQRT3 * pt->unk8) + pt->unk0) % 24576;
         cu = u >> 6;
         v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
         cv = v >> 6;
@@ -729,54 +719,54 @@ void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     func_8004DAF0(arg0);
 }
 
-extern s32 D_80192494;
+extern s32 gWaterWindowN;
 
-void func_8004E614(void) {
+void Water_BuildCellLists(void) {
     s32 i;
     s32 j;
     s32 n;
     s32 len;
 
     n = 0;
-    for (i = -D_80192494; i < 0; i++) {
-        len = D_80192494 * 2;
+    for (i = -gWaterWindowN; i < 0; i++) {
+        len = gWaterWindowN * 2;
         for (j = 0; j <= len + i; j++) {
-            D_80160430[n].unk0 = -D_80192494 + j;
-            D_80160430[n].unk1 = i;
+            gWaterCellLattice[n].unk0 = -gWaterWindowN + j;
+            gWaterCellLattice[n].unk1 = i;
             n++;
         }
     }
-    for (i = 0; i <= D_80192494; i++) {
-        len = D_80192494 * 2;
+    for (i = 0; i <= gWaterWindowN; i++) {
+        len = gWaterWindowN * 2;
         for (j = 0; j <= len - i; j++) {
-            D_80160430[n].unk0 = -D_80192494 + i + j;
-            D_80160430[n].unk1 = i;
+            gWaterCellLattice[n].unk0 = -gWaterWindowN + i + j;
+            gWaterCellLattice[n].unk1 = i;
             n++;
         }
     }
     n = 0;
-    for (i = -D_80192494; i <= D_80192494; i++) {
-        len = (D_80192494 * 2) - (s32) sqrtf(i * i);
+    for (i = -gWaterWindowN; i <= gWaterWindowN; i++) {
+        len = (gWaterWindowN * 2) - (s32) sqrtf(i * i);
         for (j = 0; j <= len; j++) {
             if ((i % 2) == 0) {
-                D_80160A98[n++].unk4 = (j - (len / 2)) * 64;
+                gWaterCellOffsets[n++].unk4 = (j - (len / 2)) * 64;
             } else {
-                D_80160A98[n++].unk4 = ((j - (len / 2)) * 64) - 32;
+                gWaterCellOffsets[n++].unk4 = ((j - (len / 2)) * 64) - 32;
             }
         }
     }
     n = 0;
-    for (i = -D_80192494; i < 0; i++) {
-        len = (D_80192494 * 2) - (s32) sqrtf(i * i);
+    for (i = -gWaterWindowN; i < 0; i++) {
+        len = (gWaterWindowN * 2) - (s32) sqrtf(i * i);
         for (j = 0; j <= len; j++) {
-            D_80160A98[n].unk6 = (((sqrtf(3.0f) * 64.0f) / 2) * i) - 0.5;
+            gWaterCellOffsets[n].unk6 = (((sqrtf(3.0f) * 64.0f) / 2) * i) - 0.5;
             n++;
         }
     }
-    for (i = 0; i <= D_80192494; i++) {
-        len = (D_80192494 * 2) - (s32) sqrtf(i * i);
+    for (i = 0; i <= gWaterWindowN; i++) {
+        len = (gWaterWindowN * 2) - (s32) sqrtf(i * i);
         for (j = 0; j <= len; j++) {
-            D_80160A98[n].unk6 = (((sqrtf(3.0f) * 64.0f) / 2) * i) + 0.5;
+            gWaterCellOffsets[n].unk6 = (((sqrtf(3.0f) * 64.0f) / 2) * i) + 0.5;
             n++;
         }
     }
@@ -784,7 +774,7 @@ void func_8004E614(void) {
 
 
 /* the field entry at a byte offset (UnkStruct_80160A98.unk0) */
-#define WATER_CELL_AT(off) ((UnkStruct_80162420*) ((s32) D_80162420 + (off)))
+#define WATER_CELL_AT(off) ((UnkStruct_80162420*) ((s32) gWaterField + (off)))
 
 /*
  * One step of the wave simulation over the window's cells (see the recomp's GAME-INTERNALS.md,
@@ -806,16 +796,16 @@ void func_8004EAA4(void) {
     s32 mean;
     s32 diff;
 
-    p = D_80160A98;
-    for (i = -D_80192494; i < 0; i++) {
-        q = p + ((D_80192494 * 2) + i + 2);
+    p = gWaterCellOffsets;
+    for (i = -gWaterWindowN; i < 0; i++) {
+        q = p + ((gWaterWindowN * 2) + i + 2);
         a = WATER_CELL_AT(p->unk0);
         b = WATER_CELL_AT(q[-1].unk0);
         mean = (a->unk0 + b->unk0) >> D_800D4724;
         diff = (b->unk0 - a->unk0) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         b->unk2 = (b->unk2 - diff) - mean;
-        for (end = p + ((D_80192494 * 2) + i); p < end;) {
+        for (end = p + ((gWaterWindowN * 2) + i); p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
             mean = (a->unk0 + b->unk0) >> D_800D4724;
@@ -845,10 +835,10 @@ void func_8004EAA4(void) {
         b->unk2 = (b->unk2 - diff) - mean;
         a->unk2 -= a->unk2 >> D_800D4730;
     }
-    for (i = 0; i < D_80192494; i++) {
+    for (i = 0; i < gWaterWindowN; i++) {
         a = WATER_CELL_AT(p->unk0);
-        end = p + ((D_80192494 * 2) - i);
-        for (q = p + (((D_80192494 * 2) - i) + 1); p < end;) {
+        end = p + ((gWaterWindowN * 2) - i);
+        for (q = p + (((gWaterWindowN * 2) - i) + 1); p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
             mean = (a->unk0 + b->unk0) >> D_800D4724;
@@ -873,7 +863,7 @@ void func_8004EAA4(void) {
         a->unk0 += a->unk2;
         a->unk2 -= a->unk2 >> D_800D4730;
     }
-    end = p + D_80192494;
+    end = p + gWaterWindowN;
     a = WATER_CELL_AT(p->unk0);
     while (p < end) {
         b = WATER_CELL_AT(p[1].unk0);
@@ -899,7 +889,7 @@ void func_8004EAA4(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
 #endif
 
-void func_8004EFB4(f32 x, f32 z, s32 height) {
+void Water_StampPoint(f32 x, f32 z, s32 height) {
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -908,7 +898,7 @@ void func_8004EFB4(f32 x, f32 z, s32 height) {
     s32 cu;
     s32 cv;
 
-    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    u = (s32) ((INV_SQRT3 * z) + x) % 24576;
     v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
     cv = v >> 6;
     cu = u >> 6;
@@ -927,7 +917,7 @@ void func_8004EFB4(f32 x, f32 z, s32 height) {
 extern s32 gFrameCounter;
 extern s32 D_801924E0[];
 
-void func_8004F1EC(f32 x, f32 z, s32 height, s32 arg3) {
+void Water_StampPointTimed(f32 x, f32 z, s32 height, s32 arg3) {
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -936,7 +926,7 @@ void func_8004F1EC(f32 x, f32 z, s32 height, s32 arg3) {
     s32 cu;
     s32 cv;
 
-    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    u = (s32) ((INV_SQRT3 * z) + x) % 24576;
     v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
     cv = v >> 6;
     cu = u >> 6;
@@ -962,15 +952,15 @@ void func_8004F3D4(f32 arg0, f32 arg1, s32 arg2) {
     s32 temp_hi;
     s32 temp_hi_2;
 
-    temp_hi = (s32) ((DIRLIGHT_DIRECTION * arg1) + arg0) % 24576;
+    temp_hi = (s32) ((INV_SQRT3 * arg1) + arg0) % 24576;
     temp_hi_2 = (s32) (TWO_OVER_SQRT_3 * arg1) % 24576;
     temp_a0 = temp_hi_2 >> 6;
     temp_a1 = temp_hi >> 6;
 
     if ((temp_hi - (temp_a1 * 64)) < (temp_hi_2 - (temp_a0 * 64))) {
-        var_v0 = D_80162420 + ((((((temp_a0 + 1) + (temp_a1 & ~0x7F) + 0x600) % 384)) * 128) + (temp_a1 & 0x7F));
+        var_v0 = gWaterField + ((((((temp_a0 + 1) + (temp_a1 & ~0x7F) + 0x600) % 384)) * 128) + (temp_a1 & 0x7F));
     } else {
-        var_v0 = D_80162420 + (((((temp_a0 + ((temp_a1 + 1) & ~0x7F) + 0x600) % 384)) * 128) + ((temp_a1 + 1) & 0x7F));
+        var_v0 = gWaterField + (((((temp_a0 + ((temp_a1 + 1) & ~0x7F) + 0x600) % 384)) * 128) + ((temp_a1 + 1) & 0x7F));
     }
     if ((arg2 * 256) < var_v0->unk0) {
         var_v0->unk0 += arg2 * 256;
@@ -978,7 +968,7 @@ void func_8004F3D4(f32 arg0, f32 arg1, s32 arg2) {
     }
 }
 
-void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
+void Water_StampLine(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -995,7 +985,7 @@ void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
         h = (s32) height << 8;
         do {
             count--;
-            u = (s32) ((DIRLIGHT_DIRECTION * pz) + px) % 24576;
+            u = (s32) ((INV_SQRT3 * pz) + px) % 24576;
             v = (s32) (TWO_OVER_SQRT_3 * pz) % 24576;
             t = v >> 6; // FAKE: the copy through t gives the original register choice
             cv = t;
@@ -1020,7 +1010,7 @@ void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
  * for each cell), scaled to +-amplitude: first column by column (velocity 0), then added again row
  * by row.
  */
-void func_8004F790(s32 amplitude) {
+void Water_FillNoise(s32 amplitude) {
     s32 i;
     s32 j;
     s32 bit;
@@ -1048,7 +1038,7 @@ void func_8004F790(s32 amplitude) {
             h = SysUtils_Round(amplitude * (((sum / 6.0f) / 16383.5f) - 1.0f)) << 8;
             // i and the row are byte offsets into the field (i steps by 4); the row is written as
             // (j << 7) << 2 (128 cells of 4 bytes): j << 9 compiles differently
-            q = (UnkStruct_80162420*) ((u8*) D_80162420 + ((j << 7) << 2) + i);
+            q = (UnkStruct_80162420*) ((u8*) gWaterField + ((j << 7) << 2) + i);
             q->unk0 = h;
             q->unk2 = 0;
         }
@@ -1057,7 +1047,7 @@ void func_8004F790(s32 amplitude) {
         rnd[k] = SysUtils_Rand() & 0x7FFF;
     }
     for (j = 0; j != 384; j++) {
-        row = (u8*) D_80162420 + ((j << 7) << 2);
+        row = (u8*) gWaterField + ((j << 7) << 2);
         for (i = 0; i != 0x200; i += 4) {
             bit = 1;
             sum = 0;
@@ -1073,7 +1063,7 @@ void func_8004F790(s32 amplitude) {
     }
 }
 
-extern UnkStruct_80192420 D_80192420[];
+extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_8019249C;
 extern s32 D_801924A0;
 extern s32 D_801924A8;
@@ -1083,13 +1073,13 @@ extern f32 D_801924B0;
 extern f32 D_801924B8;
 extern f32 D_801924BC;
 
-void func_8004E614(void);
-void func_8004F790(s32 amplitude);
+void Water_BuildCellLists(void);
+void Water_FillNoise(s32 amplitude);
 
 /*
  * Sets up the water for a scene: the simulation shifts and the window size N (16, 10 or 12), the
- * 13-word parameter set from D_800D4684, gWaterLevel, the cell lists (func_8004E614) and a random
- * field (func_8004F790); the field's wrap bounds; and, in both GfxPools, the vertex colours of the
+ * 13-word parameter set from D_800D4684, gWaterLevel, the cell lists (Water_BuildCellLists) and a random
+ * field (Water_FillNoise); the field's wrap bounds; and, in both GfxPools, the vertex colours of the
  * window's vertices and the texture coordinate 0x400 on its boundary ring and skirt.
  */
 
@@ -1116,35 +1106,35 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         D_800D4724 = 10;
         D_800D472C = 4;
         D_800D4730 = 5;
-        D_80192494 = 16;
+        gWaterWindowN = 16;
         set = 0;
     } else {
         D_800D4724 = 9;
         D_800D472C = 5;
         D_800D4730 = 6;
         if ((D_801CE64C == 2) || (gPlayers == TWO_PLAYERS)) {
-            D_80192494 = 10;
+            gWaterWindowN = 10;
             set = 26;
         } else {
-            D_80192494 = 12;
+            gWaterWindowN = 12;
             set = 13;
         }
     }
-    D_80192420[0].unk0 = D_80192420[0].unk4 = D_80192420[1].unk0 = D_80192420[1].unk4 = 0;
-    D_80192420[1].unk18 = 0.0f;
-    D_80192420[0].unk8 = D_80192420[0].unkC = D_80192420[0].unk10 = D_80192420[0].unk14 = D_80192420[0].unk18 =
-        D_80192420[1].unk8 = D_80192420[1].unkC = D_80192420[1].unk10 = D_80192420[1].unk14 = D_80192420[1].unk18;
-    for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192494;) {
+    gWaterWindow[0].unk0 = gWaterWindow[0].unk4 = gWaterWindow[1].unk0 = gWaterWindow[1].unk4 = 0;
+    gWaterWindow[1].unk18 = 0.0f;
+    gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
+        gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
+    for (src = &D_800D4684[set], dst = D_80192460; dst < &gWaterWindowN;) {
         *dst++ = *src++;
     }
     D_801924A0 = 0x8000;
     D_801924A4 = 0x8000;
     D_801924A8 = 0x800;
-    D_80192498 = D_80192494 << 6;
-    D_8019249C = (D_80192494 * 3 * (D_80192494 + 1)) + 1;
+    D_80192498 = gWaterWindowN << 6;
+    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + 1;
     gWaterLevel = waterLevel;
-    func_8004E614();
-    func_8004F790(amplitude);
+    Water_BuildCellLists();
+    Water_FillNoise(amplitude);
     nu = ((f32) ((D_801924A8 * 2) + D_801924A0) / 49152.0f) + 0.9;
     nv = ((f32) (D_801924A4 + (D_801924A8 * 2)) / (sqrtf(3.0f) * 2.0f * 8192.0f)) + 0.9;
     D_801924AC = (nu * 0x6000) - 1.0;
@@ -1168,13 +1158,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                 pool->unk170D8[i].v.cn[3] = 0xB0;
             }
         }
-        top = D_80192494;
-        bot = D_8019249C - D_80192494;
+        top = gWaterWindowN;
+        bot = D_8019249C - gWaterWindowN;
         c = bot - 1;
         d = bot - 2;
         b = top + 1;
         step = top + 2;
-        for (j = D_80192494 - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
+        for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
             pool->unk13D68[j].v.tc[1] = pool->unk13D68[j].v.tc[0] = pool->unk13D68[b].v.tc[1] = pool->unk13D68[b].v.tc[0] =
                 pool->unk13D68[top].v.tc[1] = pool->unk13D68[top].v.tc[0] = pool->unk13D68[c].v.tc[0] =
                     pool->unk13D68[c].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
@@ -1192,13 +1182,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                         pool->unk13D68[D_80192460[5]].v.tc[0] = pool->unk13D68[D_80192460[5]].v.tc[1] =
                             pool->unk13D68[D_80192460[6]].v.tc[0] = pool->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
         if (gPlayers == TWO_PLAYERS) {
-            top = D_80192494;
-            bot = D_8019249C - D_80192494;
+            top = gWaterWindowN;
+            bot = D_8019249C - gWaterWindowN;
             c = bot - 1;
             d = bot - 2;
             b = top + 1;
             step = top + 2;
-            for (j = D_80192494 - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
+            for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
                 pool->unk170D8[j].v.tc[1] = pool->unk170D8[j].v.tc[0] = pool->unk170D8[b].v.tc[1] = pool->unk170D8[b].v.tc[0] =
                     pool->unk170D8[top].v.tc[1] = pool->unk170D8[top].v.tc[0] = pool->unk170D8[c].v.tc[0] =
                         pool->unk170D8[c].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
@@ -1228,7 +1218,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  * plus each cell's offsets; on the boundary y is gWaterLevel, inside it is the field height (>> 8)
  * plus gWaterLevel and the texture coordinates come from the slopes to the neighbouring rows.
  * Then places the six skirt vertices out at D_800D4720 and stores the window's centre and
- * D_800D4720 squared in D_80192420[view].
+ * D_800D4720 squared in gWaterWindow[view].
  */
 
 #ifdef NON_MATCHING
@@ -1252,25 +1242,25 @@ void func_80050204(s32 view, Vtx* arena) {
     f32 dx;
     f32 dz;
 
-    e = D_80160A98;
+    e = gWaterCellOffsets;
     vtx = arena;
-    w = &D_80192420[view];
-    for (end = &D_80160A98[D_80192494]; end >= e;) {
+    w = &gWaterWindow[view];
+    for (end = &gWaterCellOffsets[gWaterWindowN]; end >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
     }
-    for (i = 1 - D_80192494; i < 0; i++) {
+    for (i = 1 - gWaterWindowN; i < 0; i++) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        for (end = e + ((D_80192494 * 2) + i - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((D_80192494 * 2) + i + 1)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + ((D_80192494 * 2) + i + 1))->unk0)->unk0 >> 7;
+        for (end = e + ((gWaterWindowN * 2) + i - 2); end >= e;) {
+            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + i + 1)))->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT((e + ((gWaterWindowN * 2) + i + 1))->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1293,9 +1283,9 @@ void func_80050204(s32 view, Vtx* arena) {
     vtx->v.ob[2] = e->unk6 + w->unk4;
     e++;
     vtx++;
-    for (end = e + ((D_80192494 * 2) - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((D_80192494 * 2) + 1)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + (D_80192494 * 2))->unk0)->unk0 >> 7;
+    for (end = e + ((gWaterWindowN * 2) - 2); end >= e;) {
+            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + 1)))->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1312,15 +1302,15 @@ void func_80050204(s32 view, Vtx* arena) {
     vtx->v.ob[2] = e->unk6 + w->unk4;
     e++;
     vtx++;
-    for (i = 1; i < D_80192494; i++) {
+    for (i = 1; i < gWaterWindowN; i++) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        for (end = e + ((D_80192494 * 2) - i - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((D_80192494 * 2) - i + 2)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + ((D_80192494 * 2) - i))->unk0)->unk0 >> 7;
+        for (end = e + ((gWaterWindowN * 2) - i - 2); end >= e;) {
+            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) - i + 2)))->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT((e + ((gWaterWindowN * 2) - i))->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1338,7 +1328,7 @@ void func_80050204(s32 view, Vtx* arena) {
         e++;
         vtx++;
     }
-    for (end = &D_80160A98[D_8019249C - 1]; end >= e;) {
+    for (end = &gWaterCellOffsets[D_8019249C - 1]; end >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
@@ -1353,7 +1343,7 @@ void func_80050204(s32 view, Vtx* arena) {
         arena[*idx].v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * (v->v.ob[2] - c->v.ob[2]));
         arena[*idx].v.ob[1] = gWaterLevel;
     }
-    if (w != D_80192420) {
+    if (w != gWaterWindow) {
         dx = gCameraPerspective[1].unkF0;
         dz = gCameraPerspective[1].unkF4;
     } else {
@@ -1417,9 +1407,9 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
     h = (d * SIN(angle)) / COS(angle);
-    ax = cam->unk70;
-    ay = cam->unk74;
-    az = cam->unk78;
+    ax = cam->upX;
+    ay = cam->upY;
+    az = cam->upZ;
     bx = cam->unk64;
     by = cam->unk68;
     bz = cam->unk6C;
@@ -1437,7 +1427,7 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     upx = d * bx;
     upy = d * by;
     upz = d * bz;
-    s = (f32) (gWaterLevel + D_800D49B0) - cam->unk50;
+    s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
     dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
 
     e = cam->unk98 - h;
@@ -1473,8 +1463,8 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
         }
     }
     dist = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
-    *x = cam->unk4C + (dist * cam->unkF0);
-    *z = cam->unk54 + (dist * cam->unkF4);
+    *x = cam->eyeX + (dist * cam->unkF0);
+    *z = cam->eyeZ + (dist * cam->unkF4);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")
@@ -1483,7 +1473,7 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
 void func_8004EAA4(void);
 void func_80050204(s32 view, Vtx* vtx);
 
-void func_80050F8C(s32 view, f32 x, f32 z) {
+void Water_UpdateWindow(s32 view, f32 x, f32 z) {
     UnkStruct_80192420* w;
     s32 u;
     s32 cu;
@@ -1497,8 +1487,8 @@ void func_80050F8C(s32 view, f32 x, f32 z) {
     s32 row;
     s32 pad; // stack pad: puts the spill of w at sp+0x1C
 
-    w = &D_80192420[view];
-    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    w = &gWaterWindow[view];
+    u = (s32) ((INV_SQRT3 * z) + x) % 24576;
     cu = (u + 0x20) >> 6;
     v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
     cv = (v + 0x20) >> 6;
@@ -1508,7 +1498,7 @@ void func_80050F8C(s32 view, f32 x, f32 z) {
     w->unk0 = w->unk14 + x;
     w->unk18 = (0.8660254f * fcv) - (0.8660254f * fv);
     w->unk4 = w->unk18 + z;
-    for (off = &D_80160430[D_8019249C - 1], cell = &D_80160A98[D_8019249C - 1]; off >= D_80160430; off--, cell--) {
+    for (off = &gWaterCellLattice[D_8019249C - 1], cell = &gWaterCellOffsets[D_8019249C - 1]; off >= gWaterCellLattice; off--, cell--) {
         col = off->unk0 + (cu & 0x7F);
         // (cu >> 7) << 7 is cu & ~0x7F; the original's sra/sll needs the shifts
         row = off->unk1 + ((cv + ((cu >> 7) << 7) + 0x600) % 384);
@@ -1517,7 +1507,7 @@ void func_80050F8C(s32 view, f32 x, f32 z) {
     if (gRiderGameModes != PAUSE_MODE) {
         func_8004EAA4();
     }
-    if (w == D_80192420) {
+    if (w == gWaterWindow) {
         func_80050204(0, gGfxPool->unk13D68);
     } else {
         func_80050204(1, gGfxPool->unk170D8);
@@ -1535,7 +1525,7 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z);
  * it leaves the window) and keeps the window at (0, 0); otherwise it centres each view's window
  * from func_80050B78.
  */
-void func_80051238(void) {
+void Water_Update(void) {
     static s32 D_800D47C4 = 0;
     static s32 D_800D47C8 = 1;
     static f32 D_800D47CC = 1024.0f;
@@ -1566,15 +1556,15 @@ void func_80051238(void) {
                 turn = (s32) (((f32) (SysUtils_Rand() & 0x3FFF) * 14.0f) / 16383.0) - 7;
                 D_800D47C8 = turn;
             }
-            func_8004EFB4(D_800D47CC, D_800D47D0, -50);
+            Water_StampPoint(D_800D47CC, D_800D47D0, -50);
         }
-        func_80050F8C(0, 0.0f, 0.0f);
+        Water_UpdateWindow(0, 0.0f, 0.0f);
         return;
     }
     if (gPlayers == TWO_PLAYERS) {
         func_80050B78(&gCameraPerspective[1], &x, &z);
-        func_80050F8C(1, x, z);
+        Water_UpdateWindow(1, x, z);
     }
     func_80050B78(gCameraPerspective, &x, &z);
-    func_80050F8C(0, x, z);
+    Water_UpdateWindow(0, x, z);
 }

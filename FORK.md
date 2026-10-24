@@ -1,8 +1,10 @@
 # Fork notes
 
-Private working fork of [LLONSIT/Wave-Race-64](https://github.com/LLONSIT/Wave-Race-64),
-used to turn the remaining included assembly into C that still rebuilds the ROM
-byte for byte. Nothing here is sent upstream without the owner's say-so.
+Public fork of [LLONSIT/Wave-Race-64](https://github.com/LLONSIT/Wave-Race-64), at
+<https://github.com/nickallevato/wr64-decomp>. It turns the remaining included assembly into C
+that still rebuilds the ROM byte for byte, and records how: the loop, the tools and what each
+milestone taught. Upstream does not accept AI-generated contributions, so nothing from this fork
+is offered upstream; the work is shipped on `main` here.
 
 ## Branch model
 
@@ -11,16 +13,21 @@ byte for byte. Nothing here is sent upstream without the owner's say-so.
 - `match/<func>`: one branch per function, in its own worktree (see `tools/fork/start.sh`).
   Merged into `main` only after `tools/fork/check.sh <func>` passes.
 
-`origin` is the private Gitea (`ssh://na@gitea.allevato.io:2222/na/wr64-decomp.git`).
-`upstream` is GitHub and is fetch-only.
+Remotes: `github` is the public fork (`https://github.com/nickallevato/wr64-decomp`) and
+`origin` is the owner's Gitea; `main` is pushed to both, batch branches to `origin`.
+`upstream` is LLONSIT's repository and is fetch-only.
+
+`port/pr92-davkdavk` holds davkdavk's five commits from LLONSIT/Wave-Race-64#92 (closed upstream
+unmerged); see Milestone 3.
 
 ## Setup (one time)
 
 These are the commands that produced the baseline below. Needs the system packages
-`mips-linux-gnu` binutils, `gcc`, `make`, `python3` with `venv`.
+`mips-linux-gnu` binutils, `gcc`, `make`, `python3` with `venv`, and your own dump of the
+US Rev 1 ROM (`waverace64.us.rev1.sha1` holds its checksum). The ROM is never committed.
 
 ```bash
-git checkout -b main master
+git clone https://github.com/nickallevato/wr64-decomp.git && cd wr64-decomp
 git submodule update --init --recursive
 
 python3 -m venv .venv && . .venv/bin/activate
@@ -32,7 +39,7 @@ pip install colorama watchdog               # asm-differ (./diff)
 make toolchain                              # tools/n64crc + tools/ido-static-recomp/build/5.3/out/cc
 git clone https://github.com/simonlindholm/decomp-permuter tools/decomp-permuter
 
-cp /home/na/projects/wr_64_exe/reference/wr64-decomp/baserom.us.rev1.z64 .   # never committed (*.z64 is ignored)
+cp /path/to/your/Wave\ Race\ 64.z64 baserom.us.rev1.z64    # your own dump; *.z64 is ignored by git
 make init                                   # clean + extract + build; ends with "waverace64.us.rev1.z64: OK"
 ```
 
@@ -194,8 +201,8 @@ other files use them.
 ## Milestone 2
 
 Goal: the HUD and menu code in `src/codeseg`, file by file in six batches, smallest functions
-first, each within a size-based cap. The batches ran on 2026-10-24, roughly 03:30 to 08:30, up to
-three at a time (merges `509ed40`, `650b0ca`, `5898c63`, `bfab8dd`, `2d92e88`, `8c602c9`).
+first, each within a size-based cap. The batches ran on 2026-10-24, roughly 03:30 to 08:30, two
+workers at a time, plus reviewers (merges `509ed40`, `650b0ca`, `5898c63`, `bfab8dd`, `2d92e88`, `8c602c9`).
 
 **Count (`tools/progress.py`): 1080 -> 1197 of 1472 (73.37% -> 81.32%); 384132 of 838772
 bytes (45.80%).** 117 functions matched, 25 set aside. `src/codeseg` is now 192 of 219.
@@ -243,7 +250,7 @@ bytes (45.80%).** 117 functions matched, 25 set aside. `src/codeseg` is now 192 
 | `func_801FB514` | C94E0 | 10384 | the original keeps two dead computations that IDO deletes here |
 
 Milestone 1's two set-asides were revisited and stay as they were: `func_801E5554` (40, one
-`t0`/`t1` swap in case 4) and `func_801F4120` (its note still has no score).
+`t0`/`t1` swap in case 4) and `func_801F4120` (its note carries the score, 58028 / 490800).
 
 ### Names
 
@@ -268,6 +275,8 @@ merges): `func_801E9858` (the string printer), `func_801EAFB4`, `D_80228A40`, `f
 `func_801E1290`, `func_801E1E8C`, `D_80228A90`. Set-asides keep their names (the `GLOBAL_ASM` path
 uses them). A95D0's camera code keeps `func_`/`UnkA95D0_*` names: what it does is clear, but no
 known call or constant names it yet.
+(The twelve kept names were all renamed in milestone 3; the A95D0 script runners and steps still
+keep their `func_`/`UnkA95D0_*` names.)
 
 ### What we learned
 
@@ -298,7 +307,7 @@ known call or constant names it yet.
   239 and 275.
 - **The permuter rarely helped.** It found the four `if (1) {}` in `func_801E2058`, a temp in
   `func_801E229C`, a chained `= 0` in `func_801EBD28`, and hinted at the line joining in
-  `func_801E946C`. Most runs (several hours in total, on na-workhorse) found nothing. A small local
+  `func_801E946C`. Most runs (several hours in total, on a second machine) found nothing. A small local
   variant tester (apply N source variants, score each with asm-differ in seconds) found more.
 - **A 0 from `./diff` can be stale** (see "The loop"): when the gcc check pass failed, the object was
   never rebuilt and asm-differ scored the old one. Only `check.sh` counts.
@@ -313,7 +322,7 @@ known call or constant names it yet.
   `func_801FAEB8`); re-split AF8C0/B17D0 at the right boundary (`D_80226330`).
 - Near misses worth a short retry: `func_801E5554` (40), `func_801DB8F0` (220), `func_801EE4D0` (239),
   `func_801EE6F4` (275), `func_801F2060` (300), `func_801DC274` (539), `func_801E3EE0` (588),
-  `func_801E1BA8` (610). Re-score `func_801F4120`, whose note has no score.
+  `func_801E1BA8` (610). `func_801F4120` stays at 58028 / 490800.
 - Types that disagree between files, to settle in a shared header: `D_800DAB60` (`s16` in B97B0,
   `s32[]` in code_4C750), `D_800EAC44`/`D_800EAC14` (2-D vs 1-D), `D_103B4D0` (`u32[]` vs `u8[]`),
   `D_7000000` (`u8[]` vs `Mtx*`), `func_801E9858`'s argument (`s8*` vs `u32`); `D_80228120` is used
@@ -322,4 +331,222 @@ known call or constant names it yet.
   `PrinterColorCycle` (B17D0's `func_801E3698` and `func_i6_802C5C2C` also use
   `gPrinterColorCycle`), the record-entry structs in AF8C0, the `D_10xxxxx` segment externs; the
   letter-wheel display lists are still numeric segment addresses.
-- The names kept for `batch/C6C0` (list above), once it merges.
+- The names kept for `batch/C6C0` (list above), once it merges. Done in milestone 3.
+
+## Milestone 3
+
+Goal: `src/game`, the race, rider, water and save code, in batches of one or two files, plus the
+overlays' functions that davkdavk's open pull request had already done. The batches ran on
+2026-10-24 (roughly 06:30 to 16:30): two workers at a time up to the code_43DA0/code_4F850 batch
+(`batch/C6C0` beside milestone 2's last batch, water beside 52CD0), then one worker at a time at
+the owner's request ("burn things down a little more slowly"), with the coordinator reviewing
+inline while a worker ran. Merges: `1fd16e6`, `3e29f75`, `6862b57`, `7b17b76`, `f2c4405`, `2340fd3`, `5764666`,
+`3789333`.
+
+### Count, and the recount
+
+**`tools/progress.py`: 1097 -> 1195 of 1372 (80.0% -> 87.1%): +98 matched.** Milestone 2 closed at
+1197 of 1472; on the recounted scale that is 1097 of 1372 (the numbers below use the new scale;
+1133 is where it stood after the third merge, the first one that carried the recount).
+
+The recount: `code_52CD0.c`'s rodata was a separate blob, and moving it into the C file (a2704f4)
+turned its 100 jump-table labels (`.L8009C304`, ...) from `F` symbols into plain labels.
+`tools/progress.py` counts every `F` symbol in the ELF, so those 100 labels had been counted as
+matched functions on both sides of the fraction. Nothing real changed state. Every count before
+the 52CD0 merge is 100 too high in both numbers; from there on the total is 1372.
+
+| After merge | Matched / total | Batch |
+|---|--:|---|
+| `3872f73` (milestone 2 names) | 1110 / 1372 (1210 / 1472 on the old scale, with C6C0) | code_C6C0.c, +13 |
+| `3e29f75` | 1116 | water_69D0.c, +6 |
+| `6862b57` | 1133 | code_52CD0.c, +17 (the first count after the recount) |
+| `7b17b76` | 1137 | water second pass, +4 |
+| `f2c4405` | 1145 | code_43DA0.c and code_4F850.c, +8 |
+| `2340fd3` | 1149 | the save file and small files, +4 |
+| `5764666` | 1191 | the PR #92 port, +42 |
+| `3789333` | 1195 | the large functions, +4 |
+
+Note for the next count: `tools/progress.py` also counts 22 absolute linker symbols of size 0
+(`objdump` shows them as `F *ABS*`: `func_802C5B78`, `func_802C5F6C`, ... the raw overlay addresses
+`code_4C750.c` calls, and `func_801ED338`). They have no `.s` file, so they count as matched. The
+true figure is 1173 of 1350. They are left in so the numbers stay comparable; renaming the overlay
+function that sits at such an address (to `CourseSelect_Draw`, say) would lower both numbers by one
+unless the raw symbol is kept, so those five draw functions keep their `func_i*` names.
+
+### Matched and set aside, by batch
+
+Scores are asm-differ's current / maximum with only that function's C enabled
+(`--max-size` = the function's size; lower is closer). Function names are the addresses used when
+the batch ran; the names commits below renamed many matched ones, and set-asides keep theirs (the
+`GLOBAL_ASM` path uses them).
+
+**code_C6C0.c** (31 entries): matched 13: `func_8006977C`, `80067BFC`, `800694B8`, `800683A0`,
+`80067C6C`, `80061708`, `80068538`, `80053C08`, `80069798`, `80067810`, `80061FEC`, `8006719C`,
+`800618F4` (rider part matrices and display lists, the stick rescale, the sphere push-apart, the
+orbit camera). Set aside 18: `80067E40` 1565 / 34400, `800629A8` 1690 / 29800, `80064C0C` 1805 /
+102700, `80061184` 3938, `80063C88` 5762, `8006390C` 6123, `800609EC` 6384, `80065C18` 6824,
+`800624CC` 7832, `800665B0` 9093, `80054130` 9443, `800534AC` 11744, `800687A4` 14274,
+`80051EC0` 19419, `80062E50` 37161, `8005B510` 53675, `80057B24` 82354, `8005DE24` 94453 (the last
+two are the m2c structure kept for reading).
+
+**water_69D0.c** (19 entries): first pass matched 6 (`8004F1EC`, `8004EFB4`, `8004F520`,
+`80050F8C`, `8004CC7C`, `8004E614`), set aside 13. Second pass (`batch/water-2`) matched 4 more
+(`8004F790`, `8004C998`, `8004D018`, `80051238`; the file's `.data` moved to C for the function-scope
+statics) and brought four closer. Left, nine: `8004D30C` 24 / 19900, `8004DAF0` 487, `8004E0A4`
+2500, `8004D628` 2600, `8004EAA4` 8175, `8004F9E0` 12834, `80050B78` 17535, `8004C1D0` 21445,
+`80050204` 26108.
+
+**code_52CD0.c** (26 entries; four already had C under `NEEDS_RODATA`): rodata moved to C first
+(the recount above), then matched 17: `80099AD8`, `800ADC8C`, `8009934C`, `8009D96C`, `800ADF90`,
+`8009C2CC`, `800A10E4`, `800A16F0`, `800A1CFC`, `800A2308`, `8009F398`, `8009FCB0`, `8009DC10`,
+`800AAAC8`, `800AD418`, `800A2B24`, `800A063C`. Set aside 9: `800AB25C` 60 / 39700, `8009D6B0` 315
+(also needs the unreferenced `D_800EB54C`, now owned by it in `symbol_addrs.txt`), `800A52D8` 320,
+`800998B0` 904 (matched later by the PR port), `800AC098` 1710, `800A9D48` 1810, `800AB95C` 4743,
+`800AC184` 10230, `800A68A4` 16348.
+
+**code_43DA0.c and code_4F850.c** (17 entries): matched 8: `80091CD8`, `800963CC`, `800961B8`,
+`80096694`, `8008E4B0`, `800916B4`, `8008D94C`, `8008FB74`. Set aside 9: `80091DBC` 30 / 8800
+(needs this file's `.data` for a function-scope static; the boundary near `D_800DA920` is
+unclear), `80096048` 60, `unk_game_load` 913, `8008D454` 2180, `8008BD2C` 2641, `8008DFD0` 2745,
+`80096960` 13817, `8008E794` 18577, `8008A0E0` 75211.
+
+**The save file and small files** (16 entries across wr64_save.c, code_3A580.c, code_383C0.c,
+code_43A60.c, code_3AC00.c and code_5480.c): matched 4: `8007C494`, `8007BEA4`, `8007C604`,
+`8004BC98` (after moving code_5480's `.data` and `.bss` to C). Set aside 10: `8007F030` 245 /
+26200, `8007FD80` 530, `8007D2D4` 931, `800890B4` 1285, `8007D614` 4441, `8007B630` 4527,
+`8007B930` 4557, `8007FFA8` 7764, `8004B1B4` 8621, `8007DF4C` 23088. Two older set-asides were
+looked at and left: `80088EA8` (330 in the old note, 225 measured now, with a note; one register
+copy fewer than the original) and `80085510` 4370.
+
+**The PR #92 port**: 42 functions, all matched, none set aside (below).
+
+**The large functions** (16 entries across code_2FB10.c, code_2C670.c, code_24B00.c and
+code_68A10.c): matched 4: `800AE7C4`, `80077F5C`, `80073E6C`, `800744EC`. Set aside 12:
+`800AFBD0` 666 / 84200, `800735EC` 1105, `80076378` 2603, `80079528` 3995, `800B2ABC` 8560,
+`80075310` 12903, `800B305C` 19964, `800783AC` 23154, `8007687C` 43091, `80071E70` 47402,
+`800B08F8` 51543, `8006E674` 135881.
+
+In all, 66 set-aside bodies come from the milestone (68 in `src/game` with the two older ones); each
+compiles under gcc and under IDO (`make NON_MATCHING=1` builds every object; only the final link
+fails, on `__osThreadTail_fix` from upstream's `libultra_internal.h`) and has a note with its score.
+
+### The PR #92 port
+
+davkdavk's pull request LLONSIT/Wave-Race-64#92 was closed upstream unmerged ("We won't be
+accepting AI generated contributions"). It was based on master `e00a55f`, and 84 of its 132
+functions overlapped ones already done here, so a git merge would have conflicted across the
+headers. Instead its 48 functions that were not yet in C were taken one by one. Six were in files
+the `src/game` batches were already working on (code_43DA0 2, code_4F850 3, wr64_save 1) and had
+been matched there before the drafts arrived, so no commit credits them. The other 42 were ported
+in `batch/pr92-port`: 38 overlay functions, two audio, `func_800741A4` and `func_800998B0` (which
+replaced our 904 set-aside); the logic needed no change. Commit bodies read "Ported from LLONSIT/Wave-Race-64#92 (davkdavk)". To
+keep his history in ours, his five commits were pushed as `port/pr92-davkdavk` (GitHub PR #1) and
+`5764666` is a merge commit whose parents are `2340fd3`, the port batch's tip and his `949d50c`,
+with exactly the batch tip's tree. So `main`'s tree is what was reviewed, and his commits are in
+its history. Where both versions matched, ours won. Hacks he documented stay marked (the
+intentionally uninitialised `var_v0` in `func_i11_802C5D48`, FAKE temps in `func_i5_802C5850`, a
+stack pad in `func_i13_802C6068`).
+
+### Names, hack marks and header tidies (`batch/m3-names`)
+
+Names, one commit per area, each only where the code or a report shows the meaning (a call into a
+named function, a `GAME_STATE_*` or course value, a libultra call, a string, or a fact the reports
+state with its evidence; the commit body gives each one's evidence):
+
+- the twelve milestone 2 names left for `code_4C750.c` (`Printer_DrawString`, `Popup_Spawn`,
+  `FadeTransition_Draw`, `GameState_EnterTitleScreen`, `Initials_Update`, `gStartCountdown`, ...);
+- `wr64_save.c`: `Save_PackRecord`/`UnpackRecord`, `Save_EepromWrite*`, `Save_MergePakImage`,
+  `gSaveImage`, `gBestTimes`, `gStuntRecords`, ...;
+- water: `Water_Stamp*`, `Water_Update`, `gWaterField`, `gWaterWindow`, ...;
+- riders and race: `Rider_*`, `Riders_PushApart`, `Race_RankUnfinishedRiders`, `Course_*`,
+  `gPlayer1Rider`, `gRiderRaceState`, and RiderStruct fields (`raceTime`, `lapTime`, `power`,
+  `progress`, ...);
+- camera: `camera_unk_1`'s `eyeX..upZ` (they are `guLookAt*`'s arguments), `Camera_*`,
+  `Spline_EvalClampedBSpline`;
+- overlays: `SaveLoad_*`, `ChangeNames_*`, `CourseSelect_*`, `RaceResults_Update`.
+
+A rename of a data symbol or of a function that asm still calls needs a line in
+`linker_scripts/us/rev1/symbol_addrs.txt` (name = address), because the extracted `.s` files take
+their names from it; `ovl_symbols.txt` holds the code segment's function names. `tools/fork/check.sh`
+no longer compares the function name inside gcc's "passing argument N of 'f'" warnings, so
+renaming such a function needs no baseline edit.
+
+Hack marks (comments only): the unmarked gotos and m2c labels in the `func_8005DE24` and
+`func_80057B24` set-asides, the `loop_1` goto in `func_800967EC`, two stack pads, an unused static,
+and a note for `func_80088EA8`.
+
+Header tidies (each byte-neutral, its own commit, listing the matched functions it touches):
+`UnkStruct_801C43F8.unk3600` renamed `unk3608` (named by the offset of its first light, like
+`unk35D8`); one definition each for `UnkStruct_80192420`, `UnkStruct_801BB138` and
+`UnkStruct_80228AE0` in `structs.h`; `UnkStruct_801AE948` and `UnkStruct_80198368` merged (they were
+the same 0xB2F0-byte buffer); `DIRLIGHT_DIRECTION` renamed `INV_SQRT3`. Not done: the types listed
+under "Open follow-ups" below.
+
+### What we learned
+
+**Process**
+
+- **Count with the same ruler.** A rodata move can change which symbols `progress.py` sees (the 100
+  jump-table labels, the 22 absolute symbols). Diff the `F` symbols of the ELF before and after a
+  change that moves data into C, and report a recount as a recount.
+- **Struct work and merges.** Batches that carve the same shared struct conflict textually in
+  `structs.h` (RiderStruct's carves from two batches, GfxPool, `UnkStruct_801C43F8`). Resolving by
+  hand is safe when the carves sum to the same sizes; check offsets with a compile-time assert, and
+  note that the check pass is `gcc -m32` while IDO's layout can differ (measure with IDO itself:
+  `typedef char c[(sizeof(T) == N) ? 1 : -1];` warns 654 when false).
+- **Score each function alone**, with `--max-size` set to the function's own size. The default 1024
+  lines cuts large functions short, and a score taken while a neighbour also differs includes the
+  shift. To score a set-aside without linking `NON_MATCHING=1`, switch its `#ifdef` to `#if 1` in a
+  scratch copy of the worktree. A score of 0 can be a failed build that scored the stale object.
+- **Permuter hygiene.** `pkill -f permuter.py` kills other workers' runs, and stopping a run by its
+  `timeout`/`permuter.py` PIDs leaves its forkserver workers running. Start each run under `setsid`
+  and stop it with `kill -- -<pgid>`. The permuter's scorer ignores stack offsets, and its printer
+  puts each macro statement on its own line, so display-list-heavy functions did not benefit.
+- **A worker that reports "waiting on background work" may be waiting on nothing.** Check the
+  machine and stop it.
+
+**IDO 5.3**
+
+- **Function-scope statics** compile differently from file-scope globals: each access gets its own
+  `lui` and the address is not kept in a register. Statics land in `.data`/`.bss` after the file's
+  globals, so matching them needs the file's data in C first (water_69D0, code_5480, code_68A10);
+  that was a yaml split plus defining the data in address order.
+- **Index shapes.** Direct `D_801C2938[i].x = ...` stores let IDO keep globals in temporaries
+  across the block; `rider = &D_801C2938[i]; rider->x = ...` reloads them (3995 vs 11395 in
+  `func_80079528`), but not always: it is something to try both ways. A pointer to a global (`s32*
+  p = &G`) reproduces separate `lui`s but costs alias reloads (a FAKE).
+- **Literals.** `180 - x` and `180.0f - x` do not share one constant load; where the original loads
+  a constant twice, one use is an integer literal. `x * 1.0f` is folded away, `x * 1` is not; `/ 2`
+  stays a `div.s`, `/ 2.0f` becomes `* 0.5f`; `.0f` and `0.0f` differ to the optimizer.
+- **Statement order and shape.** `a = b = c = 0` stores `c` first (reverse the chain to change the
+  store order); IDO orders stores by source line, so three statements on one line can match where
+  three lines do not; `(j << 7) << 2` is not `j << 9`; declaration order sets stack slots (count
+  the slots above and below a known spill and add or reorder locals); an unused declared local can
+  renumber registers.
+- **Jump tables show the cases.** A table that starts at 1 with its first entry pointing at the
+  join means `case 1: break;` (a semantic fix in `Course_SetupObjects`). splat's `lui at,%hi(A)`
+  followed by `sw x,%lo(B)(at)` stores to B, not A.
+- **A 2-byte-aligned struct copy** compiles to `lwl`/`lwr`; the original goes through a
+  word-aligned type.
+- **Big functions** (`func_800A2B24`, 0x27b4 bytes) matched from m2c's structure after three
+  systematic fixes; functions that need no callee-saved registers at all (`func_800783AC`) did not.
+  A local variant tester (apply N text replacements to one function, rebuild, score) found most
+  fixes in seconds per variant.
+
+### Open follow-ups
+
+- The five overlay draw functions called by raw address from `code_4C750.c` (see the count note);
+  the `UnkA95D0_*` script runners; the near set-asides: `func_8004D30C` (24), `func_80091DBC` (30,
+  needs the file's `.data`), `func_800AB25C` (60), `func_80096048` (60), `func_8007F030` (245),
+  `func_8004DAF0` (487), `func_800AFBD0` (666), `func_80067E40` (1565).
+- Types still describing the same object two ways: `RiderStruct` and `struct UnkStruct_801C2938`
+  (and `struct_800762D0`); `UnkStruct_8004B0F8` and `UnkStruct_80192690`; `D_800DACD0` and
+  `D_80227A60` (17 words, `s32` vs `Gfx*`); `D_801C26E8` (several local types, `CourseRecord.time` is
+  the stunt score); `camera_unk_1.unk8` (`s32` that holds a float); `GfxPool + 0x185E8` (written as
+  `unk170D8 + 0x151`, a separate 16 x 8-vertex block); `D_80228A78`/`D_103B4D0` locals.
+- The yaml splits for `.data`/`.bss` (water_69D0 at `0x8EE80`, code_5480, code_68A10's bss) will
+  conflict with any future change in those ranges.
+- Local macros kept on purpose: `RIDER_CP_TIME` (code_2FB10.c), `gSP1QuadrangleLP` (code_68A10.c),
+  `BUOY_FADE` (code_24B00.c).
+- The `(0, x)` comma casts left by upstream in code_24B00.c, code_383C0.c and code_3AC00.c are
+  unmarked fakes.

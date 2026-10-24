@@ -8,7 +8,7 @@ extern s32 D_i2_802C8BD8[];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5AE4.s")
 
-void* func_8007C31C();
+void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
 void* func_i2_802C5E28();
 void* func_i2_802C6ADC(Gfx*);
@@ -84,10 +84,10 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
             D_i2_802C8BC0 = 1;
         }
     } else if (D_80228A16 == 1) {
-        func_8007C31C();
+        Save_EepromWriteNames();
         switch (D_801CE630) {
             case 2:
-                func_801EB180();
+                GameState_EnterTitleScreen();
                 break;
             case 30:
                 GameState_EnterCourseOverview();
@@ -103,7 +103,7 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5E28.s")
 
 s32 func_i2_802C676C(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -116,7 +116,7 @@ s32 func_i2_802C676C(s32 arg0, s32 arg1) {
 }
 
 s32 func_i2_802C67E4(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -152,7 +152,7 @@ void func_i2_802C6864(s32 arg0) {
                 }
                 used[D_800DA9C0[0]] = 1;
                 for (i = 0; i < 4; i++) {
-                    if (i != D_800D48DC) {
+                    if (i != gPlayer1Rider) {
                         for (j = 0; j < 4; j++) {
                             if (used[j] == 0) {
                                 used[j] = 1;
@@ -200,7 +200,7 @@ void func_i2_802C6864(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C7C50.s")
 
 void func_i2_802C84EC(s32 arg0) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
     UnkStruct_func_i8_802C6E00* entry;
     s32 player;
     s32 i;
@@ -222,7 +222,7 @@ void func_i2_802C84EC(s32 arg0) {
             entry = &tbl[i][D_i2_802C8BD8[D_800DA9C0[i]]];
         }
 
-        player = (i == 0) ? D_800D48DC : D_800D48E0;
+        player = (i == 0) ? gPlayer1Rider : gPlayer2Rider;
         D_80192690[player].unkB6C = entry->unk_B[0];
         D_80192690[player].unkB70 = entry->unk_B[1];
         D_80192690[player].unkB74 = entry->unk_B[2];
@@ -233,7 +233,7 @@ void func_i2_802C84EC(s32 arg0) {
     } else {
         FadeTransition_SetProps(1, 4, 0);
     }
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     if (D_801CE630 == 0x1E) {
         func_800C1F60(2);
     }

@@ -4,7 +4,7 @@ extern f32 gPrinterScale;  /* glyph scale, set by Printer_PrintScaled */
 extern s16 gPrinterScaled; /* 1 while the scaled printer is in use; Printer_PrintScaled leaves it set */
 
 typedef struct {
-    /* 0x00 */ s16 enable; /* nonzero: func_801EAFB4 steps phase */
+    /* 0x00 */ s16 enable; /* nonzero: Printer_StepColorCycle steps phase */
     /* 0x02 */ s16 phase;  /* 0..3, advanced every period frames */
     /* 0x04 */ s32 timer;  /* frame counter */
     /* 0x08 */ s32 period; /* frames per step */
@@ -23,7 +23,7 @@ extern u8 gPrinterWidthsFont4[]; /* glyph widths, font 4 */
 extern u8 gPrinterWidthsFont5[]; /* glyph widths, font 5 */
 extern u8 gPrinterWidthsFont6[]; /* glyph widths, font 6 */
 
-extern s32 D_80228A40;         /* next free vertex in D_801CE5F8->unk40 */
+extern s32 gPrinterNextQuadVtx;         /* next free vertex in D_801CE5F8->unk40 */
 extern s32 gPrinterMode;       /* printer mode, set by Printer_SetMode */
 extern s32 gPrinterCornerR[4]; /* corner colours, set by Printer_SetMode: red */
 extern s32 gPrinterCornerG[4]; /* green */
@@ -156,7 +156,7 @@ Gfx* Printer_DrawQuad(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0,
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        vtx = &D_801CE5F8->unk40[D_80228A40 + i];
+        vtx = &D_801CE5F8->unk40[gPrinterNextQuadVtx + i];
         if (i == 1 || i == 3) {
             vtx->v.ob[0] = (s32) (w * scale) + x - 1;
             vtx->v.tc[0] = (w * 2 + 1) << 5;
@@ -192,12 +192,12 @@ Gfx* Printer_DrawQuad(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0,
         }
         vtx->v.cn[3] = 0xFF;
     }
-    gSPVertex(gdl++, D_7000000 + (D_80228A40 * 0x10) + 0x40, 4, 0);
+    gSPVertex(gdl++, D_7000000 + (gPrinterNextQuadVtx * 0x10) + 0x40, 4, 0);
     gSP1Triangle(gdl++, 0, 3, 1, 0);
     gSP1Triangle(gdl++, 0, 2, 3, 0);
-    D_80228A40 += 4;
-    if (D_80228A40 >= 0x78) {
-        D_80228A40 = 0x74;
+    gPrinterNextQuadVtx += 4;
+    if (gPrinterNextQuadVtx >= 0x78) {
+        gPrinterNextQuadVtx = 0x74;
     }
     return gdl;
 }
@@ -324,7 +324,7 @@ Gfx* Printer_Print(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
     gPrinterScale = 1.0f;
     gdl = Printer_SetMode(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     gPrinterScaled = 0;
-    return func_801E9858(gdl, font, str, x, y);
+    return Printer_DrawString(gdl, font, str, x, y);
 }
 
 /* Prints str in font at (x, y) at the given scale: sets the printer's mode and corner colours, then prints. */
@@ -333,7 +333,7 @@ Gfx* Printer_PrintScaled(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, 
     gPrinterScale = scale;
     gdl = Printer_SetMode(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     gPrinterScaled = 1;
-    return func_801E9858(gdl, font, str, x, y);
+    return Printer_DrawString(gdl, font, str, x, y);
 }
 
 /* Sets the printer mode and the four corner colours, and emits the mode's render setup (display list, combiner,
@@ -411,7 +411,7 @@ Gfx* Printer_SetMode(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b
 
 /* Prints str in font from (x, y) with the mode and colours Printer_SetMode set; a space (glyph 0xFF) only advances x.
  */
-Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
+Gfx* Printer_DrawString(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
     s32 glyph;
     s8* s;
     s32 penX;
@@ -748,7 +748,7 @@ void Printer_ResetColorCycle(void) {
     gPrinterColorCycle = gPrinterColorCycleInit;
 }
 
-void func_801EAFB4(void) {
+void Printer_StepColorCycle(void) {
     if (gPrinterColorCycle.enable != 0) {
         gPrinterColorCycle.timer++;
         if (gPrinterColorCycle.timer >= gPrinterColorCycle.period) {
@@ -803,5 +803,5 @@ Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y) {
         }
         offset -= widths[digits[i]];
     }
-    return func_801E9858(gdl, font, buf, x + offset, y);
+    return Printer_DrawString(gdl, font, buf, x + offset, y);
 }

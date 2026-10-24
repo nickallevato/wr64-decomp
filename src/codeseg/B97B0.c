@@ -29,7 +29,7 @@ void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
-void func_801EB180(void) {
+void GameState_EnterTitleScreen(void) {
     s32 pad[2]; // stack pad for the original's 0x30 frame
     s32 rider;
     s32 i;
@@ -84,10 +84,10 @@ void func_801EB180(void) {
         D_80192690[i].unkB70 = D_800D96A4[gCourseID][unk].unk4;
         D_80192690[i].unkB74 = D_800D96A4[gCourseID][unk].unk8;
     }
-    D_80192690[D_800D48DC].unkB68 = rider;
-    D_80192690[D_800D48DC].unkB6C = D_800D96A4[gCourseID][rider].unk0;
-    D_80192690[D_800D48DC].unkB70 = D_800D96A4[gCourseID][rider].unk4;
-    D_80192690[D_800D48DC].unkB74 = D_800D96A4[gCourseID][rider].unk8;
+    D_80192690[gPlayer1Rider].unkB68 = rider;
+    D_80192690[gPlayer1Rider].unkB6C = D_800D96A4[gCourseID][rider].unk0;
+    D_80192690[gPlayer1Rider].unkB70 = D_800D96A4[gCourseID][rider].unk4;
+    D_80192690[gPlayer1Rider].unkB74 = D_800D96A4[gCourseID][rider].unk8;
     D_801CE6F4[1] = 0;
     D_801CE6F4[0] = D_801CE6F4[1];
     gRiderGameModes = UNACTIVE_MODE;
@@ -104,7 +104,7 @@ void func_801EB180(void) {
     func_8009684C(0x08060000, D_800DB568[course].unk0, D_800DB568[course].unk2);
     func_8004A208();
     FadeTransition_SetProps(0, 0, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 5;
     D_800DA9AC = 1;
     func_800C21F4(0, 0);
@@ -206,7 +206,7 @@ void GameState_EnterDemo(void) {
     }
     func_8009684C(0x08060000, D_800DB568[course].unk0, D_800DB568[course].unk2);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 3;
     if (gPlayers == TWO_PLAYERS) {
         gCameraPerspective[1].viewMode = gCameraPerspective->viewMode;
@@ -256,9 +256,9 @@ void GameState_EnterCourseOverview(void) {
     gGameModeState = GMODE_STATE_STARTED;
     D_800D8178 = 1;
     FadeTransition_SetProps(4, 0, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     D_800DAA08 = 0;
-    rider = D_800DA9B0[D_800D48DC];
+    rider = D_800DA9B0[gPlayer1Rider];
     rand = SysUtils_Rand() & 3;
     if (rider == rand) {
         rand = (rand + 1) % 4;
@@ -271,26 +271,26 @@ void GameState_EnterCourseOverview(void) {
     } else {
         func_80096960(1, rider, rand, 0, 0);
     }
-    D_80192690[D_800D48DC].unkB68 = D_800DA9B0[D_800D48DC];
-    D_80192690[D_800D48DC].unkB6C = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[0];
-    D_80192690[D_800D48DC].unkB70 = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[1];
-    D_80192690[D_800D48DC].unkB74 = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[2];
+    D_80192690[gPlayer1Rider].unkB68 = D_800DA9B0[gPlayer1Rider];
+    D_80192690[gPlayer1Rider].unkB6C = gPlayerNames[D_80192690[gPlayer1Rider].unkB68].unk_B[0];
+    D_80192690[gPlayer1Rider].unkB70 = gPlayerNames[D_80192690[gPlayer1Rider].unkB68].unk_B[1];
+    D_80192690[gPlayer1Rider].unkB74 = gPlayerNames[D_80192690[gPlayer1Rider].unkB68].unk_B[2];
     if (gCourseID == SUNSET_BAY) {
-        D_80192690[D_800D48E0].unkB68 = D_800DA9B0[D_800D48DC];
+        D_80192690[gPlayer2Rider].unkB68 = D_800DA9B0[gPlayer1Rider];
     } else {
-        D_80192690[D_800D48E0].unkB68 = D_800DA9B0[D_800D48E0];
+        D_80192690[gPlayer2Rider].unkB68 = D_800DA9B0[gPlayer2Rider];
     }
-    D_80192690[D_800D48E0].unkB6C = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[0];
-    D_80192690[D_800D48E0].unkB70 = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[1];
-    D_80192690[D_800D48E0].unkB74 = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[2];
+    D_80192690[gPlayer2Rider].unkB6C = gPlayerNames[D_80192690[gPlayer2Rider].unkB68].unk_B[0];
+    D_80192690[gPlayer2Rider].unkB70 = gPlayerNames[D_80192690[gPlayer2Rider].unkB68].unk_B[1];
+    D_80192690[gPlayer2Rider].unkB74 = gPlayerNames[D_80192690[gPlayer2Rider].unkB68].unk_B[2];
     D_80192690[2].unkB68 = D_800DA9B0[2];
-    D_80192690[2].unkB6C = D_801CB298[D_80192690[2].unkB68].unk_B[0];
-    D_80192690[2].unkB70 = D_801CB298[D_80192690[2].unkB68].unk_B[1];
-    D_80192690[2].unkB74 = D_801CB298[D_80192690[2].unkB68].unk_B[2];
+    D_80192690[2].unkB6C = gPlayerNames[D_80192690[2].unkB68].unk_B[0];
+    D_80192690[2].unkB70 = gPlayerNames[D_80192690[2].unkB68].unk_B[1];
+    D_80192690[2].unkB74 = gPlayerNames[D_80192690[2].unkB68].unk_B[2];
     D_80192690[3].unkB68 = D_800DA9B0[3];
-    D_80192690[3].unkB6C = D_801CB298[D_80192690[3].unkB68].unk_B[0];
-    D_80192690[3].unkB70 = D_801CB298[D_80192690[3].unkB68].unk_B[1];
-    D_80192690[3].unkB74 = D_801CB298[D_80192690[3].unkB68].unk_B[2];
+    D_80192690[3].unkB6C = gPlayerNames[D_80192690[3].unkB68].unk_B[0];
+    D_80192690[3].unkB70 = gPlayerNames[D_80192690[3].unkB68].unk_B[1];
+    D_80192690[3].unkB74 = gPlayerNames[D_80192690[3].unkB68].unk_B[2];
     course = gCourseID;
     if (course < DOLPHIN_PARK) {
         course = DOLPHIN_PARK;
@@ -329,15 +329,15 @@ void GameState_EnterRiderSelect(void) {
         D_800DA9C0[1] = 3;
         D_800DA9C8[0] = D_800DA9C8[1] = 0;
     }
-    D_80192690[D_800D48DC].unkB68 = D_80226EF0[D_800DA9C0[0]];
-    D_80192690[D_800D48DC].unkB6C = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[0];
-    D_80192690[D_800D48DC].unkB70 = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[1];
-    D_80192690[D_800D48DC].unkB74 = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[2];
+    D_80192690[gPlayer1Rider].unkB68 = D_80226EF0[D_800DA9C0[0]];
+    D_80192690[gPlayer1Rider].unkB6C = D_800DA950[D_80192690[gPlayer1Rider].unkB68].unk_B[0];
+    D_80192690[gPlayer1Rider].unkB70 = D_800DA950[D_80192690[gPlayer1Rider].unkB68].unk_B[1];
+    D_80192690[gPlayer1Rider].unkB74 = D_800DA950[D_80192690[gPlayer1Rider].unkB68].unk_B[2];
     if (gPlayers == TWO_PLAYERS) {
-        D_80192690[D_800D48E0].unkB68 = D_80226EF0[D_800DA9C0[1]];
-        D_80192690[D_800D48E0].unkB6C = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[0];
-        D_80192690[D_800D48E0].unkB70 = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[1];
-        D_80192690[D_800D48E0].unkB74 = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[2];
+        D_80192690[gPlayer2Rider].unkB68 = D_80226EF0[D_800DA9C0[1]];
+        D_80192690[gPlayer2Rider].unkB6C = D_800DA950[D_80192690[gPlayer2Rider].unkB68].unk_B[0];
+        D_80192690[gPlayer2Rider].unkB70 = D_800DA950[D_80192690[gPlayer2Rider].unkB68].unk_B[1];
+        D_80192690[gPlayer2Rider].unkB74 = D_800DA950[D_80192690[gPlayer2Rider].unkB68].unk_B[2];
     }
     gRiderGameModes = AI_MODE;
     D_801CE64C = 2;
@@ -345,7 +345,7 @@ void GameState_EnterRiderSelect(void) {
     D_800DAB64 = 0;
     func_80096960(3, 0, 1, 2, 3);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 2;
     gCameraPerspective[1].viewMode = 2;
     switch (D_801CE608.gameMode) {
@@ -380,7 +380,7 @@ void GameState_EnterCourseSelect(void) {
     D_801CE64C = 1;
     gGameModeState = GMODE_STATE_0;
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 1;
     if (D_800DA9AC != 0) {
         D_800DA9D0 = 0;
@@ -410,11 +410,11 @@ void GameState_EnterRaceResults(void) {
         args[i] = i;
     }
     if (D_801CE6F4[0] != 0) {
-        args[D_800DA9B0[D_800D48DC]] += 4;
+        args[D_800DA9B0[gPlayer1Rider]] += 4;
     }
     func_80096960(2, args[0], args[1], args[2], args[3]);
     FadeTransition_SetProps(4, 1, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 1;
     osViBlack(true);
 }
@@ -436,7 +436,7 @@ void GameState_EnterTimeTrialsResults(void) {
     if (gPrevGameState != GAME_STATE_64) {
         func_80096960(2, 0, 1, 2, 3);
         FadeTransition_SetProps(4, 1, 0);
-        func_801E6A4C(0, 0);
+        Popup_Spawn(0, 0);
     }
     gCameraPerspective->viewMode = 1;
     func_800C21F4(3, 0);
@@ -453,7 +453,7 @@ void GameState_EnterOptionsMenu(void) {
     D_800DAB1C = 0;
     gVIsPerFrame = 2;
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     D_800E5134 = 0;
     func_800C21F4(9, 0);
 }
@@ -474,15 +474,15 @@ void GameState_EnterChangeNames(void) {
     gRiderGameModes = AI_MODE;
     D_801CE64C = 2;
     gGameModeState = GMODE_STATE_STARTED;
-    D_80192690[D_800D48DC].unkB68 = 0;
-    D_80192690[D_800D48DC].unkB6C = D_800DA950->unk_B[0];
-    D_80192690[D_800D48DC].unkB70 = D_800DA950->unk_B[1];
-    D_80192690[D_800D48DC].unkB74 = D_800DA950->unk_B[2];
+    D_80192690[gPlayer1Rider].unkB68 = 0;
+    D_80192690[gPlayer1Rider].unkB6C = D_800DA950->unk_B[0];
+    D_80192690[gPlayer1Rider].unkB70 = D_800DA950->unk_B[1];
+    D_80192690[gPlayer1Rider].unkB74 = D_800DA950->unk_B[2];
     D_801CE6F4[1] = 0;
     D_801CE6F4[0] = D_801CE6F4[1];
     func_80096960(2, 0, 1, 2, 3);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 2;
 }
 
@@ -499,7 +499,7 @@ void GameState_EnterViewRecords(void) {
     gPlayers = ONE_PLAYER;
     func_80096960(2, 0, 1, 2, 3);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 }
 
 void GameState_EnterChangeConditions(void) {
@@ -514,7 +514,7 @@ void GameState_EnterChangeConditions(void) {
     gVIsPerFrame = 2;
     gPlayers = ONE_PLAYER;
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 }
 
 void GameState_EnterAudio(void) {
@@ -529,7 +529,7 @@ void GameState_EnterAudio(void) {
     gVIsPerFrame = 2;
     gPlayers = ONE_PLAYER;
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 }
 
 void GameState_EnterEraseCourseRecords(void) {
@@ -543,7 +543,7 @@ void GameState_EnterEraseCourseRecords(void) {
     D_800DAB1C = 0;
     gVIsPerFrame = 2;
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 }
 
 void GameState_EnterSaveAndLoad(void) {
@@ -558,7 +558,7 @@ void GameState_EnterSaveAndLoad(void) {
     gVIsPerFrame = 2;
     func_80096960(2, 0, 1, 2, 3);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 }
 
 void func_801EC830(void) {
@@ -591,7 +591,7 @@ void func_801EC830(void) {
         FadeTransition_SetProps(4, 1, 0);
         osViBlack(true);
     }
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 1;
 }
 
@@ -630,15 +630,15 @@ void func_801EC9C8(void) {
     } else if (gPrevGameState == 0x2A) {
         FadeTransition_SetProps(4, 1, 0);
     }
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 1;
     func_800C21F4(0xC, 0);
 }
 
-void func_801ECAF4(void) {
+void GameState_EnterBootUp(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
-    gGameState = 5;
+    gGameState = GAME_STATE_BOOT_UP;
     D_801CE638 = 0x13;
     D_801CE63C = 1;
     D_801CE640 = 0;
@@ -646,7 +646,7 @@ void func_801ECAF4(void) {
     D_800DAB1C = 3;
     gVIsPerFrame = 2;
     FadeTransition_SetProps(0, 0, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     func_800C21F4(8, 0);
 }
 
@@ -680,16 +680,16 @@ void GameState_EnterCeremony(void) {
         D_80192690[i].unkB70 = D_800D96A4[gCourseID][D_800DA9B0[i]].unk4;
         D_80192690[i].unkB74 = D_800D96A4[gCourseID][D_800DA9B0[i]].unk8;
     }
-    var_a1 = D_800DA9B0[D_800D48DC];
+    var_a1 = D_800DA9B0[gPlayer1Rider];
     if (D_801CE6F4[0] != 0) {
         var_a1 += 4;
     }
     func_80096960(2, var_a1, D_800DA9B0[1], D_800DA9B0[2], D_800DA9B0[3]);
     func_8009684C(0x08060000, 3, -1);
     FadeTransition_SetProps(7, 10, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 8;
-    func_800C21F4(0xB, D_801C2C70[D_800D48DC].lapCount + 1);
+    func_800C21F4(0xB, D_801C2C70[gPlayer1Rider].lapCount + 1);
 }
 
 void func_801ECE50(void) {
@@ -704,7 +704,7 @@ void func_801ECE50(void) {
     gVIsPerFrame = 2;
     gPlayers = ONE_PLAYER;
     FadeTransition_SetProps(4, 1, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gRiderGameModes = UNACTIVE_MODE;
     D_801CE64C = 1;
     gGameModeState = GMODE_STATE_0;
@@ -728,7 +728,7 @@ void GameState_EnterStuntModeResults(void) {
     gGameModeState = GMODE_STATE_0;
     func_80096960(2, 0, 1, 2, 3);
     FadeTransition_SetProps(4, 1, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     gCameraPerspective->viewMode = 1;
     func_800C21F4(3, 0);
     osViBlack(1);

@@ -25,7 +25,7 @@ extern s32 D_802C76D0;
 void func_i4_802C7344(void);
 
 void func_i4_802C5800(void) {
-    if ((D_801CE63C != 0) && (gGameState == 20)) {
+    if ((D_801CE63C != 0) && (gGameState == GAME_STATE_COURSE_SELECT)) {
         func_i4_802C58F8();
     }
 
@@ -35,7 +35,7 @@ void func_i4_802C5800(void) {
         func_8006977C(&D_80198350, D_i4_802C760C[D_800DAAD8[D_800DA9D0]]);
     }
 
-    func_80069798(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_802C76AC, &D_80198310, &D_80198350);
+    Camera_SetOrbitMatrices(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_802C76AC, &D_80198310, &D_80198350);
 }
 
 void func_i4_802C58F8(void) {
@@ -127,7 +127,7 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
 
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
-        if (gGameState == 0x14) {
+        if (gGameState == GAME_STATE_COURSE_SELECT) {
             osViBlack(0);
             return func_80093C44(dList);
         }
@@ -140,7 +140,7 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
 
     gSPDisplayList(temp_v0++, &D_106F168);
 
-    if (gGameState == 20) {
+    if (gGameState == GAME_STATE_COURSE_SELECT) {
         func_i4_802C6BAC();
     } else if (D_80228A16 == 1) {
         switch (D_801CE630) {
@@ -190,13 +190,13 @@ Gfx* func_i4_802C69C4(Gfx* dList, s32 x, s32 y) {
 void func_i4_802C6BAC(void) {
     switch (D_i4_802C7538) {
         case 0:
-            func_i4_802C6C2C();
+            CourseSelect_Input();
             break;
         case 1:
             func_i4_802C6ED0();
             break;
         case 2:
-            func_i4_802C70C0();
+            CourseSelect_DifficultyInput();
             break;
         case 3:
             func_i4_802C7344();
@@ -204,7 +204,7 @@ void func_i4_802C6BAC(void) {
     }
 }
 
-void func_i4_802C6C2C(void) {
+void CourseSelect_Input(void) {
     s32 i;
 
     if (D_801CE65A[D_802C76B0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -299,7 +299,7 @@ void func_i4_802C6ED0(void) {
     }
 }
 
-void func_i4_802C70C0(void) {
+void CourseSelect_DifficultyInput(void) {
     if (D_801CE65A[D_802C76B0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
         if (D_i4_802C754C == 3) {
             gDifficulty = DIFFICULTY_EXPERT;
@@ -408,7 +408,7 @@ void func_i4_802C7474(s32 arg0) {
     D_800DAB1C = 0;
     gVIsPerFrame = 2;
     FadeTransition_SetProps(1, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     if (D_801CE630 == 40) {
         func_800C1F60(7);
     }

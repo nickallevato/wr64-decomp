@@ -146,7 +146,7 @@ extern Gfx D_106F488[];
 extern Mtx D_7000A40[];
 extern Mtx D_7000A80[];
 extern Vp D_7001280[];
-extern CourseRecord D_801C26E8[][3];
+extern CourseRecord gStuntRecords[][3];
 extern s32 D_80226350[];
 extern s8 D_80226E44[];
 
@@ -198,12 +198,12 @@ Gfx* func_801E3698(Gfx* gdl) {
     for (i = 0; i < 3; i++) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, D_801C26E8[gCourseID][i].rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, gStuntRecords[gCourseID][i].rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
     }
     if (D_801C2928 == 0) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, D_800DA9B0[D_800D48DC], 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, &D_801CE5F8->unkC80[i * 3]);
     }
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     gdl = func_801E3EE0(gdl, 2, D_800DAA34[gCourseID], D_80226350[gCourseID] + D_802288F8 + 56, 33, 0);
@@ -230,21 +230,21 @@ Gfx* func_801E3698(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        rec = &D_801C26E8[gCourseID][i];
+        rec = &gStuntRecords[gCourseID][i];
         if (i & 1) {
             x = D_802288FC;
         } else {
             x = D_802288F8;
         }
         sprintf(buf, "%1d", i + 1);
-        gdl = func_801E9858(gdl, 2, buf, D_80226E44[i + 1] + x + 17, y);
+        gdl = Printer_DrawString(gdl, 2, buf, D_80226E44[i + 1] + x + 17, y);
         if (rec->flag == 0) {
             sprintf(buf, "%s", "N");
         } else {
             sprintf(buf, "%s", "C");
         }
-        gdl = func_801E9858(gdl, 1, buf, x + 59, y);
-        gdl = func_801E9858(gdl, 2, rec->name, x + 119, y);
+        gdl = Printer_DrawString(gdl, 1, buf, x + 59, y);
+        gdl = Printer_DrawString(gdl, 2, rec->name, x + 119, y);
         gdl = func_80094200(gdl, 2, rec->time, x + 208, y);
     }
     if (D_801C2928 == 0) {
@@ -254,7 +254,7 @@ Gfx* func_801E3698(Gfx* gdl) {
         } else {
             sprintf(buf, "%s", "C");
         }
-        gdl = func_801E9858(gdl, 1, buf, D_802288FC + 59, 196);
+        gdl = Printer_DrawString(gdl, 1, buf, D_802288FC + 59, 196);
         gdl = func_80094200(gdl, 2, D_801C26D0, D_802288FC + 208, 196);
     }
     return gdl;

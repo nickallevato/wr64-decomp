@@ -122,13 +122,13 @@ typedef struct UnkStruct_801AEE20_s {
 
 typedef struct {
     u8 pad00[0x19B];
-    s32 unk19C;
+    s32 raceTime;
     u8 pad1AC[0x124];
-    s32 unk2C4;
+    s32 timeLeft;
     u8 pad2C8[0x24];
-    s32 unk2EC;
+    s32 finishState;
     u8 pad2F0[0x3C];
-    f32 unk32C;
+    f32 progress;
 } struct_800762D0;
 
 struct unk_80097E68 {
@@ -347,22 +347,22 @@ typedef struct RiderStruct {
     /* 0x024 */ s32 unk24;
     /* 0x028 */ s32 unk28;
     /* 0x02C */ s32 unk2C[64]; /* one per table B record */
-    /* 0x12C */ s32 unk12C;
+    /* 0x12C */ s32 power;
     /* 0x130 */ s32 unk130;
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
     /* 0x13C */ s32 unk13C;
-    /* 0x140 */ s32 unk140[9];
+    /* 0x140 */ s32 lapBuoyMisses[9];
     /* 0x164 */ s32 unk164;
-    /* 0x168 */ s32 unk168;
+    /* 0x168 */ s32 lapTime;
     /* 0x16C */ s32 unk16C;
-    /* 0x170 */ s32 unk170;
+    /* 0x170 */ s32 bestLapTime;
     /* 0x174 */ s32 unk174;
-    /* 0x178 */ s32 unk178[9]; /* lap split times */
-    /* 0x19C */ s32 unk19C;
+    /* 0x178 */ s32 lapTimes[9]; /* lap split times */
+    /* 0x19C */ s32 raceTime;
     /* 0x1A0 */ char pad1A0[0x4];
-    /* 0x1A4 */ s32 unk1A4[9][8]; /* checkpoint times, per lap */
-    /* 0x2C4 */ s32 unk2C4;
+    /* 0x1A4 */ s32 checkpointTimes[9][8]; /* checkpoint times, per lap */
+    /* 0x2C4 */ s32 timeLeft;
     /* 0x2C8 */ s32 unk2C8;
     /* 0x2CC */ s32 unk2CC;
     /* 0x2D0 */ s32 unk2D0;
@@ -372,23 +372,23 @@ typedef struct RiderStruct {
     /* 0x2E0 */ s32 unk2E0;
     /* 0x2E4 */ s32 unk2E4;
     /* 0x2E8 */ s32 unk2E8;
-    /* 0x2EC */ s32 unk2EC;
+    /* 0x2EC */ s32 finishState;
     /* 0x2F0 */ s32 unk2F0;
     /* 0x2F4 */ s32 unk2F4;
-    /* 0x2F8 */ s32 unk2F8;
-    /* 0x2FC */ s32 unk2FC;
-    /* 0x300 */ s32 unk300;
+    /* 0x2F8 */ s32 checkpointGap;
+    /* 0x2FC */ s32 gapRequest;
+    /* 0x300 */ s32 gapTimer;
     /* 0x304 */ s32 unk304;
     /* 0x308 */ s32 unk308;
     /* 0x30C */ s32 unk30C;
-    /* 0x310 */ s32 unk310;
+    /* 0x310 */ s32 nearestRecord;
     /* 0x314 */ s32 unk314;
     /* 0x318 */ s32 unk318;
-    /* 0x31C */ s32 unk31C;
+    /* 0x31C */ s32 inBox;
     /* 0x320 */ s32 unk320;                         /* inferred */
     /* 0x324 */ s32 unk324;
     /* 0x328 */ s32 unk328;
-    /* 0x32C */ f32 unk32C;
+    /* 0x32C */ f32 progress;
     /* 0x330 */ f32 unk330;        /* inferred */
     /* 0x334 */ s32 unk334;
     s32 unk338;
@@ -1219,7 +1219,8 @@ typedef struct UnkStruct_80192690 {
 } UnkStruct_80192690;                               /* size = 0x1718 */
 
 typedef struct UnkStruct_801AE948_s {
-    char pad[0x35D0];
+    /* 0x0000 */ s32 unk0;
+    char pad4[0x35CC];
     Lights0 unk35D8[1];
     char pad35E8[0xA18];
     /* 0x4000 */ Mtx unk4000;
@@ -1228,7 +1229,8 @@ typedef struct UnkStruct_801AE948_s {
     /* 0x40C0 */ Mtx unk40C0;
     Mtx unk4100[1];
     Mtx unk4140[1];
-    /* 0x4180 */ char pad4180[0x1040];
+    /* 0x4180 */ char pad4180[0xFC0];
+    /* 0x5140 */ Vtx unk5140[2][4];
     /* 0x51C0 */ Vtx unk51C0[4][0xC0];
     /* 0x81C0 */ Vtx unk81C0[0xC0];
     /* 0x8DC0 */ Vtx unk8DC0[4][16];
@@ -1242,7 +1244,7 @@ typedef struct UnkStruct_801AE948_s {
     /* 0xB280 */ Vtx unkB280[4];
     LookAt unkB2C0[1];
     Hilite unkB2E0[1];
-} UnkStruct_801AE948;
+} UnkStruct_801AE948; /* size = 0xB2F0 */
 
 typedef struct UnkStruct_80069740_s {
     s32 pad[0x10];
@@ -1288,7 +1290,7 @@ typedef struct UnkStruct_menu_buffer_1_s {
     /* 0x00 */ u16 type;                            /* 0 free, 1 and 2 cards, 3 spinning cursor, 4 eight-strip card */
     /* 0x02 */ u16 state;                           /* 0 sliding in, 1 settled (2 for type 4) */
     /* 0x04 */ s16 index;                           /* own slot number; picks the card's matrix */
-    /* 0x06 */ u16 active;                          /* set by func_801E5470 each frame; func_801E5554 draws only these */
+    /* 0x06 */ u16 active;                          /* set by Popup_UpdateAll each frame; func_801E5554 draws only these */
     /* 0x08 */ s32 x;
     /* 0x0C */ s32 y;
     /* 0x10 */ char pad10[4];
@@ -1299,22 +1301,6 @@ typedef struct UnkStruct_menu_buffer_1_s {
     /* 0x24 */ s32 menuY;                           /* the pause cursor's y for option 0 (+15 per option) */
     /* 0x28 */ s32 variant;                         /* type 2: 0 place card, else wide card; type 4: 176 wide */
 } UnkStruct_menu_buffer_1;                          /* size = 0x2C */
-
-typedef struct UnkStruct_80198368_s {
-    /* 0x0000 */ s32 unk0;
-    /* 0x0004 */ char pad4[0x513C];
-    /* 0x5140 */ Vtx unk5140[2][4];
-    /* 0x51C0 */ Vtx unk51C0[4][0xC0];
-    /* 0x81C0 */ Vtx unk81C0[0xC0];
-    /* 0x8DC0 */ Vtx unk8DC0[4][16];                         /* inferred */
-    /* 0x91C0 */ Vtx unk91C0[4][16];                         /* inferred */
-    /* 0x95C0 */ char pad95C0[0x1C00];
-    /* 0xB1C0 */ Vtx unkB1C0[4];
-    /* 0xB200 */ Vtx unkB200[4];
-    /* 0xB240 */ Vtx unkB240[4];
-    /* 0xB280 */ Vtx unkB280[4];
-    /* 0xB2C0 */ char padB2C0[0x30];
-} UnkStruct_80198368;                               /* size = 0xB2F0 */
 
 typedef struct UnkStruct_801C43F8_s {
     Vtx unk0[7];
@@ -1327,13 +1313,13 @@ typedef struct UnkStruct_801C43F8_s {
     Vtx unk350[10][4];
     Mtx unk5D0[1];
     char pad610[0x2fc0];
-    Lights0 unk35D8[2];
-    Lights0 unk3600[2];
+    Lights0 unk35D8[2]; /* the field is at 0x35D0 (Lights0 is 0x18) */
+    Lights0 unk3608[2]; /* the field is at 0x3600; named, like unk35D8, by the offset of its l[0] (field + 8) */
 } UnkStruct_801C43F8;
 
 typedef struct UnkStruct_801CE5F8_s {
     char pad[0x40];
-    Vtx unk40[120]; /* the text printer's quad vertices (Printer_DrawQuad), from D_80228A40 (clamped to 0x74 + 4) */
+    Vtx unk40[120]; /* the text printer's quad vertices (Printer_DrawQuad), from gPrinterNextQuadVtx (clamped to 0x74 + 4) */
     char pad7C0[0x280];
     Mtx unkA40[1];
     Mtx unkA80[1];
@@ -1393,14 +1379,14 @@ struct UnkStruct_801C2938 {
     /* 0x008 */ char pad8[4];
     /* 0x00C */ s32 unkC;
     /* 0x010 */ char pad10[0x11C];
-    /* 0x12C */ s32 unk12C;
+    /* 0x12C */ s32 power;
     /* 0x130 */ char pad130[0x6C];
-    /* 0x19C */ s32 unk19C;
+    /* 0x19C */ s32 raceTime;
     /* 0x1A0 */ char pad1A0[0x124];
-    /* 0x2C4 */ s32 unk2C4;
+    /* 0x2C4 */ s32 timeLeft;
     /* 0x2C8 */ s32 unk2C8;
     /* 0x2CC */ char pad2CC[0x20];
-    /* 0x2EC */ s32 unk2EC;
+    /* 0x2EC */ s32 finishState;
     /* 0x2F0 */ char pad2F0[4];
     /* 0x2F4 */ s32 unk2F4;
     /* 0x2F8 */ char pad2F8[0x20];
@@ -1415,5 +1401,38 @@ typedef struct UnkStruct_80227A60 {
     /* 0x00 */ Gfx* unk0[12];
     /* 0x30 */ Gfx* unk30[5];
 } UnkStruct_80227A60; /* size = 0x44 */
+
+// One view's water window (gWaterWindow[], 0x1C bytes per view): the snapped centre as integer world x and z, the
+// window centre, its radius squared and the snap offsets (Water_UpdateWindow writes them).
+typedef struct UnkStruct_80192420_s {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+} UnkStruct_80192420; /* size = 0x1C */
+
+// A record of gCoursePoints (table A): buoys by type and difficulty, course-edge points and points with a height.
+typedef struct UnkStruct_801BB138_s {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} UnkStruct_801BB138; /* size = 0x18 */
+
+// A 0x1C-byte entry of D_80228AE0, the stunt-score popups (C94E0.c draws them).
+typedef struct UnkStruct_80228AE0_s {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+} UnkStruct_80228AE0; /* size = 0x1C */
 
 #endif /* STRUCTS_H */

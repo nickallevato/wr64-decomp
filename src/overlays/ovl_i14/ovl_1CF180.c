@@ -54,7 +54,7 @@ void func_i14_802C5E5C(s32 arg0) {
     gVIsPerFrame = 2;
 
     FadeTransition_SetProps(5, 1, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     if (D_801CE630 == 2) {
         func_800C1F60(0);
