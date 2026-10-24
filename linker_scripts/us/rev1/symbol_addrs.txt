@@ -166,6 +166,7 @@ D_80151BE0 = 0x80151BE0; //defined:true
 gCurrentPauseMenuOptionCount = 0x801CE626; //defined:true
 D_801FC840 = 0x801FC840; //defined:true
 
+gPopupSlotInit = 0x80226C50;
 gPrinterWidthsFont0 = 0x80226D70;
 gPrinterWidthsFont1 = 0x80226D98;
 gPrinterWidthsFont2 = 0x80226DC4;

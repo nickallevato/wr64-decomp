@@ -1,6 +1,6 @@
 #include "global.h"
 
-extern UnkStruct_menu_buffer_1 D_80226C50;
+extern UnkStruct_menu_buffer_1 gPopupSlotInit;
 
 extern UnkStruct_menu_buffer_1 menu_buffer_1[];
 
@@ -12,19 +12,19 @@ void func_801E5470(void) {
         switch (menu_buffer_1[i].type) {
             case 1:
                 menu_buffer_1[i].active = 1;
-                func_801E6074(&menu_buffer_1[i]);
+                Popup_UpdateCard1(&menu_buffer_1[i]);
                 break;
             case 2:
                 menu_buffer_1[i].active = 1;
-                func_801E62A8(&menu_buffer_1[i]);
+                Popup_UpdateCard2(&menu_buffer_1[i]);
                 break;
             case 3:
                 menu_buffer_1[i].active = 1;
-                func_801E66F4(&menu_buffer_1[i]);
+                Popup_UpdatePauseCursor(&menu_buffer_1[i]);
                 break;
             case 4:
                 menu_buffer_1[i].active = 1;
-                func_801E68EC(&menu_buffer_1[i]);
+                Popup_UpdateCard4(&menu_buffer_1[i]);
                 break;
         }
     }
@@ -175,7 +175,7 @@ Gfx* func_801E5554(Gfx* gdl) {
 
 extern s32 D_801C2650;
 
-void func_801E6074(UnkStruct_menu_buffer_1* slot) {
+void Popup_UpdateCard1(UnkStruct_menu_buffer_1* slot) {
     MtxF mf;
     f32 t;
 
@@ -214,14 +214,14 @@ void func_801E6074(UnkStruct_menu_buffer_1* slot) {
     }
 }
 
-void func_801E62A8(UnkStruct_menu_buffer_1* slot) {
+void Popup_UpdateCard2(UnkStruct_menu_buffer_1* slot) {
     MtxF mf;
     f32 t;
 
     switch (slot->state) {
         case 0:
             t = (slot->frame / 5.0f) * 1.5f;
-            // An int 1, as in func_801E6074; the asm converts to unsigned, hence the (u32) casts.
+            // An int 1, as in Popup_UpdateCard1; the asm converts to unsigned, hence the (u32) casts.
             if (slot->variant != 0) {
                 slot->x = (u32) (((1 - t) * 102.0f) + 58.0f);
                 slot->y = (u32) (((1 - t) * 15.0f) + 93.0f);
@@ -258,7 +258,7 @@ extern s32 D_802C6BD0;
 
 void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
 
-void func_801E66F4(UnkStruct_menu_buffer_1* slot) {
+void Popup_UpdatePauseCursor(UnkStruct_menu_buffer_1* slot) {
     MtxF mf;
     MtxF unused[2]; // never touched; keeps the 0x100 frame
     f32 angle;
@@ -294,7 +294,7 @@ void func_801E66F4(UnkStruct_menu_buffer_1* slot) {
     }
 }
 
-void func_801E68EC(UnkStruct_menu_buffer_1* slot) {
+void Popup_UpdateCard4(UnkStruct_menu_buffer_1* slot) {
     switch (slot->state) { /* irregular */
         case 0:
             slot->y = (s32) ((slot->frame++) * 3.0f * slot->frame) - 0x28;
@@ -336,17 +336,17 @@ void func_801E6A4C(u16 kind, u16 param) {
         case 0:
             if (param == 0) {
                 for (i = 0; i < 5; i++) {
-                    menu_buffer_1[i] = D_80226C50;
+                    menu_buffer_1[i] = gPopupSlotInit;
                 }
                 return;
             }
         default:
             return;
         case 1:
-            idx = func_801E6F6C();
+            idx = Popup_FindFreeSlot();
             if (idx != -1) {
                 slot = &menu_buffer_1[idx];
-                *slot = D_80226C50;
+                *slot = gPopupSlotInit;
                 slot->index = idx;
                 slot->type = 1;
                 slot->state = 0;
@@ -357,10 +357,10 @@ void func_801E6A4C(u16 kind, u16 param) {
             }
             break;
         case 2:
-            idx = func_801E6F6C();
+            idx = Popup_FindFreeSlot();
             if (idx != -1) {
                 slot = &menu_buffer_1[idx];
-                *slot = D_80226C50;
+                *slot = gPopupSlotInit;
                 slot->index = idx;
                 slot->type = 2;
                 slot->state = 0;
@@ -374,10 +374,10 @@ void func_801E6A4C(u16 kind, u16 param) {
             }
             break;
         case 3:
-            idx = func_801E6F6C();
+            idx = Popup_FindFreeSlot();
             if (idx != -1) {
                 slot = &menu_buffer_1[idx];
-                *slot = D_80226C50;
+                *slot = gPopupSlotInit;
                 slot->index = idx;
                 slot->type = 3;
                 switch (param) { /* switch 2 */
@@ -425,10 +425,10 @@ void func_801E6A4C(u16 kind, u16 param) {
             }
             break;
         case 4:
-            idx = func_801E6F6C();
+            idx = Popup_FindFreeSlot();
             if (idx != -1) {
                 slot = &menu_buffer_1[idx];
-                *slot = D_80226C50;
+                *slot = gPopupSlotInit;
                 ;
                 slot->index = idx;
                 slot->type = 4;
@@ -441,7 +441,7 @@ void func_801E6A4C(u16 kind, u16 param) {
     }
 }
 
-s32 func_801E6F6C(void) {
+s32 Popup_FindFreeSlot(void) {
     s32 i;
     UnkStruct_menu_buffer_1* slots = menu_buffer_1;
 
