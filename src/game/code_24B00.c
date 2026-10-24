@@ -155,7 +155,7 @@ void func_800C3628(s32);
 void func_801FB488(s32, s32, s32);
 void func_8006A300(void);
 void func_800B4750(void);
-void func_801EDFFC(s32, s32, f32, s32);
+void func_801EDFFC(s32, f32, f32, f32);
 void func_8004CC7C(UnkStruct_801BFB70*); /* extern */
 void func_8004F520(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5);
 void func_801EE6F4(s32*, s32, s32, f32, f32, f32, f32); /* extern */

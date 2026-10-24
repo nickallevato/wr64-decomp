@@ -69,8 +69,8 @@ typedef struct UnkStruct_801AEE20_s {
     /* 0x018 */ f32 unk18;
     /* 0x01C */ f32 unk1C;
     /* 0x020 */ f32 unk20;
-    /* 0x024 */ s32 unk24;        /* inferred */
-    /* 0x028 */ s32 unk28;        /* inferred */
+    /* 0x024 */ f32 unk24;
+    /* 0x028 */ f32 unk28;
     /* 0x02C */ char pad2C[0x44]; /* maybe part of unk28[0x12]? */
     /* 0x070 */ f32 unk70;
     /* 0x074 */ f32 unk74;
