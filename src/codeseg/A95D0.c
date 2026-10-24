@@ -407,7 +407,11 @@ void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEF84.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF008.s")
+void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key) {
+    obj->type = 1;
+    obj->base = key->base;
+    obj->u.p1 = key->p;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF08C.s")
 
