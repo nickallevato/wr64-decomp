@@ -92,6 +92,9 @@ extern s32 D_800D98D4;
 extern u8 D_2000A40[];
 extern Vtx D_6000310[];
 extern u8 D_8004400[];
+extern u8 D_8004C00[];
+extern s32 D_800D9944[];
+extern s8 D_800D9918[][3];
 extern s32 D_800DA914;
 extern s32 D_8035C800[];
 extern s32 D_8035D200[];
@@ -381,7 +384,65 @@ Gfx* func_8008D454(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008D454.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008D94C.s")
+Gfx* func_8008D94C(Gfx* gdl) {
+    s32 pad; // stack pad
+    s32 x;
+    s32 y;
+    s32 x2;
+    s32 s;
+    s32 dsdx;
+
+    x = D_801C4170.unk0 + D_801C4170.unkC;
+    s = 0;
+    y = D_801C4170.unk4 - D_801C4170.unk10;
+    x2 = x;
+    switch (gCourseID) {
+        case DOLPHIN_PARK:
+            dsdx = 0x555;
+            break;
+        case SUNSET_BAY:
+            dsdx = 0x29B;
+            break;
+        case GLACIER_COAST:
+            dsdx = 0x555;
+            break;
+    }
+    // On other courses dsdx is used uninitialized, as in the original.
+    if ((x - D_800D9944[gCourseID]) < 0) {
+        x2 = D_800D9944[gCourseID];
+        s = D_800D9944[gCourseID] - x;
+    }
+    if ((y - D_800D9944[gCourseID]) < 0) {
+        s = D_800D9944[gCourseID] - x; // x, not y, as in the original
+    }
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
+    gDPSetTexturePersp(gdl++, G_TP_NONE);
+    if ((gCourseID == SUNSET_BAY) && (D_801C4170.unk14 >= 0.0f)) {
+        gDPLoadTextureBlock(gdl++, D_8004C00, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+        gDPSetPrimColor(gdl++, 0, 0, D_800D9918[gCourseID][0], D_800D9918[gCourseID][1], D_800D9918[gCourseID][2], 0);
+        if ((x2 >= -24) && (x2 < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
+            // The s/t clamp terms shift by dsdx * 2 (a variable shift), as in the original.
+            gSPTextureRectangle(gdl++, MAX((x2 - D_800D9944[gCourseID]) << 2, 0), MAX((y - D_800D9944[gCourseID]) << 2, 0),
+                                    MAX((x2 + D_800D9944[gCourseID]) << 2, 0), MAX((y + D_800D9944[gCourseID]) << 2, 0), 0,
+                                    (s << 5) - MIN((((x2 - D_800D9944[gCourseID]) << (dsdx * 2)) >> 7), 0),
+                                    0 - MIN((((y - D_800D9944[gCourseID]) << (dsdx * 2)) >> 7), 0), dsdx, dsdx);
+        }
+    }
+    if ((D_801C4170.unk14 >= 0.0f) && (x2 >= -24) && (x2 < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
+        gDPLoadTextureBlock(gdl++, D_8004400, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+        gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0);
+        gSPTextureRectangle(gdl++, MAX((x2 - D_800D9944[gCourseID]) << 2, 0), MAX((y - D_800D9944[gCourseID]) << 2, 0),
+                                MAX((x2 + D_800D9944[gCourseID]) << 2, 0), MAX((y + D_800D9944[gCourseID]) << 2, 0), 0,
+                                (s << 5) - MIN((((x2 - D_800D9944[gCourseID]) << (dsdx * 2)) >> 7), 0),
+                                0 - MIN((((y - D_800D9944[gCourseID]) << (dsdx * 2)) >> 7), 0), dsdx, dsdx);
+    }
+    return gdl;
+}
 
 #ifdef NON_MATCHING
 // Score 2745 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
