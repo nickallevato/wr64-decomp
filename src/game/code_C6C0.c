@@ -301,6 +301,14 @@ typedef struct UnkStruct_80227A60 {
     /* 0x30 */ Gfx* unk30[5];
 } UnkStruct_80227A60; /* size = 0x44 */
 
+// The rider's 19 entries of 0x28 bytes at 0x660 (unk660 .. 0x958).
+typedef struct RiderPart {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ char pad4[0x24];
+} RiderPart; /* size = 0x28 */
+
+#define RIDER_PARTS(rider) ((RiderPart*) (rider)->unk660)
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -797,9 +805,137 @@ void func_80053A5C(UnkStruct_80052E90_arg1_s* arg0, f32 arg1, UnkStruct_80052E90
     func_8005374C(&arg0->unk6C, arg1, &arg2->unk6C, &arg3->unk6C);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80053C08.s")
+void func_80053C08(s32, s32);
 
-void func_80053C08(f32, s32);
+void func_80053C08(s32 arg0, s32 arg1) {
+    UnkStruct_80192690* rider = &D_80192690[arg0];
+    RiderPart* p;
+
+    if ((arg1 >= 18) && (arg1 < 22)) {
+        rider->unkC68 = 0;
+    } else {
+        rider->unkC68 = 1;
+    }
+    if ((arg1 == 23) || (arg1 == 24) || (arg1 == 17) || ((arg1 >= 18) && (arg1 < 22))) {
+        for (p = &RIDER_PARTS(rider)[18]; p >= &RIDER_PARTS(rider)[0]; p--) {
+            p->unk0 = 0;
+        }
+        if (arg1 == 24) {
+            rider->unk1574 = 0;
+        }
+    } else {
+        for (p = &RIDER_PARTS(rider)[18]; p >= &RIDER_PARTS(rider)[0]; p--) {
+            p->unk0 = 1;
+        }
+    }
+    switch (arg1) {
+        case 22:
+        case 25:
+            if (rider->unk16CC == 0) {
+                RIDER_PARTS(rider)[17].unk0 = 4;
+                RIDER_PARTS(rider)[9].unk0 = 4;
+                RIDER_PARTS(rider)[18].unk0 = 4;
+                RIDER_PARTS(rider)[10].unk0 = 4;
+                RIDER_PARTS(rider)[6].unk0 = 2;
+                RIDER_PARTS(rider)[14].unk0 = 3;
+                return;
+            }
+            RIDER_PARTS(rider)[15].unk0 = 0;
+            RIDER_PARTS(rider)[7].unk0 = 0;
+            RIDER_PARTS(rider)[2].unk0 = 0;
+            RIDER_PARTS(rider)[14].unk0 = 0;
+            RIDER_PARTS(rider)[6].unk0 = 0;
+            return;
+        case 24:
+            RIDER_PARTS(rider)[2].unk0 = 5;
+            RIDER_PARTS(rider)[15].unk0 = 5;
+            RIDER_PARTS(rider)[7].unk0 = 5;
+            RIDER_PARTS(rider)[11].unk0 = 5;
+            RIDER_PARTS(rider)[3].unk0 = 5;
+            RIDER_PARTS(rider)[6].unk0 = 2;
+            RIDER_PARTS(rider)[14].unk0 = 3;
+            return;
+        case 10:
+            RIDER_PARTS(rider)[18].unk0 = 0;
+            RIDER_PARTS(rider)[17].unk0 = 0;
+            RIDER_PARTS(rider)[10].unk0 = 0;
+            RIDER_PARTS(rider)[9].unk0 = 0;
+            RIDER_PARTS(rider)[6].unk0 = 2;
+            RIDER_PARTS(rider)[14].unk0 = 3;
+            return;
+        case 15:
+            RIDER_PARTS(rider)[16].unk0 = 0;
+            RIDER_PARTS(rider)[8].unk0 = 0;
+            RIDER_PARTS(rider)[15].unk0 = 0;
+            RIDER_PARTS(rider)[7].unk0 = 0;
+            RIDER_PARTS(rider)[2].unk0 = 0;
+            RIDER_PARTS(rider)[6].unk0 = 2;
+            RIDER_PARTS(rider)[14].unk0 = 3;
+            return;
+        case 8:
+            RIDER_PARTS(rider)[14].unk0 = 0;
+            RIDER_PARTS(rider)[6].unk0 = 0;
+            RIDER_PARTS(rider)[15].unk0 = 0;
+            RIDER_PARTS(rider)[7].unk0 = 0;
+            RIDER_PARTS(rider)[2].unk0 = 0;
+            rider->unkC68 = 0;
+            return;
+        case 17:
+            rider->unkC68 = 0;
+            return;
+        case 7:
+            RIDER_PARTS(rider)[14].unk0 = 0;
+            RIDER_PARTS(rider)[6].unk0 = 0;
+            RIDER_PARTS(rider)[16].unk0 = 0;
+            RIDER_PARTS(rider)[18].unk0 = 0;
+            RIDER_PARTS(rider)[17].unk0 = 0;
+            RIDER_PARTS(rider)[15].unk0 = 0;
+            RIDER_PARTS(rider)[8].unk0 = 0;
+            RIDER_PARTS(rider)[10].unk0 = 0;
+            RIDER_PARTS(rider)[9].unk0 = 0;
+            RIDER_PARTS(rider)[7].unk0 = 0;
+            RIDER_PARTS(rider)[2].unk0 = 0;
+            RIDER_PARTS(rider)[1].unk0 = 0;
+            RIDER_PARTS(rider)[0].unk0 = 0;
+            return;
+        case 2:
+            RIDER_PARTS(rider)[18].unk0 = 0;
+            RIDER_PARTS(rider)[17].unk0 = 0;
+            RIDER_PARTS(rider)[10].unk0 = 0;
+            RIDER_PARTS(rider)[9].unk0 = 0;
+            RIDER_PARTS(rider)[14].unk0 = 3;
+            return;
+        case 9:
+            RIDER_PARTS(rider)[15].unk0 = 0;
+            RIDER_PARTS(rider)[7].unk0 = 0;
+            RIDER_PARTS(rider)[2].unk0 = 0;
+            RIDER_PARTS(rider)[16].unk0 = 0;
+            RIDER_PARTS(rider)[8].unk0 = 0;
+            return;
+        case 1:
+        case 6:
+            RIDER_PARTS(rider)[18].unk0 = 0;
+            RIDER_PARTS(rider)[17].unk0 = 0;
+            RIDER_PARTS(rider)[10].unk0 = 0;
+            RIDER_PARTS(rider)[9].unk0 = 0;
+            return;
+        case 3:
+            RIDER_PARTS(rider)[18].unk0 = 0;
+            RIDER_PARTS(rider)[17].unk0 = 0;
+            RIDER_PARTS(rider)[10].unk0 = 0;
+            RIDER_PARTS(rider)[9].unk0 = 0;
+            RIDER_PARTS(rider)[14].unk0 = 3;
+            return;
+        case 4:
+            RIDER_PARTS(rider)[16].unk0 = 0;
+            RIDER_PARTS(rider)[18].unk0 = 0;
+            RIDER_PARTS(rider)[17].unk0 = 0;
+            RIDER_PARTS(rider)[8].unk0 = 0;
+            RIDER_PARTS(rider)[10].unk0 = 0;
+            RIDER_PARTS(rider)[9].unk0 = 0;
+            return;
+    }
+}
 
 s32 func_80053EAC(s32 arg0, s32 arg1, s32 arg2, f32 arg3, u16 arg4) {
     UnkStruct_80192690* temp_v0;
@@ -815,7 +951,7 @@ s32 func_80053EAC(s32 arg0, s32 arg1, s32 arg2, f32 arg3, u16 arg4) {
         temp_v0->unkC58 = arg2;
         temp_v0->unkC6C = 0;
         temp_v0->unk142C = 0.0f;
-        func_80053C08(arg3, arg1);
+        func_80053C08(arg0, arg1);
         return 0;
     }
 
@@ -828,7 +964,7 @@ s32 func_80053EAC(s32 arg0, s32 arg1, s32 arg2, f32 arg3, u16 arg4) {
     temp_v0->unk1430 = arg3;
     temp_v0->unk142C = arg3;
     temp_v0->unkC64 = arg4;
-    func_80053C08(arg3, -1);
+    func_80053C08(arg0, -1);
     return 0;
 }
 
