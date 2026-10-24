@@ -178,6 +178,14 @@ extern UnkA95D0_Runner D_80228058[];
 extern UnkA95D0_Obj D_80227E98[];
 void func_800AB95C(s32, s32);
 extern UnkA95D0_Step D_80223F7C[];
+extern RiderStruct D_801C2C70[];
+void func_801DB8F0(UnkA95D0_Runner* runner);
+void func_801DC0AC(UnkA95D0_Runner* runner);
+void func_801DC274(UnkA95D0_Runner* runner);
+void func_801DC60C(UnkA95D0_Runner* runner);
+void func_801DCD34(UnkA95D0_Runner* runner);
+void func_801DD2D0(UnkA95D0_Runner* runner);
+void func_800AC098(UnkStruct_801DB0E4_arg0* arg0, s32 arg1);
 extern UnkA95D0_Step D_80224B14[];
 extern UnkStruct_801DB0E4_arg1 D_80225E34;
 extern f32 D_80228120[][2];
@@ -433,7 +441,68 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD2D0.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD6B4.s")
+void func_801DD6B4(UnkA95D0_Runner* runner) {
+    void (*func)(UnkA95D0_Runner*);
+
+    D_802287A8 = 0;
+    func = NULL;
+    switch (D_801CE638) {
+        case 8:
+            switch (gCourseID) {
+                case DOLPHIN_PARK:
+                    func = func_801DC274;
+                    break;
+                case SUNNY_BEACH:
+                    if (gDifficulty == DIFFICULTY_EXPERT) {
+                        func = func_801DC404;
+                    }
+                    break;
+                case SUNSET_BAY:
+                    func = func_801DC5A8;
+                    break;
+                case DRAKE_LAKE:
+                    func = func_801DC60C;
+                    break;
+                case PORT_BLUE:
+                    func = func_801DCD34;
+                    break;
+                case GLACIER_COAST:
+                    func = func_801DD2D0;
+                    break;
+            }
+            break;
+        case 21:
+            switch (gDifficulty) {
+                case DIFFICULTY_NORMAL:
+                case DIFFICULTY_HARD:
+                    D_802287AC = D_801C2C70[0].lapCount;
+                    if (D_802287AC < 3) {
+                        func = func_801DC0AC;
+                    }
+                    break;
+                case DIFFICULTY_EXPERT:
+                    switch (D_801C2C70[0].lapCount) {
+                        case 0:
+                            func = func_801DB8F0;
+                            break;
+                        case 1:
+                            D_802287AC = 4;
+                            func = (void (*)(UnkA95D0_Runner*)) func_801DBF68;
+                            break;
+                        case 2:
+                            D_802287AC = 3;
+                            func = (void (*)(UnkA95D0_Runner*)) func_801DBF68;
+                            break;
+                    }
+                    break;
+            }
+            break;
+    }
+    if (func != NULL) {
+        func(runner);
+        func_800AC098(&D_80228190, D_802287A8);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD85C.s")
 
