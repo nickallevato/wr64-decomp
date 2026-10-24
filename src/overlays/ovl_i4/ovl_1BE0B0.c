@@ -1,5 +1,13 @@
 #include "global.h"
 
+extern s32 D_i4_802C7540;
+extern s32 D_i4_802C7544;
+extern s32 D_i4_802C7548;
+extern s32 D_802C76B4;
+extern s32 D_802C76B8;
+extern s32 D_802C76BC;
+extern s32 D_802C76C0;
+
 extern u16 D_80A0008[];
 
 void func_i4_802C7344(void);
@@ -104,7 +112,39 @@ void func_i4_802C6BAC(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C6C2C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C6ED0.s")
+void func_i4_802C6ED0(void) {
+    f32 temp_fv0;
+    f32 temp_fv1;
+
+    switch (D_i4_802C7544) {
+        case 1:
+            D_i4_802C7540 = 1;
+            temp_fv0 = (f32) (5 - D_i4_802C753C) / 5.0f;
+            temp_fv1 = (f32) D_i4_802C753C / 5.0f;
+            D_802C76B4 = (s32) (71.0f * temp_fv0) + 0x8E;
+            D_802C76B8 = (s32) (53.0f * temp_fv0) + 0x21;
+            D_802C76BC = (s32) (142.0f * temp_fv1);
+            D_802C76C0 = (s32) (106.0f * temp_fv1);
+            if (++D_i4_802C753C >= 6) {
+                D_i4_802C7538 = 2;
+                D_i4_802C753C = 0;
+                D_i4_802C7548 = 1;
+            }
+            break;
+        case 2:
+            temp_fv0 = (f32) (5 - D_i4_802C753C) / 5.0f;
+            temp_fv1 = (f32) D_i4_802C753C / 5.0f;
+            D_802C76B4 = (s32) (71.0f * temp_fv1) + 0x8E;
+            D_802C76B8 = (s32) (53.0f * temp_fv1) + 0x21;
+            D_802C76BC = (s32) (142.0f * temp_fv0);
+            D_802C76C0 = (s32) (106.0f * temp_fv0);
+            if (++D_i4_802C753C >= 6) {
+                D_i4_802C7538 = 0;
+                D_i4_802C753C = 0;
+            }
+            break;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C70C0.s")
 
