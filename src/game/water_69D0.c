@@ -462,7 +462,112 @@ void func_8004F790(s32 amplitude) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050204.s")
 
+extern s32 D_801924A8;
+
+/*
+ * Casts the four corner rays of the camera's view onto the plane at gWaterLevel + D_800D49B0, keeps
+ * the shortest forward distance (capped), and returns the point that far ahead of the camera along
+ * (unkF0, unkF4), less 32 and plus 0.866 of the window radius, in *x and *z.
+ */
+
+#ifdef NON_MATCHING
+// 17535/26100: float register allocation; the original keeps more of the corner products in stack slots (frame 0xC0, here 0xD0) and uses five saved FP registers, here six
+void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
+    s32 angle;
+    f32 d;
+    f32 s;
+    f32 ax;
+    f32 ay;
+    f32 az;
+    f32 bx;
+    f32 by;
+    f32 bz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 h;
+    f32 w;
+    f32 e;
+    f32 rx;
+    f32 ry;
+    f32 rz;
+    f32 dist;
+    f32 t;
+    f32 upx;
+    f32 upy;
+    f32 upz;
+    f32 lox;
+    f32 loy;
+    f32 loz;
+    f32 hix;
+    f32 hiy;
+    f32 hiz;
+
+    angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
+    d = cam->unk9C;
+    h = (d * SIN(angle)) / COS(angle);
+    ax = cam->unk70;
+    ay = cam->unk74;
+    az = cam->unk78;
+    bx = cam->unk64;
+    by = cam->unk68;
+    bz = cam->unk6C;
+    cx = (ay * bz) - (az * by);
+    cy = (az * bx) - (ax * bz);
+    cz = (ax * by) - (ay * bx);
+    e = cam->unk94;
+    w = (h * 320.0f) / 240.0f;
+    hix = (e + w) * cx;
+    hiy = (e + w) * cy;
+    hiz = (e + w) * cz;
+    lox = (e - w) * cx;
+    loy = (e - w) * cy;
+    loz = (e - w) * cz;
+    upx = d * bx;
+    upy = d * by;
+    upz = d * bz;
+    s = (f32) (gWaterLevel + D_800D49B0) - cam->unk50;
+    dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
+
+    e = cam->unk98 - h;
+    rx = (ax * e) + upx;
+    ry = (ay * e) + upy;
+    rz = (az * e) + upz;
+    if ((ry + hiy) < -5.0f) {
+        t = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+        if (t < dist) {
+            dist = t;
+        }
+    }
+    if ((ry + loy) < -5.0f) {
+        t = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+        if (t < dist) {
+            dist = t;
+        }
+    }
+    e = cam->unk98 + h;
+    rx = (ax * e) + upx;
+    ry = (ay * e) + upy;
+    rz = (az * e) + upz;
+    if ((ry + hiy) < -5.0f) {
+        t = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+        if (t < dist) {
+            dist = t;
+        }
+    }
+    if ((ry + loy) < -5.0f) {
+        t = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+        if (t < dist) {
+            dist = t;
+        }
+    }
+    dist = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
+    *x = cam->unk4C + (dist * cam->unkF0);
+    *z = cam->unk54 + (dist * cam->unkF4);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")
+#endif
 
 extern UnkStruct_80160430 D_80160430[];
 extern UnkStruct_80160A98 D_80160A98[];
