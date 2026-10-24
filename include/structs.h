@@ -447,6 +447,24 @@ typedef struct {
     s32 unkE8;
 } UnkStruct_func_8009CCE8;
 
+// A 0x14-byte record entry; unk10 receives the entered initials. Initials_SaveToRecords also
+// clears unk10[4], which is the first byte of the next entry.
+typedef struct UnkStruct_AF8C0_14 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s8 unk10[4];
+} UnkStruct_AF8C0_14; // size = 0x14
+
+// A 0x10-byte record entry; unkC receives the entered initials (and unkC[4], as above).
+typedef struct UnkStruct_AF8C0_10 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s8 unkC[4];
+} UnkStruct_AF8C0_10; // size = 0x10
+
 typedef struct TexEntry {
     /* 0x0 */ u8* img;
     /* 0x4 */ u32 width;
