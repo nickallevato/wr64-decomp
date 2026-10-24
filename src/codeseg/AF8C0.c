@@ -8,12 +8,54 @@ extern s32 D_801CE638;
 extern s32 D_801CE63C;
 extern s32 D_801CE640;
 extern s32 D_801CE644;
+extern s32 D_801CB334;
+extern s32 D_801C2660[];
+extern s32 D_801C2690[];
+extern const s16 D_800EAC14[][8];
+extern Mtx D_8011F820;
+
+s32 func_8007BEA4(s32);
+s32 func_8007C204(s32);
+Gfx* func_80094A44(Gfx*, s32);
+void func_801EC500(void);
+Gfx* func_801E2058(Gfx*);
+Gfx* func_801E229C(Gfx*);
+void func_801E2530(void);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1290.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1BA8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1E8C.s")
+Gfx* func_801E1E8C(Gfx* gdl) {
+    s32 i;
+    s16 course;
+
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+    }
+    D_800DAB2C = 0;
+    gdl = func_801E2058(func_8008FB74(func_80093F78(gdl)));
+    gSPMatrix(gdl++, &D_8011F820, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gdl = func_801E229C(Draw_WaterEffects(func_80094A44(gdl, gCourseID)));
+    if (gGameState == GAME_STATE_64) {
+        func_801E2530();
+    } else if (D_80228A16 == 1) {
+        if (D_801CE608.gameMode == 4) {
+            for (i = 0; i < D_801CB334 + 1; i++) {
+                course = D_800EAC14[gDifficulty][i];
+                if ((D_801C2660[course] != 0) || (D_801C2690[course] != 0)) {
+                    if (D_800DAB68 != 0) {
+                        func_8007C204(course);
+                    } else {
+                        func_8007BEA4(course);
+                    }
+                }
+            }
+        }
+        func_801EC500();
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E2058.s")
 
