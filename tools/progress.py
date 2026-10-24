@@ -29,6 +29,10 @@ def get_func_sizes():
             components = line.split()
             size = int(components[4], 16)
             name = components[5]
+            # Size-0 symbols are addresses, not code: the linker script's absolute
+            # func_802Cxxxx entry points into overlays and the microcode *TextEnd markers.
+            if size == 0:
+                continue
             total += size
             sizes[name] = size
 
