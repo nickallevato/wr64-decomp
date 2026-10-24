@@ -59,7 +59,106 @@ Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E9858.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E9B04.s")
+/* Glyph index of character c in font, or 0xFF for a space; 0 for a character the font lacks. */
+s32 func_801E9B04(s32 font, s8 c) {
+    s32 glyph = 0;
+
+    if (c >= '0' && c <= '9') {
+        glyph = c - '0';
+    } else if (c >= 'A' && c <= 'Z') {
+        switch (font) {
+            case 0:
+            case 1:
+            case 2:
+                glyph = c - 'A' + 10;
+                break;
+        }
+    } else if (c == '/') {
+        switch (font) {
+            case 5:
+                glyph = 0xA;
+                break;
+            case 2:
+                glyph = 0x28;
+                break;
+        }
+    } else if (c == '-') {
+        switch (font) {
+            case 0:
+            case 1:
+                glyph = 0x24;
+                break;
+            case 2:
+                glyph = 0x25;
+                break;
+        }
+    } else if (c == '\'') {
+        switch (font) {
+            case 0:
+            case 1:
+                glyph = 0x25;
+                break;
+            case 2:
+                glyph = 0x26;
+                break;
+            case 3:
+                glyph = 0xA;
+                break;
+        }
+    } else if (c == '@') {
+        switch (font) {
+            case 0:
+            case 1:
+                glyph = 0x26;
+                break;
+            case 2:
+                glyph = 0x27;
+                break;
+            case 3:
+                glyph = 0xB;
+                break;
+        }
+    } else if (c == '&') {
+        if (font == 2) {
+            glyph = 0x24;
+        }
+    } else if (c == '.') {
+        switch (font) {
+            case 0:
+                glyph = 0x27;
+                break;
+            case 2:
+                glyph = 0x29;
+                break;
+            case 1:
+                glyph = 0x29;
+                break;
+        }
+    } else if (c == '|') {
+        if (font == 2) {
+            glyph = 0x2A;
+        }
+    } else if (c == '<') {
+        if (font == 2) {
+            glyph = 0x2B;
+        }
+    } else if (c == '>') {
+        if (font == 2) {
+            glyph = 0x2C;
+        }
+    } else if (c == '\n') {
+        if (font == 1) {
+            glyph = 0x28;
+        }
+    } else if (c == '+') {
+        if (font == 2) {
+            glyph = 0x2D;
+        }
+    } else if (c == ' ') {
+        glyph = 0xFF;
+    }
+    return glyph;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E9D6C.s")
 
