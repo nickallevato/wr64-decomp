@@ -119,7 +119,67 @@ void func_801EF3C4(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EF504.s")
 
 // Draw the guide arrow (next-buoy compass) for each player.
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EFFD8.s")
+extern Gfx D_1010528[];
+extern Vp D_1014450;
+extern Vp D_1014460;
+extern Vp D_1014470;
+extern Vp D_1014480;
+extern Gfx D_1014618[];
+extern Mtx D_300E008;
+extern Mtx D_300E088;
+extern s32 D_801AE950;
+
+void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
+
+void func_801EFFD8(Gfx** gdlp) {
+    Gfx* gdl;
+    RiderStruct* rider;
+    s32 i;
+    s32 alpha;
+
+    gdl = *gdlp;
+    gSPDisplayList(gdl++, D_1014618);
+    gSPPerspNormalize(gdl++, D_80228D24);
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            rider = &D_801C2938[D_800D48E0];
+        }
+        alpha = rider->unk2DC * 255 / 4;
+        if ((alpha > 0) && (rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+            if (gPlayers == ONE_PLAYER) {
+                gSPViewport(gdl++, &D_1014460);
+            } else if (i == 0) {
+                gSPViewport(gdl++, &D_1014470);
+            } else {
+                gSPViewport(gdl++, &D_1014480);
+            }
+            gDPPipeSync(gdl++);
+            if ((rider->unk328 >= 40) && ((rider->unk328 % 20) == 0)) {
+                gDPSetCombineMode(gdl++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+            } else {
+                gDPSetCombineLERP(gdl++, 0, 0, 0, SHADE, 0, 0, 0, PRIMITIVE, 0, 0, 0, SHADE, 0, 0, 0, PRIMITIVE);
+            }
+            func_801EE228(&D_801AE948->unk4140[D_801AE950], rider->unk2D0, 0.0f, 1.0f, 0.0f);
+            gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+            gDPPipeSync(gdl++);
+            gDPSetPrimColor(gdl++, 0, 0, 255, 150, 150, alpha);
+            if (alpha < 255) {
+                gDPSetRenderMode(gdl++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            } else {
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+            }
+            gSPDisplayList(gdl++, D_1010528);
+            gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+        }
+    }
+    gSPViewport(gdl++, &D_1014450);
+    gSPMatrix(gdl++, &D_300E008, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gdl++, &D_300E088, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+    *gdlp = gdl;
+}
 
 extern s32 D_800D817C;
 extern s8 D_80228B58[];
