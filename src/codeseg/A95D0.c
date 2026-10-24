@@ -55,6 +55,114 @@ extern struct UnkStruct_801DB0E4_arg0 D_80228190;
 extern s32 D_802287A8;
 extern s32 D_802287AC;
 
+// A keyframed object (type 1, 2, 3 or 5) and the script runner that drives it.
+// Layouts come from the copies and stores in func_801DEF84..func_801DFE80 and func_801E0F8C.
+typedef struct UnkA95D0_Base {
+    /* 0x00 */ Vec3f unk0;
+    /* 0x0C */ Vec3f unkC;
+    /* 0x18 */ Vec3f unk18;
+    /* 0x24 */ Vec3f unk24;
+    /* 0x30 */ u8 pad30[4];
+    /* 0x34 */ f32 unk34;
+    /* 0x38 */ f32 unk38;
+    /* 0x3C */ u8 pad3C[4];
+    /* 0x40 */ f32 unk40;
+    /* 0x44 */ f32 unk44;
+    /* 0x48 */ u8 pad48[0x10];
+} UnkA95D0_Base; // size = 0x58
+
+typedef struct UnkA95D0_Payload1 {
+    /* 0x00 */ Vec3f unk0;
+    /* 0x0C */ u8 padC[4];
+    /* 0x10 */ Vec3f unk10;
+    /* 0x1C */ u8 pad1C[4];
+} UnkA95D0_Payload1; // size = 0x20
+
+typedef struct UnkA95D0_Payload2 {
+    /* 0x00 */ f32 unk0[14];
+} UnkA95D0_Payload2; // size = 0x38
+
+typedef struct UnkA95D0_Payload5 {
+    /* 0x00 */ f32 unk0[33];
+} UnkA95D0_Payload5; // size = 0x84
+
+typedef struct UnkA95D0_Key1 {
+    /* 0x00 */ UnkA95D0_Base base;
+    /* 0x58 */ UnkA95D0_Payload1 p;
+} UnkA95D0_Key1;
+
+typedef struct UnkA95D0_Key2 {
+    /* 0x00 */ UnkA95D0_Base base;
+    /* 0x58 */ UnkA95D0_Payload2 p;
+} UnkA95D0_Key2;
+
+typedef struct UnkA95D0_Key5 {
+    /* 0x00 */ UnkA95D0_Base base;
+    /* 0x58 */ UnkA95D0_Payload5 p;
+} UnkA95D0_Key5;
+
+typedef struct UnkA95D0_Obj {
+    /* 0x00 */ s32 type;
+    /* 0x04 */ UnkA95D0_Base base;
+    /* 0x5C */ union {
+        UnkA95D0_Payload1 p1;
+        UnkA95D0_Payload2 p2;
+        UnkA95D0_Payload5 p5;
+    } u;
+} UnkA95D0_Obj; // size = 0xE0
+
+// A spline cursor: frame within the segment and segment index (-1 when done).
+typedef struct UnkA95D0_Cursor {
+    /* 0x00 */ s32 frame;
+    /* 0x04 */ s32 seg;
+} UnkA95D0_Cursor; // size = 0x8
+
+typedef struct UnkA95D0_Spline3 {
+    /* 0x00 */ s32 count;
+    /* 0x04 */ f32* points[3];
+    /* 0x10 */ s32* durations;
+} UnkA95D0_Spline3; // size = 0x14
+
+typedef struct UnkA95D0_Spline1 {
+    /* 0x00 */ s32 count;
+    /* 0x04 */ f32* points;
+    /* 0x08 */ s32* durations;
+} UnkA95D0_Spline1; // size = 0xC
+
+struct UnkA95D0_Runner;
+
+typedef struct UnkA95D0_Step {
+    /* 0x00 */ s32 duration;
+    /* 0x04 */ void (*func)(struct UnkA95D0_Runner*, s32);
+    /* 0x08 */ s32 arg;
+} UnkA95D0_Step; // size = 0xC
+
+typedef struct UnkA95D0_Runner {
+    /* 0x00 */ UnkA95D0_Obj* obj;
+    /* 0x04 */ UnkA95D0_Step* step;
+    /* 0x08 */ s32 frame;
+    /* 0x0C */ UnkA95D0_Cursor* cursors;
+    /* 0x10 */ s32 unk10[10];
+} UnkA95D0_Runner; // size = 0x38
+
+void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
+extern UnkA95D0_Runner D_80228058[];
+extern UnkA95D0_Obj D_80227E98[];
+void func_800AB95C(s32, s32);
+extern UnkA95D0_Step D_80223F7C[];
+void func_801DF744(UnkA95D0_Obj* obj);
+void func_801DF38C(UnkA95D0_Obj* obj);
+void func_801DF128(UnkA95D0_Obj* obj);
+void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
+void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
+void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
+void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
+void func_801DED88(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
+void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline);
+void func_801DEC00(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline);
+void func_801DF278(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Key2* key);
+void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key);
+
 // TODO: Improve these matches
 void func_801DAFA0(void** arg0, s32 arg1) {
     *(f32*) (((u8*) (*arg0)) + 0x50) = 3.0f;
@@ -254,7 +362,14 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC404.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC5A8.s")
+void func_801DC5A8(UnkA95D0_Runner* runner) {
+    s32 index = runner->step - D_80223F7C;
+
+    if (index == 2 && runner->frame == 1) {
+        func_800AB92C();
+        func_800AB95C(1, 0);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC60C.s")
 
@@ -266,7 +381,13 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD85C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDA24.s")
+void func_801DDA24(void) {
+    s32 i;
+
+    for (i = 0; i < gPlayers; i++) {
+        func_801DDAB8(&gCameraPerspective[i], &D_80227E98[i], &D_80228058[i]);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDAB8.s")
 
@@ -278,91 +399,238 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DE690.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEA94.s")
+void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count) {
+    s32 i;
+
+    for (i = 0; i < count; i++) {
+        cursors[i].seg = 0;
+        cursors[i].frame = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEB08.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEC00.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DED44.s")
+void func_801DED44(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(out, &cursors[0], &splines[0]);
+    func_801DEC00(out + 3, &cursors[1], &splines[1]);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DED88.s")
+void func_801DED88(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(out, &cursors[0], &splines[0]);
+    func_801DEC00(out + 3, &cursors[1], &splines[1]);
+    func_801DEC00(out + 6, &cursors[2], &splines[2]);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEDE8.s")
+void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(out, &cursors[0], &splines[0]);
+    func_801DEC00(out + 3, &cursors[1], &splines[1]);
+    func_801DEB08(out + 6, &cursors[2], (UnkA95D0_Spline1*) &splines[2]);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEE48.s")
+void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(out, &cursors[0], &splines[0]);
+    func_801DEC00(out + 3, &cursors[1], &splines[1]);
+    func_801DEC00(out + 6, &cursors[2], &splines[2]);
+    func_801DEB08(out + 9, &cursors[3], (UnkA95D0_Spline1*) &splines[3]);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEEC4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEF84.s")
+void func_801DEF84(UnkA95D0_Obj* obj, UnkA95D0_Base* base, UnkA95D0_Payload1* p) {
+    obj->type = 1;
+    obj->base = *base;
+    obj->u.p1 = *p;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF008.s")
+void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key) {
+    obj->type = 1;
+    obj->base = key->base;
+    obj->u.p1 = key->p;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF08C.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF128.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF1F8.s")
+void func_801DF1F8(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Base* base, UnkA95D0_Payload2* p) {
+    obj->type = type;
+    obj->base = *base;
+    obj->u.p2 = *p;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF278.s")
+void func_801DF278(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Key2* key) {
+    obj->type = type;
+    obj->base = key->base;
+    obj->u.p2 = key->p;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF2F8.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF38C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF578.s")
+void func_801DF578(UnkA95D0_Obj* obj, UnkA95D0_Base* base, UnkA95D0_Payload5* p) {
+    obj->type = 5;
+    obj->base = *base;
+    obj->u.p5 = *p;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF5F0.s")
+void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key) {
+    obj->type = 5;
+    obj->base = key->base;
+    obj->u.p5 = key->p;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF668.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF744.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFC48.s")
+void func_801DFC48(UnkA95D0_Obj* obj) {
+    switch (obj->type) {
+        case 1:
+            func_801DF128(obj);
+            break;
+        case 2:
+        case 3:
+            func_801DF38C(obj);
+            break;
+        case 5:
+            func_801DF744(obj);
+            break;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFCB8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFD8C.s")
+void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj) {
+    runner->obj = obj;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFD94.s")
+void func_801DFD94(UnkA95D0_Runner* runner, UnkA95D0_Step* step) {
+    runner->step = step;
+    runner->frame = 0;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFDA0.s")
+void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors) {
+    runner->cursors = cursors;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFDA8.s")
+void func_801DFDA8(UnkA95D0_Runner* runner, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                   s32 arg8, s32 arg9, s32 arg10) {
+    runner->unk10[0] = arg1;
+    runner->unk10[1] = arg2;
+    runner->unk10[2] = arg3;
+    runner->unk10[3] = arg4;
+    runner->unk10[4] = arg5;
+    runner->unk10[5] = arg6;
+    runner->unk10[6] = arg7;
+    runner->unk10[7] = arg8;
+    runner->unk10[8] = arg9;
+    runner->unk10[9] = arg10;
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFDF0.s")
+void func_801DFDF0(UnkA95D0_Runner* runner, s32 count) {
+    func_801DEA94(runner->cursors, count);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE10.s")
+void func_801DFE10(UnkA95D0_Runner* runner, UnkA95D0_Key1* key) {
+    func_801DF008(runner->obj, key);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE30.s")
+void func_801DFE30(UnkA95D0_Runner* runner, UnkA95D0_Key2* key) {
+    func_801DF278(runner->obj, 2, key);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE58.s")
+void func_801DFE58(UnkA95D0_Runner* runner, UnkA95D0_Key2* key) {
+    func_801DF278(runner->obj, 3, key);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE80.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFF5C.s")
+void func_801DFF5C(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[6];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFFA8.s")
+    func_801DED44(out, runner->cursors, splines);
+    func_801DF08C(runner->obj, &out[0], &out[3], NULL, NULL);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFFF4.s")
+void func_801DFFA8(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[9];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0044.s")
+    func_801DED88(out, runner->cursors, splines);
+    func_801DF08C(runner->obj, &out[0], &out[3], &out[6], NULL);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0094.s")
+void func_801DFFF4(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[7];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E00E0.s")
+    func_801DEDE8(out, runner->cursors, splines);
+    func_801DF08C(runner->obj, &out[0], &out[3], NULL, &out[6]);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E012C.s")
+void func_801E0044(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[10];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E017C.s")
+    func_801DEE48(out, runner->cursors, splines);
+    func_801DF08C(runner->obj, &out[0], &out[3], &out[6], &out[9]);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E01CC.s")
+void func_801E0094(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[6];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0218.s")
+    func_801DED44(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[0], &out[3], NULL, NULL);
+}
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0264.s")
+void func_801E00E0(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[9];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E02B4.s")
+    func_801DED88(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[0], &out[3], &out[6], NULL);
+}
+
+void func_801E012C(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[7];
+
+    func_801DEDE8(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[0], &out[3], NULL, &out[6]);
+}
+
+void func_801E017C(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[10];
+
+    func_801DEE48(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[0], &out[3], &out[6], &out[9]);
+}
+
+void func_801E01CC(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[6];
+
+    func_801DED44(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[3], &out[0], NULL, NULL);
+}
+
+void func_801E0218(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[9];
+
+    func_801DED88(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[3], &out[0], &out[6], NULL);
+}
+
+void func_801E0264(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[7];
+
+    func_801DEDE8(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[3], &out[0], NULL, &out[6]);
+}
+
+void func_801E02B4(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[10];
+
+    func_801DEE48(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[3], &out[0], &out[6], &out[9]);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0304.s")
 
@@ -380,7 +648,20 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0DB8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0F8C.s")
+void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
+    cam->unk4C = obj->base.unkC.x;
+    cam->unk50 = obj->base.unkC.y;
+    cam->unk54 = obj->base.unkC.z;
+    cam->unk7C = obj->base.unk0.x;
+    cam->unk80 = obj->base.unk0.y;
+    cam->unk84 = obj->base.unk0.z;
+    cam->unk70 = obj->base.unk18.x;
+    cam->unk74 = obj->base.unk18.y;
+    cam->unk78 = obj->base.unk18.z;
+    cam->unk88 = obj->base.unk34;
+    cam->unk94 = obj->base.unk40;
+    cam->unk98 = obj->base.unk44;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0FF0.s")
 

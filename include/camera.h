@@ -34,7 +34,8 @@ typedef struct camera_unk_1 {
     /* 0x07C */ f32 unk7C;
     /* 0x080 */ f32 unk80;
     /* 0x084 */ f32 unk84;
-    /* 0x088 */ char pad88[0xC];                    /* maybe part of unk84[4]? */
+    /* 0x088 */ f32 unk88;
+    /* 0x08C */ char pad8C[0x8];
     /* 0x094 */ f32 unk94;
     /* 0x098 */ f32 unk98;
     /* 0x09C */ f32 unk9C;
