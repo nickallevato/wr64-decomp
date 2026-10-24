@@ -1327,8 +1327,8 @@ typedef struct UnkStruct_801C43F8_s {
     Vtx unk350[10][4];
     Mtx unk5D0[1];
     char pad610[0x2fc0];
-    Lights0 unk35D8[2];
-    Lights0 unk3600[2];
+    Lights0 unk35D8[2]; /* the field is at 0x35D0 (Lights0 is 0x18) */
+    Lights0 unk3608[2]; /* the field is at 0x3600; named, like unk35D8, by the offset of its l[0] (field + 8) */
 } UnkStruct_801C43F8;
 
 typedef struct UnkStruct_801CE5F8_s {

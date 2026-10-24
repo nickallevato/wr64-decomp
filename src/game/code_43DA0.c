@@ -1670,7 +1670,7 @@ Gfx* func_800916B4(Gfx* gdl) {
                              D_801CB058[D_800DAB2C].unk10, D_801CB058[D_800DAB2C].unk14, D_801CB058[D_800DAB2C].unk0,
                              D_801CB058[D_800DAB2C].unk4, D_801CB058[D_800DAB2C].unk8, D_801CB058[D_800DAB2C].unkAC,
                              D_801CB058[D_800DAB2C].unkB0, D_801CB058[D_800DAB2C].unkB4);
-    SysUtils_LightsSetSource((Lights1*) &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C], D_801CB058[D_800DAB2C].unkD8,
+    SysUtils_LightsSetSource((Lights1*) &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C], D_801CB058[D_800DAB2C].unkD8,
                              D_801CB058[D_800DAB2C].unkDC, D_801CB058[D_800DAB2C].unkE0, D_801CB058[D_800DAB2C].unkCC,
                              D_801CB058[D_800DAB2C].unkD0, D_801CB058[D_800DAB2C].unkD4, D_801CB058[D_800DAB2C].unkFC,
                              D_801CB058[D_800DAB2C].unk100, D_801CB058[D_800DAB2C].unk104);
@@ -1679,17 +1679,17 @@ Gfx* func_800916B4(Gfx* gdl) {
         if (D_801C3C58->unk78 != 0) {
             gSPNumLights(gdl++, NUMLIGHTS_2);
             gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C].l[0], 1);
-            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].l[0], 2);
-            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 3);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].l[0], 2);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].a, 3);
         } else {
             gSPNumLights(gdl++, NUMLIGHTS_1);
             gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C].l[0], 1);
-            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 2);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].a, 2);
         }
     } else {
         gSPNumLights(gdl++, NUMLIGHTS_1);
-        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].l[0], 1);
-        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 2);
+        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].l[0], 1);
+        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3608[D_800DAB2C].a, 2);
     }
     gDPPipeSync(gdl++);
     gDPSetFogColor(gdl++, D_801CB058[D_800DAB2C].unk48, D_801CB058[D_800DAB2C].unk4C, D_801CB058[D_800DAB2C].unk50,
