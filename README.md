@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1191%20%2F%201372-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-86.8%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-55.2%25-4fc9b8?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1170%20%2F%201347-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-86.9%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-56.2%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -33,17 +33,18 @@ continues from there. See [Credits](#credits) and [How this fork is made](#how-t
 ## Progress
 
 Counted by `tools/progress.py` on `main`. A function counts only when it is C and the ROM still matches.
+Size-0 symbols (overlay entry addresses and microcode end markers) are not counted as functions.
 
 | Area | What's in it | Matched | |
 |---|---|--:|---|
-| `src/libultra` | Nintendo's N64 OS library | 184 / 184 | `████████████████████` 100% |
+| `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | `src/audio` | sequence and sound playback | 225 / 228 | `███████████████████▊` 98.7% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 192 / 219 | `█████████████████▌░░` 87.7% |
-| `src/game` | race logic, riders, camera, water | 429 / 501 | `█████████████████░░░` 85.6% |
+| `src/game` | race logic, riders, camera, water | 433 / 501 | `█████████████████▎░░` 86.4% |
+| other | handwritten assembly and loose segments | 40 / 47 | `█████████████████░░░` 85.1% |
 | `src/sys` | boot, threads, memory | 31 / 37 | `████████████████▊░░░` 83.8% |
-| other | loose segments | 42 / 53 | `███████████████▊░░░░` 79.2% |
-| `src/overlays` | courses and menu screens | 88 / 150 | `███████████▋░░░░░░░░` 58.7% |
-| **Total** | | **1191 / 1372** | **86.8%** |
+| `src/overlays` | courses and menu screens | 92 / 158 | `███████████▋░░░░░░░░` 58.2% |
+| **Total** | | **1170 / 1347** | **86.9%** |
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
 assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
