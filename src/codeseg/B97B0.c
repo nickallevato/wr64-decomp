@@ -228,7 +228,27 @@ void func_801ECE50(void) {
     osViBlack(1);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ECF18.s")
+void func_801ECF18(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_STUNT_MODE_RESULTS;
+    D_801CE638 = 0x16;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    func_80096960(2, 0, 1, 2, 3);
+    FadeTransition_SetProps(4, 1, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 1;
+    func_800C21F4(3, 0);
+    osViBlack(1);
+}
 
 void func_801ED004(void) {
     gPrevGameState = gGameState;
