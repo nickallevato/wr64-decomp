@@ -30,7 +30,150 @@ void func_801E5470(void) {
     }
 }
 
+#ifdef NON_MATCHING
+// Regalloc only: case 4's loop counter and its texture-offset induction temp swap $t0/$t1 (6 instructions).
+extern Gfx D_106F030[];
+extern Gfx D_106F0A8[];
+extern Gfx D_106F3A0[];
+extern Gfx D_106F408[];
+extern u8 D_7000000[];
+extern u32 D_8042008[];
+extern u32 D_8049008[];
+extern u32 D_8058008[];
+extern u32 D_8071008[];
+extern RiderStruct D_801C2938[];
+
+Gfx* func_801E8800(Gfx*, u32, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, f32);
+
+Gfx* func_801E5554(Gfx* gdl) {
+    s32 off;
+    u32 width;
+    s32 j;
+    s32 i;
+    s32 xoff;
+    UnkStruct_menu_buffer_1* slot;
+    u32* tex;
+    s32 row;
+    s32 h;
+
+    for (j = 0; j < 5; j++) {
+        slot = &menu_buffer_1[j];
+        if (slot->unk_6 != 0) {
+            switch (slot->unk_0) {
+                case 1:
+                    if (slot->unk2 == 1) {
+                        gSPDisplayList(gdl++, D_106F030);
+                    } else {
+                        gSPDisplayList(gdl++, D_106F0A8);
+                        gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+                        gSPMatrix(gdl++, D_7000000, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+                        gSPMatrix(gdl++, D_7000000 + ((u16) slot->unk4 << 6) + 0x900,
+                                  G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                    }
+                    off = 0;
+                    row = 0;
+                    do {
+                        gDPLoadTextureTile(gdl++, D_8042008 + off, G_IM_FMT_RGBA, G_IM_SIZ_32b, 160, 0, 0, 0, 159, 4, 0,
+                                           G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
+                                           G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                        if (slot->unk2 == 1) {
+                            gSPTextureRectangle(gdl++, slot->unk8 << 2, (slot->unkC + row) << 2,
+                                                (slot->unk8 + 160) << 2, (slot->unkC + row + 5) << 2, G_TX_RENDERTILE,
+                                                0, 0, 1 << 10, 1 << 10);
+                        } else {
+                            gdl = func_801E8800(gdl, 160, 6, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                0xFF, 0xFF, 0xFF, 0xFF, 1.0f);
+                        }
+                        row += 5;
+                        off += 160 * 5;
+                    } while (row != 40);
+                    break;
+                case 2:
+                    if (slot->unk2 == 1) {
+                        gSPDisplayList(gdl++, D_106F030);
+                    } else {
+                        gSPDisplayList(gdl++, D_106F0A8);
+                        gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+                        gSPMatrix(gdl++, D_7000000, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+                        gSPMatrix(gdl++, D_7000000 + ((u16) slot->unk4 << 6) + 0x900,
+                                  G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                    }
+                    if (slot->unk28 != 0) {
+                        row = 0;
+                        off = 0;
+                        do {
+                            gDPLoadTextureTile(gdl++, D_8049008 + off, G_IM_FMT_RGBA, G_IM_SIZ_32b, 204, 0, 0, 0, 203,
+                                               4, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP,
+                                               G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                            if (slot->unk2 == 1) {
+                                gSPTextureRectangle(gdl++, slot->unk8 << 2, (slot->unkC + row) << 2,
+                                                    (slot->unk8 + 204) << 2, (slot->unkC + row + 5) << 2,
+                                                    G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                            } else {
+                                h = (off == 204 * 25) ? 4 : 6;
+                                gdl = func_801E8800(gdl, 204, h, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                    0xFF, 0xFF, 0xFF, 0xFF, 1.0f);
+                            }
+                            off += 204 * 5;
+                            row += 5;
+                        } while (off != 204 * 30);
+                    } else {
+                        off = 0;
+                        row = 0;
+                        do {
+                            gDPLoadTextureTile(gdl++, D_8049008 + D_801C2938[D_800D48DC].racePosition * 3200 + off,
+                                               G_IM_FMT_RGBA, G_IM_SIZ_32b, 80, 0, 0, 0, 79, 2, 0,
+                                               G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
+                                               G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                            h = (row == 38) ? 1 : 3;
+                            if (slot->unk2 == 1) {
+                                gSPTextureRectangle(gdl++, slot->unk8 << 2, (slot->unkC + row) << 2,
+                                                    (slot->unk8 + 80) << 2, (slot->unkC + row + 2) << 2,
+                                                    G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                            } else {
+                                gdl = func_801E8800(gdl, 80, h, 0, row, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                    0xFF, 0xFF, 0xFF, 0xFF, 1.0f);
+                            }
+                            row += 2;
+                            off += 80 * 2;
+                        } while (row != 40);
+                    }
+                    break;
+                case 3:
+                    gSPMatrix(gdl++, D_7000000, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+                    gSPMatrix(gdl++, D_7000000 + ((u16) slot->unk4 << 6) + 0x900,
+                              G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                    gSPDisplayList(gdl++, D_106F3A0);
+                    gSPDisplayList(gdl++, D_106F408);
+                    break;
+                case 4:
+                    if (slot->unk28 != 0) {
+                        xoff = -8;
+                        width = 176;
+                        tex = D_8071008;
+                    } else {
+                        xoff = 0;
+                        width = 160;
+                        tex = D_8058008;
+                    }
+                    gSPDisplayList(gdl++, D_106F030);
+                    for (i = 0, row = 0; i != 8; i++, row += 5) {
+                        gDPLoadTextureTile(gdl++, tex + width * 5 * i, G_IM_FMT_RGBA, G_IM_SIZ_32b, width, 0, 0, 0,
+                                           width - 1, 4, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP,
+                                           G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                        gSPScisTextureRectangle(gdl++, (slot->unk8 + xoff) << 2, (slot->unkC + row) << 2,
+                                                (slot->unk8 + xoff + width) << 2, (slot->unkC + row + 5) << 2,
+                                                G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                    }
+                    break;
+            }
+        }
+    }
+    return gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E5554.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E6074.s")
 
