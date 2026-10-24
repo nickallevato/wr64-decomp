@@ -1,5 +1,12 @@
 #include "global.h"
 
+extern s32 D_i4_802C754C;
+extern s32 D_i4_802C7550;
+extern s32 D_i4_802C7558[];
+extern s32 D_i4_802C757C[][4];
+extern s32 D_802C76A4;
+extern s32 D_802C76CC;
+
 extern s32 D_i4_802C7540;
 extern s32 D_i4_802C7544;
 extern s32 D_i4_802C7548;
@@ -110,7 +117,66 @@ void func_i4_802C6BAC(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C6C2C.s")
+void func_i4_802C6C2C(void) {
+    s32 i;
+
+    if (D_801CE65A[D_802C76B0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+        D_800D8240 = 0;
+        if (D_801CE608.gameMode == 11) {
+            func_i4_802C7474(0x28);
+            AudioGeneral_PlaySound(0x37, 0);
+        } else {
+            D_i4_802C7538 = 1;
+            D_i4_802C753C = 0;
+            D_i4_802C7540 = 0;
+            D_i4_802C7544 = 1;
+            D_i4_802C7550 = 1;
+            for (i = 0; i < 4; i++) {
+                if (D_i4_802C757C[D_800DAAD8[D_800DA9D0]][i] != 0) {
+                    break;
+                }
+            }
+            D_802C76CC = D_i4_802C754C = i;
+            AudioGeneral_PlaySound(0x11, 0);
+        }
+    } else if (D_801CE65A[D_802C76B0].unk0 & B_BUTTON) {
+        func_i4_802C7474(10);
+        AudioGeneral_PlaySound(0x16, 0);
+    } else if (D_801CE65A[D_802C76B0].unk0 & U_JPAD) {
+        if (--D_800DA9D0 < D_802C76A4) {
+            D_800DA9D0 = 8;
+        }
+        while (1) {
+            if (D_i4_802C7558[D_800DAAD8[D_800DA9D0]] != 0) {
+                break;
+            }
+            if (--D_800DA9D0 < D_802C76A4) {
+                D_800DA9D0 = 8;
+            }
+        }
+        if (D_800DA9D0 != D_802C76A8) {
+            D_i4_802C7530 = 1;
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE65A[D_802C76B0].unk0 & D_JPAD) {
+        if (++D_800DA9D0 >= 9) {
+            D_800DA9D0 = D_802C76A4;
+        }
+        while (1) {
+            if (D_i4_802C7558[D_800DAAD8[D_800DA9D0]] != 0) {
+                break;
+            }
+            if (++D_800DA9D0 >= 9) {
+                D_800DA9D0 = D_802C76A4;
+            }
+        }
+        if (D_800DA9D0 != D_802C76A8) {
+            D_i4_802C7530 = 1;
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    }
+    SysUtils_Rand();
+}
 
 void func_i4_802C6ED0(void) {
     f32 temp_fv0;
