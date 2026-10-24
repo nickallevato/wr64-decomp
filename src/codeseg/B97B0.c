@@ -1096,7 +1096,51 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
+#ifdef NON_MATCHING
+// Score 5846: c and the 1.0f constant get no callee-saved register (frame 0x68, not 0x70), so the products spill.
+void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
+    f32 len;
+    f32 xx;
+    f32 yy;
+    f32 zz;
+    s32 angle;
+    f32 s;
+    f32 c;
+    f32 t;
+
+    len = sqrtf(SQ(x) + SQ(y) + SQ(z));
+    if (len > 0.0f) {
+        x /= len;
+        y /= len;
+        z /= len;
+    }
+    xx = SQ(x);
+    yy = SQ(y);
+    zz = SQ(z);
+    angle = ANGLE_TO_CUSTOM_UNITS(arg1);
+    c = COS(angle);
+    s = SIN(angle);
+    arg0[3][0] = 0.0f;
+    t = 1.0f - c;
+    arg0[3][1] = 0.0f;
+    arg0[3][2] = 0.0f;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][3] = 1.0f;
+    arg0[0][0] = ((1.0f - xx) * c) + xx;
+    arg0[2][1] = (y * z * t) - (x * s);
+    arg0[1][2] = (x * s) + (y * z * t);
+    arg0[1][1] = ((1.0f - yy) * c) + yy;
+    arg0[2][0] = (y * s) + (z * x * t);
+    arg0[0][2] = (z * x * t) - (y * s);
+    arg0[2][2] = ((1.0f - zz) * c) + zz;
+    arg0[1][0] = (x * y * t) - (z * s);
+    arg0[0][1] = (z * s) + (x * y * t);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE040.s")
+#endif
 
 void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
     MtxF mtx;
