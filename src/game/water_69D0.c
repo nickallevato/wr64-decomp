@@ -226,7 +226,61 @@ void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     func_8004DAF0(arg0);
 }
 
+extern s32 D_80192494;
+
+#ifdef NON_MATCHING
+// 1405/29200: the first two loops; the original recomputes 2N +- i every row, IDO here strength-reduces it (registers then shift by one). The rest matches
+void func_8004E614(void) {
+    s32 i;
+    s32 j;
+    s32 n;
+    s32 len;
+
+    n = 0;
+    for (i = -D_80192494; i < 0; i++) {
+        for (j = 0; j <= (D_80192494 * 2) + i; j++) {
+            D_80160430[n].unk0 = -D_80192494 + j;
+            D_80160430[n].unk1 = i;
+            n++;
+        }
+    }
+    for (i = 0; i <= D_80192494; i++) {
+        for (j = 0; j <= (D_80192494 * 2) - i; j++) {
+            D_80160430[n].unk0 = -D_80192494 + i + j;
+            D_80160430[n].unk1 = i;
+            n++;
+        }
+    }
+    n = 0;
+    for (i = -D_80192494; i <= D_80192494; i++) {
+        len = (D_80192494 * 2) - (s32) sqrtf(i * i);
+        for (j = 0; j <= len; j++) {
+            if ((i % 2) == 0) {
+                D_80160A98[n++].unk4 = (j - (len / 2)) * 64;
+            } else {
+                D_80160A98[n++].unk4 = ((j - (len / 2)) * 64) - 32;
+            }
+        }
+    }
+    n = 0;
+    for (i = -D_80192494; i < 0; i++) {
+        len = (D_80192494 * 2) - (s32) sqrtf(i * i);
+        for (j = 0; j <= len; j++) {
+            D_80160A98[n].unk6 = (((sqrtf(3.0f) * 64.0f) / 2) * i) - 0.5;
+            n++;
+        }
+    }
+    for (i = 0; i <= D_80192494; i++) {
+        len = (D_80192494 * 2) - (s32) sqrtf(i * i);
+        for (j = 0; j <= len; j++) {
+            D_80160A98[n].unk6 = (((sqrtf(3.0f) * 64.0f) / 2) * i) + 0.5;
+            n++;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004E614.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
 
