@@ -140,6 +140,8 @@ typedef struct UnkA95D0_Runner {
 } UnkA95D0_Runner; // size = 0x38
 
 void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
+void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline);
+void func_801DEC00(Vec3f* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline);
 void func_801DF278(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Key2* key);
 void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key);
 
@@ -372,7 +374,10 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEC00.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DED44.s")
+void func_801DED44(Vec3f* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(&out[0], &cursors[0], &splines[0]);
+    func_801DEC00(&out[1], &cursors[1], &splines[1]);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DED88.s")
 
