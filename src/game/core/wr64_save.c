@@ -1108,16 +1108,16 @@ static const char devstr51[] = "PFS write error\n";
 static const char devstr52[] = "PFS no delete file\n";
 static const char devstr53[] = "PFS delete error %d\n";
 
-// Reads the save file from the Controller Pak into D_801AEC18, checks its code and checksum, and takes part of it:
-// mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
-// merged records (func_8007CB68). The result is written to the EEPROM.
-#ifdef NON_MATCHING
-// The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 951.
 // The whole 0x200-byte save image, copied as words.
 typedef struct SaveBlock {
     u32 w[0x80];
 } SaveBlock;
 
+// Reads the save file from the Controller Pak into D_801AEC18, checks its code and checksum, and takes part of it:
+// mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
+// merged records (func_8007CB68). The result is written to the EEPROM.
+#ifdef NON_MATCHING
+// The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 931.
 extern u8 D_801AEA78[];
 
 s32 func_8007D2D4(s32 mode) {
@@ -1213,8 +1213,8 @@ s32 func_8007D2D4(s32 mode) {
 // mode - 1 (0x80 added is ignored), 5 the records. When the file is new or its data is bad, the rest of the image
 // starts from the defaults (func_8007B370).
 #ifdef NON_MATCHING
-// Same calls; the original places the code after the file switch right behind its case 0 (the new-file case
-// jumps back into it), and registers differ. Score 6176.
+// Same calls and jump tables; the original places the code that follows the file switch right after its case 0
+// (the new-file case jumps back into it), so blocks are ordered differently and registers differ. Score 4441.
 s32 func_8007D614(s32 mode) {
     s32 n;
     s32 ret;
@@ -1286,6 +1286,7 @@ s32 func_8007D614(s32 mode) {
     }
     switch (mode) {
         case 0:
+            // FAKE: UnkStruct_8007CB68_2 is only 2-byte aligned, so a plain struct copy uses lwl/lwr
             *(SaveBlock*) &D_801AEC18 = *(SaveBlock*) D_801AEA18;
             break;
         case 1:
@@ -1328,6 +1329,12 @@ s32 func_8007D614(s32 mode) {
         case 0:
             return 0;
         default:
+        case PFS_ERR_NOPACK:
+        case PFS_ERR_NEW_PACK:
+        case PFS_ERR_INCONSISTENT:
+        case PFS_ERR_CONTRFAIL:
+        case PFS_ERR_INVALID:
+        case PFS_ERR_BAD_DATA:
             return 2;
     }
 }
