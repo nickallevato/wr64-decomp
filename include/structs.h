@@ -881,7 +881,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x0C5C */ s32 unkC5C;
     /* 0x0C60 */ s32 unkC60;
     /* 0x0C64 */ u16 unkC64;
-    /* 0x0C66 */ char padC66[6];                    /* maybe part of unkC64[4]? */
+    /* 0x0C66 */ u16 unkC66;
+    /* 0x0C68 */ char padC68[4];
     /* 0x0C6C */ s32 unkC6C;
     /* 0x0C70 */ char padC70[8];                    /* maybe part of unkC6C[3]? */
     /* 0x0C78 */ s32 unkC78;
@@ -988,7 +989,10 @@ typedef struct UnkStruct_80192690 {
     /* 0x16D8 */ s32 unk16D8;
     /* 0x16DC */ char pad16DC[4];
     /* 0x16E0 */ u16 unk16E0;
-    /* 0x16E2 */ char pad16E2[0x36];                /* maybe part of unk16E0[0x1C]? */
+    /* 0x16E2 */ char pad16E2[6];
+    /* 0x16E8 */ s32 unk16E8;
+    /* 0x16EC */ s32 unk16EC;
+    /* 0x16F0 */ char pad16F0[0x28];
 } UnkStruct_80192690;                               /* size = 0x1718 */
 
 typedef struct UnkStruct_801AE948_s {

@@ -285,6 +285,17 @@ typedef struct UnkStruct_8005CEF8_s {
     /* 0x3D8 */ f32 unk3D8;
 } UnkStruct_8005CEF8; /* size = 0x3DC */
 
+// Entries for func_800AC098 (the same layout as A95D0.c's UnkStruct_801DB0E4_arg0).
+typedef struct UnkStruct_80192540 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ Vec3f unkC;
+    /* 0x18 */ Vec3f unk18;
+    /* 0x24 */ Vec3f unk24;
+    /* 0x30 */ f32 unk30;
+} UnkStruct_80192540; /* size = 0x34 */
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -327,6 +338,8 @@ extern f32 D_800D49F4;
 extern f32 D_800D4A00;
 extern UnkStruct_80192690 D_80193D5C[];
 extern u8 D_3000000[];
+extern UnkStruct_80192540 D_80192540[];
+extern s32 D_800D4948;
 extern Gfx D_10068B0[];
 
 void func_80098048(s32, s32);
@@ -355,6 +368,7 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_800AC098(UnkStruct_80192540*, s32);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80051EC0.s")
 
@@ -2175,7 +2189,43 @@ Gfx* func_80067BFC(Gfx* gdl, s32 arg1, s32 arg2) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067E40.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800683A0.s")
+void func_800683A0(s32 arg0) {
+    UnkStruct_80192690* rider = &D_80192690[arg0];
+
+    D_80192540[arg0].unk0 = 6;
+    D_80192540[arg0].unk4 = rider->unk16E8;
+    D_80192540[arg0].unk8 = rider->unk16EC;
+    D_80192540[arg0].unkC.x = rider->unk44.x + (D_800D4948 * rider->unk6C);
+    D_80192540[arg0].unkC.y = rider->unk44.y + (D_800D4948 * rider->unk70);
+    D_80192540[arg0].unkC.z = rider->unk44.z + (D_800D4948 * rider->unk74);
+    D_80192540[arg0].unk18.x = rider->unk6C;
+    D_80192540[arg0].unk18.y = rider->unk70;
+    D_80192540[arg0].unk18.z = rider->unk74;
+    D_80192540[arg0].unk24.x = rider->unk78;
+    D_80192540[arg0].unk24.y = rider->unk7C;
+    D_80192540[arg0].unk24.z = rider->unk80;
+    D_80192540[arg0].unk30 = 0.1f;
+    func_800AC098(&D_80192540[arg0], 1);
+    if (gRiderGameModes != PAUSE_MODE) {
+        if (rider->unk16E8 == 0) {
+            if (rider->unkC7C != 0) {
+                if (rider->unkC66 != 0) {
+                    rider->unk16EC += 2;
+                } else {
+                    rider->unk16EC += 1;
+                }
+            }
+        } else {
+            rider->unk16EC += 1;
+        }
+        if (rider->unk16EC >= 16) {
+            rider->unk16EC = 0;
+            if (rider->unk16E8 == 3) {
+                rider->unk16E8 = 0;
+            }
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80068538.s")
 
