@@ -328,6 +328,17 @@ typedef struct UnkStruct_80069798 {
     /* 0x28 */ UnkStruct_80069798_1 unk28;
 } UnkStruct_80069798; /* size = 0x40 */
 
+// The rider's four collision spheres at 0x160C (unk160C .. 0x169C).
+typedef struct RiderSphere {
+    /* 0x00 */ Vec3f pos;
+    /* 0x0C */ Vec3f vel;
+    /* 0x18 */ UnkStruct_8004B0F8_1* unk18;
+    /* 0x1C */ UnkStruct_8004B0F8_1* unk1C;
+    /* 0x20 */ UnkStruct_8004B0F8_1* unk20;
+} RiderSphere; /* size = 0x24 */
+
+#define RIDER_SPHERES(rider) ((RiderSphere*) &(rider)->unk160C)
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -405,6 +416,7 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
@@ -2333,7 +2345,87 @@ void func_80061708(s32 arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800618F4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80061FEC.s")
+void func_80061FEC(void) {
+    UnkStruct_80192690* a;
+    UnkStruct_80192690* b;
+    RiderSphere* sa;
+    RiderSphere* sb;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 distSq;
+    f32 dist;
+    f32 inv;
+    f32 closing;
+    f32 push;
+
+    for (a = D_80192690; a <= &D_80192690[gRiders - 2]; a++) {
+        for (b = a + 1; b <= &D_80192690[gRiders - 1]; b++) {
+            dx = a->unk44.x - b->unk44.x;
+            dz = a->unk44.z - b->unk44.z;
+            if (SQ(dx) + SQ(dz) > 6084.0f) {
+                continue;
+            }
+            for (sa = RIDER_SPHERES(a); sa <= &RIDER_SPHERES(a)[3]; sa++) {
+                for (sb = RIDER_SPHERES(b); sb <= &RIDER_SPHERES(b)[3]; sb++) {
+                    dx = sa->pos.x - sb->pos.x;
+                    dz = sa->pos.z - sb->pos.z;
+                    distSq = SQ(dx) + SQ(dz);
+                    if (distSq >= 576.0f) {
+                        continue;
+                    }
+                    dy = sa->pos.y - sb->pos.y;
+                    distSq += SQ(dy);
+                    if (distSq >= 576.0f) {
+                        continue;
+                    }
+                    dist = sqrtf(distSq);
+                    inv = 1.0f / dist;
+                    dx *= inv;
+                    dy *= inv;
+                    dz *= inv;
+                    closing = ((sb->vel.x - sa->vel.x) * dx) + (dy * (sb->vel.y - sa->vel.y)) + (dz * (sb->vel.z - sa->vel.z));
+                    if (a->unkC40 < closing) {
+                        a->unkC40 = closing;
+                        a->unk15B4 = dx;
+                        a->unk15B8 = dy;
+                        a->unk15BC = dz;
+                    }
+                    if (b->unkC40 < closing) {
+                        b->unkC40 = closing;
+                        b->unk15B4 = -dx;
+                        b->unk15B8 = -dy;
+                        b->unk15BC = -dz;
+                    }
+                    push = (24.0f - dist) * 0.5f;
+                    dx *= push;
+                    dy *= push;
+                    dz *= push;
+                    sa->unk18->unkC += dx;
+                    sa->unk18->unk10 += dy;
+                    sa->unk18->unk14 += dz;
+                    sa->unk1C->unkC += dx;
+                    sa->unk1C->unk10 += dy;
+                    sa->unk1C->unk14 += dz;
+                    sa->unk20->unkC += dx;
+                    sa->unk20->unk10 += dy;
+                    sa->unk20->unk14 += dz;
+                    sb->unk18->unkC -= dx;
+                    sb->unk18->unk10 -= dy;
+                    sb->unk18->unk14 -= dz;
+                    sb->unk1C->unkC -= dx;
+                    sb->unk1C->unk10 -= dy;
+                    sb->unk1C->unk14 -= dz;
+                    sb->unk20->unkC -= dx;
+                    sb->unk20->unk10 -= dy;
+                    sb->unk20->unk14 -= dz;
+                    func_8006243C(a, dx, dy, dz);
+                    func_8006243C(b, -dx, -dy, -dz);
+                }
+            }
+        }
+    }
+}
 
 void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
     UnkStruct_8004B0F8_1* var_v0;
