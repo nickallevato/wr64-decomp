@@ -47,6 +47,11 @@ typedef struct UnkStruct_800DCE98_s {
     /* 0x4 */ Gfx* unk4;
 } UnkStruct_800DCE98; /* size = 0x8 */
 
+typedef struct UnkStruct_801CE740_s {
+    /* 0x0 */ s16 rider;
+    /* 0x2 */ s16 unk2;
+} UnkStruct_801CE740; /* size = 0x4 */
+
 typedef struct UnkStruct_801CE7D8_s {
     s32 unk0;
     s32 unk4;
@@ -68,7 +73,7 @@ extern s32 D_800DABA0[];
 extern s32 D_800DABC0[];
 extern UnkStruct_800DACD0 D_800DACD0[];
 extern s32 D_801CE73C;
-extern s32 D_801CE740[];
+extern UnkStruct_801CE740 D_801CE740[];
 
 extern DmaEntry* D_800DC0E4[];
 extern DmaEntry* D_800DC108[];
