@@ -113,7 +113,73 @@ void func_801EF3C4(void) {
 // Draw the guide arrow (next-buoy compass) for each player.
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EFFD8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F03E0.s")
+extern s32 D_800D817C;
+extern s8 D_80228B58[];
+extern s32 D_80228D08;
+extern s32 D_80228D0C;
+extern s32 D_80228D10;
+
+void func_801F03E0(void) {
+    s32 d;
+    s32 i;
+
+    if ((gGameModeState == GMODE_STATE_1) || (gGameModeState == GMODE_STATE_2)) {
+        if (D_80228D08 == 0) {
+            D_80228D0C -= 3;
+            if (D_80228D0C <= 0) {
+                D_80228D0C = 0;
+                D_80228D08 = 1;
+            }
+        } else {
+            if ((D_80228A90 % 15) == 0) {
+                if (gGameModeState != GMODE_STATE_2) {
+                    AudioGeneral_PlaySound(0x22, (D_80228A90 / 15) - 1);
+                } else {
+                    AudioGeneral_PlaySound(0x23, 0);
+                }
+            }
+            d = D_80228A90 - 15;
+            if (d < 0) {
+                d = -d;
+            }
+            if (d < 15) {
+                for (i = 0; i < gRiders; i++) {
+                    if ((D_80192690[i].unkB58 & 0xA000) && (D_80228B58[i] == 0)) {
+                        if (d <= 0) {
+                            D_801C2938[i].unk12C = 5;
+                        } else if (d < 2) {
+                            D_801C2938[i].unk12C = 4;
+                        } else if (d < 3) {
+                            D_801C2938[i].unk12C = 3;
+                        } else if (d < 4) {
+                            D_801C2938[i].unk12C = 2;
+                        } else if (d < 5) {
+                            D_801C2938[i].unk12C = 1;
+                        }
+                        if (d < 5) {
+                            D_801C2938[i].unk314 = 1;
+                            D_801C2938[i].unk28 = 1;
+                        }
+                        D_80228B58[i] = 1;
+                    }
+                }
+            }
+            D_80228A90--;
+            if (D_80228A90 == 15) {
+                gGameModeState = GMODE_STATE_2;
+                D_800D817C = 0;
+            } else if (D_80228A90 <= 0) {
+                gGameModeState = GMODE_STATE_STARTED;
+                D_80228D08 = 2;
+            }
+        }
+    } else if ((D_80228D08 == 2) && (gCurrentPauseMenuOption == -1)) {
+        D_80228D0C += 6;
+        if (D_80228D0C >= D_80228D10) {
+            D_80228D08 = 0;
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F06A0.s")
 
