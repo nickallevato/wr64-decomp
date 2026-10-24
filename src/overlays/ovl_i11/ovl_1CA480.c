@@ -1,8 +1,65 @@
 #include "global.h"
 
+extern s32 D_i11_802C618C[][2];
+
+void func_800C3050(s32);
+void func_i11_802C5F7C(void);
+void func_i11_802C6098(s32);
+
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i11/ovl_1CA480/func_i11_802C5800.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i11/ovl_1CA480/func_i11_802C5D48.s")
+void func_i11_802C5D48(void) {
+    s32* limits;
+    // Intentionally uninitialised: the original reads this stack slot unset when the
+    // selection is 0 or 1. Initialising it to 0 adds a store and breaks the match.
+    s32 var_v0;
+
+    if (D_801CE658[2].unk_00.unk_2 & (A_BUTTON | START_BUTTON | Z_TRIG)) {
+        if (D_i11_802C6150 == 2) {
+            var_v0 = 1;
+            func_800C3050(D_800DA9EC[D_i11_802C6150]);
+        } else if (D_i11_802C6150 == 3) {
+            var_v0 = 1;
+            func_i11_802C6098(60);
+        }
+        if (var_v0 != 0) {
+            AudioGeneral_PlaySound(0x11, 0);
+        }
+    } else if (D_801CE658[2].unk_00.unk_2 & B_BUTTON) {
+        func_i11_802C6098(60);
+        AudioGeneral_PlaySound(0x16, 0);
+    } else if (D_801CE658[0].unk_00.unk_2 & U_JPAD) {
+        D_i11_802C6150--;
+        if (D_i11_802C6150 < 0) {
+            D_i11_802C6150 = 3;
+        }
+        AudioGeneral_PlaySound(0x10, 0);
+    } else if (D_801CE658[0].unk_00.unk_2 & D_JPAD) {
+        D_i11_802C6150++;
+        if (D_i11_802C6150 >= 4) {
+            D_i11_802C6150 = 0;
+        }
+        AudioGeneral_PlaySound(0x10, 0);
+    } else if (D_801CE658[0].unk_00.unk_2 & L_JPAD) {
+        if (D_i11_802C6150 != 3) {
+            limits = D_i11_802C618C[D_i11_802C6150];
+            if (--D_800DA9EC[D_i11_802C6150] < limits[0]) {
+                D_800DA9EC[D_i11_802C6150] = limits[1];
+            }
+            func_i11_802C5F7C();
+        }
+        AudioGeneral_PlaySound(0x10, 0);
+    } else if (D_801CE658[0].unk_00.unk_2 & R_JPAD) {
+        if (D_i11_802C6150 != 3) {
+            limits = D_i11_802C618C[D_i11_802C6150];
+            if (++D_800DA9EC[D_i11_802C6150] > limits[1]) {
+                D_800DA9EC[D_i11_802C6150] = limits[0];
+            }
+            func_i11_802C5F7C();
+        }
+        AudioGeneral_PlaySound(0x10, 0);
+    }
+}
 
 void func_i11_802C5F7C(void) {
     if (D_i11_802C6150 == 0) {

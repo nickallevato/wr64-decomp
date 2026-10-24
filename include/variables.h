@@ -96,6 +96,7 @@ extern s32 D_i4_802C7554;
 extern s32 D_802C76B0;
 
 // gController ?
+extern UnkStruct_801CE658 D_801CE658[];
 extern Controller D_801CE65A[];
 extern Controller D_801CE692[]; // to be confirmed
 
