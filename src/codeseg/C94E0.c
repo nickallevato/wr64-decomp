@@ -42,7 +42,118 @@ void func_801FBFB4(Gfx**);
 void func_801FAEB0(s32 arg0) {
 }
 
+#ifdef NON_MATCHING
+// Score 3409: f and g swap float registers, and the colour bytes convert and mask in a different order.
+extern u8 D_80227744[][3];
+extern u8 D_80227754[][3];
+extern char D_802279F8[];
+extern char D_802279FC[];
+extern char D_80227A00[];
+extern char D_80227A08[];
+extern f32 D_80227A54;
+extern s32 D_80228B60[2];
+extern s32 D_80228B68[2];
+extern s32 D_80228B70[2];
+extern char D_80228CF8[];
+
+// Flash "LAP n" (or the final-lap message) for each player when a lap starts.
+void func_801FAEB8(Gfx** gdlp) {
+    Gfx* gdl;
+    RiderStruct* rider;
+    s32 i;
+    f32 f;
+    f32 g;
+    u8(*c)[3];
+    s32 r0;
+    s32 g0;
+    s32 b0;
+    s32 r1;
+    s32 g1;
+    s32 b1;
+    s32 x;
+    s32 y;
+    s32 w;
+    f32 scale;
+    f32 big;
+
+    gdl = *gdlp;
+    big = D_80227A54; // FAKE: a float literal in the original (its rodata is still in the F6010 data blob)
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            rider = &D_801C2938[D_800D48E0];
+        }
+        if (rider->unk308 != 0) {
+            rider->unk308 = 0;
+            D_80228B60[i] = 40;
+            D_80228B70[i] = 0;
+            D_80228B68[i] = 0;
+        }
+        if (D_80228B60[i] > 0) {
+            D_80228B60[i]--;
+            f = (3 - D_80228B70[i]) / 3.0f;
+            g = 1.0f - f;
+            c = &D_80227744[D_80228B68[i]];
+            r0 = c[0][0] * f + c[1][0] * g;
+            g0 = c[0][1] * f + c[1][1] * g;
+            b0 = c[0][2] * f + c[1][2] * g;
+            c = &D_80227754[D_80228B68[i]];
+            r1 = c[0][0] * f + c[1][0] * g;
+            g1 = c[0][1] * f + c[1][1] * g;
+            b1 = c[0][2] * f + c[1][2] * g;
+            D_80228B70[i]++;
+            if (D_80228B70[i] >= 3) {
+                D_80228B68[i]++;
+                D_80228B70[i] = 0;
+                D_80228B68[i] &= 3;
+            }
+            if (rider->lapCount < D_801CE728[0]) {
+                if (gPlayers == ONE_PLAYER) {
+                    x = 116;
+                    y = 70;
+                    w = 60;
+                    scale = big;
+                } else {
+                    x = 125;
+                    w = 48;
+                    scale = 1.0f;
+                    if (i == 0) {
+                        y = 40;
+                    } else {
+                        y = 150;
+                    }
+                }
+                gdl = func_801E93B4(gdl, 0, D_802279F8, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
+                sprintf(D_80228CF8, D_802279FC, rider->lapCount);
+                gdl = func_801E9858(gdl, 0, D_80228CF8, x + w, y);
+            } else {
+                x = 100;
+                if (gPlayers == ONE_PLAYER) {
+                    x = 82;
+                    y = 70;
+                    w = 98;
+                    scale = big;
+                } else {
+                    scale = 1.0f;
+                    w = 77;
+                    if (i == 0) {
+                        y = 40;
+                    } else {
+                        y = 150;
+                    }
+                }
+                gdl = func_801E9858(func_801E93B4(gdl, 0, D_80227A00, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
+                                                  g1, b1, scale),
+                                    0, D_80227A08, x + w, y);
+            }
+        }
+    }
+    *gdlp = gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/C94E0/func_801FAEB8.s")
+#endif
 
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
     UnkStruct_80228AE0* var_v1;
