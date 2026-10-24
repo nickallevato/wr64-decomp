@@ -1309,7 +1309,7 @@ typedef struct UnkStruct_801CE780_unk4_s {
 } UnkStruct_801CE780_unk4;                         /* size = 0x24 */
 
 typedef struct UnkStruct_801CE780_s {
-    /* 0x00 */ char pad0[4];
+    /* 0x00 */ s32 unk0;
     /* 0x04 */ UnkStruct_801CE780_unk4** unk4; /* inferred */
     /* 0x08 */ u32 unk8;                       /* inferred */
     /* 0x0C */ u32 unkC;                       /* inferred */
