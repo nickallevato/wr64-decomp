@@ -407,7 +407,11 @@ typedef struct GfxPool_s {
     /* 0x0F008 */ Mtx unkF008[4];         
     /* 0x0F108 */ Mtx unkF108[4];         
     /* 0x0F208 */ Mtx unkF208[4];         
-    /* 0x0F308 */ char padF308[0x500];
+    /* 0x0F308 */ Mtx unkF308[4];
+    /* 0x0F408 */ Mtx unkF408[4];
+    /* 0x0F508 */ Mtx unkF508[4];
+    /* 0x0F608 */ Mtx unkF608[4];
+    /* 0x0F708 */ Mtx unkF708[4];
     /* 0x0F808 */ Mtx unkF808[4];
     /* 0x0F908 */ char padF908[0x500];
     /* 0x0FE08 */ Vtx unkFE08[0x3F6];

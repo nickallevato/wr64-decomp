@@ -296,6 +296,11 @@ typedef struct UnkStruct_80192540 {
     /* 0x30 */ f32 unk30;
 } UnkStruct_80192540; /* size = 0x34 */
 
+typedef struct UnkStruct_80227A60 {
+    /* 0x00 */ char pad0[0x30];
+    /* 0x30 */ Gfx* unk30[5];
+} UnkStruct_80227A60; /* size = 0x44 */
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -342,6 +347,8 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern Gfx D_1007968[];
+extern UnkStruct_80227A60 D_80227A60[];
 
 void func_80098048(s32, s32);
 f32 func_8004D30C(f32, f32);
@@ -2293,7 +2300,47 @@ void func_800683A0(s32 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80068538.s")
+Gfx* func_80068538(Gfx* gdl) {
+    s32 i;
+    s32 flag;
+
+    gSPDisplayList(gdl++, D_1007968);
+    for (i = 0; i < gRiders; i++) {
+        if (D_80192690[i].unkB68 == 2) {
+            if (i == D_800D48DC) {
+                if (D_801CE6F4[0] != 0) {
+                    flag = 1;
+                } else {
+                    flag = 0;
+                }
+            } else if ((i == D_800D48E0) && (gPlayers == TWO_PLAYERS)) {
+                if (D_801CE6F4[1] != 0) {
+                    flag = 1;
+                } else {
+                    flag = 0;
+                }
+            } else {
+                flag = 0;
+            }
+            gSPClearGeometryMode(gdl++, G_CULL_BOTH);
+            if (flag == 0) {
+                gSPSetGeometryMode(gdl++, G_CULL_BACK);
+            }
+            gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF308[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gdl++, D_80227A60[flag].unk30[0]);
+            gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF408[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gdl++, D_80227A60[flag].unk30[1]);
+            if (1) {} // FAKE
+            gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF508[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gdl++, D_80227A60[flag].unk30[2]);
+            gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF608[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gdl++, D_80227A60[flag].unk30[3]);
+            gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF708[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gdl++, D_80227A60[flag].unk30[4]);
+        }
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800687A4.s")
 
