@@ -1718,9 +1718,9 @@ void Hud_UpdateOffCourseCountdown(void);
 #define RIDER_CP_TIME(rider, lap, cp) ((rider)->unk1A4[(lap) - 2][cp])
 
 #ifdef NON_MATCHING
-// 11395: same blocks and calls. Register allocation differs throughout; the original spills the
-// gGameModes value to the stack across the calls, keeps the D_800D48DC address in a register
-// in the gap loops; this C is 4 instructions longer.
+// 3995: same blocks and calls. In the 2P gap loop the original reads D_800D48E0 / D_800D48DC
+// again after the rider's stores and indexes with multu; elsewhere only register numbers and
+// the scheduling of the D_801C3A08 stores differ.
 void func_80079528(void) {
     s32 i;
     s32 j;
@@ -1730,7 +1730,6 @@ void func_80079528(void) {
     s32 other;
     s32 tmp;
     RiderStruct* rider;
-    RiderStruct* rider2;
 
     D_801C3A08 = osGetTime();
     if (gCurrentPauseMenuOption != -1) {
@@ -1775,19 +1774,18 @@ void func_80079528(void) {
         // goes to the rider ahead ("simultaneously goal").
         if ((D_801CE638 == 1) && (gGameModes == GMODE_CHAMPIONSHIP)) {
             for (i = 0; i < gRiders; i++) {
-                rider = &D_801C2938[i];
-                if ((rider->unk2F4 != 0) && (rider->unk2EC == 0) && (rider->unk304 == 0)) {
-                    rider->unk304 = 1;
+                if ((D_801C2938[i].unk2F4 != 0) && (D_801C2938[i].unk2EC == 0) && (D_801C2938[i].unk304 == 0)) {
+                    D_801C2938[i].unk304 = 1;
                     for (j = 0; j < gRiders; j++) {
-                        rider2 = &D_801C2938[j];
-                        if ((rider2->unk2F4 != 0) && (rider2->unk2EC == 0) && (j != i)) {
-                            if ((rider->unk32C < rider2->unk32C) && (rider->unk19C < rider2->unk19C)) {
-                                tmp = rider->unk32C;
-                                rider->unk32C = rider2->unk32C;
-                                rider2->unk32C = tmp;
-                            } else if ((rider->unk19C == rider2->unk19C) &&
-                                       (rider->racePosition < rider2->racePosition) && (j != D_800D48DC)) {
-                                rider2->unk19C++;
+                        if ((D_801C2938[j].unk2F4 != 0) && (D_801C2938[j].unk2EC == 0) && (j != i)) {
+                            if ((D_801C2938[i].unk32C < D_801C2938[j].unk32C) &&
+                                (D_801C2938[i].unk19C < D_801C2938[j].unk19C)) {
+                                tmp = D_801C2938[i].unk32C;
+                                D_801C2938[i].unk32C = D_801C2938[j].unk32C;
+                                D_801C2938[j].unk32C = tmp;
+                            } else if ((D_801C2938[i].unk19C == D_801C2938[j].unk19C) &&
+                                       (D_801C2938[i].racePosition < D_801C2938[j].racePosition) && (j != D_800D48DC)) {
+                                D_801C2938[j].unk19C++;
                             }
                         }
                     }
@@ -1903,56 +1901,51 @@ void func_80079528(void) {
         }
     } else if (gGameModes == GMODE_2P_VS) {
         for (i = 0; i < gRiders; i++) {
-            rider = &D_801C2938[i];
-            if (rider->unk2FC == 10) {
-                if (rider->racePosition == 1) {
-                    time = RIDER_CP_TIME(rider, rider->lapCount, rider->unk164);
+            if (D_801C2938[i].unk2FC == 10) {
+                if (D_801C2938[i].racePosition == 1) {
+                    time = RIDER_CP_TIME(&D_801C2938[i], D_801C2938[i].lapCount, D_801C2938[i].unk164);
                     if (i == D_800D48DC) {
-                        other = RIDER_CP_TIME(&D_801C2938[D_800D48E0], rider->lapCount, rider->unk164);
+                        other = RIDER_CP_TIME(&D_801C2938[D_800D48E0], D_801C2938[i].lapCount, D_801C2938[i].unk164);
                         if (other == 0) {
                             other = time;
                         }
-                        rider->unk2FC = 1;
-                        rider->unk2F8 = time - other;
-                        rider->unk300 = 40;
-                        rider2 = &D_801C2938[D_800D48E0];
-                        rider2->unk2FC = 2;
-                        rider2->unk2F8 = time - other;
-                        rider2->unk300 = 40;
-                        func_800C3EF4(-((rider->unk2F8 + 500) / 1000));
+                        D_801C2938[i].unk2FC = 1;
+                        D_801C2938[i].unk2F8 = time - other;
+                        D_801C2938[i].unk300 = 40;
+                        D_801C2938[D_800D48E0].unk2FC = 2;
+                        D_801C2938[D_800D48E0].unk2F8 = time - other;
+                        D_801C2938[D_800D48E0].unk300 = 40;
+                        func_800C3EF4(-((D_801C2938[i].unk2F8 + 500) / 1000));
                     } else {
-                        other = RIDER_CP_TIME(&D_801C2938[D_800D48DC], rider->lapCount, rider->unk164);
+                        other = RIDER_CP_TIME(&D_801C2938[D_800D48DC], D_801C2938[i].lapCount, D_801C2938[i].unk164);
                         if (other == 0) {
                             other = time;
                         }
-                        rider->unk2FC = 1;
-                        rider->unk2F8 = time - other;
-                        rider->unk300 = 40;
-                        rider2 = &D_801C2938[D_800D48DC];
-                        rider2->unk2FC = 2;
-                        rider2->unk2F8 = time - other;
-                        rider2->unk300 = 40;
-                        func_800C3EF4(-((rider->unk2F8 + 500) / 1000));
+                        D_801C2938[i].unk2FC = 1;
+                        D_801C2938[i].unk2F8 = time - other;
+                        D_801C2938[i].unk300 = 40;
+                        D_801C2938[D_800D48DC].unk2FC = 2;
+                        D_801C2938[D_800D48DC].unk2F8 = time - other;
+                        D_801C2938[D_800D48DC].unk300 = 40;
+                        func_800C3EF4(-((D_801C2938[i].unk2F8 + 500) / 1000));
                     }
                 } else {
-                    rider->unk2FC = 0;
+                    D_801C2938[i].unk2FC = 0;
                 }
             }
         }
     }
     if ((gGameModes == GMODE_2P_VS) && (D_801CE638 == 1)) {
         if (D_801C1FD4 == 0) {
-            rider = &D_801C2938[D_800D48DC];
-            if (rider->unk2F4 != 0) {
-                rider2 = &D_801C2938[D_800D48E0];
-                if (rider2->unk2F4 != 0) {
+            if (D_801C2938[D_800D48DC].unk2F4 != 0) {
+                if (D_801C2938[D_800D48E0].unk2F4 != 0) {
                     D_801C1FD4 = 1;
-                    if (rider2->unk19C >= rider->unk19C) {
-                        rider->racePosition = 0;
-                        rider2->racePosition = 1;
+                    if (D_801C2938[D_800D48E0].unk19C >= D_801C2938[D_800D48DC].unk19C) {
+                        D_801C2938[D_800D48DC].racePosition = 0;
+                        D_801C2938[D_800D48E0].racePosition = 1;
                     } else {
-                        rider->racePosition = 1;
-                        rider2->racePosition = 0;
+                        D_801C2938[D_800D48DC].racePosition = 1;
+                        D_801C2938[D_800D48E0].racePosition = 0;
                     }
                 }
             }
