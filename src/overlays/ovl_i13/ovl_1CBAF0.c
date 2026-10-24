@@ -331,7 +331,30 @@ s32 func_i13_802C6CE4(void) {
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C6E48.s")
+s32 func_i13_802C6E48(void) {
+    s32 var_v1 = 0;
+
+    if (D_i13_802C8D80 == 0) {
+        return 0;
+    }
+    D_i13_802C8D80 = 0;
+    D_i13_802C8D84 = 0;
+    if (D_i13_802C8D54 == 0) {
+        D_i13_802C8D74 = func_8007D2D4(5);
+    } else {
+        D_i13_802C8D74 = func_8007D614(5);
+    }
+    if (D_i13_802C8D74 == 0) {
+        D_801CE640 = 1;
+        var_v1 = 1;
+    } else {
+        D_801CE640 = 3;
+    }
+    if (var_v1 != 0) {
+        func_800C3E6C(1);
+    }
+    return 0;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C6F0C.s")
 
