@@ -70,9 +70,15 @@ tools/fork/check.sh func_801E93B4
   `match/<func>` from `main`, links in the ROM, `.venv` and the built tools, extracts the asm,
   runs `make` once, and writes the draft to `m2c/<func>.c`.
 - `tools/fork/check.sh [func ...]`: fails if a named function still has a `GLOBAL_ASM` line,
-  recompiles the C files that define the named functions, runs the full `make`, and exits 0
-  only if it prints `waverace64.us.rev1.z64: OK`. Then prints the progress line.
+  recompiles the C files that define the named functions and every file with an
+  `#ifdef NON_MATCHING` block, runs the full `make`, and exits 0 only if it prints
+  `waverace64.us.rev1.z64: OK`, the gcc check pass reported no warning or error beyond
+  `tools/fork/warnings-baseline.txt` (upstream's existing ones), and each defining file is
+  linked (in `build/waverace64.us.rev1.map`). Then prints the progress line.
   A mismatch: `python3 first_diff.py` locates the first differing address; `./diff <func>` shows the asm diff.
+- Call `check.sh` from the worktree you are checking (`tools/fork/check.sh`, the copy in that
+  worktree): it `cd`s into the repository it lives in, so running the main checkout's copy
+  checks the main checkout, whatever the current directory is.
 - A function counts as done only when `check.sh` passes on the commit that adds it.
 
 ## The loop
@@ -94,6 +100,15 @@ One function per worktree; every step runs from the worktree root with `. .venv/
 6. **Commit** on `match/<func>` (`<func>: <what it is> in C`). Push the branch to `origin` if wanted.
 7. **Merge.** The coordinator merges `--no-ff` into `main`, runs `make extract` and
    `tools/fork/check.sh <func>` again there, and pushes `main`.
+
+**Commit rule.** `FORK.md` and `tools/fork/` changes always get their own commits; a game-code
+commit (`src/`, `include/`, `linker_scripts/`, ...) never includes fork files. A rename or names
+commit stays within one area, the size of one future upstream batch: separate commits for, for
+example, the text printer, the popups and the portraits.
+
+**`make NON_MATCHING=1` leaves its objects behind.** That build writes non-matching objects into
+`build/`, and a later plain `make` reuses them, so the ROM stops matching for no visible reason.
+Run `make clean` (or `rm -rf build`) before going back to normal builds.
 
 **NON_MATCHING rule.** Past the cap the function stays `#pragma GLOBAL_ASM` and does not count.
 The best attempt is kept beside it, never built by default:
@@ -129,10 +144,10 @@ two of the four are stand-ins: the two functions the recomp hooks call (`func_80
 
 | Function | File | Best score | Remaining difference | Time |
 |---|---|---|---|---|
-| `func_801E5554` | `src/codeseg/B3AA0.c` | 40 / 71200 | the popup cards. One register swap in case 4 (loop counter and IDO's strength-reduced texture-offset temp take `$t0`/`$t1` the wrong way round); frame and everything else match | about 1 h by hand and 50 min of permuter, then a 15 min retry and 10 min more permuter, nothing helped |
+| `func_801E5554` | `src/codeseg/B3AA0.c` | 40 / 71200 | the popup cards. One register swap in case 4 (loop counter and IDO's strength-reduced texture-offset temp take `$t0`/`$t1` the wrong way round; it spans six instructions); frame and everything else match | about 1 h by hand and 50 min of permuter, then a 15 min retry and 10 min more permuter, nothing helped |
 | `func_801F4120` | `src/codeseg/BCFF0.c` | 58028 / 490800 | LAP, RANK and SPEED (0x4CB0 bytes, about 4,900 instructions). Same control flow and frame; register allocation and scheduling differ throughout. The `1.8f` is `D_80227A4C` in the original | about 40 min by hand and 10 min of permuter |
 
-`func_801E5554` is two instructions of regalloc from done; `func_801F4120` is a long way off.
+`func_801E5554` is one register swap (six instructions) from done; `func_801F4120` is a long way off.
 
 ### Names
 
