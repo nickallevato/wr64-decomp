@@ -31,7 +31,8 @@
 # (the same set as main 7c56acf, full rebuild): one per line as
 # "file: warning: text", line and column removed, sorted with LC_ALL=C; a warning
 # that occurs twice in a file is listed twice (the comparison counts them). make runs under LC_ALL=C so gcc's
-# messages are plain ASCII whatever the locale. Add to the baseline only warnings
+# messages are plain ASCII whatever the locale. In "passing argument N of 'f'" warnings the function name is
+# not compared (both sides are normalised), so renaming f needs no baseline edit. Add to the baseline only warnings
 # you did not cause. To regenerate it from a full rebuild:
 #   rm -rf build/src && LC_ALL=C COLOR=0 make 2>&1 | sed 's/\x1b\[[0-9;]*[mK]//g' \
 #     | grep -E '^[^ :]+:[0-9]+:[0-9]+: (warning|error):' \
@@ -87,15 +88,18 @@ make_status=${PIPESTATUS[0]}
 # 4. gcc diagnostics not in the baseline. Checked before make's status, so an
 #    error in a NON_MATCHING body is reported with its file and line.
 sed 's/\x1b\[[0-9;]*[mK]//g' "$tmp/log" | grep -E '^[^ :]+:[0-9]+:[0-9]+: (warning|error):' > "$tmp/diag" || true
-sed -E 's/^([^ :]+):[0-9]+:[0-9]+: /\1: /' "$tmp/diag" | sort > "$tmp/now"
-if [ -f "$BASELINE" ]; then sort "$BASELINE" > "$tmp/base"; else : > "$tmp/base"; fi
+# The function named in a "passing argument N of 'f'" warning is not compared: a rename
+# must not need a baseline edit. The file, the argument number and the rest of the text are.
+norm() { sed -E "s/^([^ :]+):[0-9]+:[0-9]+: /\\1: /; s/(passing argument [0-9]+ of )'[A-Za-z_0-9]+'/\\1'FUNC'/"; }
+norm < "$tmp/diag" | sort > "$tmp/now"
+if [ -f "$BASELINE" ]; then sed -E "s/(passing argument [0-9]+ of )'[A-Za-z_0-9]+'/\\1'FUNC'/" "$BASELINE" | sort > "$tmp/base"; else : > "$tmp/base"; fi
 comm -23 "$tmp/now" "$tmp/base" | sort -u > "$tmp/new"
 if [ -s "$tmp/new" ]; then
     echo "check: FAILED - the gcc check pass reported warnings/errors not in $BASELINE:" >&2
-    while IFS= read -r w; do
-        # the full line(s), with line numbers, for each new diagnostic
-        grep -F -- "${w#*: }" "$tmp/diag" | grep -F -- "${w%%: *}:" | sed 's/^/  /' >&2
-    done < "$tmp/new"
+    while IFS= read -r d; do
+        # the full line, with line numbers, for each new diagnostic
+        if grep -qxF -- "$(printf '%s\n' "$d" | norm)" "$tmp/new"; then echo "  $d" >&2; fi
+    done < "$tmp/diag"
     exit 1
 fi
 
