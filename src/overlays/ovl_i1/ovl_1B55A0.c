@@ -1,11 +1,22 @@
 #include "global.h"
 
+extern s32 D_801C2650;
+extern s32 D_801C2654;
+
 extern s32 D_801CB330;
 extern s32 D_801CB334;
 extern s32 D_801CB350[][4];
 extern s32 D_i1_802C950C;
 extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
+
+s32 func_8007BEA4(s32);
+s32 func_8007C204(s32);
+s32 func_8007C494(void);
+Gfx* func_80093AFC(Gfx*);
+Gfx* func_i1_802C7E48(Gfx*);
+void func_i1_802C8E70(void);
+void GameState_EnterCeremony(void);
 
 void func_i1_802C7570(s32 arg0);
 void func_80077F5C(void);
@@ -217,7 +228,40 @@ void func_i1_802C7570(s32 arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C7608.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C7D00.s")
+Gfx* func_i1_802C7D00(Gfx* dList) {
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+    }
+
+    dList = func_8009328C(dList);
+    dList = func_80093AFC(dList);
+
+    gDPPipeSync(dList++);
+    gDPSetColorImage(dList++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, OS_K0_TO_PHYSICAL(gFrameBuffers[gFramebuffersIdx]));
+    gDPSetScissor(dList++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
+
+    dList = func_i1_802C7E48(dList);
+
+    if (gPlayers == 1) {
+        gSPDisplayList(dList++, D_106F168);
+    }
+
+    func_i1_802C8E70();
+
+    if (D_80228A16 == 1) {
+        func_8007C494();
+        if ((D_801C2650 != 0) || (D_801C2654 != 0)) {
+            if (D_800DAB68 != 0) {
+                func_8007C204(gCourseID);
+            } else {
+                func_8007BEA4(gCourseID);
+            }
+        }
+        GameState_EnterCeremony();
+    }
+
+    return dList;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C7E48.s")
 
