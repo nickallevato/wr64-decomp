@@ -282,7 +282,125 @@ void func_8004E614(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004E614.s")
 #endif
 
+extern s32 D_800D4724;
+extern s32 D_800D472C;
+extern s32 D_800D4730;
+
+/* the field entry at a byte offset (UnkStruct_80160A98.unk0) */
+#define WATER_CELL_AT(off) ((UnkStruct_80162420*) ((s32) D_80162420 + (off)))
+
+/*
+ * One step of the wave simulation over the window's cells (see the recomp's GAME-INTERNALS.md,
+ * "Entry + 2 is a velocity"). Each neighbour pair a, b is coupled once:
+ *     mean = (a.h + b.h) >> D_800D4724, diff = (b.h - a.h) >> D_800D472C,
+ *     a.v += diff - mean, b.v -= diff + mean;
+ * and each cell, once all its pairs are done, steps: h += v, v -= v >> D_800D4730.
+ */
+
+#ifdef NON_MATCHING
+// 8175/32400: registers, and the original reloads a cell velocity after storing the cell height (here it reuses the register), so the stepping blocks are a few instructions shorter here
+void func_8004EAA4(void) {
+    UnkStruct_80160A98* p;
+    UnkStruct_80160A98* q;
+    UnkStruct_80160A98* end;
+    UnkStruct_80162420* a;
+    UnkStruct_80162420* b;
+    s32 i;
+    s32 mean;
+    s32 diff;
+
+    p = D_80160A98;
+    for (i = -D_80192494; i < 0; i++) {
+        q = p + ((D_80192494 * 2) + i + 2);
+        a = WATER_CELL_AT(p->unk0);
+        b = WATER_CELL_AT(q[-1].unk0);
+        mean = (a->unk0 + b->unk0) >> D_800D4724;
+        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        a->unk2 = (a->unk2 + diff) - mean;
+        b->unk2 = (b->unk2 - diff) - mean;
+        for (end = p + ((D_80192494 * 2) + i); p < end;) {
+            p++;
+            b = WATER_CELL_AT(q->unk0);
+            mean = (a->unk0 + b->unk0) >> D_800D4724;
+            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            a->unk2 = (a->unk2 + diff) - mean;
+            q++;
+            b->unk2 = (b->unk2 - diff) - mean;
+            a = WATER_CELL_AT(p->unk0);
+            mean = (a->unk0 + b->unk0) >> D_800D4724;
+            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            a->unk2 = (a->unk2 + diff) - mean;
+            b->unk2 = (b->unk2 - diff) - mean;
+            b = WATER_CELL_AT(p[-1].unk0);
+            mean = (a->unk0 + b->unk0) >> D_800D4724;
+            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            a->unk2 = (a->unk2 + diff) - mean;
+            b->unk2 = (b->unk2 - diff) - mean;
+            b->unk0 += b->unk2;
+            b->unk2 -= b->unk2 >> D_800D4730;
+        }
+        b = WATER_CELL_AT(q->unk0);
+        p++;
+        mean = (a->unk0 + b->unk0) >> D_800D4724;
+        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        a->unk2 = (a->unk2 + diff) - mean;
+        a->unk0 += a->unk2;
+        b->unk2 = (b->unk2 - diff) - mean;
+        a->unk2 -= a->unk2 >> D_800D4730;
+    }
+    for (i = 0; i < D_80192494; i++) {
+        a = WATER_CELL_AT(p->unk0);
+        end = p + ((D_80192494 * 2) - i);
+        for (q = p + (((D_80192494 * 2) - i) + 1); p < end;) {
+            p++;
+            b = WATER_CELL_AT(q->unk0);
+            mean = (a->unk0 + b->unk0) >> D_800D4724;
+            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            a->unk2 = (a->unk2 + diff) - mean;
+            q++;
+            b->unk2 = (b->unk2 - diff) - mean;
+            a = WATER_CELL_AT(p->unk0);
+            mean = (a->unk0 + b->unk0) >> D_800D4724;
+            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            a->unk2 = (a->unk2 + diff) - mean;
+            b->unk2 = (b->unk2 - diff) - mean;
+            b = WATER_CELL_AT(p[-1].unk0);
+            mean = (a->unk0 + b->unk0) >> D_800D4724;
+            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            a->unk2 = (a->unk2 + diff) - mean;
+            b->unk2 = (b->unk2 - diff) - mean;
+            b->unk0 += b->unk2;
+            b->unk2 -= b->unk2 >> D_800D4730;
+        }
+        p++;
+        a->unk0 += a->unk2;
+        a->unk2 -= a->unk2 >> D_800D4730;
+    }
+    end = p + D_80192494;
+    a = WATER_CELL_AT(p->unk0);
+    while (p < end) {
+        b = WATER_CELL_AT(p[1].unk0);
+        p += 2;
+        mean = (a->unk0 + b->unk0) >> D_800D4724;
+        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        a->unk2 = (a->unk2 + diff) - mean;
+        a->unk0 += a->unk2;
+        b->unk2 = (b->unk2 - diff) - mean;
+        a->unk2 -= a->unk2 >> D_800D4730;
+        a = WATER_CELL_AT(p->unk0);
+        mean = (a->unk0 + b->unk0) >> D_800D4724;
+        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        a->unk2 = (a->unk2 + diff) - mean;
+        b->unk2 = (b->unk2 - diff) - mean;
+        b->unk0 += b->unk2;
+        b->unk2 -= b->unk2 >> D_800D4730;
+    }
+    a->unk0 += a->unk2;
+    a->unk2 -= a->unk2 >> D_800D4730;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
+#endif
 
 void func_8004EFB4(f32 x, f32 z, s32 height) {
     UnkStruct_80162420* p0;
