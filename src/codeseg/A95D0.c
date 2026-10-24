@@ -94,13 +94,22 @@ typedef struct UnkA95D0_Payload2 {
 
 typedef struct UnkA95D0_Payload5 {
     /* 0x00 */ f32 unk0[3];
-    /* 0x0C */ f32 unkC[6];
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18[2];
+    /* 0x20 */ f32 unk20;
     /* 0x24 */ f32 unk24[2];
-    /* 0x2C */ f32 unk2C[2];
+    /* 0x2C */ f32 unk2C;
+    /* 0x30 */ f32 unk30;
     /* 0x34 */ f32 unk34;
-    /* 0x38 */ f32 unk38[4];
+    /* 0x38 */ f32 unk38;
+    /* 0x3C */ f32 unk3C;
+    /* 0x40 */ f32 unk40;
+    /* 0x44 */ f32 unk44;
     /* 0x48 */ UnkA95D0_Ease unk48[3];
-    /* 0x6C */ f32 unk6C[2];
+    /* 0x6C */ f32 unk6C;
+    /* 0x70 */ f32 unk70;
     /* 0x74 */ s32 unk74[3];
     /* 0x80 */ s32 unk80;
 } UnkA95D0_Payload5; // size = 0x84
@@ -161,7 +170,7 @@ typedef struct UnkA95D0_Runner {
     /* 0x04 */ UnkA95D0_Step* step;
     /* 0x08 */ s32 frame;
     /* 0x0C */ UnkA95D0_Cursor* cursors;
-    /* 0x10 */ s32 unk10[10];
+    /* 0x10 */ f32* unk10[10];
 } UnkA95D0_Runner; // size = 0x38
 
 void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
@@ -175,6 +184,7 @@ void func_801DF128(UnkA95D0_Obj* obj);
 void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner);
 void func_801DEEC4(UnkA95D0_Obj* obj);
+void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key);
 void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
 void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
@@ -673,8 +683,8 @@ void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors) {
     runner->cursors = cursors;
 }
 
-void func_801DFDA8(UnkA95D0_Runner* runner, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
-                   s32 arg8, s32 arg9, s32 arg10) {
+void func_801DFDA8(UnkA95D0_Runner* runner, f32* arg1, f32* arg2, f32* arg3, f32* arg4, f32* arg5, f32* arg6,
+                   f32* arg7, f32* arg8, f32* arg9, f32* arg10) {
     runner->unk10[0] = arg1;
     runner->unk10[1] = arg2;
     runner->unk10[2] = arg3;
@@ -703,7 +713,21 @@ void func_801DFE58(UnkA95D0_Runner* runner, UnkA95D0_Key2* key) {
     func_801DF278(runner->obj, 3, key);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE80.s")
+void func_801DFE80(UnkA95D0_Runner* runner, UnkA95D0_Key5* key) {
+    UnkA95D0_Payload5* p;
+    s32 i;
+    s32 axis;
+
+    func_801DF5F0(runner->obj, key);
+    p = &runner->obj->u.p5;
+    for (i = 0; i < 3; i++) {
+        p->unk0[i] = *runner->unk10[i];
+    }
+    for (i = 0; i < 2; i++) {
+        axis = p->unk74[i];
+        p->unk18[i] = *runner->unk10[axis] - *runner->unk10[axis + 3] * 100.0f;
+    }
+}
 
 void func_801DFF5C(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
     f32 out[6];
