@@ -28,6 +28,13 @@ extern s32 D_802C8E90;
 extern s32 D_802C8E94;
 extern s32 D_802C8E9C;
 
+void func_i13_802C6068(void);
+void func_i13_802C7060(void);
+void func_i13_802C81AC(s32 arg0);
+Gfx* func_i13_802C711C(Gfx*);
+Gfx* func_i13_802C832C(Gfx*);
+void GameState_EnterOptionsMenu(void);
+
 s32 func_i13_802C6700(void);
 
 s32 func_8007BDB8(void);
@@ -48,7 +55,35 @@ void func_800C3E6C(s32);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C5800.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C5F6C.s")
+Gfx* func_i13_802C5F6C(Gfx* gdl) {
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        if (gGameState == 0x40) {
+            return func_80093C44(gdl);
+        }
+    }
+
+    D_800DAB2C = 0;
+
+    gdl = func_i13_802C711C(gdl);
+    if (D_i13_802C8D74 != 0) {
+        func_i13_802C81AC(D_i13_802C8D74);
+        D_i13_802C8D74 = 0;
+    }
+    gdl = func_i13_802C832C(gdl);
+
+    if (gGameState == 0x40) {
+        if (D_i13_802C8D78 == 0) {
+            func_i13_802C6068();
+        } else {
+            func_i13_802C7060();
+        }
+    } else if (D_80228A16 == 1) {
+        GameState_EnterOptionsMenu();
+    }
+
+    return gdl;
+}
 
 void func_i13_802C6068(void) {
     s32 pad; // stack pad: needed for match (shifts var_v1 stack slot)
