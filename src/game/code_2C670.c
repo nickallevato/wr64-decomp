@@ -904,9 +904,8 @@ extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
 #ifdef NON_MATCHING
-// 5535: same loops and calls. The original walks the last loop with two pointers (one for the
-// record, one for its link fields), saves s8 and has a 0xB0 frame (here 0x90), and numbers the
-// saved registers differently from the first loop on.
+// 3993: same loops and calls. The original saves s8 and has a 0xB0 frame (here 0x98), and
+// numbers the saved registers differently from the first loop on.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     s32 i;
     s32 k;
@@ -927,6 +926,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     f32 oz;
     f32 x;
     f32 z;
+    UnkStruct_801AEE20* e;
 
     for (i = 0; i < arg1; i++) {
         arg0[i].unk4 = 0.0f;
@@ -973,31 +973,32 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         }
     }
     for (i = 0; i < arg1; i++) {
-        if ((arg0[i].unk98 != 2) && (arg0[i].unk98 != 3) && (arg0[i].unk98 != 5)) {
-            arg0[i].unk9C = 0;
+        e = &arg0[i];
+        if ((e->unk98 != 2) && (e->unk98 != 3) && (e->unk98 != 5)) {
+            e->unk9C = 0;
         } else {
-            arg0[i].unk9C = 1;
+            e->unk9C = 1;
         }
-        if ((arg0[i].unkC0 >= 2) || (arg0[i].unkBC != 0)) {
-            arg0[i].unkC4 = 0;
-        } else if ((arg0[i].unk98 != 0) && (arg0[i].unk98 != 1) && (arg0[i].unk98 != 2) && (arg0[i].unk98 != 3)) {
-            arg0[i].unkC4 = 0;
+        if ((e->unkC0 >= 2) || (e->unkBC != 0)) {
+            e->unkC4 = 0;
+        } else if ((e->unk98 != 0) && (e->unk98 != 1) && (e->unk98 != 2) && (e->unk98 != 3)) {
+            e->unkC4 = 0;
         } else {
-            arg0[i].unkC4 = 1;
+            e->unkC4 = 1;
         }
-        if ((arg0[i].unkC0 >= 2) || (arg0[i].unkBC != 0)) {
-            arg0[i].unkC8 = 0;
-        } else if ((arg0[i].unk98 != 0) && (arg0[i].unk98 != 1) && (arg0[i].unk98 != 2) && (arg0[i].unk98 != 3)) {
-            arg0[i].unkC8 = 0;
+        if ((e->unkC0 >= 2) || (e->unkBC != 0)) {
+            e->unkC8 = 0;
+        } else if ((e->unk98 != 0) && (e->unk98 != 1) && (e->unk98 != 2) && (e->unk98 != 3)) {
+            e->unkC8 = 0;
         } else {
-            arg0[i].unkC8 = 1;
+            e->unkC8 = 1;
         }
-        type = arg0[i].unk98;
-        arg0[i].unk3C = arg0[i].unk40 = arg0[i].unk44 = 0.0f;
-        arg0[i].unk48 = arg0[i].unk4C = arg0[i].unk50 = 0.0f;
-        arg0[i].unk54 = arg0[i].unk58 = arg0[i].unk5C = 0.0f;
-        dx = arg0[i].unk74;
-        dz = -arg0[i].unk70;
+        type = e->unk98;
+        e->unk3C = e->unk40 = e->unk44 = 0.0f;
+        e->unk48 = e->unk4C = e->unk50 = 0.0f;
+        e->unk54 = e->unk58 = e->unk5C = 0.0f;
+        dx = e->unk74;
+        dz = -e->unk70;
         switch (type) {
             case 0:
                 px = -dx;
@@ -1012,10 +1013,10 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
                 px = 0.0f;
                 break;
         }
-        arg0[i].unk78 = dx;
-        arg0[i].unk7C = dz;
-        arg0[i].unk80 = px;
-        arg0[i].unk84 = pz;
+        e->unk78 = dx;
+        e->unk7C = dz;
+        e->unk80 = px;
+        e->unk84 = pz;
         switch (type) {
             case 2:
                 width = 1600.0f;
@@ -1036,65 +1037,65 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
                 break;
         }
         half = width * 0.5f;
-        arg0[i].unk8C = half;
-        ax = arg0[arg0[i].unkA0].unk0 - arg0[i].unk0;
-        az = arg0[arg0[i].unkA0].unk8 - arg0[i].unk8;
-        arg0[i].unk88 = sqrtf((ax * ax) + (az * az));
-        ax = arg0[arg0[i].unkAC].unk0 - arg0[i].unk0;
-        az = arg0[arg0[i].unkAC].unk8 - arg0[i].unk8;
-        arg0[i].unk90 = sqrtf((ax * ax) + (az * az));
-        if (arg0[i].unk90 > 0.0f) {
-            ax /= arg0[i].unk90;
-            az /= arg0[i].unk90;
+        e->unk8C = half;
+        ax = arg0[arg0[i].unkA0].unk0 - e->unk0;
+        az = arg0[arg0[i].unkA0].unk8 - e->unk8;
+        e->unk88 = sqrtf((ax * ax) + (az * az));
+        ax = arg0[arg0[i].unkAC].unk0 - e->unk0;
+        az = arg0[arg0[i].unkAC].unk8 - e->unk8;
+        e->unk90 = sqrtf((ax * ax) + (az * az));
+        if (e->unk90 > 0.0f) {
+            ax /= e->unk90;
+            az /= e->unk90;
         }
         angle = 2.0f * func_801ED090((ax * dx) + (az * dz));
-        if (arg0[i].unk98 == 0) {
+        if (e->unk98 == 0) {
             angle = 360.0f - angle;
         }
-        arg0[i].unk94 = angle;
-        ax = arg0[i].unk0 - arg0[arg0[i].unkB0].unk0;
-        az = arg0[i].unk8 - arg0[arg0[i].unkB0].unk8;
+        e->unk94 = angle;
+        ax = e->unk0 - arg0[arg0[i].unkB0].unk0;
+        az = e->unk8 - arg0[arg0[i].unkB0].unk8;
         len = sqrtf((ax * ax) + (az * az));
         if (len > 0.0f) {
             ax /= len;
             az /= len;
         }
-        arg0[i].unkE4 = ax;
-        arg0[i].unkE8 = az;
-        switch (arg0[i].unk98) {
+        e->unkE4 = ax;
+        e->unkE8 = az;
+        switch (e->unk98) {
             case 0:
-                arg0[i].unkF0 = arg0[i].unkE4;
-                arg0[i].unkEC = -arg0[i].unkE8;
+                e->unkF0 = e->unkE4;
+                e->unkEC = -e->unkE8;
                 break;
             case 1:
-                arg0[i].unkEC = arg0[i].unkE8;
-                arg0[i].unkF0 = -arg0[i].unkE4;
+                e->unkEC = e->unkE8;
+                e->unkF0 = -e->unkE4;
                 break;
             default:
-                arg0[i].unkF0 = 0.0f;
-                arg0[i].unkEC = 0.0f;
+                e->unkF0 = 0.0f;
+                e->unkEC = 0.0f;
                 break;
         }
         ox = -142.0f * px;
         oz = -142.0f * pz;
-        if (arg0[i].unk98 == 4) {
+        if (e->unk98 == 4) {
             ox = 1.0f;
             oz = 1.0f;
         }
-        x = arg0[i].unk0;
-        z = arg0[i].unk8;
-        arg0[i].unkC = arg0[i].unk2C = x + (dx * half);
-        arg0[i].unk10 = 0.0f;
-        arg0[i].unk1C = 0.0f;
-        arg0[i].unk14 = arg0[i].unk30 = z + (dz * half);
-        arg0[i].unk60 = x + ox;
-        arg0[i].unk68 = z + oz;
-        arg0[i].unk18 = arg0[i].unk34 = x - (dx * half);
-        arg0[i].unk64 = 46.0f;
-        arg0[i].unk20 = arg0[i].unk38 = z - (dz * half);
+        x = e->unk0;
+        z = e->unk8;
+        e->unkC = e->unk2C = x + (dx * half);
+        e->unk10 = 0.0f;
+        e->unk1C = 0.0f;
+        e->unk14 = e->unk30 = z + (dz * half);
+        e->unk60 = x + ox;
+        e->unk68 = z + oz;
+        e->unk18 = e->unk34 = x - (dx * half);
+        e->unk64 = 46.0f;
+        e->unk20 = e->unk38 = z - (dz * half);
         if ((i == D_801BB12C) && (gCourseID == GLACIER_COAST)) {
-            arg0[i].unk10 = -110.0f;
-            arg0[i].unk1C = -160.0f;
+            e->unk10 = -110.0f;
+            e->unk1C = -160.0f;
         }
     }
 }
