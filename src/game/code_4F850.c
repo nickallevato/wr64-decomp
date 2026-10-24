@@ -147,9 +147,9 @@ u32* func_800965B8(s32 arg0);
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
 #ifdef NON_MATCHING
-// Score 7070 of 63000, 2 instructions short: the original walks the list with a copy of list (spilled at sp18)
-// and keeps the next entry in v1; the list pointers of the race-results and stunt-results cases are in a3 there;
-// the five saved unk30 entries are all read before the copy starts; stack slots are 0x18 lower.
+// Score 5394 of 63000, 2 instructions short: the original walks the list with a copy of list (spilled at sp18)
+// and keeps the next entry in v1; the load/buffer/list temps are in a1/a2/a3 there (a3/t0/a1 here); stack slots
+// are 0x18 lower.
 void unk_game_load(void) {
     s32 fromState67;
     DmaEntry** list;
@@ -165,6 +165,7 @@ void unk_game_load(void) {
     s32 i;
     UnkStruct_80227A60* m;
     UnkStruct_800DCE98* e;
+    UnkStruct_80227A60* src;
 
     load = 0;
     buffer = 0;
@@ -412,11 +413,12 @@ void unk_game_load(void) {
                 saved38 = D_80227A60[0].unk30[2];
                 saved3C = D_80227A60[0].unk30[3];
                 saved40 = D_80227A60[0].unk30[4];
-                D_80227A60[0].unk30[0] = D_80227A60[D_801CE760[0]].unk30[0];
-                D_80227A60[0].unk30[1] = D_80227A60[D_801CE760[0]].unk30[1];
-                D_80227A60[0].unk30[2] = D_80227A60[D_801CE760[0]].unk30[2];
-                D_80227A60[0].unk30[3] = D_80227A60[D_801CE760[0]].unk30[3];
-                D_80227A60[0].unk30[4] = D_80227A60[D_801CE760[0]].unk30[4];
+                src = &D_80227A60[D_801CE760[0]];
+                D_80227A60[0].unk30[0] = src->unk30[0];
+                D_80227A60[0].unk30[1] = src->unk30[1];
+                D_80227A60[0].unk30[2] = src->unk30[2];
+                D_80227A60[0].unk30[3] = src->unk30[3];
+                D_80227A60[0].unk30[4] = src->unk30[4];
             }
             if (D_801CE760[1] != -1) {
                 if ((D_801CE760[1] == 0) && (D_801CE760[0] != -1)) {
@@ -426,11 +428,12 @@ void unk_game_load(void) {
                     D_80227AE0 = saved3C;
                     D_80227AE4 = saved40;
                 } else {
-                    D_80227AD4 = D_80227A60[D_801CE760[1]].unk30[0];
-                    D_80227AD8 = D_80227A60[D_801CE760[1]].unk30[1];
-                    D_80227ADC = D_80227A60[D_801CE760[1]].unk30[2];
-                    D_80227AE0 = D_80227A60[D_801CE760[1]].unk30[3];
-                    D_80227AE4 = D_80227A60[D_801CE760[1]].unk30[4];
+                    src = &D_80227A60[D_801CE760[1]];
+                    D_80227AD4 = src->unk30[0];
+                    D_80227AD8 = src->unk30[1];
+                    D_80227ADC = src->unk30[2];
+                    D_80227AE0 = src->unk30[3];
+                    D_80227AE4 = src->unk30[4];
                 }
             }
             if (D_801CE73C == 4) {
