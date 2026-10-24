@@ -187,7 +187,66 @@ void func_801F03E0(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F14B4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F1CFC.s")
+extern u16 D_801CE72E;
+extern s32 D_80228B5C;
+
+void func_801F1CFC(void) {
+    f32 x;
+    f32 z;
+    s32 blocked;
+    RiderStruct* rider;
+    UnkStruct_80192690* p;
+    s32 i;
+    s32 inZone;
+    s32 show;
+    s32 add;
+
+    if ((gGameModes == GMODE_2P_VS) &&
+        ((D_801C2938[D_800D48DC].unk2F4 != 0) || (D_801C2938[D_800D48DC].unk2EC != 0) ||
+         (D_801C2938[D_800D48E0].unk2F4 != 0) || (D_801C2938[D_800D48E0].unk2EC != 0))) {
+        blocked = 1;
+    } else {
+        blocked = 0;
+    }
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            p = &D_80192690[D_800D48DC];
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            p = &D_80192690[D_800D48E0];
+            rider = &D_801C2938[D_800D48E0];
+        }
+        if ((rider->unk2EC != 0) || (rider->unk2F4 != 0)) {
+            continue;
+        }
+        x = p->unk44.x;
+        z = p->unk44.z;
+        inZone = (gCourseID != SOUTHERN_ISLAND) && (p->unk16D0 > 80);
+        show = (func_80074264(x, z) || inZone) && (blocked == 0) && (D_801CE72E != 0);
+        if (rider->unk2E4 != 0) {
+            if (!show) {
+                rider->unk2E4 = 0;
+            } else if ((p->unkC54 != 23) && (p->unkC54 != 7)) {
+                if (rider->unk2E8 > 0) {
+                    if (D_80228B5C >= rider->unk2E8) {
+                        add = inZone ? 0x80 : 0;
+                        if (rider->unk2E8 == D_80228B5C) {
+                            AudioGeneral_PlaySound(10, rider->unk2E8 / 20 + add);
+                        } else if ((rider->unk2E8 % 20) == 0) {
+                            AudioGeneral_PlaySound(10, rider->unk2E8 / 20 + add - 1);
+                        }
+                    }
+                    rider->unk2E8--;
+                } else if (rider->unk2E8 == 0) {
+                    func_800762D0((struct_800762D0*) rider);
+                }
+            }
+        } else if (show) {
+            rider->unk2E4 = 1;
+            rider->unk2E8 = D_80228B5C + 20;
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F2060.s")
 
