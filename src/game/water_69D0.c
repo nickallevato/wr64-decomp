@@ -192,7 +192,54 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
     }
 }
 
+extern s32 D_800D47C0;
+
+#ifdef NON_MATCHING
+// 1210/18900: the address of D_800D47C0 is held in a register here (the original loads and stores it with separate lui), and registers differ from there
+void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
+    UnkStruct_80162420* p0;
+    UnkStruct_80162420* p1;
+    UnkStruct_80162420* p2;
+    s32 u;
+    s32 v;
+    s32 cu;
+    s32 cv;
+    s32 phase;
+    s32 h;
+    f32 r;
+    f32 end;
+
+    phase = D_800D47C0 + step;
+    if (phase >= period) {
+        phase -= period;
+    }
+    h = (s32) (SIN((phase << 12) / period) * amplitude) << 8;
+    r = D_80192498 >> 2;
+    D_800D47C0 = phase;
+    end = r + x;
+    x -= r;
+    z -= r;
+    while (x <= end) {
+        u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+        v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
+        cv = v >> 6;
+        cu = u >> 6;
+        if ((u - (cu * 64)) < (v - (cv * 64))) {
+            p0 = WATER_CELL(cu, cv + 1);
+        } else {
+            p0 = WATER_CELL(cu + 1, cv);
+        }
+        p2 = WATER_CELL(cu, cv);
+        p1 = WATER_CELL(cu + 1, cv + 1);
+        p0->unk0 = p2->unk0 = p1->unk0 = h;
+        p0->unk2 = p2->unk2 = p1->unk2 = 0;
+        x += 64.0f;
+        z += 64.0f;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D018.s")
+#endif
 
 #ifdef NON_MATCHING
 // 2820/19900: the original keeps -0x80 and 0x180 in registers ($ra, $t3) and starts the first row division before the second div check; registers differ from there. Frame and spill slots match
