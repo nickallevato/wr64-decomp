@@ -56,20 +56,26 @@ extern s32 D_802287A8;
 extern s32 D_802287AC;
 
 // A keyframed object (type 1, 2, 3 or 5) and the script runner that drives it.
-// Layouts come from the copies and stores in func_801DEF84..func_801DFE80.
+// Layouts come from the copies and stores in func_801DEF84..func_801DFE80 and func_801E0F8C.
 typedef struct UnkA95D0_Base {
-    /* 0x00 */ u8 pad0[0x20];
-    /* 0x20 */ Vec3f unk20;
-    /* 0x2C */ u8 pad2C[0xC];
+    /* 0x00 */ Vec3f unk0;
+    /* 0x0C */ Vec3f unkC;
+    /* 0x18 */ Vec3f unk18;
+    /* 0x24 */ Vec3f unk24;
+    /* 0x30 */ u8 pad30[4];
+    /* 0x34 */ f32 unk34;
     /* 0x38 */ f32 unk38;
-    /* 0x3C */ u8 pad3C[0x1C];
+    /* 0x3C */ u8 pad3C[4];
+    /* 0x40 */ f32 unk40;
+    /* 0x44 */ f32 unk44;
+    /* 0x48 */ u8 pad48[0x10];
 } UnkA95D0_Base; // size = 0x58
 
 typedef struct UnkA95D0_Payload1 {
     /* 0x00 */ Vec3f unk0;
-    /* 0x0C */ Vec3f unkC;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
+    /* 0x0C */ u8 padC[4];
+    /* 0x10 */ Vec3f unk10;
+    /* 0x1C */ u8 pad1C[4];
 } UnkA95D0_Payload1; // size = 0x20
 
 typedef struct UnkA95D0_Payload2 {
@@ -634,7 +640,20 @@ void func_801E02B4(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0DB8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0F8C.s")
+void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
+    cam->unk4C = obj->base.unkC.x;
+    cam->unk50 = obj->base.unkC.y;
+    cam->unk54 = obj->base.unkC.z;
+    cam->unk7C = obj->base.unk0.x;
+    cam->unk80 = obj->base.unk0.y;
+    cam->unk84 = obj->base.unk0.z;
+    cam->unk70 = obj->base.unk18.x;
+    cam->unk74 = obj->base.unk18.y;
+    cam->unk78 = obj->base.unk18.z;
+    cam->unk88 = obj->base.unk34;
+    cam->unk94 = obj->base.unk40;
+    cam->unk98 = obj->base.unk44;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0FF0.s")
 
