@@ -324,6 +324,16 @@ typedef struct UnkStruct_80192690_C88 {
 
 #define RIDER_PARTS(rider) ((RiderPart*) (rider)->unk660)
 
+// A view of the rider's button state at 0xB56 (unkB56 .. unkB5F).
+typedef struct RiderButtons {
+    /* 0x0 */ u16 held;
+    /* 0x2 */ u16 pressed;
+    /* 0x4 */ u16 released;
+    /* 0x6 */ u16 prevHeld;
+    /* 0x8 */ s8 stickX;
+    /* 0x9 */ s8 stickY;
+} RiderButtons; /* size = 0xA */
+
 typedef struct UnkStruct_80069798_1 {
     /* 0x00 */ s32 unk0[6];
 } UnkStruct_80069798_1; /* size = 0x18 */
@@ -397,6 +407,8 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern s32 D_800D49DC;
+extern s32 gFrameCounter;
 extern s32 D_800D4934;
 extern s16 D_800D492C;
 extern s32 D_800D4930;
@@ -2342,7 +2354,172 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800609EC.s")
 
+#ifdef NON_MATCHING
+// Register allocation differs: the original reads unkB56/unkB5E/unkB5F through a pointer kept in $a1
+// (saved across SysUtils_Round); IDO folds this version's pointer into arg0. Control flow matches.
+void func_80061184(UnkStruct_80192690* arg0) {
+    RiderButtons* btn;
+    OSContPad* pad;
+    s32 d;
+    u16 dirs;
+
+    arg0->unkB58 = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB50.button;
+    arg0->unkB5A = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB56;
+    arg0->unkB5C = arg0->unkB56;
+    arg0->unkB56 = arg0->unkB50.button;
+    arg0->unkB5E = arg0->unkB50.stick_x;
+    arg0->unkB5F = arg0->unkB50.stick_y;
+    d = arg0->unkB50.stick_x - arg0->unkB60;
+    if (d < -D_800D49DC) {
+        d = -D_800D49DC;
+    } else if (D_800D49DC < d) {
+        d = D_800D49DC;
+    }
+    arg0->unkB60 += d;
+    btn = (RiderButtons*) &arg0->unkB56;
+    arg0->unkC66 = btn->held & 0xA000;
+    if ((arg0->unkC54 == 23) || (arg0->unk1608 != 0) || ((arg0->unkC54 == 7) && (arg0->unkC58 < 56)) ||
+        ((arg0->unkC54 > 0) && (arg0->unkC54 < 7)) || (gRiderGameModes == PAUSE_MODE) ||
+        (gRiderGameModes == UNACTIVE_MODE)) {
+        btn->stickX = btn->stickY = 0;
+        arg0->unkC66 = 0;
+        arg0->unk15DC = 0;
+        if ((arg0->unkC54 == 7) || ((arg0->unkC54 == 23) && (RIDER_PARTS(arg0)[0].unk4.y < 0.0f))) {
+            arg0->unk1444 = 1;
+        } else {
+            arg0->unk1444 = 0;
+        }
+    } else {
+        arg0->unk15DC = 1;
+        arg0->unk1444 = 0;
+        if (arg0->unkC54 == 24) {
+            arg0->unk1578 *= 0.3f;
+        } else if ((arg0->unkC54 == 9) || (arg0->unkC54 == 17)) {
+            arg0->unk1578 *= 0.9f;
+        } else if (arg0->unkC54 == 8) {
+            btn->stickX = SysUtils_Round(btn->stickX * 0.8f);
+            arg0->unk1578 *= 0.85f;
+        }
+    }
+    if (btn->stickX < -14) {
+        arg0->unk159C = gFrameCounter;
+    } else if (btn->stickX >= 15) {
+        arg0->unk15A0 = gFrameCounter;
+    }
+    if (btn->stickY < -14) {
+        arg0->unk15A8 = gFrameCounter;
+        if (!(btn->held & 0xA000)) {
+            arg0->unk1600 = 0;
+            arg0->unk15F0 = gFrameCounter;
+        }
+    } else if (btn->stickY >= 15) {
+        arg0->unk15A4 = gFrameCounter;
+    }
+    pad = &arg0->unkB50;
+    dirs = 0;
+    if (pad->stick_x < -64) {
+        arg0->unk1600 = 1;
+        dirs = 0x200;
+    }
+    if (pad->stick_x > 64) {
+        dirs |= 0x100;
+        arg0->unk1600 = 1;
+    }
+    if (pad->stick_y > 64) {
+        dirs |= 0x800;
+    }
+    if (pad->stick_y < -64) {
+        dirs |= 0x400;
+    }
+    arg0->unk15F4 = (arg0->unk15F6 ^ dirs) & dirs;
+    arg0->unk15F6 = dirs;
+    if ((arg0->unkC54 == 22) || (arg0->unkC54 == 15)) {
+        if ((arg0->unkC66 == 0) && (arg0->unk15F4 != 0)) {
+            if (arg0->unk15F8 == 0) {
+                arg0->unk15F8++;
+            } else {
+                switch (arg0->unk15FC) {
+                    case 0x100:
+                        if (arg0->unk15F4 & 0x800) {
+                            arg0->unk15F8++;
+                        } else {
+                            arg0->unk15F8 = 0;
+                        }
+                        break;
+                    case 0x200:
+                        if (arg0->unk15F4 & 0x400) {
+                            arg0->unk15F8++;
+                        } else {
+                            arg0->unk15F8 = 0;
+                        }
+                        break;
+                    case 0x400:
+                        if (arg0->unk15F4 & 0x100) {
+                            arg0->unk15F8++;
+                        } else {
+                            arg0->unk15F8 = 0;
+                        }
+                        break;
+                    case 0x800:
+                        if (arg0->unk15F4 & 0x200) {
+                            arg0->unk15F8++;
+                        } else {
+                            arg0->unk15F8 = 0;
+                        }
+                        break;
+                }
+            }
+            if (arg0->unk15FA == 0) {
+                arg0->unk15FA++;
+            } else {
+                switch (arg0->unk15FC) {
+                    case 0x100:
+                        if (arg0->unk15F4 & 0x400) {
+                            arg0->unk15FA++;
+                        } else {
+                            arg0->unk15FA = 0;
+                        }
+                        break;
+                    case 0x200:
+                        if (arg0->unk15F4 & 0x800) {
+                            arg0->unk15FA++;
+                        } else {
+                            arg0->unk15FA = 0;
+                        }
+                        break;
+                    case 0x400:
+                        if (arg0->unk15F4 & 0x200) {
+                            arg0->unk15FA++;
+                        } else {
+                            arg0->unk15FA = 0;
+                        }
+                        break;
+                    case 0x800:
+                        if (arg0->unk15F4 & 0x100) {
+                            arg0->unk15FA++;
+                        } else {
+                            arg0->unk15FA = 0;
+                        }
+                        break;
+                }
+            }
+            arg0->unk15FC = arg0->unk15F4;
+            arg0->unk15FE = 0;
+        } else {
+            arg0->unk15FE++;
+            if (arg0->unk15FE >= 5) {
+                arg0->unk15FA = 0;
+                arg0->unk15F8 = 0;
+            }
+        }
+    } else {
+        arg0->unk15FA = 0;
+        arg0->unk15F8 = 0;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80061184.s")
+#endif
 
 s32 func_80061644(f32 arg0) {
     s32 var_v1;
