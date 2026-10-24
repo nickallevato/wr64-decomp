@@ -405,7 +405,10 @@ Gfx* func_80091CD8(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NEEDS_DATA
+#ifdef NON_MATCHING
+// Score 30 of 8800: the code matches, only the static's address differs. The static (D_800DA914, 0x800DA914) has
+// to be in this file's .data, which is still part of the 0x8F000 data blob. As an extern, IDO no longer sinks the
+// store below the gdl writes (score 2610).
 void* func_80091DBC(Gfx* gdl) {
     static s32 D_800DA914 = { 0 };
 
