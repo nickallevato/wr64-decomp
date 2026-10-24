@@ -150,6 +150,7 @@ u32* func_800962F0(s32 arg0);
 u32* func_800963CC(s32 arg0, s32 arg1);
 u32* func_800964CC(s32 arg0);
 u32* func_800965B8(s32 arg0);
+Gfx* func_80093DBC(Gfx* gfxPtr, u16 red, u16 green, u16 blue);
 
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
