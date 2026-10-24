@@ -352,6 +352,7 @@ f32 func_8007F448(f32, f32, f32, f32*, f32*, f32*);
 void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
+Gfx* func_80067810(Gfx*, s32, s32);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80051EC0.s")
 
@@ -2159,7 +2160,14 @@ void func_80062918(Vec3f* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067810.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067BFC.s")
+Gfx* func_80067BFC(Gfx* gdl, s32 arg1, s32 arg2) {
+    gdl = func_80067810(gdl, arg1, arg2);
+    gSPEndDisplayList(gdl++);
+    if (D_80193D5C[arg2].unk0.h != 0) {
+        gdl += 6;
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067C6C.s")
 
