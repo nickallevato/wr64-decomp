@@ -15,6 +15,10 @@ extern s32 D_801CB334;
 extern s16 D_800EAC44[][4];
 extern s32 D_801CB330;
 extern s32 D_801CE704;
+extern s16 D_800DAA00;
+extern s16 D_800EABEC[];
+extern s16 D_800EAC14[][8];
+extern UnkStruct_800DB568 D_800DB58C[];
 
 void func_8004A208(void);
 void func_8009684C(s32 arg0, s32 arg1, s32 arg2);
@@ -209,7 +213,94 @@ void func_801EB4F4(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB91C.s")
+void func_801EB91C(void) {
+    s32 rand;
+    s32 rider;
+    s32 course;
+
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_SATE_COURSE_OVERVIEW;
+    D_801CE638 = 8;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gPlayers = ONE_PLAYER;
+    if (D_800D8240 != 0) {
+        D_801CB330 = D_801C3A10;
+    }
+    D_801CB330 = D_800EAC14[gDifficulty][D_801CB334];
+    gCourseID = D_801CB330;
+    if ((gCourseID == DOLPHIN_PARK) && (D_800DAA00 < 9999)) {
+        D_800DAA00++;
+    }
+    gGameModes = 0xA;
+    D_800D49B0 = D_800EABEC[D_801CB330];
+    gBuoyMisses = 5;
+    if (gCourseID == SUNNY_BEACH) {
+        gRiders = 4;
+    } else if (gCourseID == SUNSET_BAY) {
+        gRiders = 2;
+    } else {
+        gRiders = 1;
+    }
+    gCameraPerspective->viewMode = 5;
+    if ((gCourseID == SUNNY_BEACH) || (gCourseID == 4)) {
+        gRiderGameModes = UNACTIVE_MODE;
+    } else {
+        gRiderGameModes = AI_MODE;
+    }
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_STARTED;
+    D_800D8178 = 1;
+    FadeTransition_SetProps(4, 0, 0);
+    func_801E6A4C(0, 0);
+    D_800DAA08 = 0;
+    rider = D_800DA9B0[D_800D48DC];
+    rand = SysUtils_Rand() & 3;
+    if (rider == rand) {
+        rand = (rand + 1) % 4;
+    }
+    if (D_801CE6F4[0] != 0) {
+        rider += 4;
+    }
+    if (gCourseID == SUNNY_BEACH) {
+        func_80096960(0, rider, D_800DA9B0[1], D_800DA9B0[2], D_800DA9B0[3]);
+    } else {
+        func_80096960(1, rider, rand, 0, 0);
+    }
+    D_80192690[D_800D48DC].unkB68 = D_800DA9B0[D_800D48DC];
+    D_80192690[D_800D48DC].unkB6C = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[0];
+    D_80192690[D_800D48DC].unkB70 = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[1];
+    D_80192690[D_800D48DC].unkB74 = D_801CB298[D_80192690[D_800D48DC].unkB68].unk_B[2];
+    if (gCourseID == SUNSET_BAY) {
+        D_80192690[D_800D48E0].unkB68 = D_800DA9B0[D_800D48DC];
+    } else {
+        D_80192690[D_800D48E0].unkB68 = D_800DA9B0[D_800D48E0];
+    }
+    D_80192690[D_800D48E0].unkB6C = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[0];
+    D_80192690[D_800D48E0].unkB70 = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[1];
+    D_80192690[D_800D48E0].unkB74 = D_801CB298[D_80192690[D_800D48E0].unkB68].unk_B[2];
+    D_80192690[2].unkB68 = D_800DA9B0[2];
+    D_80192690[2].unkB6C = D_801CB298[D_80192690[2].unkB68].unk_B[0];
+    D_80192690[2].unkB70 = D_801CB298[D_80192690[2].unkB68].unk_B[1];
+    D_80192690[2].unkB74 = D_801CB298[D_80192690[2].unkB68].unk_B[2];
+    D_80192690[3].unkB68 = D_800DA9B0[3];
+    D_80192690[3].unkB6C = D_801CB298[D_80192690[3].unkB68].unk_B[0];
+    D_80192690[3].unkB70 = D_801CB298[D_80192690[3].unkB68].unk_B[1];
+    D_80192690[3].unkB74 = D_801CB298[D_80192690[3].unkB68].unk_B[2];
+    course = gCourseID;
+    if (course < DOLPHIN_PARK) {
+        course = DOLPHIN_PARK;
+    }
+    if (course >= RIDER_SELECTION) {
+        course = SOUTHERN_ISLAND;
+    }
+    func_8009684C(0x08060000, D_800DB58C[course].unk0, D_800DB58C[course].unk2);
+    func_800C21F4(2, gCourseID);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EBD28.s")
 
