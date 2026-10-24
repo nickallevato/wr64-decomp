@@ -1209,7 +1209,131 @@ s32 func_8007D2D4(s32 mode) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D2D4.s")
 #endif
 
+// Writes the save image to the Controller Pak file (making it when there is none): mode 0 the whole image, 1-4 name
+// mode - 1 (0x80 added is ignored), 5 the records. When the file is new or its data is bad, the rest of the image
+// starts from the defaults (func_8007B370).
+#ifdef NON_MATCHING
+// Same calls; the original places the code after the file switch right behind its case 0 (the new-file case
+// jumps back into it), and registers differ. Score 6176.
+s32 func_8007D614(s32 mode) {
+    s32 n;
+    s32 ret;
+    s32 fresh;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 fileNo;
+
+    ret = Save_PfsIsPlug();
+    if (ret != 0) {
+        return ret;
+    }
+    if (mode >= 0x80) {
+        mode -= 0x80;
+    }
+    switch (osPfsFindFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, &fileNo)) {
+        case 0:
+            fresh = 0;
+            break;
+        default:
+        case PFS_ERR_NOPACK:
+        case PFS_ERR_NEW_PACK:
+        case PFS_ERR_INCONSISTENT:
+        case PFS_ERR_CONTRFAIL:
+            return 2;
+        case PFS_ERR_INVALID:
+            fresh = 1;
+            switch (osPfsAllocateFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, 0x200, &fileNo)) {
+                case 0:
+                    break;
+                case PFS_DIR_FULL:
+                    return 3;
+                default:
+                case PFS_ERR_NOPACK:
+                case PFS_ERR_NEW_PACK:
+                case PFS_ERR_INCONSISTENT:
+                case PFS_ERR_CONTRFAIL:
+                case PFS_ERR_INVALID:
+                case PFS_ERR_BAD_DATA:
+                case PFS_DATA_FULL:
+                    return 2;
+            }
+            break;
+    }
+    func_8007B930();
+    if ((mode != 0) && (fresh == 0)) {
+        switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &D_801AEC18)) {
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                return 2;
+            default:
+                for (i = 0; i < 2; i++) {
+                    if (D_801AEC18.unk4[i - 4] != D_800D8268[i]) {
+                        fresh = 1;
+                    }
+                }
+                if (Save_GenCheckSum((u8*) &D_801AEC18) != D_801AEC18.unk2) {
+                    fresh = 1;
+                }
+                break;
+        }
+    }
+    if (fresh != 0) {
+        func_8007B370(&D_801AEC18);
+    }
+    switch (mode) {
+        case 0:
+            *(SaveBlock*) &D_801AEC18 = *(SaveBlock*) D_801AEA18;
+            break;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            n = mode - 1;
+            Libc_strncpy(D_801AEC18.unk10[n], D_801AEA18->unk10[n], 10);
+            for (i = 0; i < 3; i++) {
+                D_801AEC18.unk38[0][n][i] = D_801AEA18->unk38[0][n][i];
+            }
+            break;
+        case 5:
+            for (i = 0; i < 8; i++) {
+                for (j = 0; j < 4; j++) {
+                    for (k = 0; k < 6; k++) {
+                        D_801AEC18.unk60[i][j][k] = D_801AEA18->unk60[i][j][k];
+                    }
+                }
+                for (j = 0; j < 2; j++) {
+                    for (k = 0; k < 3; k++) {
+                        D_801AEC18.unk1A8[i][j][k] = D_801AEA18->unk1A8[i][j][k];
+                    }
+                }
+                for (k = 0; k < 5; k++) {
+                    D_801AEC18.unk1D8[i][k] = D_801AEA18->unk1D8[i][k];
+                }
+            }
+            for (i = 0; i < 9; i++) {
+                for (j = 0; j < 3; j++) {
+                    for (k = 0; k < 5; k++) {
+                        D_801AEC18.unk120[i][j][k] = D_801AEA18->unk120[i][j][k];
+                    }
+                }
+            }
+            break;
+    }
+    D_801AEC18.unk2 = Save_GenCheckSum((u8*) &D_801AEC18);
+    switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_WRITE, 0, 0x200, (u8*) &D_801AEC18)) {
+        case 0:
+            return 0;
+        default:
+            return 2;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D614.s")
+#endif
 
 s32 Save_PfsDeleteFile(void) {
     s32 ret;
