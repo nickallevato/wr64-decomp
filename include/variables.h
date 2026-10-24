@@ -233,7 +233,7 @@ extern f32 D_801D06BC;
 extern f32 D_801D06C4;
 extern f32 D_801D0754;
 extern f32 D_801D0758;
-extern UnkStruct_801CF060 D_801D0668[]; // use if defined elsewhere
+extern unkStruct_func_800C1268 D_801D0668;
 extern  StructVarS0 D_801CF060[];
 extern s32 D_800E531C;
 extern s32 D_800E5344;

@@ -299,7 +299,7 @@ segments:
       - [0xA53B0, .rodata, game/code_4C750]
       - [0xA5950, .rodata, game/code_4F850]
       - [0xA5B20, .rodata, game/wr64_game_load]
-      - [0xA5CC0, rodata] # rodata from code_52CD0, introduces a gap if .rodata'd
+      - [0xA5CC0, .rodata, game/code_52CD0]
       - [0xA6350, .rodata, game/code_68A10]
 
       # AUDIO RODATA

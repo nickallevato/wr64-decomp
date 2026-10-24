@@ -41,26 +41,6 @@ struct UnkStruct_80052480 {
     s8 unk1C;
 }; /* size = 0x1C */
 
-struct UnkStruct_801C2938 {
-    char pad0[4];
-    s32 unk4;
-    char pad8[0x124];
-    s32 unk12C;
-    char pad130[0x6C];
-    s32 unk19C;
-    char pad1A0[0x124];
-    s32 unk2C4;
-    s32 unk2C8;
-    char pad2CC[0x20];
-    s32 unk2EC;
-    char pad2F0[4];
-    s32 unk2F4;
-    char pad2F8[0x20];
-    s32 unk318;
-    char pad31C[0x1C];
-    s32 unk338;
-    char pad33C[0x3C];
-};
 struct UnkStruct_801D0798 {
     char pad0[0x1C5C];
     s32 unk1C5C;
