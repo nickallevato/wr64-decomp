@@ -15,6 +15,13 @@ extern UnkStruct_801603E0 D_80160400[];
 extern UnkStruct_801603E0 D_801603E0[];
 extern UnkStruct_801603E0 D_80158520[];
 extern Vec3f D_80158450[];
+extern s32 D_800D4610;
+extern s32 D_80160420;
+extern s32 D_800D4654;
+extern s32 D_800D4670;
+extern s32 D_800D4674;
+extern f32 D_800D4678;
+extern u16 D_800D467C;
 
 extern s32 D_1000140;
 extern s32 D_10001E0;
@@ -399,4 +406,81 @@ Gfx* func_8004BC40(Gfx* gdl) {
     return gdl;
 }
 
+// The title ripple's per-frame update: the controller toggles D_800D467C/D_800D4670 or steers the second centre
+// (D_80160400); otherwise it circles, and every 300 counts it restarts (func_8004B6E0) with a new speed and every
+// seventh time a new fill colour (D_800D4650). Then each of the 0x3F6 cells moves along its offset and its vertex
+// (gGfxPool->unkFE08) follows.
+#ifdef NON_MATCHING
+// The original reloads D_800D467C, D_800D4674, D_80160420 and D_800D4670 with lui at each use (function-scope statics,
+// as in water_69D0?) where IDO here keeps their addresses in saved registers. Score 7405.
+void func_8004BC98(void) {
+    UnkStruct_801603E0* e;
+    Vtx* v;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 speed;
+    s32 last;
+    f32 w;
+    f32 k;
+
+    if (gControllerOne[D_80154330[0]].unk_2 & 0x800) {
+        D_800D467C ^= 1;
+    }
+    if (gControllerOne[D_80154330[0]].unk_2 & 0x10) {
+        func_8004B6E0();
+        D_800D4670 ^= 1;
+    }
+    if (gControllerOne[D_80154330[0]].unk_0 & 0x10) {
+        D_80160400->unk10 = gControllerOne[D_80154330[0]].unk_8 * 5;
+        D_80160400->unk14 = gControllerOne[D_80154330[0]].unk_9 * -5;
+    } else {
+        last = D_80160420;
+        D_80160420 = D_800D4610;
+        D_800D4674 = (D_800D4674 + D_800D4610) - last;
+        if (D_800D4674 > 300) {
+            if (++D_800D4654 == 7) {
+                D_800D4650 = ((SysUtils_Rand() & 0xFFFF) * 6) >> 16;
+                D_800D4654 = 0;
+            }
+            D_800D4674 = 0;
+            func_8004B6E0();
+            D_800D4670 ^= 1;
+            if (D_800DAB1C == 1) {
+                D_800D4678 = (((SysUtils_Rand() >> 16) * 50) / 65536.0) + 50.0;
+            } else {
+                D_800D4678 = (((SysUtils_Rand() >> 16) * 5) / 65536.0) + 7.0;
+            }
+        }
+        D_80160400->unk10 = gSinTable[((D_800D4610 * 8) + 0x400) & 0xFFF] * D_800D4678;
+        D_80160400->unk14 = gSinTable[(D_800D4610 * 8) & 0xFFF] * D_800D4678;
+        if (D_800D467C == 0) {
+            D_80160400->unk14 = 0;
+            D_80160400->unk10 = 0;
+        }
+    }
+    D_80160400->unk0 = D_80160400->unk8 + D_80160400->unk10;
+    D_80160400->unk4 = D_80160400->unkC + D_80160400->unk14;
+    for (i = 0, e = D_80158520; e != D_801603E0; i++, e++) {
+        v = &gGfxPool->unkFE08[i];
+        dx = D_80160400->unk0 - e->unk8;
+        dz = D_80160400->unk4 - e->unkC;
+        speed = sqrtf(SQ(D_80160400->unk10) + SQ(D_80160400->unk14)) + 0.5;
+        w = (e->unk1C + e->unk18) * (s32) (sqrtf(SQ(dx) + SQ(dz)) + 0.5);
+        if (w != 0.0f) {
+            k = (f32) (e->unk18 * speed) / w;
+            if (D_800D4670 != 0) {
+                e->unk10 = 0.5 - dx * k;
+                e->unk14 = 0.5 - dz * k;
+            } else {
+                e->unk10 = dx * k + 0.5;
+                e->unk14 = dz * k + 0.5;
+            }
+        }
+        v->v.ob[0] = e->unk0 = e->unk10 + e->unk8;
+        v->v.ob[1] = e->unk4 = e->unk14 + e->unkC;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_5480/func_8004BC98.s")
+#endif
