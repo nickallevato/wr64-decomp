@@ -140,8 +140,13 @@ typedef struct UnkA95D0_Runner {
 } UnkA95D0_Runner; // size = 0x38
 
 void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
+void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
+void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
+void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
+void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
+void func_801DED88(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
 void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline);
-void func_801DEC00(Vec3f* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline);
+void func_801DEC00(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline);
 void func_801DF278(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Key2* key);
 void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key);
 
@@ -374,9 +379,9 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEC00.s")
 
-void func_801DED44(Vec3f* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
-    func_801DEC00(&out[0], &cursors[0], &splines[0]);
-    func_801DEC00(&out[1], &cursors[1], &splines[1]);
+void func_801DED44(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(out, &cursors[0], &splines[0]);
+    func_801DEC00(out + 3, &cursors[1], &splines[1]);
 }
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DED88.s")
@@ -460,7 +465,12 @@ void func_801DFE58(UnkA95D0_Runner* runner, UnkA95D0_Key2* key) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE80.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFF5C.s")
+void func_801DFF5C(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[6];
+
+    func_801DED44(out, runner->cursors, splines);
+    func_801DF08C(runner->obj, &out[0], &out[3], NULL, NULL);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFFA8.s")
 
