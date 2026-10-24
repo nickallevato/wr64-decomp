@@ -1210,7 +1210,12 @@ typedef struct UnkStruct_801AE948_s {
     /* 0x40C0 */ Mtx unk40C0;
     Mtx unk4100[1];
     Mtx unk4140[1];
-    char pad4180[0x7040];
+    /* 0x4180 */ char pad4180[0x1040];
+    /* 0x51C0 */ Vtx unk51C0[4][0xC0];
+    /* 0x81C0 */ Vtx unk81C0[0xC0];
+    /* 0x8DC0 */ Vtx unk8DC0[4][16];
+    /* 0x91C0 */ Vtx unk91C0[4][16];
+    /* 0x95C0 */ char pad95C0[0x1C00];
     /* 0xB1C0 */ Vtx unkB1C0[4];
     /* 0xB200 */ Vtx unkB200[4];
     /* 0xB240 */ Vtx unkB240[4];

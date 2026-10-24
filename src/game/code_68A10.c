@@ -45,7 +45,9 @@ typedef struct UnkStruct_801D0798_s {
     /* 0x1000 */ UnkStruct_801D0798_unk1000 unk1000[64];
     /* 0x1A00 */ UnkStruct_801D0798_unk1000 unk1A00[4];
     /* 0x1AA0 */ UnkStruct_801D0798_unk1AA0 unk1AA0[8];
-    /* 0x1C20 */ char pad1C20[0xC];
+    /* 0x1C20 */ s32 unk1C20;
+    /* 0x1C24 */ s32 unk1C24;
+    /* 0x1C28 */ char pad1C28[0x4];
     /* 0x1C30 */ s32 unk1C2C;
     /* 0x1C34 */ s32 unk1C30;
     char pad1C34[0x4];
@@ -608,16 +610,242 @@ void func_800AF798(Gfx** gdl) {
     *gdl = gdlh;
 }
 
+extern UnkStruct_801D0798_unk0* D_800E6D64;
+extern UnkStruct_801D0798_unk0* D_800E6D68;
+extern UnkStruct_801D0798_unk1000* D_800E6D6C;
+extern UnkStruct_801D0798_unk1000* D_800E6D70;
+extern UnkStruct_801D0798_unk1000* D_800E6D74;
+extern UnkStruct_801D0798_unk1000* D_800E6D78;
+extern UnkStruct_801D0798_unk1AA0* D_800E6D80;
+extern struct camera_unk_1* D_801D796C;
+extern struct camera_unk_1* D_801D7970;
+
+void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
+
+#ifdef NON_MATCHING
+// 11460: same loops, calls and stores. Register allocation and scheduling differ from the
+// first loop on (the original keeps 0xFF, 24 and the side-vector addresses in saved registers
+// and spills more); the frame is 0xD0, not 0xE8.
+void func_800AFBD0(s32 arg0) {
+    f32 sideX;
+    f32 sideY;
+    f32 sideZ;
+    s32 i;
+    s32 alpha;
+    f32 size;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 len;
+    f32 h;
+    f32 x;
+    f32 y;
+    f32 z;
+    Vtx* vtx;
+
+    // Records of unk0, oldest first: a three-vertex streak along the record's velocity.
+    D_800E6D60->unk1C20 = 0;
+    vtx = D_801AE948->unk51C0[arg0];
+    for (i = 63, D_800E6D64 = &D_800E6D68[63]; i >= 0; i--, D_800E6D64--) {
+        if (D_800E6D64->unk38 != 0) {
+            alpha = 0xFF - (D_800E6D64->unk3C * 24);
+            if (alpha < 0) {
+                alpha = 0;
+            }
+            size = D_800E6D64->unk30;
+            if ((D_801D7A08 != 0) && (arg0 == gRiders)) {
+                size *= 2.0f;
+            }
+            dx = D_800E6D64->unkC;
+            dy = D_800E6D64->unk10;
+            dz = D_800E6D64->unk14;
+            len = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
+            if (len > 0.0f) {
+                dx /= len;
+                dy /= len;
+                dz /= len;
+            }
+            h = size * 1.2f;
+            vtx->v.ob[0] = D_800E6D64->unk0 + (h * dx);
+            vtx->v.ob[1] = D_800E6D64->unk4 + (h * dy);
+            vtx->v.cn[3] = alpha;
+            vtx->v.ob[2] = D_800E6D64->unk8 + (h * dz);
+            vtx++;
+            func_801EDAE0(D_800E6D64->unk0 - D_801D796C->unk4C, D_800E6D64->unk4 - D_801D796C->unk50,
+                          D_800E6D64->unk8 - D_801D796C->unk54, dx, dy, dz, &sideX, &sideY, &sideZ);
+            h = size * 0.5f;
+            x = h * sideX;
+            vtx->v.ob[0] = x + D_800E6D64->unk0;
+            y = h * sideY;
+            vtx->v.ob[1] = y + D_800E6D64->unk4;
+            z = h * sideZ;
+            vtx->v.cn[3] = alpha;
+            vtx->v.ob[2] = z + D_800E6D64->unk8;
+            vtx++;
+            vtx->v.ob[0] = D_800E6D64->unk0 - x;
+            vtx->v.ob[1] = D_800E6D64->unk4 - y;
+            vtx->v.cn[3] = alpha;
+            vtx->v.ob[2] = D_800E6D64->unk8 - z;
+            vtx++;
+            D_800E6D60->unk1C20++;
+        }
+    }
+    // The same streaks for the second view's camera.
+    if (gPlayers == TWO_PLAYERS) {
+        vtx = D_801AE948->unk51C0[arg0 + 2];
+        for (i = 63, D_800E6D64 = &D_800E6D68[63]; i >= 0; i--, D_800E6D64--) {
+            if (D_800E6D64->unk38 != 0) {
+                alpha = 0xFF - (D_800E6D64->unk3C * 24);
+                if (alpha < 0) {
+                    alpha = 0;
+                }
+                size = D_800E6D64->unk30;
+                vtx->v.cn[3] = alpha;
+                dx = D_800E6D64->unkC;
+                dy = D_800E6D64->unk10;
+                dz = D_800E6D64->unk14;
+                len = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
+                if (len > 0.0f) {
+                    dx /= len;
+                    dy /= len;
+                    dz /= len;
+                }
+                h = size * 1.2f;
+                vtx->v.ob[0] = D_800E6D64->unk0 + (h * dx);
+                vtx->v.ob[1] = D_800E6D64->unk4 + (h * dy);
+                vtx->v.cn[3] = alpha;
+                vtx->v.ob[2] = D_800E6D64->unk8 + (h * dz);
+                vtx++;
+                func_801EDAE0(D_800E6D64->unk0 - D_801D7970->unk4C, D_800E6D64->unk4 - D_801D7970->unk50,
+                              D_800E6D64->unk8 - D_801D7970->unk54, dx, dy, dz, &sideX, &sideY, &sideZ);
+                h = size * 0.5f;
+                vtx->v.ob[0] = D_800E6D64->unk0 + (h * sideX);
+                vtx->v.ob[1] = D_800E6D64->unk4 + (h * sideY);
+                vtx->v.cn[3] = alpha;
+                vtx->v.ob[2] = D_800E6D64->unk8 + (h * sideZ);
+                vtx++;
+                vtx->v.ob[0] = D_800E6D64->unk0 - (h * sideX);
+                vtx->v.ob[1] = D_800E6D64->unk4 - (h * sideY);
+                vtx->v.cn[3] = alpha;
+                vtx->v.ob[2] = D_800E6D64->unk8 - (h * sideZ);
+                vtx++;
+            }
+        }
+    }
+    // Records of unk1000, only for the human's slot: a triangle facing the camera (D_801D7980/8C).
+    D_800E6D60->unk1C24 = 0;
+    if (arg0 == D_800D48DC) {
+        vtx = D_801AE948->unk81C0;
+        for (i = 63, D_800E6D6C = &D_800E6D70[63]; i >= 0; i--, D_800E6D6C--) {
+            if (D_800E6D6C->unk20 != 0) {
+                size = D_800E6D6C->unk18;
+                alpha = 0xFF - (D_800E6D6C->unk24 << 5);
+                if (alpha < 0) {
+                    alpha = 0;
+                }
+                x = D_800E6D6C->unk0;
+                y = D_800E6D6C->unk4;
+                z = D_800E6D6C->unk8;
+                vtx->v.ob[0] = x;
+                vtx->v.ob[1] = y;
+                vtx->v.cn[3] = alpha;
+                vtx->v.ob[2] = z;
+                vtx++;
+                vtx->v.ob[0] = (D_801D7980 * size) + x;
+                vtx->v.ob[1] = (D_801D7984 * size) + y;
+                vtx->v.cn[3] = alpha;
+                vtx->v.ob[2] = (D_801D7988 * size) + z;
+                vtx++;
+                vtx->v.ob[0] = (D_801D798C * size) + x;
+                vtx->v.ob[1] = (D_801D7990 * size) + y;
+                vtx->v.cn[3] = alpha;
+                vtx->v.ob[2] = (D_801D7994 * size) + z;
+                vtx++;
+                D_800E6D60->unk1C24++;
+            }
+        }
+    }
+    // Records of unk1A00: a camera-facing square each.
+    vtx = D_801AE948->unk8DC0[arg0];
+    for (i = 0, D_800E6D74 = D_800E6D78; i < 4; i++, D_800E6D74++) {
+        if (D_800E6D74->unk20 != 0) {
+            size = D_800E6D74->unk18;
+            if ((D_801D7A08 != 0) && (arg0 == gRiders)) {
+                size *= 2.0f;
+            }
+            h = size / 2.0f;
+            x = D_800E6D74->unk0 - (h * (D_801D7980 + D_801D798C));
+            y = D_800E6D74->unk4 - (h * (D_801D7984 + D_801D7990));
+            z = D_800E6D74->unk8 - (h * (D_801D7988 + D_801D7994));
+            vtx->v.ob[0] = x;
+            vtx->v.ob[1] = y;
+            vtx->v.ob[2] = z;
+            vtx++;
+            vtx->v.ob[0] = (size * D_801D7980) + x;
+            vtx->v.ob[1] = (size * D_801D7984) + y;
+            vtx->v.ob[2] = (size * D_801D7988) + z;
+            vtx++;
+            vtx->v.ob[0] = ((D_801D7980 + D_801D798C) * size) + x;
+            vtx->v.ob[1] = ((D_801D7984 + D_801D7990) * size) + y;
+            vtx->v.ob[2] = ((D_801D7988 + D_801D7994) * size) + z;
+            vtx++;
+            vtx->v.ob[0] = (size * D_801D798C) + x;
+            vtx->v.ob[1] = (size * D_801D7990) + y;
+            vtx->v.ob[2] = (size * D_801D7994) + z;
+            vtx++;
+        }
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        vtx = D_801AE948->unk8DC0[arg0 + 2];
+        for (i = 0, D_800E6D74 = D_800E6D78; i != 4; i++, D_800E6D74++) {
+            if (D_800E6D74->unk20 != 0) {
+                size = D_800E6D74->unk18;
+                h = size / 2.0f;
+                x = D_800E6D74->unk0 - (h * (D_801D79A4 + D_801D79B0));
+                y = D_800E6D74->unk4 - (h * (D_801D79A8 + D_801D79B4));
+                z = D_800E6D74->unk8 - (h * (D_801D79AC + D_801D79B8));
+                vtx->v.ob[0] = x;
+                vtx->v.ob[1] = y;
+                vtx->v.ob[2] = z;
+                vtx++;
+                vtx->v.ob[0] = (size * D_801D79A4) + x;
+                vtx->v.ob[1] = (size * D_801D79A8) + y;
+                vtx->v.ob[2] = (size * D_801D79AC) + z;
+                vtx++;
+                vtx->v.ob[0] = ((D_801D79A4 + D_801D79B0) * size) + x;
+                vtx->v.ob[1] = ((D_801D79A8 + D_801D79B4) * size) + y;
+                vtx->v.ob[2] = ((D_801D79AC + D_801D79B8) * size) + z;
+                vtx++;
+                vtx->v.ob[0] = (size * D_801D79B0) + x;
+                vtx->v.ob[1] = (size * D_801D79B4) + y;
+                vtx->v.ob[2] = (size * D_801D79B8) + z;
+                vtx++;
+            }
+        }
+    }
+    // The eight unk1AA0 records, newest first from unk1C38: two vertices each.
+    vtx = D_801AE948->unk91C0[arg0];
+    for (i = 7; i >= 0; i--) {
+        D_800E6D7C = &D_800E6D80[(D_800E6D60->unk1C38 + i) % 8];
+        vtx->v.ob[0] = D_800E6D7C->unk0;
+        vtx->v.ob[1] = D_800E6D7C->unk4;
+        vtx->v.cn[3] = 0xFF;
+        vtx->v.ob[2] = D_800E6D7C->unk8;
+        vtx++;
+        vtx->v.ob[0] = D_800E6D7C->unkC;
+        vtx->v.ob[1] = D_800E6D7C->unk10;
+        vtx->v.cn[3] = 0xFF;
+        vtx->v.ob[2] = D_800E6D7C->unk14;
+        vtx++;
+        D_800E6D7C->unk28++;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800AFBD0.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B08F8.s")
 
-extern UnkStruct_801D0798_unk0* D_800E6D68;
-extern UnkStruct_801D0798_unk1000* D_800E6D70;
-extern UnkStruct_801D0798_unk1000* D_800E6D78;
-extern UnkStruct_801D0798_unk1AA0* D_800E6D80;
-
-void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 void func_801EDBD4(f32, f32, f32, f32*, f32*, f32*);
 void func_800AFBD0(s32);
 void func_800B08F8(s32);
