@@ -2511,7 +2511,6 @@ s32 func_800ADE14(s32 arg0) {
     return 0;
 }
 
-#ifdef NEEDS_RODATA
 extern s32 D_800E62C0;
 extern s32 D_801D06B8;
 
@@ -2594,6 +2593,3 @@ Gfx* func_800ADF90(Gfx* arg0) {
 
     return arg0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800ADF90.s")
-#endif
