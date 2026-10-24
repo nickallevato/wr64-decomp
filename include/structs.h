@@ -907,7 +907,7 @@ typedef struct UnkStruct_80192690 {
     /* 0x0B90 */ f32 unkB90;
     /* 0x0B94 */ f32 unkB94;
     /* 0x0B98 */ f32 unkB98;
-    /* 0x0B9C */ char padB9C[4];
+    /* 0x0B9C */ f32 unkB9C;
     /* 0x0BA0 */ f32 unkBA0;
     /* 0x0BA4 */ f32 unkBA4;
     /* 0x0BA8 */ f32 unkBA8;
@@ -930,7 +930,7 @@ typedef struct UnkStruct_80192690 {
     /* 0x0BEC */ f32 unkBEC;
     /* 0x0BF0 */ f32 unkBF0;
     /* 0x0BF4 */ f32 unkBF4;
-    /* 0x0BF8 */ char padBF8[4];
+    /* 0x0BF8 */ f32 unkBF8;
     /* 0x0BFC */ f32 unkBFC;
     /* 0x0C00 */ f32 unkC00;
     /* 0x0C04 */ f32 unkC04;
@@ -1053,7 +1053,7 @@ typedef struct UnkStruct_80192690 {
     /* 0x157C */ s32 unk157C;
     /* 0x1580 */ f32 unk1580;
     /* 0x1584 */ f32 unk1584;
-    /* 0x1588 */ char pad1588[4];
+    /* 0x1588 */ f32 unk1588;
     /* 0x158C */ f32 unk158C;
     /* 0x1590 */ f32 unk1590;
     /* 0x1594 */ f32 unk1594;
@@ -1062,19 +1062,22 @@ typedef struct UnkStruct_80192690 {
     /* 0x15A0 */ s32 unk15A0;
     /* 0x15A4 */ s32 unk15A4;
     /* 0x15A8 */ s32 unk15A8;
-    /* 0x15AC */ char pad15AC[4];
+    /* 0x15AC */ f32 unk15AC;
     /* 0x15B0 */ s32 unk15B0;
     /* 0x15B4 */ f32 unk15B4;
     /* 0x15B8 */ f32 unk15B8;
     /* 0x15BC */ f32 unk15BC;
     /* 0x15C0 */ s32 unk15C0;
-    /* 0x15C4 */ char pad15C4[0xC];
+    /* 0x15C4 */ f32 unk15C4;
+    /* 0x15C8 */ s32 unk15C8;
+    /* 0x15CC */ f32 unk15CC;
     /* 0x15D0 */ f32 unk15D0;
-    /* 0x15D4 */ char pad15D4[4];
+    /* 0x15D4 */ f32 unk15D4;
     /* 0x15D8 */ f32 unk15D8;
     /* 0x15DC */ s16 unk15DC;
     /* 0x15DE */ s16 unk15DE;
-    /* 0x15E0 */ char pad15E0[8];
+    /* 0x15E0 */ f32 unk15E0;
+    /* 0x15E4 */ f32 unk15E4;
     /* 0x15E8 */ f32 unk15E8;
     /* 0x15EC */ f32 unk15EC;
     /* 0x15F0 */ s32 unk15F0;
@@ -1100,9 +1103,13 @@ typedef struct UnkStruct_80192690 {
     /* 0x1654 */ f32 unk1654;
     /* 0x1658 */ f32 unk1658;
     /* 0x165C */ f32 unk165C;
-    /* 0x1660 */ char pad1660[0x40];                /* maybe part of unk165C[0x11]? */
+    /* 0x1660 */ char pad1660[0x3C];                /* maybe part of unk165C[0x11]? */
+    /* 0x169C */ f32 unk169C;
     /* 0x16A0 */ f32 unk16A0;
-    /* 0x16A4 */ char pad16A4[0x10];                /* maybe part of unk16A0[6]? */
+    /* 0x16A4 */ f32 unk16A4;
+    /* 0x16A8 */ f32 unk16A8;
+    /* 0x16AC */ f32 unk16AC;
+    /* 0x16B0 */ f32 unk16B0;
     /* 0x16B4 */ s32 unk16B4;
     /* 0x16B8 */ f32 unk16B8;
     /* 0x16BC */ f32 unk16BC;

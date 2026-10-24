@@ -46,7 +46,8 @@ struct UnkStruct_801C2938 {
     s32 unk4;
     char pad8[0x124];
     s32 unk12C;
-    char pad130[0x198];
+    char pad130[0x194];
+    s32 unk2C4;
     s32 unk2C8;
     char pad2CC[0x4C];
     s32 unk318;
@@ -410,6 +411,22 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern f32 D_800D4AC8;
+extern f32 D_800D4938;
+extern f32 D_800D92F0[];
+extern f32 D_800D9300[];
+extern f32 D_800D9310[];
+extern f32 D_800D9320[];
+extern f32 D_800D9330[];
+extern f32 D_800D9340[];
+extern f32 D_800D9400[];
+extern f32 D_800D9410[];
+extern f32 D_800D9480[];
+
+extern f32 D_800D49C0;
+extern f32 D_800D494C;
+extern f32 D_800D4954;
+extern u32 D_800D4944;
 extern Gfx D_10079F0[];
 extern Gfx D_2000000[];
 extern f32 D_800D49A4;
@@ -3620,7 +3637,321 @@ void func_8006390C(s32 arg0, void* arg1) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8006390C.s")
 #endif
 
+#ifdef NON_MATCHING
+// Close in structure: register allocation and a few constant loads differ (1.0f, D_800D4AC0, 0.9f),
+// so the original is 0x18 bytes longer. Control flow matches, including the switch on unk1598.
+// Starts a timed stick move (unk1598) for the rider.
+#define MOVE_START(r)          \
+    if ((r)->unk16E2 == 0) {    \
+        (r)->unk16D4 = 0;       \
+        (r)->unk16DC = 0;       \
+        (r)->unk16E2 = 1;       \
+        (r)->unk15EC = 0.0f;    \
+    }
+
+void func_80063C88(s32 arg0) {
+    UnkStruct_80192690* rider;
+    struct UnkStruct_801C2938* stats;
+    f32 f;
+    f32 d;
+    f32 speed;
+    f32 dx;
+    f32 dz;
+    f32 max;
+
+    if (D_801CE638 == 4) {
+        D_80192690[arg0].unkB64 = D_80192690[arg0].unkB68;
+        func_800629A8(&D_80192690[arg0]);
+    }
+    stats = &D_801C2938[arg0];
+    rider = &D_80192690[arg0];
+    if (stats->unk318 != 0) {
+        rider->unkC = D_800D4AC8;
+    } else {
+        rider->unkC = D_800D4AC4;
+    }
+    if (rider->unkB56 & 0x10) {
+        rider->unk14 = (rider->unk15E8 * 0.2f) + 0.8f;
+    } else if ((u16) rider->unk1602 != 0) {
+        if ((u16) rider->unk1602 == 1) {
+            rider->unk14 = 0.999f;
+        } else {
+            rider->unk14 = ((1.0f - rider->unk15E8) * D_800D4938) + rider->unk15E8;
+        }
+        rider->unk1590 = rider->unk1594 * 0.01f;
+    } else {
+        d = rider->unk15E8 - rider->unk14;
+        if (d < -0.01f) {
+            d = -0.01f;
+        } else if (d > 0.01f) {
+            d = 0.01f;
+        }
+        rider->unk14 += d;
+        rider->unk1590 = rider->unk1594;
+    }
+    if (rider->unkC54 == 8) {
+        f = 0.1f;
+    } else if (rider->unkC54 == 9) {
+        f = 0.15f;
+    } else if (rider->unkC54 == 17) {
+        f = 0.2f;
+    } else {
+        f = 1.0f;
+    }
+    rider->unk169C = D_800D92F0[rider->unkB64] * f;
+    rider->unk16A0 = D_800D9300[rider->unkB64] * f;
+    rider->unk16A4 = D_800D9320[rider->unkB64] * f;
+    rider->unk16A8 = D_800D9340[rider->unkB64] * f;
+    rider->unk16AC = D_800D9330[rider->unkB64] * f;
+    rider->unk16B0 = D_800D9310[rider->unkB64] * f;
+    if ((rider->unkB58 & 0x4000) && (rider->unkC54 == 22) && (rider->unk15D8 == 1.0f)) {
+        rider->unk15D8 = 0.9f;
+    }
+    if (rider->unkB64 == 1) {
+        if (rider->unkC7C != 0) {
+            f = D_800D4AC0;
+        } else {
+            f = 1.2f * D_800D4AC0;
+        }
+    } else if (rider->unkB64 == 2) {
+        if (rider->unkC7C != 0) {
+            f = D_800D4AC0;
+        } else {
+            f = 0.9f * D_800D4AC0;
+        }
+    } else {
+        f = D_800D4AC0;
+    }
+    if (rider->unkC54 == 23) {
+        f *= 0.7f;
+    }
+    if (rider->unk15D8 < 1.0f) {
+        f *= ((1.0f - rider->unk15D8) * 7.5f) + 1.0f;
+    }
+    rider->unk0.f = f;
+    if (rider->unk1580 <= rider->unkB90) {
+        rider->unk1588 = rider->unkBB8;
+    } else {
+        rider->unk1588 = (((1.0f - (rider->unkB90 / rider->unk1580)) * rider->unk1584) + 1.0f) * rider->unkBB8;
+    }
+    if (stats->unk2C4 == 0) {
+        rider->unk1578 = 0.0f;
+    } else {
+        if (rider->unk16CE != 0) {
+            f = D_800D95C0[rider->unkB64];
+        } else {
+            f = D_800D95B0[rider->unkB64];
+        }
+        rider->unkB9C = (stats->unk12C / 5.0f) * f;
+        if ((gPlayers == TWO_PLAYERS) && ((u16) D_800D4970 != 0)) {
+            if (stats->unk4 != 0) {
+                dx = D_80192690[D_800D48DC].unk44.x - D_80192690[D_800D48E0].unk44.x;
+                dz = D_80192690[D_800D48DC].unk44.z - D_80192690[D_800D48E0].unk44.z;
+                if (rider->unkB64 == 1) {
+                    max = 1.05f;
+                } else if (rider->unkB64 == 2) {
+                    max = 1.15f;
+                } else {
+                    max = 1.1f;
+                }
+                f = ((sqrtf(SQ(dx) + SQ(dz)) * (max - 0.9f)) / 200.0f) + 0.9f;
+                if (max < f) {
+                    f = max;
+                }
+            } else {
+                f = 0.9f;
+            }
+            rider->unk1578 *= f;
+            if (rider->unkB64 == 0) {
+                rider->unk1588 /= f;
+            } else if (rider->unkB64 == 1) {
+                rider->unk1588 /= sqrtf(f);
+            } else if (rider->unkB64 == 2) {
+                rider->unk1588 /= f * f;
+            } else {
+                rider->unk1588 /= f * sqrtf(f);
+            }
+        }
+        if (rider->unkC78 == 12) {
+            rider->unk1578 *= D_800D49C0;
+        }
+    }
+    {
+        s32 ang = DEG_TO_BINANG((((f32) rider->unkB5E * rider->unk1588) / 70.0f));
+        rider->unk15E4 = SIN(ang);
+        rider->unk15E0 = COS(ang);
+    }
+    if (rider->unk1598 != 0) {
+        rider->unk15E4 = 0.0f;
+        rider->unk15E0 = 1.0f;
+    }
+    if (((rider->unkB90 < 11.111112f) && ((rider->unkC54 == 22) || (rider->unkC54 == 7))) || (rider->unkC44 != 0.0f)) {
+        rider->unkBF8 = D_800D9480[rider->unkB64] * (f32) rider->unkB5E;
+    } else {
+        rider->unkBF8 = 0.0f;
+    }
+    speed = sqrtf(SQ(rider->unkB78) + SQ(rider->unkB80));
+    if ((rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) {
+        if (rider->unk70 > 0.8f) {
+            rider->unk15C4 = rider->unk156C * 70.0f;
+        } else {
+            rider->unk15C4 = 0.0f;
+        }
+    } else if ((rider->unkC78 == 12) || ((rider->unkC54 != 22) && (rider->unkC54 != 25))) {
+        rider->unk15C4 = 0.0f;
+    } else {
+        rider->unk15C4 = sqrtf(SQ(rider->unk6C) + SQ(rider->unk74)) * (f32) rider->unkB5F;
+        if (rider->unk15C4 < 0.0f) {
+            rider->unk15C4 *= rider->unk1570;
+        } else {
+            rider->unk15C4 *= rider->unk156C;
+            if (rider->unkC7C != 0) {
+                rider->unk15C4 *= 0.5f;
+            }
+            rider->unk15C4 *= 1.0f - ((0.25f * (f32) rider->unkB5E * (f32) rider->unkB5E) / 4900.0f);
+        }
+        if (speed < 16.666668f) {
+            f = speed / 16.666668f;
+            if (f < 0.7f) {
+                f = 0.7f;
+            }
+            rider->unk15C4 *= f;
+        }
+    }
+    if (speed < 16.666668f) {
+        rider->unk15CC = D_800D494C * (1.0f - (speed / 16.666668f)) * (f32) rider->unkB5E;
+    } else {
+        rider->unk15CC = 0.0f;
+    }
+    if (rider->unk16CC != 0) {
+        rider->unk15D4 = (f32) gWaterLevel - 10.0f;
+    } else {
+        if (speed < 33.333336f) {
+            rider->unk15D4 = (f32) gWaterLevel + (D_800D4954 * (speed / 33.333336f));
+        } else {
+            rider->unk15D4 = (f32) gWaterLevel + D_800D4954;
+        }
+        if (rider->unkB68 == 1) {
+            rider->unk15D4 -= 5.0f;
+        } else if (rider->unkB68 == 2) {
+            rider->unk15D4 += 2.0f;
+        }
+    }
+    rider->unk16F2 = rider->unk16F0;
+    if (rider->unk7C < 0.0f) {
+        rider->unk16F0 = 1;
+    } else {
+        rider->unk16F0 = 0;
+    }
+    if ((rider->unk16F0 != rider->unk16F2) && (rider->unkC54 == 22)) {
+        rider->unk16D4++;
+    }
+    if ((rider->unkC54 == 22) || (rider->unkC54 == 25)) {
+        switch (rider->unk1598) {
+            case 0:
+                if ((rider->unkC78 == 0) && (rider->unkB90 > 33.333336f) && (rider->unkC66 != 0)) {
+                    if (rider->unkB50.stick_x < -69) {
+                    if (((u32) (gFrameCounter - rider->unk15A0) < D_800D4944) || (rider->unk16F4 == 3)) {
+                        rider->unk16F4 = 0;
+                        rider->unk1598 = 2;
+                        rider->unk15AC = -D_800D9400[rider->unkB64];
+                        MOVE_START(rider);
+                        rider->unk16E8 = 3;
+                        rider->unk16EC = 0;
+                    }
+                    } else if (rider->unkB50.stick_x >= 70) {
+                    if (((u32) (gFrameCounter - rider->unk159C) < D_800D4944) || (rider->unk16F4 == 4)) {
+                        rider->unk16F4 = 0;
+                        rider->unk1598 = 1;
+                        rider->unk15AC = D_800D9400[rider->unkB64];
+                        MOVE_START(rider);
+                        rider->unk16E8 = 3;
+                        rider->unk16EC = 0;
+                    }
+                    } else if (rider->unkB50.stick_y < -69) {
+                    if (((u32) (gFrameCounter - rider->unk15A4) < D_800D4944) || (rider->unk16F4 == 5)) {
+                        rider->unk16F4 = 0;
+                        rider->unk1598 = 4;
+                        rider->unk15AC = D_800D9410[rider->unkB64];
+                        MOVE_START(rider);
+                        rider->unk16E8 = 3;
+                        rider->unk16EC = 0;
+                    }
+                    } else if ((rider->unkB50.stick_y >= 70) && ((u32) (gFrameCounter - rider->unk15A8) < D_800D4944)) {
+                        rider->unk1598 = 3;
+                        rider->unk15C8 = 0;
+                        MOVE_START(rider);
+                    }
+                }
+                break;
+            case 2:
+                if ((rider->unkB50.stick_x >= -69) ||
+                    (((rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) && (rider->unk16DC >= 6))) {
+                    rider->unk1598 = 0;
+                    rider->unk1606 = -1;
+                } else {
+                    rider->unkB5E = 0;
+                }
+                break;
+            case 1:
+                if ((rider->unkB50.stick_x < 70) ||
+                    (((rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) && (rider->unk16DC >= 6))) {
+                    rider->unk1598 = 0;
+                    rider->unk1606 = -1;
+                } else {
+                    rider->unkB5E = 0;
+                }
+                break;
+            case 3:
+                if (rider->unkC78 >= 8) {
+                    rider->unk15C8++;
+                    if (D_800D4948 < rider->unk15C8) {
+                        rider->unk1598 = 0;
+                    }
+                }
+                if (rider->unkB50.stick_y < 70) {
+                    rider->unk1598 = 0;
+                }
+                break;
+            case 4:
+                if ((rider->unkB50.stick_y >= -69) ||
+                    (((rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) && (rider->unk16DC >= 6))) {
+                    rider->unk1598 = 0;
+                    rider->unk1606 = -1;
+                } else {
+                    rider->unkB5F = 0;
+                }
+                break;
+        }
+    } else if (rider->unk1598 != 0) {
+        rider->unk1598 = 0;
+        rider->unk1606 = -1;
+    }
+    rider->unkBE4 = rider->unk44.x;
+    rider->unkBE8 = rider->unk44.y;
+    rider->unkBEC = rider->unk44.z;
+    if ((rider->unkC4C + rider->unkC48 + rider->unkC44 + rider->unkC40 + rider->unkC3C + rider->unkC50 + rider->unkC38) != 0.0f) {
+        func_80051EC0(arg0);
+    }
+    if (gRiderGameModes != PAUSE_MODE) {
+        rider->unk15DE = 0;
+        rider->unkC38 = 0.0f;
+        rider->unkC50 = 0.0f;
+        rider->unkC3C = 0.0f;
+        rider->unkC40 = 0.0f;
+        rider->unkC44 = 0.0f;
+        rider->unkC48 = 0.0f;
+        rider->unkC4C = 0.0f;
+        rider->unk15BC = 0.0f;
+        rider->unk15B8 = 0.0f;
+        rider->unk15B4 = 0.0f;
+    }
+}
+
+#undef MOVE_START
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80063C88.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80064C0C.s")
 
