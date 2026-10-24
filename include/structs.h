@@ -441,10 +441,8 @@ typedef struct GfxPool_s {
     /* 0x0F808 */ Mtx unkF808[4];
     /* 0x0F908 */ char padF908[0x500];
     /* 0x0FE08 */ Vtx unkFE08[0x3F6];
-    /* 0x13D68 */ Vtx *unk13D68;
-    /* 0x13D6C */ char pad13D6C[0x336C];
-    /* 0x170D8 */ Vtx *unk170D8;
-    /* 0x170DC */ char pad170DC[0x1F0C];
+    /* 0x13D68 */ Vtx unk13D68[0x337]; /* water vertices, view 0 (filled by func_80050204) */
+    /* 0x170D8 */ Vtx unk170D8[0x1F1]; /* water vertices, view 1 */
 } GfxPool; /* size = 0x18FE8 */
 
 
