@@ -488,7 +488,55 @@ void func_801DC0AC(UnkA95D0_Runner* runner) {
     }
 }
 
+#ifdef NON_MATCHING
+extern s32 D_80228194;
+extern s32 D_80228198;
+extern f32 D_8022819C;
+extern f32 D_802281A0;
+extern f32 D_802281A4;
+extern f32 D_802281B4;
+extern f32 D_802281B8;
+extern f32 D_802281BC;
+extern f32 D_802281C0;
+
+// The init stores and the D_80228198 increment get a shared base register here; the original keeps them apart.
+void func_801DC274(UnkA95D0_Runner* runner) {
+    f32 vec[3];
+    UnkStruct_801DB0E4_arg0* e;
+    f32 mag;
+    s32 i;
+
+    if (runner->step - D_80223A30 != 2) {
+        return;
+    }
+    D_802287A8 = 1;
+    if (runner->frame == 1) {
+        func_800AB92C();
+        D_80228190[0].unk0 = 6;
+        D_80228194 = 2;
+        D_80228198 = 0;
+        D_802281C0 = 0.1f;
+        D_8022819C = -300.0f;
+        D_802281A0 = 0.0f;
+        D_802281A4 = -540.0f;
+        D_802281B4 = 0.0f;
+        D_802281BC = 0.0f;
+        D_802281B8 = 1.0f;
+    }
+    D_80228190[0].unk8++;
+    vec[0] = -3.0f;
+    vec[1] = 0.0f;
+    vec[2] = -5.0f;
+    mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
+    e = &D_80228190[0];
+    for (i = 0; i < 3; i++) {
+        e->unk14[i] = vec[i] / mag;
+        e->unkC[i] += e->unk14[i] * 8.0f;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC274.s")
+#endif
 
 void func_801DC404(UnkA95D0_Runner* runner) {
     f32 t;
