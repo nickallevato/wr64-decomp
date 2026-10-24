@@ -300,7 +300,7 @@ typedef struct UnkStruct_80192540 {
 } UnkStruct_80192540; /* size = 0x34 */
 
 typedef struct UnkStruct_80227A60 {
-    /* 0x00 */ char pad0[0x30];
+    /* 0x00 */ Gfx* unk0[12];
     /* 0x30 */ Gfx* unk30[5];
 } UnkStruct_80227A60; /* size = 0x44 */
 
@@ -2373,7 +2373,51 @@ void func_80062918(Vec3f* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8006719C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067810.s")
+Gfx* func_80067810(Gfx* gdl, s32 arg1, s32 arg2) {
+    gSPClearGeometryMode(gdl++, G_CULL_FRONT);
+    gSPSetGeometryMode(gdl++, G_CULL_BACK);
+    if (D_80193D5C[arg2].unk0.h == 0) {
+        gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE108[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+        gSPDisplayList(gdl++, D_80227A60[arg1].unk0[0]);
+        gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE208[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+        gSPDisplayList(gdl++, D_80227A60[arg1].unk0[1]);
+        gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE308[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+        gSPDisplayList(gdl++, D_80227A60[arg1].unk0[2]);
+    }
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE408[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[3]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE508[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[4]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE608[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[5]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE708[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[6]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE908[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[7]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkEB08[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[8]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkED08[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[9]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkEF08[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[10]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF108[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[11]);
+    gSPClearGeometryMode(gdl++, G_CULL_BACK);
+    gSPSetGeometryMode(gdl++, G_CULL_FRONT);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkE808[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[6]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkEA08[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[7]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkEC08[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[8]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkEE08[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[9]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF008[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[10]);
+    gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF208[arg2], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[11]);
+    return gdl;
+}
 
 Gfx* func_80067BFC(Gfx* gdl, s32 arg1, s32 arg2) {
     gdl = func_80067810(gdl, arg1, arg2);
