@@ -996,7 +996,7 @@ void func_801DDAB8(void* arg0, void* arg1, void* arg2) {
             obj->u.p5.unk48[1].target = 90.0f;
             break;
         case 3:
-        mode3:
+        mode3: // goto target: case 5 with D_801CE638 == 0 sets mode 3 and runs this code
             func_801DF5F0(obj, &D_80225BD8);
             obj->u.p5.unkC = D_80228108;
             obj->u.p5.unk18[0] = cam->unk4 - cam->unk1C * 100.0f;
@@ -1015,7 +1015,7 @@ void func_801DDAB8(void* arg0, void* arg1, void* arg2) {
             switch (D_801CE638) {
                 case 0:
                     cam->viewMode = 3;
-                    goto mode3;
+                    goto mode3; // into case 3's code, as the original does
                 case 8:
                 default:
                     cam->viewMode = 6;
@@ -1085,7 +1085,7 @@ void func_801DDE48(void) {
 }
 
 void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner) {
-    UNUSED s32 pad[2];
+    UNUSED s32 pad[2]; // stack pad for the original's frame size
     f32 prevX;
     f32 prevY;
     f32 prevZ;
@@ -1149,6 +1149,7 @@ void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner
                 obj->u.p5.unk34 = sqrtf(SQ(cam->unk10) + SQ(cam->unk18));
                 break;
             }
+            // fallthrough: with a script set, case 4 goes on into case 7
         case 7:
             cam->camViewY += (0.0f - cam->camViewY) * 0.15f;
             if (runner->step->duration == -2) {
@@ -1196,7 +1197,7 @@ void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner
         case 8:
             func_801DD6B4(runner);
             runner->frame++;
-            goto skip;
+            goto skip; // case 8 jumps past func_801DFC48, as the original does
     }
     func_801DFC48(obj);
 skip:
@@ -1263,6 +1264,7 @@ void func_801DE3CC(void) {
             case 23:
             case 24:
                 rate = 0.15f;
+                // fallthrough
             case 25:
                 if (mode >= 2) {
                     viewY = 10.0f;
@@ -1321,7 +1323,7 @@ f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count) {
         w[1] = ((t3 * 0.5f) - t2) + 0.6666667f;
         w[2] = (-t3 * 0.5f) + (t2 * 0.5f) + (t * 0.5f) + 0.16666667f;
         w[3] = t3 / 6.0f;
-    } else if (count == (seg + 5U)) {
+    } else if (count == (seg + 5U)) { // 5U, 4U: unsigned, so IDO keeps the compare as written (not seg == count - 5)
         u = 1.0f - t;
         u2 = u * u;
         u3 = u2 * u;

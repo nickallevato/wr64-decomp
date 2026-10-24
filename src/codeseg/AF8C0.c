@@ -442,9 +442,9 @@ Gfx* Initials_DrawLetterWheel(Gfx* gdl) {
         } else if ((i >= gLetterWheelFirst) || (i <= gLetterWheelLast)) {
             draw = 1;
             if (1) {} // FAKE
-            if (1) {}
-            if (1) {}
-            if (1) {}
+            if (1) {} // FAKE
+            if (1) {} // FAKE
+            if (1) {} // FAKE
         }
         if (draw != 0) {
             gSPMatrix(gdl++, &D_801CE5F8->unk1380[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);

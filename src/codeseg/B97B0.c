@@ -30,7 +30,7 @@ void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
 void func_801EB180(void) {
-    s32 pad[2];
+    s32 pad[2]; // stack pad for the original's 0x30 frame
     s32 rider;
     s32 i;
     s32 course;
