@@ -1,9 +1,17 @@
 #include "common.h"
 
-typedef struct UnkStruct_80228C30 {
-    /* 0x00 */ char pad0[0x18];
+typedef struct UnkStruct_80228C30_sub {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ char pad10[4];
+    /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ char pad1C[0x38];
+} UnkStruct_80228C30_sub; /* size = 0x1C */
+
+typedef struct UnkStruct_80228C30 {
+    /* 0x00 */ UnkStruct_80228C30_sub unk0[3];
 } UnkStruct_80228C30; /* size = 0x54 */
 
 typedef struct PortraitPos {
@@ -704,7 +712,7 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // Buoy marks: the label, k = gBuoyMisses (at most 28) marks D_102E3D8, then the rider's unk134 (n)
-    // marks D_102E620 over the right end of the row (one fewer while D_80228C30[player].unk18 == 1).
+    // marks D_102E620 over the right end of the row (one fewer while D_80228C30[player].unk0[0].unk18 == 1).
     if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
         if (gPlayers == ONE_PLAYER) {
             HUD_LOAD32(gdl, D_102DF50, 24, 12);
@@ -750,7 +758,7 @@ void func_801F4120(Gfx** gdlp) {
                     n = D_801C2938[D_800D48E0].unk134;
                 }
             }
-            if (boost->unk18 == 1) {
+            if (boost->unk0[0].unk18 == 1) {
                 n--;
             }
             j = k - n;
