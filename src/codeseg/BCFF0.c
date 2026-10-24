@@ -17,7 +17,8 @@ typedef struct UnkStruct_80228C30 {
 typedef struct PortraitPos {
     /* 0x00 */ s32 x;
     /* 0x04 */ s32 y;
-    /* 0x08 */ char pad8[8];
+    /* 0x08 */ s32 unk8; /* target x */
+    /* 0x0C */ s32 unkC; /* target y */
     /* 0x10 */ s32 bobPhase; /* index into gPortraitBob (& 7) */
 } PortraitPos; /* size = 0x14 */
 
@@ -1340,7 +1341,157 @@ void func_801F4120(Gfx** gdlp) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F4120.s")
 #endif
 
+#ifdef NON_MATCHING
+// Score 3870: &gRiders is not hoisted into a register (the original keeps it in t4), which shifts most registers.
+extern s32 D_801C1FD4;
+extern s32 D_80228DD8[4];
+extern s32 D_80228DE8[4];
+extern s32 D_80228DFC;
+
+void func_801F8DD0(void) {
+    s32 i;
+    s32 j;
+    PortraitPos* pos;
+    RiderStruct* r;
+    s32 me;
+    s32 d;
+    s32 ad;
+    s32 bob;
+    f32 dx;
+    f32 dz;
+    f32 dist;
+
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            gPortraitPos[i][j].unkC = D_801C2938[j].racePosition * 24;
+        }
+        for (j = 0; j < gRiders; j++) {
+            if (gPlayers == ONE_PLAYER) {
+                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                    gPortraitPos[i][j].unkC += 4;
+                }
+            } else if (i == 0) {
+                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                    gPortraitPos[i][j].unkC += 4;
+                }
+            } else if (D_801C2938[D_800D48E0].racePosition < D_801C2938[j].racePosition) {
+                gPortraitPos[i][j].unkC += 4;
+            }
+        }
+        for (j = 0; j < gRiders; j++) {
+            pos = &gPortraitPos[i][j];
+            d = pos->unkC - pos->y;
+            if (pos->y != pos->unkC) {
+                ad = (d < 0) ? -d : d;
+                if (ad < 5) {
+                    pos->y = pos->unkC;
+                    pos->unk8 = 0;
+                } else {
+                    pos->y += ((d == 0) ? 0 : (d > 0) ? 1 : -1) * 4;
+                    if (d < 0) {
+                        pos->unk8 = 0;
+                    } else if (ad < 16) {
+                        pos->unk8 = ad / 2;
+                    } else {
+                        pos->unk8 = 8;
+                    }
+                }
+            } else {
+                pos->unk8 = 0;
+            }
+            d = pos->unk8 - pos->x;
+            if (pos->x != pos->unk8) {
+                ad = (d < 0) ? -d : d;
+                if (ad < 3) {
+                    pos->x = pos->unk8;
+                } else {
+                    pos->x += ((d == 0) ? 0 : (d > 0) ? 1 : -1) * 2;
+                }
+            }
+        }
+    }
+    for (j = 0; j < gRiders; j++) {
+        if (D_80192690[j].unk15C0 == 2) {
+            D_80228DD8[j] = -15;
+        } else if (D_80192690[j].unk15C0 == 1) {
+            D_80228DD8[j] = -5;
+        } else {
+            D_80228DE8[j] = 1;
+            D_80228DD8[j] = 0;
+        }
+        d = D_80228DD8[j] - D_80228DC8[j];
+        if (D_80228DC8[j] != D_80228DD8[j]) {
+            ad = (d >= 0) ? d : -d;
+            D_80228DE8[j]++;
+            if (d > 0) {
+                D_80228DC8[j]++;
+            } else if (D_80228DE8[j] >= ad) {
+                D_80228DC8[j] = D_80228DD8[j];
+            } else {
+                D_80228DC8[j] -= D_80228DE8[j];
+            }
+            if (D_80228DC8[j] == D_80228DD8[j]) {
+                D_80228DE8[j] = 1;
+            }
+        }
+    }
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            pos = &gPortraitPos[i][j];
+            if ((pos->x == pos->unk8) && (pos->y == pos->unkC) && (D_801C1FD4 == 0)) {
+                r = &D_801C2938[j];
+                if ((r->unk2F4 == 0) && (((i == 0) && (r->unk320 == D_801C2938[D_800D48DC].unk320) &&
+                                          (r->racePosition == D_801C2938[D_800D48DC].racePosition + 1)) ||
+                                         ((i == 1) && (r->unk320 == D_801C2938[D_800D48E0].unk320) &&
+                                          (r->racePosition == D_801C2938[D_800D48E0].racePosition + 1)))) {
+                    if (i == 0) {
+                        me = D_800D48DC;
+                    } else {
+                        me = D_800D48E0;
+                    }
+                    if ((r->unk310 == D_801C2938[me].unk310) && (gGameModeState == GMODE_STATE_STARTED)) {
+                        dx = D_80192690[me].unk44.x - D_80192690[j].unk44.x;
+                        dz = D_80192690[me].unk44.z - D_80192690[j].unk44.z;
+                        dist = sqrtf(dx * dx + dz * dz);
+                        if (dist < 512.0f) {
+                            if (dist < 256.0f) {
+                                bob = pos->bobPhase + 2;
+                            } else {
+                                bob = pos->bobPhase + 1;
+                            }
+                            pos->bobPhase = bob & 7;
+                        }
+                    }
+                }
+            }
+            if (pos->bobPhase != 0) {
+                pos->bobPhase++;
+                if (pos->bobPhase >= 8) {
+                    pos->bobPhase = 0;
+                }
+            }
+        }
+    }
+    if (D_80228A9C == 1) {
+        D_80228A9C = 2;
+        D_80228DFC = 4;
+    }
+    d = D_80228DFC - D_80228DF8;
+    if (D_80228DFC != D_80228DF8) {
+        D_80228DF8 += (d == 0) ? 0 : (d > 0) ? 1 : -1;
+    }
+    if (D_80228DFC == D_80228DF8) {
+        if (D_80228DF8 > 0) {
+            D_80228A9C = 3;
+        } else {
+            D_80228A9C = 0;
+        }
+        D_80228DFC = 0;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F8DD0.s")
+#endif
 
 // Draw the column of rider portraits, with their race positions.
 void func_801F9520(Gfx** gdlp) {
