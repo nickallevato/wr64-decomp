@@ -8,9 +8,9 @@ typedef struct {
     /* 0x02 */ s16 unk2;  /* 0..3, advanced every unk8 frames */
     /* 0x04 */ s32 unk4;  /* frame counter */
     /* 0x08 */ s32 unk8;  /* frames per step */
-    /* 0x0C */ s16 unkC;
-    /* 0x0E */ s16 unkE;
-    /* 0x10 */ s16 unk10;
+    /* 0x0C */ s16 r; /* prim colour, set by func_801E946C */
+    /* 0x0E */ s16 g;
+    /* 0x10 */ s16 b;
     /* 0x12 */ s16 unk12;
 } UnkStruct_80228A78; /* size = 0x14 */
 
@@ -71,7 +71,28 @@ Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EAA6C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EADB0.s")
+/* Sets D_80228A78's colour from its phase and timer: red and blue ramp 128 -> 255 in phases 0 and 2, back in 1 and 3. */
+void func_801EADB0(void) {
+    s32 c;
+    s32 c2;
+
+    switch (D_80228A78.unk2) {
+        case 0:
+        case 2:
+            c = (u32) ((D_80228A78.unk4 * 127.0f) / D_80228A78.unk8) + 128;
+            D_80228A78.r = c;
+            D_80228A78.g = 255;
+            D_80228A78.b = c;
+            break;
+        case 1:
+        case 3:
+            c2 = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 127.0f) / D_80228A78.unk8) + 128;
+            D_80228A78.r = c2;
+            D_80228A78.g = 255;
+            D_80228A78.b = c2;
+            break;
+    }
+}
 
 void func_801EAF78(void) {
     D_80228A78 = D_80226E30;
