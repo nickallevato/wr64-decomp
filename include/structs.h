@@ -1027,7 +1027,11 @@ typedef struct UnkStruct_801AE948_s {
     /* 0x40C0 */ Mtx unk40C0;
     Mtx unk4100[1];
     Mtx unk4140[1];
-    char pad4180[0x7140];
+    char pad4180[0x7040];
+    /* 0xB1C0 */ Vtx unkB1C0[4];
+    /* 0xB200 */ Vtx unkB200[4];
+    /* 0xB240 */ Vtx unkB240[4];
+    /* 0xB280 */ Vtx unkB280[4];
     LookAt unkB2C0[1];
     Hilite unkB2E0[1];
 } UnkStruct_801AE948;

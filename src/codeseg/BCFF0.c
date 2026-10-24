@@ -81,6 +81,8 @@ extern s32 D_80228AC0;
 extern s32 D_80228B50;
 extern s32 D_80228B54;
 extern UnkStruct_80228B88 D_80228B88[2][4];
+extern s32 D_80228C28;
+extern s32 D_80228C2C;
 extern UnkStruct_80228C30 D_80228C30[];
 extern s8 D_80228CF8[5];
 extern u16 D_80228D24;
@@ -760,7 +762,133 @@ void func_801F0E7C(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F14B4.s")
+extern Gfx D_1014820[];
+extern Gfx D_1014870[];
+extern Gfx D_10148C0[];
+extern Gfx D_1014910[];
+extern u8 D_80227744[][3];
+extern u8 D_80227754[][3];
+extern u8 D_80227764[][3];
+extern u8 D_80227774[][3];
+
+// Draw the HUD markers of D_80228C30 (missed buoys, boosts), after cycling their vertex colours.
+void func_801F14B4(Gfx** gdlp) {
+    Gfx* gdl;
+    s32 j;
+    f32 f;
+    s32 r0;
+    s32 g0;
+    s32 b0;
+    s32 r1;
+    s32 g1;
+    s32 b1;
+    f32 g;
+    Vtx* vtx;
+    u8(*top)[3];
+    u8(*bottom)[3];
+    UnkStruct_80228C30* m;      // unused; m and e keep the frame at 0xE8
+    UnkStruct_80228C30_sub* e;  // unused
+    RiderStruct* rider;
+    s32 i;
+
+    gdl = *gdlp;
+    f = (2 - D_80228C28) / (f32) 2; // (f32) 2: with 2.0f IDO multiplies by 0.5f
+    g = 1.0f - f;
+    for (j = 0; j < 4; j++) {
+        if (j == 0) {
+            top = D_80227744;
+            bottom = D_80227754;
+            vtx = D_801AE948->unkB1C0;
+        } else if (j == 1) {
+            vtx = D_801AE948->unkB280;
+        } else if (j == 2) {
+            top = D_80227764;
+            bottom = D_80227774;
+            vtx = D_801AE948->unkB200;
+        } else {
+            vtx = D_801AE948->unkB240;
+        }
+        if ((j == 0) || (j == 2)) {
+            r0 = top[D_80228C2C][0] * f;
+            g0 = top[D_80228C2C][1] * f;
+            b0 = top[D_80228C2C][2] * f;
+            r0 += top[D_80228C2C + 1][0] * g;
+            g0 += top[D_80228C2C + 1][1] * g;
+            b0 += top[D_80228C2C + 1][2] * g;
+            r1 = bottom[D_80228C2C][0] * f;
+            g1 = bottom[D_80228C2C][1] * f;
+            b1 = bottom[D_80228C2C][2] * f;
+            r1 += bottom[D_80228C2C + 1][0] * g;
+            g1 += bottom[D_80228C2C + 1][1] * g;
+            b1 += bottom[D_80228C2C + 1][2] * g;
+        }
+        vtx[0].v.cn[0] = r0;
+        vtx[0].v.cn[1] = g0;
+        vtx[0].v.cn[2] = b0;
+        vtx[1].v.cn[0] = r0;
+        vtx[1].v.cn[1] = g0;
+        vtx[1].v.cn[2] = b0;
+        vtx[2].v.cn[0] = r1;
+        vtx[2].v.cn[1] = g1;
+        vtx[2].v.cn[2] = b1;
+        vtx += 3; // the original steps to the last vertex rather than indexing it
+        vtx->v.cn[0] = r1;
+        vtx->v.cn[1] = g1;
+        vtx->v.cn[2] = b1;
+    }
+    if (gCurrentPauseMenuOption == -1) {
+        D_80228C28++;
+        if (D_80228C28 >= 2) {
+            D_80228C28 = 0;
+            D_80228C2C++;
+            D_80228C2C &= 3;
+        }
+    }
+    gSPClearGeometryMode(gdl++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(gdl++, G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+    gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetTexturePersp(gdl++, G_TP_PERSP);
+    gDPSetTextureFilter(gdl++, G_TF_BILERP);
+    gDPSetCombineMode(gdl++, G_CC_MODULATERGBA, G_CC_MODULATERGBA);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetAlphaCompare(gdl++, G_AC_NONE);
+    gSPMatrix(gdl++, &D_5000000->unk4040, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            rider = &D_801C2938[D_800D48E0];
+        }
+        for (j = 0; j < 3; j++) {
+            if (D_80228C30[i].unk0[j].unk18 != 0) {
+                func_801EDFFC(&D_801AE948->unk4140[D_801AE950], D_80228C30[i].unk0[j].unk0 + D_80228B54,
+                              D_80228C30[i].unk0[j].unk4, 0.0f);
+                gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                func_801EE97C(&D_801AE948->unk4140[D_801AE950], D_80228C30[i].unk0[j].unk10,
+                              D_80228C30[i].unk0[j].unk10, 1.0f);
+                gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+                switch (D_80228C30[i].unk0[j].unk18) {
+                    case 1:
+                        gSPDisplayList(gdl++, D_1014820);
+                        break;
+                    case 2:
+                        if (rider->unk12C >= 5) {
+                            gSPDisplayList(gdl++, D_1014910);
+                        } else {
+                            gSPDisplayList(gdl++, D_1014870);
+                        }
+                        break;
+                    case 3:
+                        gSPDisplayList(gdl++, D_10148C0);
+                        break;
+                }
+            }
+        }
+    }
+    *gdlp = gdl;
+}
 
 extern u16 D_801CE72E;
 extern s32 D_80228B5C;
