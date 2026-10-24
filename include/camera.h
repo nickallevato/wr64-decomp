@@ -24,7 +24,9 @@ typedef struct camera_unk_1 {
     /* 0x04C */ f32 unk4C;
     /* 0x050 */ f32 unk50;
     /* 0x054 */ f32 unk54;
-    /* 0x058 */ u8 pad58[0xC];
+    /* 0x058 */ f32 unk58;
+    /* 0x05C */ f32 unk5C;
+    /* 0x060 */ f32 unk60;
     /* 0x064 */ f32 unk64;
     /* 0x068 */ f32 unk68;
     /* 0x06C */ f32 unk6C;
@@ -35,16 +37,20 @@ typedef struct camera_unk_1 {
     /* 0x080 */ f32 unk80;
     /* 0x084 */ f32 unk84;
     /* 0x088 */ f32 unk88;
-    /* 0x08C */ char pad8C[0x8];
+    /* 0x08C */ f32 unk8C;
+    /* 0x090 */ f32 unk90;
     /* 0x094 */ f32 unk94;
     /* 0x098 */ f32 unk98;
     /* 0x09C */ f32 unk9C;
     /* 0x0A0 */ f32 unkA0;
-    /* 0x0A4 */ char padA4[0x48];                   /* maybe part of unkA0[0x13]? */
+    /* 0x0A4 */ MtxF unkA4;
+    /* 0x0E4 */ u16 unkE4;
+    /* 0x0E6 */ char padE6[2];
+    /* 0x0E8 */ s32 unkE8;
     /* 0x0EC */ s32 unkEC;
     /* 0x0F0 */ f32 unkF0;
     /* 0x0F4 */ f32 unkF4;
-    /* 0x0F8 */ char padF8[4];
+    /* 0x0F8 */ s32 unkF8;
     /* 0x0FC */ f32 camViewY;
     /* 0x100 */ char pad100[8];                     /* maybe part of camViewY[3]? */
     /* 0x108 */ s32 unk10C;
