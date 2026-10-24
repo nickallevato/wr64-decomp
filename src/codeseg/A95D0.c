@@ -410,7 +410,10 @@ void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj) {
     runner->obj = obj;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFD94.s")
+void func_801DFD94(UnkA95D0_Runner* runner, UnkA95D0_Step* step) {
+    runner->step = step;
+    runner->frame = 0;
+}
 
 void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors) {
     runner->cursors = cursors;
