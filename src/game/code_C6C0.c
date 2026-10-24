@@ -326,6 +326,8 @@ extern f32 D_800D4A68[7];
 extern f32 D_800D49F4;
 extern f32 D_800D4A00;
 extern UnkStruct_80192690 D_80193D5C[];
+extern u8 D_3000000[];
+extern Gfx D_10068B0[];
 
 void func_80098048(s32, s32);
 f32 func_8004D30C(f32, f32);
@@ -2209,7 +2211,17 @@ s32 func_8006931C(UnkStruct_80192690* arg0, Mtx* arg1) {
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800694B8.s")
+Gfx* func_800694B8(Gfx* gdl, s32 arg1) {
+    if (D_80192690[arg1].unkC78 < 4) {
+        if (func_8006931C(&D_80192690[arg1], &gGfxPool->unkF808[arg1]) == 0) {
+            // Segment 3 is gGfxPool.
+            gSPMatrix(gdl++, &((GfxPool*) D_3000000)->unkF808[arg1], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gdl++, D_10068B0);
+        }
+    }
+    return gdl;
+}
+
 
 Gfx* func_80069594(Gfx* arg0) {
     UnkStruct_80192690* temp_v1;
