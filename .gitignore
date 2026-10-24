@@ -43,3 +43,6 @@ venv_dir/*
 tools/decomp-permuter
 tools/m2c
 /m2c/
+
+# decomp-permuter work dirs (hold ROM-derived target asm)
+/nonmatchings/

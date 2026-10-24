@@ -1,6 +1,6 @@
 #include "common.h"
 
-void func_801E9858(Gfx*, s32, s32, s32, s32);
+Gfx* func_801E9858(Gfx*, s32, char*, s32, s32);
 extern f32 D_80226E24;
 extern s16 D_80226E28;
 
@@ -21,7 +21,14 @@ void func_801E92FC(Gfx* arg0, s32 arg1, char* buf, s32 arg3, s32 arg4, s32 arg5,
     func_801E9858(arg0, arg1, buf, arg3, arg4);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E93B4.s")
+Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
+                   u8 arg10, u8 arg11, u8 arg12, u8 arg13, u8 arg14, u8 arg15, u8 arg16, u8 arg17, f32 scale) {
+    D_80226E24 = scale;
+    gdl = func_801E946C(gdl, mode, (s32) arg6, (s32) arg7, (s32) arg8, (s32) arg9, (s32) arg10, (s32) arg11,
+                        (s32) arg12, (s32) arg13, (s32) arg14, (s32) arg15, (s32) arg16, (s32) arg17);
+    D_80226E28 = 1;
+    return func_801E9858(gdl, font, str, x, y);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E946C.s")
 
