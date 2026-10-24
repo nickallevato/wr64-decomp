@@ -760,4 +760,56 @@ void func_80050F8C(s32 view, f32 x, f32 z) {
     }
 }
 
+extern s32 D_800D47C4;
+extern s32 D_800D47C8;
+extern f32 D_800D47CC;
+extern f32 D_800D47D0;
+extern s32 D_801C1FCC;
+
+void func_80050B78(camera_unk_1* cam, f32* x, f32* z);
+
+#ifdef NON_MATCHING
+// 5472/18800: the frame is 0x30 here, 0x28 in the original, and the addresses of D_800D47C4 and D_800D47CC/D0 are held in registers here; the original loads each with its own lui
+void func_80051238(void) {
+    s32 angle;
+    f32 x;
+    f32 z;
+
+    if ((gCourseID == GLACIER_COAST) && (gRiderGameModes != PAUSE_MODE) && (D_801CE638 == 1)) {
+        if (D_801C1FCC == 1) {
+            if (gWaterLevel >= -99) {
+                gWaterLevel--;
+            }
+        } else if ((D_801C1FCC == 2) && (gWaterLevel >= -149)) {
+            gWaterLevel--;
+        }
+    }
+    if (D_801CE64C == 1) {
+        if (D_801CE638 != 6) {
+            angle = (D_800D47C4 + D_800D47C8 + 0x1000) & 0xFFF;
+            D_800D47CC += 51.2 * COS(angle);
+            D_800D47C4 = angle;
+            D_800D47D0 += 51.2 * SIN(angle);
+            if ((f32) (D_80192498 * D_80192498) < ((D_800D47CC * D_800D47CC) + (D_800D47D0 * D_800D47D0))) {
+                angle = SysUtils_Rand() & 0xFFF;
+                D_800D47C4 = angle;
+                D_800D47CC = COS(angle) * D_80192498;
+                D_800D47D0 = SIN(angle) * D_80192498;
+                D_800D47C4 = SysUtils_Rand() & 0xFFF;
+                D_800D47C8 = (s32) (((f32) (SysUtils_Rand() & 0x3FFF) * 14.0f) / 16383.0) - 7;
+            }
+            func_8004EFB4(D_800D47CC, D_800D47D0, -50);
+        }
+        func_80050F8C(0, 0.0f, 0.0f);
+        return;
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        func_80050B78(&gCameraPerspective[1], &x, &z);
+        func_80050F8C(1, x, z);
+    }
+    func_80050B78(gCameraPerspective, &x, &z);
+    func_80050F8C(0, x, z);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80051238.s")
+#endif
