@@ -1076,7 +1076,8 @@ typedef struct UnkStruct_801C43F8_s {
 
 typedef struct UnkStruct_801CE5F8_s {
     char pad[0x40];
-    Vtx unk40[160]; /* the text printer's quad vertices (func_801E8800), from D_80228A40 */
+    Vtx unk40[120]; /* the text printer's quad vertices (func_801E8800), from D_80228A40 (clamped to 0x74 + 4) */
+    char pad7C0[0x280];
     Mtx unkA40[1];
     Mtx unkA80[1];
     char padA80[0x7C0-0x40];
