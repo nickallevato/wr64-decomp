@@ -959,7 +959,155 @@ void func_8004F790(s32 amplitude) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F790.s")
 #endif
 
+extern s32 D_800D4684[];
+extern UnkStruct_80192420 D_80192420[];
+extern s32 D_8019249C;
+extern s32 D_801924A0;
+extern s32 D_801924A8;
+extern s32 D_801924A4;
+extern f32 D_801924AC;
+extern f32 D_801924B0;
+extern f32 D_801924B8;
+extern f32 D_801924BC;
+
+void func_8004E614(void);
+void func_8004F790(s32 amplitude);
+
+/*
+ * Sets up the water for a scene: the simulation shifts and the window size N (16, 10 or 12), the
+ * 13-word parameter set from D_800D4684, gWaterLevel, the cell lists (func_8004E614) and a random
+ * field (func_8004F790); the field's wrap bounds; and, in both GfxPools, the vertex colours of the
+ * window's vertices and the texture coordinate 0x400 on its boundary ring and skirt.
+ */
+
+#ifdef NON_MATCHING
+// 12834/52100: registers from the start (saved registers numbered differently) and the frame (0x40 here, 0x50 in the original, which spills the two wrap counts to 0x40/0x44 across sqrtf)
+void func_8004F9E0(s32 waterLevel, s32 amplitude) {
+    s32 set;
+    s32* src;
+    s32* dst;
+    s32 nu;
+    s32 nv;
+    GfxPool* pool;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 top;
+    s32 bot;
+    s32 b;
+    s32 c;
+    s32 d;
+    s32 step;
+
+    if (D_801CE64C == 1) {
+        D_800D4724 = 10;
+        D_800D472C = 4;
+        D_800D4730 = 5;
+        D_80192494 = 16;
+        set = 0;
+    } else {
+        D_800D4724 = 9;
+        D_800D472C = 5;
+        D_800D4730 = 6;
+        if ((D_801CE64C == 2) || (gPlayers == TWO_PLAYERS)) {
+            D_80192494 = 10;
+            set = 26;
+        } else {
+            D_80192494 = 12;
+            set = 13;
+        }
+    }
+    D_80192420[0].unk0 = D_80192420[0].unk4 = D_80192420[1].unk0 = D_80192420[1].unk4 = 0;
+    D_80192420[1].unk18 = 0.0f;
+    D_80192420[0].unk8 = D_80192420[0].unkC = D_80192420[0].unk10 = D_80192420[0].unk14 = D_80192420[0].unk18 =
+        D_80192420[1].unk8 = D_80192420[1].unkC = D_80192420[1].unk10 = D_80192420[1].unk14 = D_80192420[1].unk18;
+    for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192494;) {
+        *dst++ = *src++;
+    }
+    D_801924A0 = 0x8000;
+    D_801924A4 = 0x8000;
+    D_801924A8 = 0x800;
+    D_80192498 = D_80192494 << 6;
+    D_8019249C = (D_80192494 * 3 * (D_80192494 + 1)) + 1;
+    gWaterLevel = waterLevel;
+    func_8004E614();
+    func_8004F790(amplitude);
+    nu = ((f32) ((D_801924A8 * 2) + D_801924A0) / 49152.0f) + 0.9;
+    nv = ((f32) (D_801924A4 + (D_801924A8 * 2)) / (sqrtf(3.0f) * 2.0f * 8192.0f)) + 0.9;
+    D_801924AC = (nu * 0x6000) - 1.0;
+    D_801924B0 = -nu * 0x6000;
+    D_801924B8 = (sqrtf(3.0f) * nv * 8192.0f) - 1.0;
+    D_801924BC = sqrtf(3.0f) * -nv * 8192.0f;
+    D_801924B4 = (D_801924AC - D_801924B0) + 1.0;
+    D_801924C0 = (D_801924B8 - D_801924BC) + 1.0;
+    for (pool = &D_8011F8E8[1]; pool >= D_8011F8E8; pool--) {
+        for (i = D_8019249C + 5; i >= 0; i--) {
+            pool->unk13D68[i].v.cn[0] = 0xFF;
+            pool->unk13D68[i].v.cn[1] = 0xFF;
+            pool->unk13D68[i].v.cn[2] = 0xFF;
+            pool->unk13D68[i].v.cn[3] = 0xB0;
+        }
+        if (gPlayers == TWO_PLAYERS) {
+            for (i = D_8019249C + 5; i >= 0; i--) {
+                pool->unk170D8[i].v.cn[0] = 0xFF;
+                pool->unk170D8[i].v.cn[1] = 0xFF;
+                pool->unk170D8[i].v.cn[2] = 0xFF;
+                pool->unk170D8[i].v.cn[3] = 0xB0;
+            }
+        }
+        top = D_80192494;
+        bot = D_8019249C - D_80192494;
+        c = bot - 1;
+        d = bot - 2;
+        b = top + 1;
+        step = top + 2;
+        for (j = D_80192494 - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
+            pool->unk13D68[j].v.tc[1] = pool->unk13D68[j].v.tc[0] = pool->unk13D68[b].v.tc[1] = pool->unk13D68[b].v.tc[0] =
+                pool->unk13D68[top].v.tc[1] = pool->unk13D68[top].v.tc[0] = pool->unk13D68[c].v.tc[0] =
+                    pool->unk13D68[c].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
+                        pool->unk13D68[k].v.tc[0] = pool->unk13D68[k].v.tc[1] = 0x400;
+            b += step;
+            top += step;
+            c -= step;
+            d -= step;
+            step++;
+        }
+        pool->unk13D68[D_80192460[1]].v.tc[0] = pool->unk13D68[D_80192460[1]].v.tc[1] =
+            pool->unk13D68[D_80192460[2]].v.tc[0] = pool->unk13D68[D_80192460[2]].v.tc[1] =
+                pool->unk13D68[D_80192460[3]].v.tc[0] = pool->unk13D68[D_80192460[3]].v.tc[1] =
+                    pool->unk13D68[D_80192460[4]].v.tc[0] = pool->unk13D68[D_80192460[4]].v.tc[1] =
+                        pool->unk13D68[D_80192460[5]].v.tc[0] = pool->unk13D68[D_80192460[5]].v.tc[1] =
+                            pool->unk13D68[D_80192460[6]].v.tc[0] = pool->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
+        if (gPlayers == TWO_PLAYERS) {
+            top = D_80192494;
+            bot = D_8019249C - D_80192494;
+            c = bot - 1;
+            d = bot - 2;
+            b = top + 1;
+            step = top + 2;
+            for (j = D_80192494 - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
+                pool->unk170D8[j].v.tc[1] = pool->unk170D8[j].v.tc[0] = pool->unk170D8[b].v.tc[1] = pool->unk170D8[b].v.tc[0] =
+                    pool->unk170D8[top].v.tc[1] = pool->unk170D8[top].v.tc[0] = pool->unk170D8[c].v.tc[0] =
+                        pool->unk170D8[c].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
+                            pool->unk170D8[k].v.tc[0] = pool->unk170D8[k].v.tc[1] = 0x400;
+                b += step;
+                top += step;
+                c -= step;
+                d -= step;
+                step++;
+            }
+            pool->unk170D8[D_80192460[1]].v.tc[0] = pool->unk170D8[D_80192460[1]].v.tc[1] =
+                pool->unk170D8[D_80192460[2]].v.tc[0] = pool->unk170D8[D_80192460[2]].v.tc[1] =
+                    pool->unk170D8[D_80192460[3]].v.tc[0] = pool->unk170D8[D_80192460[3]].v.tc[1] =
+                        pool->unk170D8[D_80192460[4]].v.tc[0] = pool->unk170D8[D_80192460[4]].v.tc[1] =
+                            pool->unk170D8[D_80192460[5]].v.tc[0] = pool->unk170D8[D_80192460[5]].v.tc[1] =
+                                pool->unk170D8[D_80192460[6]].v.tc[0] = pool->unk170D8[D_80192460[6]].v.tc[1] = 0x400;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F9E0.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050204.s")
 
