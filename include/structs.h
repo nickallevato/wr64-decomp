@@ -979,7 +979,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x16A4 */ char pad16A4[0x14];                /* maybe part of unk16A0[6]? */
     /* 0x16B8 */ f32 unk16B8;
     /* 0x16BC */ f32 unk16BC;
-    /* 0x16C0 */ char pad16C0[0xC];                 /* maybe part of unk16BC[4]? */
+    /* 0x16C0 */ char pad16C0[0x8];
+    /* 0x16C8 */ s32 unk16C8;
     /* 0x16CC */ u16 unk16CC;
     /* 0x16CE */ char pad16CE[0xA];                 /* maybe part of unk16CC[6]? */
     /* 0x16D8 */ s32 unk16D8;

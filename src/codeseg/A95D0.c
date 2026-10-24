@@ -185,6 +185,17 @@ extern UnkA95D0_Runner D_80228058[];
 extern UnkA95D0_Obj D_80227E98[];
 void func_800AB95C(s32, s32);
 extern UnkA95D0_Step D_80223F7C[];
+extern UnkA95D0_Step D_80224D9C[];
+extern UnkA95D0_Step D_80224F98[];
+extern UnkA95D0_Step D_8022512C[];
+extern UnkA95D0_Step D_802252B4[];
+extern UnkA95D0_Step D_802254F4[];
+extern UnkA95D0_Step D_80225804[];
+void func_801DFC48(UnkA95D0_Obj* obj);
+void func_801DFCB8(UnkA95D0_Runner* runner);
+void func_801DD6B4(UnkA95D0_Runner* runner);
+s32 func_8009CB68(void);
+u8 func_8009CCE8(UnkStruct_func_8009CCE8* arg0);
 extern UnkA95D0_Step D_80223A30[];
 extern UnkA95D0_Step D_80223D38[];
 extern UnkA95D0_Step D_80224060[];
@@ -695,7 +706,131 @@ void func_801DDE48(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDEDC.s")
+void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner) {
+    UNUSED s32 pad[2];
+    f32 prevX;
+    f32 prevY;
+    f32 prevZ;
+    UnkA95D0_Step* step;
+
+    D_80228108 = gWaterLevel;
+    prevX = cam->unk4C;
+    prevY = cam->unk50;
+    prevZ = cam->unk54;
+    switch (cam->viewMode) {
+        case 1:
+            break;
+        case 2:
+            obj->u.p5.unk0[0] = cam->unk4;
+            obj->u.p5.unk0[1] = *(f32*) &cam->unk8 + 30.0f;
+            obj->u.p5.unk0[2] = cam->unkC;
+            obj->u.p5.unkC = D_80228108;
+            obj->u.p5.unk24[0] = cam->unk1C;
+            obj->u.p5.unk24[1] = cam->unk24;
+            obj->u.p5.unk48[1].target += 1.0f;
+            break;
+        case 4:
+            step = NULL;
+            if ((gGameModes == GMODE_TIME_TRIALS) || (gGameModes == GMODE_CHAMPIONSHIP) ||
+                (gGameModes == GMODE_STUNT)) {
+                switch (D_80192690[cam->unkE8].unk16C8) {
+                    case 1:
+                        step = D_80224D9C;
+                        break;
+                    case 2:
+                        step = D_80224F98;
+                        break;
+                    case 3:
+                        step = D_8022512C;
+                        break;
+                    case 4:
+                        step = D_802252B4;
+                        break;
+                    case 5:
+                        step = D_802254F4;
+                        break;
+                    case 6:
+                        step = D_80225804;
+                        break;
+                }
+            }
+            if (step != NULL) {
+                obj->u.p5.unk80 = 0;
+                obj->base.unk24[0] = 0.0f;
+                obj->base.unk24[2] = 0.0f;
+                obj->base.unk24[1] = 1.0f;
+                func_801DFD94(runner, step);
+                cam->viewMode = 7;
+            } else {
+                obj->u.p5.unk0[0] = cam->unk4;
+                obj->u.p5.unk0[1] = *(f32*) &cam->unk8 + cam->camViewY;
+                obj->u.p5.unk0[2] = cam->unkC;
+                obj->u.p5.unkC = D_80228108;
+                obj->u.p5.unk24[0] = cam->unk1C;
+                obj->u.p5.unk24[1] = cam->unk24;
+                obj->u.p5.unk34 = sqrtf(SQ(cam->unk10) + SQ(cam->unk18));
+                break;
+            }
+        case 7:
+            cam->camViewY += (0.0f - cam->camViewY) * 0.15f;
+            if (runner->step->duration == -2) {
+                if (runner->frame == 0) {
+                    func_801DF5F0(obj, &D_80225BD8);
+                    obj->u.p5.unk18[0] = cam->unk4 - cam->unk1C * 100.0f;
+                    obj->u.p5.unk18[1] = cam->unkC - cam->unk24 * 100.0f;
+                }
+                runner->frame = 1;
+                obj->u.p5.unk0[0] = cam->unk4;
+                obj->u.p5.unk0[1] = *(f32*) &cam->unk8 + cam->camViewY;
+                obj->u.p5.unk0[2] = cam->unkC;
+                obj->u.p5.unkC = D_80228108;
+                obj->u.p5.unk24[0] = cam->unk1C;
+                obj->u.p5.unk24[1] = cam->unk24;
+                obj->u.p5.unk34 = sqrtf(SQ(cam->unk10) + SQ(cam->unk18));
+                obj->u.p5.unk48[1].target += 1.2f;
+                if (obj->u.p5.unk48[1].target > 360.0f) {
+                    obj->u.p5.unk48[1].target -= 360.0f;
+                }
+            } else {
+                *(f32*) &cam->unk8 += cam->camViewY;
+                func_801DFCB8(runner);
+                *(f32*) &cam->unk8 -= cam->camViewY;
+                if (runner->obj->type == 5) {
+                    obj->base.unk3C += 0.1;
+                    if (obj->base.unk3C > 1.0f) {
+                        obj->base.unk3C = 1.0f;
+                    }
+                    obj->u.p5.unk48[0].rate += 0.1;
+                    if (obj->u.p5.unk48[0].rate > 1.0f) {
+                        obj->u.p5.unk48[0].rate = 1.0f;
+                    }
+                    obj->u.p5.unk48[2].rate += 0.1;
+                    if (obj->u.p5.unk48[2].rate > 1.0f) {
+                        obj->u.p5.unk48[2].rate = 1.0f;
+                    }
+                }
+            }
+            break;
+        case 6:
+            func_801DFCB8(runner);
+            func_801DD6B4(runner);
+            break;
+        case 8:
+            func_801DD6B4(runner);
+            runner->frame++;
+            goto skip;
+    }
+    func_801DFC48(obj);
+skip:
+    func_801E0F8C(cam, obj);
+    func_8009CB68();
+    func_8009CCE8((UnkStruct_func_8009CCE8*) cam);
+    cam->unk58 = cam->unk4C - prevX;
+    cam->unk5C = cam->unk50 - prevY;
+    cam->unk60 = cam->unk54 - prevZ;
+    func_801E0FF0(cam);
+    func_801E11B4(gGfxPool, cam);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DE3CC.s")
 
