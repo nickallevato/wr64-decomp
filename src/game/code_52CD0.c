@@ -200,6 +200,7 @@ s32 func_800ADC8C(s32);
 void func_800ADD14(void);
 void func_800A2B24(s32);
 // File declarations
+f32 func_8004D30C(f32, f32);
 void func_8009A97C(UnkStruct_801CF060* arg0);
 void func_8009A4DC(UnkStruct_801CF060* arg0);
 void func_8009A9FC(UnkStruct_801CF060* arg0);
@@ -2569,7 +2570,621 @@ Gfx* func_800A28F4(Gfx* gdl, s32 arg1) {
     return gdl;
 }
 
+#ifdef NON_MATCHING
+// Score 11400 of 254100: registers and scheduling throughout; the control flow (the unk50 switch) follows the original.
+void func_800A2B24(s32 arg0) {
+    camera_unk_1* cam;
+    s32 prev;
+
+    cam = &gCameraPerspective[D_80223930];
+    switch (D_801CF060[arg0].unk50) {
+        case 0:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            D_801CF060[arg0].unk1C = Math_Normalize_Angle(D_801CF060[arg0].unk1C) * 0.6;
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk20) * 0.9;
+            if ((f64) Math_Normalize_Angle(D_801CF060[arg0].unk20) > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if ((f64) Math_Normalize_Angle(D_801CF060[arg0].unk20) < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk20 = func_8009D564(D_801CF060[arg0].unk20);
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 1:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 == 1) {
+                D_801CF060[arg0].unk5C += -10.0f;
+            }
+            if (D_801CF060[arg0].unk54 == 7) {
+                D_801CF060[arg0].unk5C += 120.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(-D_801CF060[arg0].unk5C);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 2:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 == 1) {
+                D_801CF060[arg0].unk5C += 120.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(-D_801CF060[arg0].unk5C);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            if (D_801CF060[arg0].unk54 == 1) {
+                D_801CF060[arg0].unk74 = 3;
+                D_801CF060[arg0].unk78 = 0;
+            }
+            break;
+        case 3:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 3.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 3.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 < 3) {
+                D_801CF060[arg0].unk5C -= 8.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 10) && (D_801CF060[arg0].unk54 < 15)) {
+                D_801CF060[arg0].unk5C += 25.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.0);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 11) && (D_801CF060[arg0].unk54 < 40)) {
+                D_801CF060[arg0].unk20 = Math_Normalize_Angle((f32) (D_801CF060[arg0].unk54 - 10) * -12.0f);
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 4:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 3.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 < 3) {
+                D_801CF060[arg0].unk5C -= 10.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 10) && (D_801CF060[arg0].unk54 < 14)) {
+                D_801CF060[arg0].unk5C += 25.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.0);
+            D_801CF060[arg0].unk1C = 0.0f;
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 16) && (D_801CF060[arg0].unk54 < 45)) {
+                D_801CF060[arg0].unk1C = Math_Normalize_Angle(2.0f * ((f32) (D_801CF060[arg0].unk54 - 15) * -12.0f));
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            if (D_801CF060[arg0].unk54 == 15) {
+                D_801CF060[arg0].unk74 = 3;
+                D_801CF060[arg0].unk78 = 0;
+            }
+            break;
+        case 5:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 < 3) {
+                D_801CF060[arg0].unk5C -= 10.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 10) && (D_801CF060[arg0].unk54 < 16)) {
+                D_801CF060[arg0].unk5C += 30.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.0);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 6:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.5;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 7.5;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 < 3) {
+                D_801CF060[arg0].unk5C -= 8.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 10) && (D_801CF060[arg0].unk54 < 14)) {
+                D_801CF060[arg0].unk74 = 3;
+                D_801CF060[arg0].unk78 = 0;
+                D_801CF060[arg0].unk5C += 27.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(-D_801CF060[arg0].unk5C);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 7:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            prev = D_801CF060[arg0].unk54;
+            D_801CF060[arg0].unk1C = func_8009D564(Math_Normalize_Angle(D_801CF060[arg0].unk1C) * 0.9);
+            D_801CF060[arg0].unk74 = 5;
+            D_801CF060[arg0].unk54 = (s32) (prev + 1) % 80;
+            D_801CF060[arg0].unk78 = prev;
+            break;
+        case 8:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 3.5f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.5f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 0.5f;
+            } else {
+                D_801CF060[arg0].unk5C += 0.5f;
+            }
+            if (D_801CF060[arg0].unk54 == 1) {
+                D_801CF060[arg0].unk5C += -5.0f;
+            }
+            if (D_801CF060[arg0].unk54 == 7) {
+                D_801CF060[arg0].unk5C += 50.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(-D_801CF060[arg0].unk5C);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 30;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 9:
+            if (D_801CF060[arg0].unk10 >= 1000.0f) {
+                D_801D0758 = D_801CF060[arg0].unk10 - 1000.0f;
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - 1000.0f);
+            }
+            if (D_801D0758 > 30.0f) {
+                if (D_801CF060[arg0].unk10 > 1000.0f) {
+                    D_801CF060[arg0].unk5C -= 5.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 5.0f;
+                }
+            } else if (D_801CF060[arg0].unk10 > 1000.0f) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 10:
+            if (D_801CF060[arg0].unk10 >= 600.0f) {
+                D_801D0758 = D_801CF060[arg0].unk10 - 600.0f;
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - 600.0f);
+            }
+            if (D_801D0758 > 30.0f) {
+                if (D_801CF060[arg0].unk10 > 600.0f) {
+                    D_801CF060[arg0].unk5C -= 5.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 5.0f;
+                }
+            } else if (D_801CF060[arg0].unk10 > 600.0f) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 12:
+            D_801CF060[arg0].unk74 = 0;
+            D_801CF060[arg0].unk20 = 0.0f;
+            D_801CF060[arg0].unk1C = 0.0f;
+            D_801CF060[arg0].unk5C = 0.0f;
+            D_801CF060[arg0].unk10 = 75.0f;
+            break;
+        case 13:
+            if (D_801CF060[arg0].unk10 >= -200.0) {
+                D_801D0758 = D_801CF060[arg0].unk10 - -200.0;
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - -200.0);
+            }
+            if (D_801D0758 > 40.0f) {
+                if (D_801CF060[arg0].unk10 > -200.0f) {
+                    D_801CF060[arg0].unk5C -= 3.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.5f;
+                }
+            } else if (D_801CF060[arg0].unk10 > -200.0f) {
+                D_801CF060[arg0].unk5C -= 0.5f;
+            } else {
+                D_801CF060[arg0].unk5C += 0.5f;
+            }
+            if (D_801CF060[arg0].unk54 == 1) {
+                D_801CF060[arg0].unk74 = 1;
+                D_801CF060[arg0].unk78 = 0;
+                D_801CF060[arg0].unk5C = 5.0f;
+            }
+            if (D_801CF060[arg0].unk20 < 90.0) {
+                D_801CF060[arg0].unk20 += (90.0f - D_801CF060[arg0].unk20) * 0.1;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 14:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 7.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 1.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 < 3) {
+                D_801CF060[arg0].unk5C -= 10.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 10) && (D_801CF060[arg0].unk54 < 14)) {
+                D_801CF060[arg0].unk5C += 30.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(-D_801CF060[arg0].unk5C * 1.5);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 15:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 8.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 0.3f;
+            } else {
+                D_801CF060[arg0].unk5C += 0.1f;
+            }
+            if (D_801CF060[arg0].unk54 < 7) {
+                D_801CF060[arg0].unk5C -= 5.5f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 20) && (D_801CF060[arg0].unk54 < 24)) {
+                D_801CF060[arg0].unk5C += 14.0f;
+            }
+            if (D_801CF060[arg0].unk54 == 32) {
+                func_800BF784(func_8009D4A8(cam->unk4C - D_801CF060[arg0].unkC, cam->unk54 - D_801CF060[arg0].unk14) /
+                                  100.0f,
+                              64);
+            }
+            D_801CF060[arg0].unk5C *= 0.9;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.5);
+            D_801CF060[arg0].unk1C = 0.0f;
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 21) && (D_801CF060[arg0].unk54 < 80)) {
+                D_801CF060[arg0].unk1C = Math_Normalize_Angle((f32) (D_801CF060[arg0].unk54 - 20) * -6.0f);
+                D_801CF060[arg0].unk20 = Math_Normalize_Angle(FABS(D_801CF060[arg0].unk5C) * -1.2);
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 16:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 8.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 3.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 0.3f;
+            } else {
+                D_801CF060[arg0].unk5C += 0.1f;
+            }
+            if (D_801CF060[arg0].unk54 < 7) {
+                D_801CF060[arg0].unk5C -= 5.5f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 20) && (D_801CF060[arg0].unk54 < 24)) {
+                D_801CF060[arg0].unk5C += 14.0f;
+            }
+            if (D_801CF060[arg0].unk54 == 32) {
+                func_800BF784(func_8009D4A8(cam->unk4C - D_801CF060[arg0].unkC, cam->unk54 - D_801CF060[arg0].unk14) /
+                                  100.0f,
+                              64);
+            }
+            D_801CF060[arg0].unk5C *= 0.9;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.5);
+            D_801CF060[arg0].unk1C = 0.0f;
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 21) && (D_801CF060[arg0].unk54 < 80)) {
+                D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.2);
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            if (D_801CF060[arg0].unk54 == 20) {
+                D_801CF060[arg0].unk74 = 1;
+                D_801CF060[arg0].unk78 = 0;
+            }
+            break;
+        case 17:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 40.0f) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 3.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.0f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 40.0f) <
+                       D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 3.0f;
+            } else {
+                D_801CF060[arg0].unk5C += 1.0f;
+            }
+            if (D_801CF060[arg0].unk54 < 3) {
+                D_801CF060[arg0].unk5C -= 5.0f;
+            }
+            if ((D_801CF060[arg0].unk54 >= 10) && (D_801CF060[arg0].unk54 < 16)) {
+                D_801CF060[arg0].unk5C += 15.0f;
+            }
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(-D_801CF060[arg0].unk5C);
+            if (D_801CF060[arg0].unk20 > 90.0) {
+                D_801CF060[arg0].unk20 = 90.0f;
+            }
+            if (D_801CF060[arg0].unk20 < -90.0) {
+                D_801CF060[arg0].unk20 = -90.0f;
+            }
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 18:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+                     ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 70.0f)) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 3.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.5f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+                        ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 70.0f)) < D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 0.5f;
+            } else {
+                D_801CF060[arg0].unk5C += 0.5f;
+            }
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.2);
+            D_801CF060[arg0].unk1C = Math_Normalize_Angle(D_801CF060[arg0].unk1C) * 0.6;
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+        case 19:
+            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            } else {
+                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+            }
+            if (D_801D0758 > 40.0f) {
+                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+                     ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 200.0f)) < D_801CF060[arg0].unk10) {
+                    D_801CF060[arg0].unk5C -= 3.0f;
+                } else {
+                    D_801CF060[arg0].unk5C += 1.5f;
+                }
+            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+                        ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 200.0f)) < D_801CF060[arg0].unk10) {
+                D_801CF060[arg0].unk5C -= 0.5f;
+            } else {
+                D_801CF060[arg0].unk5C += 0.5f;
+            }
+            D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.2);
+            D_801CF060[arg0].unk1C = Math_Normalize_Angle(D_801CF060[arg0].unk1C) * 0.6;
+            D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            break;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A2B24.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A52D8.s")
 
@@ -3005,7 +3620,6 @@ typedef struct UnkStruct_800E6C78 {
 extern UnkStruct_800E6C78* D_800E6C78[];
 extern f32 D_801D06D8;
 extern f32 D_801D06E0;
-f32 func_8004D30C(f32, f32);
 
 void func_800AAAC8(s32 arg0) {
     s32 i;
