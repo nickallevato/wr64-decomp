@@ -182,7 +182,62 @@ void func_801F9520(Gfx** gdlp) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FA3C0.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FAD68.s")
+// Rasterise a line from (x0, y0) to (x1, y1) (Bresenham): writes the points into xs/ys and their count.
+void func_801FAD68(s32 x0, s32 y0, s32 x1, s32 y1, s32* count, s32* xs, s32* ys) {
+    s32 dx;
+    s32 dy;
+    s32 adx;
+    s32 ady;
+    s32 sx;
+    s32 sy;
+    s32 err;
+    s32 x;
+    s32 y;
+    s32 n;
+
+    dx = adx = x1 - x0;
+    dy = ady = y1 - y0;
+    sx = SIGNUM(dx);
+    sy = SIGNUM(dy);
+    err = 0;
+    if (dx < 0) {
+        adx = -dx;
+    }
+    if (dy < 0) {
+        ady = -dy;
+    }
+    x = x0;
+    y = y0;
+    xs[0] = x;
+    ys[0] = y;
+    n = 1;
+    if (adx >= ady) {
+        while (x != x1) {
+            err += ady;
+            x += sx;
+            if (err * 2 >= adx) {
+                err -= adx;
+                y += sy;
+            }
+            xs[n] = x;
+            ys[n] = y;
+            n++;
+        }
+    } else {
+        while (y != y1) {
+            err += adx;
+            y += sy;
+            if (err * 2 >= ady) {
+                err -= ady;
+                x += sx;
+            }
+            xs[n] = x;
+            ys[n] = y;
+            n++;
+        }
+    }
+    *count = n;
+}
 
 void func_801FAEA8(void) {
 }
