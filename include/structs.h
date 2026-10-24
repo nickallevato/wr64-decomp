@@ -101,7 +101,7 @@ typedef struct UnkStruct_801AEE20_s {
     /* 0x098 */ s32 unk98;
     /* 0x09C */ s32 unk9C; /* inferred */
     /* 0x0A0 */ s32 unkA0; /* maybe part of unk9C[0xB]? */
-    /* 0x0A4 */ char padA4[0x4];
+    /* 0x0A4 */ s32 unkA4;
     /* 0x0A8 */ s32 unkA8;
     /* 0x0AC */ s32 unkAC;
     /* 0x0B0 */ s32 unkB0;
@@ -338,25 +338,26 @@ struct UnkStruct_801C3C50 {
 typedef struct RiderStruct {
     /* 0x000 */ s32 lapCount;
     /* 0x004 */ s32 racePosition;
-    /* 0x008 */ char pad8[4];
+    /* 0x008 */ s32 unk8;
     /* 0x00C */ s32 unkC;
     /* 0x010 */ s32 unk10;
-    /* 0x014 */ char pad14[0xC];                    /* maybe part of unk10[4]? */
+    /* 0x014 */ char pad14[0x8];
+    /* 0x01C */ s32 unk1C;
     /* 0x020 */ s32 unk20;                          /* inferred */
-    /* 0x024 */ char pad24[4];
+    /* 0x024 */ s32 unk24;
     /* 0x028 */ s32 unk28;
-    /* 0x02C */ char pad2C[0x100];
+    /* 0x02C */ s32 unk2C[64]; /* one per table B record */
     /* 0x12C */ s32 unk12C;
-    /* 0x130 */ char pad130[4];
+    /* 0x130 */ s32 unk130;
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
     /* 0x13C */ s32 unk13C;
-    /* 0x140 */ char pad140[0x24];
+    /* 0x140 */ s32 unk140[9];
     /* 0x164 */ s32 unk164;
-    /* 0x168 */ char pad168[0x4];
+    /* 0x168 */ s32 unk168;
     /* 0x16C */ s32 unk16C;
     /* 0x170 */ s32 unk170;
-    /* 0x174 */ char pad174[0x4];
+    /* 0x174 */ s32 unk174;
     /* 0x178 */ s32 unk178[9]; /* lap split times */
     /* 0x19C */ s32 unk19C;
     /* 0x1A0 */ char pad1A0[0x4];
@@ -379,17 +380,17 @@ typedef struct RiderStruct {
     /* 0x300 */ s32 unk300;
     /* 0x304 */ s32 unk304;
     /* 0x308 */ s32 unk308;
-    /* 0x30C */ char pad30C[4];
+    /* 0x30C */ s32 unk30C;
     /* 0x310 */ s32 unk310;
     /* 0x314 */ s32 unk314;
     /* 0x318 */ s32 unk318;
     /* 0x31C */ s32 unk31C;
     /* 0x320 */ s32 unk320;                         /* inferred */
-    /* 0x324 */ char pad324[4];
+    /* 0x324 */ s32 unk324;
     /* 0x328 */ s32 unk328;
     /* 0x32C */ f32 unk32C;
     /* 0x330 */ f32 unk330;        /* inferred */
-    char pad334[0x4];
+    /* 0x334 */ s32 unk334;
     s32 unk338;
     /* 0x33C */ s32 unk33C;
     char pad340[0x10];

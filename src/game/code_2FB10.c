@@ -1,6 +1,34 @@
 #include "common.h"
 
+// A course record (0x14 bytes): the time, the rider (D_800DA9B0[0]), the flag drawn as "C"
+// or "N" (D_801CB32C), the difficulty, and the initials.
+typedef struct UnkStruct_801C1FF0 {
+    /* 0x00 */ s32 time;
+    /* 0x04 */ s32 rider;
+    /* 0x08 */ s32 flag;
+    /* 0x0C */ s32 difficulty;
+    /* 0x10 */ s8 name[4];
+} UnkStruct_801C1FF0; /* size = 0x14 */
+
+// A stunt record (0x10 bytes), as B17D0's CourseRecord.
+typedef struct UnkStruct_801C26E8 {
+    /* 0x00 */ s32 score;
+    /* 0x04 */ s32 rider;
+    /* 0x08 */ s32 flag;
+    /* 0x0C */ s8 name[4];
+} UnkStruct_801C26E8; /* size = 0x10 */
+
+typedef struct UnkStruct_80228AE0 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ char pad4[0x18];
+} UnkStruct_80228AE0; /* size = 0x1C */
+
 extern s32 D_800D48E0;
+extern UnkStruct_801C1FF0 D_801C1FF0[][3];
+extern UnkStruct_801C1FF0 D_801C22C0[];
+extern UnkStruct_801C1FF0 D_801C23B0[];
+extern s32 D_801C24A0[][9];
+extern UnkStruct_801C26E8 D_801C26E8[][3];
 
 extern UnkStruct_801AEE20 D_801AEE20[];
 extern s32 D_801BB120;
@@ -11,7 +39,447 @@ static const char devstr2[] = "dolphin condition full\n";
 static const char devstr3[] = "rank value adjust\n";
 static const char devstr4[] = "simultaneously goal !!\n";
 
+typedef struct UnkStruct_801BB138 {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ char padC[0xC];
+} UnkStruct_801BB138; /* size = 0x18 */
+
+extern UnkStruct_801BB138 D_801BB138[];
+extern UnkStruct_801C1FF0 D_800D81B0;
+extern UnkStruct_801C26E8 D_800D81C4;
+extern s32 D_800D8224;
+extern s32 D_800D8228;
+extern s32 D_800D817C;
+extern f32 D_800D8180[];
+extern u8 D_800D9280[];
+extern s32 D_800D5438;
+extern s32 D_801BB12C;
+extern s32 D_801BC938;
+extern UnkStruct_801BC940 D_801BC940[];
+extern s32 D_801BFA40;
+extern f32 D_801C1F94;
+extern f32 D_801C1F98;
+extern f32 D_801C1F9C;
+extern f32 D_801C1FA0;
+extern f32 D_801C1FA4;
+extern f32 D_801C1FA8;
+extern f32 D_801C1FAC;
+extern f32 D_801C1FB0;
+extern f32 D_801C1FB4;
+extern s32 D_801C1FC0;
+extern s32 D_801C1FC4;
+extern s32 D_801C1FC8;
+extern s32 D_801C1FCC;
+extern s32 D_801C1FD0;
+extern s32 D_801C1FD4;
+extern s32 D_801C1FD8;
+extern s32 D_801C1FDC;
+extern s32 D_801C1FE0;
+extern s32 D_801C1FE4;
+extern s32 D_801C1FE8;
+extern s32 D_801C2650;
+extern s32 D_801C2654;
+extern s32 D_801C2658;
+extern s32 D_801C26C0[];
+extern s32 D_801C2660[];
+extern s32 D_801C2690[];
+extern s32 D_801C26C4;
+extern s32 D_801C26C8;
+extern s32 D_801C26E0;
+extern s32 D_801C26E4;
+extern s32 D_801C292C;
+extern s32 D_801C2930;
+extern s32 D_801C3718;
+extern s32 D_801C378C;
+extern s32 D_801C3790[];
+extern s32 D_801C3890[];
+extern f32 D_801C39B0;
+extern s32 D_801C39B8;
+extern s32 D_801C39C0;
+extern f32 D_801C39C4;
+extern s32 D_801C39C8;
+extern s32 D_801C39CC;
+extern s32 D_801C39D0;
+extern s32 D_801C39D4;
+extern s32 D_801C39D8;
+extern s32 D_801C39DC;
+extern s32 D_801C39E0;
+extern s32 D_801C39E4;
+extern s32 D_801C39E8;
+extern s32 D_801C39EC;
+extern s32 D_801C39F0;
+extern s32 D_801C39F4;
+extern s32 D_801C39F8;
+extern s32 D_801C39FC;
+extern s32 D_801C3A00;
+extern s32 D_801C3A04;
+
+void func_801EED70(void);
+
+#ifdef NON_MATCHING
+// 17378: same blocks, loops and calls; register allocation and scheduling differ throughout,
+// and this C is 21 instructions shorter.
+void func_80075310(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 depth;
+    s32 type;
+    s32 n;
+    f32 x;
+    f32 z;
+    f32 a;
+    RiderStruct* rider;
+
+    // First call: the default records of slots 9 to 11.
+    if (D_800D8224 != 0) {
+        D_800D8224 = 0;
+        for (i = 9; i < 12; i++) {
+            for (j = 0; j < 3; j++) {
+                D_801C1FF0[i][j] = D_800D81B0;
+            }
+            for (j = 0; j < 9; j++) {
+                D_801C24A0[i][j] = -1;
+            }
+            D_801C22C0[i] = D_800D81B0;
+            D_801C23B0[i] = D_800D81B0;
+        }
+        for (i = 9; i < 12; i++) {
+            for (j = 0; j < 3; j++) {
+                D_801C26E8[i][j] = D_800D81C4;
+            }
+        }
+        D_801C26C4 = 2;
+        D_801C26C4 = 3;
+        D_801C26C8 = 1;
+        D_801C26C8 = 0;
+    }
+
+    // The course's extent from both buoy tables: the bounding box and the largest |x| or |z|
+    // (at least 4096), and from them the map scale.
+    D_801C1FC4 = 0;
+    D_801C1FA4 = 32767.0f;
+    D_801C1FA8 = -32768.0f;
+    D_801C1F9C = D_801C1FA4;
+    D_801C1FA0 = D_801C1FA8;
+    D_801C1F94 = 0.0f;
+    for (i = 0; i < D_801BB120; i++) {
+        x = D_801AEE20[i].unk24;
+        if (x < D_801C1F9C) {
+            D_801C1F9C = x;
+        }
+        if (D_801C1FA0 < x) {
+            D_801C1FA0 = x;
+        }
+        z = D_801AEE20[i].unk28;
+        if (z < D_801C1FA4) {
+            D_801C1FA4 = z;
+        }
+        if (D_801C1FA8 < z) {
+            D_801C1FA8 = z;
+        }
+        a = (x >= 0.0f) ? x : -x;
+        if (D_801C1F94 < a) {
+            D_801C1F94 = a;
+        }
+        a = (z >= 0.0f) ? z : -z;
+        if (D_801C1F94 < a) {
+            D_801C1F94 = a;
+        }
+    }
+    for (i = 0; i < D_801BC938; i++) {
+        x = D_801BB138[i].unk0;
+        if (x < D_801C1F9C) {
+            D_801C1F9C = x;
+        }
+        if (D_801C1FA0 < x) {
+            D_801C1FA0 = x;
+        }
+        z = D_801BB138[i].unk8;
+        if (z < D_801C1FA4) {
+            D_801C1FA4 = z;
+        }
+        if (D_801C1FA8 < z) {
+            D_801C1FA8 = z;
+        }
+        a = (x >= 0.0f) ? x : -x;
+        if (D_801C1F94 < a) {
+            D_801C1F94 = a;
+        }
+        a = (z >= 0.0f) ? z : -z;
+        if (D_801C1F94 < a) {
+            D_801C1F94 = a;
+        }
+    }
+    if (D_801C1F94 < 4096.0f) {
+        D_801C1F94 = 4096.0f;
+        D_801C1F9C = -4096.0f;
+        D_801C1FA4 = -4096.0f;
+        D_801C1FA0 = -D_801C1F9C;
+        D_801C1FA8 = -D_801C1FA4;
+    }
+    D_801C1FAC = D_801C1FA0 - D_801C1F9C;
+    D_801C1FB0 = D_801C1FA8 - D_801C1FA4;
+    D_801C1F98 = 160.0f / (2.0f * D_801C1F94);
+    D_801C1FB4 = (D_801C1F94 * 1.4142f) + 2048.0f;
+
+    // D_801C3890: 1 for table B records that are not reached from exactly one record
+    // (unkA0 or unkA4).
+    for (i = 0; i < D_801BB120; i++) {
+        D_801C3890[i] = 0;
+    }
+    for (i = 0; i < D_801BB120; i++) {
+        D_801C3890[D_801AEE20[i].unkA0]++;
+        if (D_801AEE20[i].unkA4 != -1) {
+            D_801C3890[D_801AEE20[i].unkA4]++;
+        }
+    }
+    for (i = 0; i < D_801BB120; i++) {
+        if (D_801C3890[i] == 1) {
+            D_801C3890[i] = 0;
+        } else {
+            D_801C3890[i] = 1;
+        }
+    }
+    // D_801C3790: the records of one lap from D_801BB12C, outside the stretches that start at
+    // a type 6 record and end at a record from the previous step.
+    depth = 0;
+    n = 0;
+    i = D_801BB12C;
+    do {
+        if (D_801AEE20[i].unk98 != 6) {
+            if ((D_801C3890[i] != 0) && (depth > 0)) {
+                depth--;
+            }
+            if (depth == 0) {
+                D_801C3790[n++] = i;
+            }
+        } else {
+            if (depth == 0) {
+                D_801C3790[n++] = i;
+            }
+            depth++;
+        }
+        i = D_801AEE20[i].unkA0;
+    } while (i != D_801BB12C);
+    D_801C378C = n;
+    D_801C1FC0 = 0;
+    for (i = 0; i < D_801BB120; i++) {
+        if (D_801AEE20[i].unk9C == 1) {
+            D_801C1FC0++;
+        }
+    }
+
+    // Reset the standings of every rider.
+    D_801C3718 = gRiders;
+    for (i = 0; i < gRiders; i++) {
+        rider = &D_801C2938[i];
+        rider->unk174 = 0;
+        rider->lapCount = 0;
+        rider->racePosition = 0;
+        rider->unk324 = 0;
+        rider->unk8 = 0;
+        rider->unk320 = 0;
+        rider->unk32C = 0.0f;
+        rider->unk1C = -1;
+        rider->unk20 = 0;
+        rider->unk24 = 0;
+        rider->unk28 = 0;
+        rider->unkC = rider->unk10 = rider->unk310 = D_801BB12C;
+        if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
+            rider->unk12C = 5;
+        } else {
+            rider->unk12C = 0;
+        }
+        rider->unk138 = 0;
+        rider->unk130 = 0;
+        rider->unk134 = 0;
+        rider->unk13C = 0;
+        if (gGameModes == GMODE_STUNT) {
+            rider->unk164 = 1;
+        } else {
+            rider->unk164 = 0;
+        }
+        rider->unk33C = 0;
+        rider->unk2F8 = 0;
+        rider->unk300 = 0;
+        rider->unk2FC = 0;
+        rider->unk2C8 = 0;
+        rider->unk2E0 = 0;
+        rider->unk2DC = 0;
+        rider->unk2D8 = 0;
+        rider->unk2D0 = 0;
+        rider->unk328 = 0;
+        rider->unk2E8 = 0;
+        rider->unk2E4 = 0;
+        rider->unk334 = 0;
+        rider->unk2EC = 0;
+        rider->unk2F0 = 0;
+        rider->unk2F4 = 0;
+        rider->unk304 = 0;
+        for (j = 0; j < D_801BB120; j++) {
+            rider->unk2C[j] = 0;
+        }
+        rider->unk168 = 0;
+        rider->unk16C = 0;
+        rider->unk19C = 0;
+        rider->unk170 = 599999;
+        rider->unk2C4 = D_800D9280[gCourseID] * 1000;
+        for (j = 0; j < 9; j++) {
+            rider->unk140[j] = 0;
+            rider->unk178[j] = 0;
+            for (k = 0; k < 8; k++) {
+                rider->unk1A4[j][k] = 0;
+            }
+        }
+        rider->unk330 = 0.0f;
+        rider->unk308 = 0;
+        rider->unk30C = 0;
+        rider->unk31C = 0;
+        rider->unk314 = 0;
+        rider->unk318 = 0;
+        rider->unk350 = (struct UnkStruct_801C3C54*) D_801AEE20;
+        // D_801CE638 8: each rider starts at the record after one of type 11..14.
+        if (D_801CE638 == 8) {
+            switch ((i + D_800D5438) & 3) {
+                case 0:
+                    type = 11;
+                    break;
+                case 1:
+                    type = 12;
+                    break;
+                case 2:
+                    type = 13;
+                    break;
+                case 3:
+                    type = 14;
+                    break;
+            }
+            for (j = 0; j < D_801BB120; j++) {
+                if (type == D_801AEE20[j].unk98) {
+                    break;
+                }
+            }
+            if (j >= D_801BB120) {
+                j = D_801BB12C;
+            } else {
+                j = D_801AEE20[j].unkB4;
+            }
+            for (k = j, n = D_801BB120 - 1; (D_801AEE20[k].unk98 >= 2) && (n > 0); n--) {
+                k = D_801AEE20[k].unkB4;
+            }
+            rider->unkC = rider->unk310 = k;
+            k = j;
+            if (D_801AEE20[j].unk98 == 1) {
+                for (n = D_801BB120 - 1; n > 0; n--) {
+                    k = D_801AEE20[k].unkB4;
+                    if (D_801AEE20[k].unk98 != 1) {
+                        break;
+                    }
+                }
+            }
+            rider->unk10 = k;
+        }
+    }
+
+    D_800D817C = 1;
+    D_801C1FD8 = 0;
+    D_801C1FD4 = 0;
+    D_801C1FDC = 0;
+    D_801C39C4 = D_800D8180[gCourseID];
+    if (gDifficulty == DIFFICULTY_NORMAL) {
+        D_801C39B8 = 0;
+    } else if (gDifficulty == DIFFICULTY_HARD) {
+        D_801C39B8 = 4;
+    } else {
+        D_801C39B8 = 5;
+    }
+    D_801C1FD0 = 0;
+    D_801C1FCC = 0;
+    D_801C1FC8 = 0;
+    if (gCourseID == MARINE_FORTRESS) {
+        for (i = 0; i < D_801BFA40; i++) {
+            if (D_801BC940[i].unk4C == 2) {
+                break;
+            }
+        }
+        if (i < D_801BFA40) {
+            D_801C39C0 = i;
+        } else {
+            D_801C39C0 = 0;
+        }
+    }
+    D_801C2930 = 0;
+    if (gGameModes == GMODE_STUNT) {
+        D_801C26DC = D_801C26D8 = D_801C26D4 = D_801C26D0 = 0;
+        D_801C26E4 = D_801C26E0 = 0;
+        D_801C39D4 = D_801C39D0 = D_801C39CC = 0;
+        D_801C39E4 = D_801C39E0 = D_801C39DC = D_801C39D8 = 0;
+        D_801C39F8 = D_801C39F4 = D_801C39F0 = D_801C39EC = D_801C39E8 = 0;
+        D_801C3A04 = 0;
+        D_801C3A00 = 0;
+        D_801C39FC = D_801C3A00;
+        D_801C292C = 0;
+        D_801C39C8 = 0;
+    }
+    D_801C39B0 = 100000.0f;
+    D_801C39B4 = -100000.0f;
+    D_801C2928 = 0;
+    D_801C2658 = 0;
+    D_801C2654 = 0;
+    D_801C2650 = 0;
+    if (D_800DAB68 == 0) {
+        D_801C1FE4 = D_801C1FF0[gCourseID][0].time;
+        D_801C1FE0 = D_801C1FE8 = D_801C22C0[gCourseID].time;
+    } else {
+        D_801C1FE4 = D_801C23B0[gCourseID].time;
+        D_801C1FE0 = D_801C1FE8 = 0;
+    }
+
+    // The starting order D_801C26C0.
+    if (D_801CE6F8 != 0) {
+        for (i = 0; i < 4; i++) {
+            D_801C26C0[i] = 3 - i;
+        }
+        D_801C26C0[1] = 0;
+        D_801C26C0[3] = 2;
+        for (i = 0; i < 12; i++) {
+            D_801C2690[i] = 0;
+            D_801C2660[i] = 0;
+        }
+    } else if (gGameModes == GMODE_2P_VS) {
+        for (i = 0; i < gRiders; i++) {
+            D_801C26C0[i] = i;
+        }
+    } else if (gCourseID == RIDER_SELECTION) {
+        for (i = 0; i < gRiders; i++) {
+            D_801C26C0[i] = i;
+        }
+    }
+    // D_800D8228 (1-4) puts that slot on the human's rider.
+    if (D_800D8228 != 0) {
+        for (i = 0; i < gRiders; i++) {
+            if (D_800D8228 - 1 == D_801C26C0[i]) {
+                break;
+            }
+        }
+        if ((i < gRiders) && (i != D_800D48DC)) {
+            D_801C26C0[i] = D_801C26C0[D_800D48DC];
+            D_801C26C0[D_800D48DC] = D_800D8228 - 1;
+        }
+    }
+    if (gCourseID != DOLPHIN_PARK) {
+        for (i = 0; i < gRiders; i++) {
+            D_801C2938[i].racePosition = D_801C26C0[i];
+        }
+    }
+    func_801EED70();
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80075310.s")
+#endif
 
 s32 func_80076240(f32 arg0, f32 arg1, f32 arg2, f32 arg3) {
     s32 sp24;
@@ -203,7 +671,6 @@ void func_80076378(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_8007687C.s")
 
 extern s32 D_801C1FD4;
-extern s32 D_801C26C0[];
 
 void func_80077F5C(void) {
     s32 i;
@@ -328,34 +795,6 @@ void func_80078264(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_800783AC.s")
 
-// A course record (0x14 bytes): the time, the rider (D_800DA9B0[0]), the flag drawn as "C"
-// or "N" (D_801CB32C), the difficulty, and the initials.
-typedef struct UnkStruct_801C1FF0 {
-    /* 0x00 */ s32 time;
-    /* 0x04 */ s32 rider;
-    /* 0x08 */ s32 flag;
-    /* 0x0C */ s32 difficulty;
-    /* 0x10 */ s8 name[4];
-} UnkStruct_801C1FF0; /* size = 0x14 */
-
-// A stunt record (0x10 bytes), as B17D0's CourseRecord.
-typedef struct UnkStruct_801C26E8 {
-    /* 0x00 */ s32 score;
-    /* 0x04 */ s32 rider;
-    /* 0x08 */ s32 flag;
-    /* 0x0C */ s8 name[4];
-} UnkStruct_801C26E8; /* size = 0x10 */
-
-typedef struct UnkStruct_80228AE0 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ char pad4[0x18];
-} UnkStruct_80228AE0; /* size = 0x1C */
-
-extern UnkStruct_801C1FF0 D_801C1FF0[][3];
-extern UnkStruct_801C1FF0 D_801C22C0[];
-extern UnkStruct_801C1FF0 D_801C23B0[];
-extern s32 D_801C24A0[][9];
-extern UnkStruct_801C26E8 D_801C26E8[][3];
 extern s32 D_801C1FD8;
 extern s32 D_801C1FDC;
 extern s32 D_801C2650;
