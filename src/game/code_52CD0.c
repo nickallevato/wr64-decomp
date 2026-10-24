@@ -1807,7 +1807,85 @@ Gfx* func_8009DB90(Gfx* dl, s32 arg1) {
     return dl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_8009DC10.s")
+Gfx* func_8009DC10(Gfx* gdl, s32 arg1) {
+    UnkStruct_801CE780_unk4* temp_s4;
+    UnkStruct_801CE780_unk4** v1;
+    s32 index;
+    s32 sp68;
+    s32 var_s3;
+
+    index = D_801CE774;
+
+    v1 = D_801CE780[index].unk4;
+
+    temp_s4 = *v1;
+    if (gCurrentPauseMenuOption == -1) {
+        D_801CF060[arg1].unk78 = (D_801CF060[arg1].unk78 + 1) % temp_s4->unk0;
+    }
+
+    sp68 = D_801CF0D8[arg1].unk0 % temp_s4->unk0;
+    gSPDisplayList(gdl++, D_800E6CA0);
+
+    gdl = func_8009D96C(gdl, arg1, 0.1f);
+
+    var_s3 = temp_s4->unk14[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unkC);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s4->unk10[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk10);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s4->unkC[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk14);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s4->unk20[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unkC);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s4->unk1C[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk10);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s4->unk18[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk14);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s4->unk8[sp68];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s4->unk4[var_s3].unk6, temp_s4->unk4[var_s3].unk7,
+                  temp_s4->unk4[var_s3].unk8, temp_s4->unk4[var_s3].unk9, temp_s4->unk4[var_s3].unkA,
+                  temp_s4->unk4[var_s3].unkB, temp_s4->unk4[var_s3].unk0, temp_s4->unk4[var_s3].unk2,
+                  temp_s4->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk8);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    return gdl;
+}
 
 Gfx* func_8009E794(Gfx* dl, s32 arg1) {
     UNUSED s32 pad;
