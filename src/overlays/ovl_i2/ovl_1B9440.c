@@ -20,8 +20,7 @@ extern Gfx D_80BE4A8[];
 extern Gfx D_80BE500[];
 extern s32 D_i2_802C8BC0;
 struct SelectionState {
-    s32 player_1_ready;
-    s32 player_2_ready;
+    s32 ready[2];
 };
 
 extern struct SelectionState D_802C8C58;
@@ -48,7 +47,7 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
     if (D_801CE60C == 1) {
         gdl = func_8009328C(gdl);
     } else {
-        if (D_802C8C58.player_1_ready == 0) {
+        if (D_802C8C58.ready[0] == 0) {
             D_800DAB2C = 0;
             gdl = func_800933C4(gdl);
         }
@@ -67,10 +66,10 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
         gSPDisplayList(gdl++, &D_80BE500);
     } else {
         gdl = func_i2_802C7C50(gdl);
-        if (D_802C8C58.player_1_ready == 0) {
+        if (D_802C8C58.ready[0] == 0) {
             gSPDisplayList(gdl++, &D_80BE4A8);
         }
-        if (D_802C8C58.player_2_ready == 0) {
+        if (D_802C8C58.ready[1] == 0) {
             gSPDisplayList(gdl++, &D_80BE500);
         }
     }
