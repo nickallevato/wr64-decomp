@@ -1071,7 +1071,200 @@ void func_801F23A0(void) {
     }
 }
 
+#ifdef NON_MATCHING
+// Score 9103: same instructions, but the frame is 0x18 smaller and y is not kept in s0, so registers and stack offsets differ; the original has more locals.
+extern u8 D_1038D00[];
+extern u8 D_10390C0[];
+extern u8 D_1039100[];
+extern u8 D_1039140[];
+extern u8 D_1039180[];
+extern u8 D_103AE08[];
+extern u8 D_103AEC8[];
+extern u8 D_103AF88[];
+extern u8 D_103B408[];
+extern u8 D_103D2D0[];
+extern s32 D_801C1FE0;
+extern s32 D_80228AA0;
+extern s32 D_80228AC4;
+extern s32 D_80228AC8;
+extern s32 D_80228ACC;
+extern s32 D_80228AD0;
+extern s32 D_80228AD4;
+extern s32 D_80228AD8;
+extern s32 D_80228CD8[6];
+
+#define HUD_LOAD8(gdl, img, w, h)                                                                     \
+    gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, h, 0, G_TX_NOMIRROR | G_TX_CLAMP, \
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD)
+
+// Draw a time as m'ss"cc. Style 0 is the lap list (with the lap number), 1 the big
+// RGBA digits, 2 and 3 the small and medium IA digits; arg5 picks the icon.
+void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 color) {
+    Gfx* gdl;
+    s32 sec;
+    s32 min;
+    s32 ms;
+    s32 i;
+    s32 px;
+    s32 lap;
+    s32 skip;
+    s32 ix;
+    RiderStruct* rider;
+
+    gdl = *gdlp;
+    if (time < 0) {
+        time = 0;
+    }
+    if (time >= 600000) {
+        time = 599999;
+    }
+    sec = time / 1000;
+    ms = time % 1000;
+    min = sec / 60;
+    D_80228CD8[0] = min;
+    D_80228CD8[1] = (sec % 60) / 10;
+    D_80228CD8[2] = (sec % 60) % 10;
+    D_80228CD8[3] = ms / 100;
+    if ((style != 1) || (arg5 != 1)) {
+        D_80228CD8[4] = (ms % 100) / 10;
+        D_80228CD8[5] = ms % 10;
+    } else if (time == 0) {
+        D_80228CD8[5] = 0;
+        D_80228CD8[4] = 0;
+    } else if (time == 599999) {
+        D_80228CD8[5] = 9;
+        D_80228CD8[4] = 9;
+    } else {
+        D_80228CD8[4] = (color + 5) % 10;
+        D_80228CD8[5] = color % 10;
+    }
+    px = x;
+    if ((style == 2) || (style == 3)) {
+        if (time < 10000) {
+            skip = 2;
+        } else if (min == 0) {
+            skip = 1;
+        } else {
+            skip = 0;
+        }
+    } else {
+        skip = 0;
+    }
+    if (style == 1) {
+        gDPPipeSync(gdl++);
+        gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
+        for (i = 0; i < 6; i++) {
+            HUD_DIGIT(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16, px, y);
+            px += 13;
+            if (i == 0) {
+                px += 6;
+            } else if (i == 2) {
+                px += 7;
+            }
+        }
+        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, y);
+        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, y);
+    } else if ((style == 0) || (style == 2)) {
+        gDPPipeSync(gdl++);
+        gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
+        if (style == 0) {
+            rider = &D_801C2938[D_800D48DC];
+            if (rider->unk2F4 != 0) {
+                lap = rider->lapCount;
+            } else {
+                lap = rider->lapCount - 1;
+            }
+            gDPPipeSync(gdl++);
+            if ((D_80228AA0 != 0) && (arg5 == lap)) {
+                gDPSetPrimColor(gdl++, 0, 0, D_80228AB8, D_80228ABC, D_80228AC0, 255);
+            } else if (D_801C1FE0 >= time) {
+                gDPSetPrimColor(gdl++, 0, 0, D_80228AAC, D_80228AB0, D_80228AB4, 255);
+            } else {
+                gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
+            }
+        } else if (arg5 != 3) {
+            if (arg5 == 1) {
+                HUD_LOAD8(gdl, D_1039180, 8, 8);
+            } else {
+                HUD_LOAD8(gdl, D_10390C0, 8, 8);
+            }
+            if (skip == 0) {
+                ix = x - 8;
+            } else if (skip == 1) {
+                ix = x + 4;
+            } else {
+                ix = x + 10;
+            }
+            HUD_SCISRECT(gdl, ix, y, 8, 8);
+        }
+        for (i = 0; i < 6; i++) {
+            if ((skip == 0) || (i >= skip)) {
+                HUD_LOAD8(gdl, &D_10387C0[D_80228CD8[i] << 6], 8, 8);
+                HUD_SCISRECT(gdl, px, y, 8, 8);
+            }
+            px += 7;
+            if ((i == 0) || (i == 2)) {
+                px += 5;
+            }
+        }
+        if (skip == 0) {
+            HUD_LOAD8(gdl, D_1039100, 8, 8);
+            HUD_SCISRECT(gdl, x + 6, y, 8, 8);
+        }
+        HUD_LOAD8(gdl, D_1039140, 8, 8);
+        HUD_SCISRECT(gdl, x + 25, y, 8, 8);
+        if (style == 0) {
+            HUD_LOAD8(gdl, D_1038D00, 8, 8);
+            HUD_SCISRECT(gdl, x + 60, y, 8, 8);
+            HUD_LOAD8(gdl, &D_10387C0[arg5 << 6], 8, 8);
+            HUD_SCISRECT(gdl, x + 66, y, 8, 8);
+        }
+    } else if (style == 3) {
+        gDPPipeSync(gdl++);
+        if (color == 0) {
+            gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
+        } else if (color == 1) {
+            gDPSetPrimColor(gdl++, 0, 0, D_80228AC4, D_80228AC8, D_80228ACC, 255);
+        } else {
+            gDPSetPrimColor(gdl++, 0, 0, D_80228AD0, D_80228AD4, D_80228AD8, 255);
+        }
+        if (arg5 != 3) {
+            if (arg5 == 1) {
+                HUD_LOAD8(gdl, D_103B408, 16, 12);
+            } else {
+                HUD_LOAD8(gdl, D_103AE08, 16, 12);
+            }
+            if (skip == 0) {
+                ix = x - 10;
+            } else if (skip == 1) {
+                ix = x + 5;
+            } else {
+                ix = x + 16;
+            }
+            HUD_RECT(gdl, ix, y, 16, 12);
+        }
+        for (i = 0; i < 6; i++) {
+            if ((skip == 0) || (i >= skip)) {
+                HUD_LOAD8(gdl, &D_1039248[D_80228CD8[i] * 0xC0], 16, 12);
+                HUD_RECT(gdl, px, y, 16, 12);
+            }
+            px += 11;
+            if ((i == 0) || (i == 2)) {
+                px += 4;
+            }
+        }
+        if (skip == 0) {
+            HUD_LOAD8(gdl, D_103AEC8, 16, 12);
+            HUD_RECT(gdl, x + 10, y, 16, 12);
+        }
+        HUD_LOAD8(gdl, D_103AF88, 16, 12);
+        HUD_RECT(gdl, x + 36, y, 16, 12);
+    }
+    *gdlp = gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F25E0.s")
+#endif
 
 #ifdef NON_MATCHING
 // Same control flow and stack frame; register allocation and scheduling differ throughout
