@@ -61,7 +61,7 @@ typedef struct UnkA95D0_Base {
     /* 0x00 */ Vec3f unk0;
     /* 0x0C */ Vec3f unkC;
     /* 0x18 */ Vec3f unk18;
-    /* 0x24 */ Vec3f unk24;
+    /* 0x24 */ f32 unk24[3];
     /* 0x30 */ u8 pad30[4];
     /* 0x34 */ f32 unk34;
     /* 0x38 */ f32 unk38;
@@ -72,9 +72,9 @@ typedef struct UnkA95D0_Base {
 } UnkA95D0_Base; // size = 0x58
 
 typedef struct UnkA95D0_Payload1 {
-    /* 0x00 */ Vec3f unk0;
+    /* 0x00 */ f32 unk0[3];
     /* 0x0C */ u8 padC[4];
-    /* 0x10 */ Vec3f unk10;
+    /* 0x10 */ f32 unk10[3];
     /* 0x1C */ u8 pad1C[4];
 } UnkA95D0_Payload1; // size = 0x20
 
@@ -457,7 +457,31 @@ void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key) {
     obj->u.p1 = key->p;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF08C.s")
+void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4) {
+    s32 i;
+
+    if (arg1 != NULL) {
+        UnkA95D0_Payload1* p = &obj->u.p1;
+        for (i = 0; i < 3; i++) {
+            p->unk0[i] = arg1[i];
+        }
+    }
+    if (arg2 != NULL) {
+        UnkA95D0_Payload1* p = &obj->u.p1;
+        for (i = 0; i < 3; i++) {
+            p->unk10[i] = arg2[i];
+        }
+    }
+    if (arg3 != NULL) {
+        UnkA95D0_Base* b = &obj->base;
+        for (i = 0; i < 3; i++) {
+            b->unk24[i] = arg3[i];
+        }
+    }
+    if (arg4 != NULL) {
+        obj->base.unk38 = *arg4;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF128.s")
 
