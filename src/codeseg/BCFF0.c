@@ -99,7 +99,65 @@ extern s32 D_801CE704;
     gSPScisTextureRectangle(gdl++, ((x) << 2), ((y) << 2), (((x) + (w)) << 2), (((y) + (h)) << 2), G_TX_RENDERTILE, 0, \
                             0, 1 << 10, 1 << 10)
 
+#ifdef NON_MATCHING
+// Score 435: idx (the second half's index) is copied from D_80228D1C early into its own register; the original reuses the first index product's.
+extern s32 D_801C1FD8;
+extern s32 D_80227888[][3];
+extern s32 D_802278C4[][3];
+extern s32 D_80227900[][3];
+extern s32 D_8022793C[][3];
+extern s32 D_80228AC4;
+extern s32 D_80228AC8;
+extern s32 D_80228ACC;
+extern s32 D_80228AD0;
+extern s32 D_80228AD4;
+extern s32 D_80228AD8;
+extern s32 D_80228D1C;
+extern s32 D_80228D20;
+
+void func_801EE9C0(void) {
+    f32 f;
+    f32 g;
+    s32 idx;
+    s32(*a)[3];
+    s32(*b)[3];
+
+    f = (2 - D_80228D20) / (f32) 2;
+    g = 1.0f - f;
+    a = &D_80227888[D_80228D1C];
+    D_80228AAC = a[0][0] * f + a[1][0] * g;
+    D_80228AB0 = a[0][1] * f + a[1][1] * g;
+    D_80228AB4 = a[0][2] * f + a[1][2] * g;
+    b = &D_802278C4[D_80228D1C];
+    idx = D_80228D1C;
+    D_80228AB8 = b[0][0] * f + b[1][0] * g;
+    D_80228ABC = b[0][1] * f + b[1][1] * g;
+    D_80228AC0 = b[0][2] * f + b[1][2] * g;
+    if (D_801C1FD8 != 0) {
+        g = 0.0f;
+        idx = 0;
+        f = 1.0f;
+    }
+    a = &D_80227900[idx];
+    D_80228AC4 = a[0][0] * f + a[1][0] * g;
+    D_80228AC8 = a[0][1] * f + a[1][1] * g;
+    D_80228ACC = a[0][2] * f + a[1][2] * g;
+    b = &D_8022793C[idx];
+    D_80228AD0 = b[0][0] * f + b[1][0] * g;
+    D_80228AD4 = b[0][1] * f + b[1][1] * g;
+    D_80228AD8 = b[0][2] * f + b[1][2] * g;
+    if (gCurrentPauseMenuOption == -1) {
+        D_80228D20++;
+        if (D_80228D20 >= 2) {
+            D_80228D1C++;
+            D_80228D20 = 0;
+            D_80228D1C &= 3;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EE9C0.s")
+#endif
 
 // HUD_Init
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EED70.s")
