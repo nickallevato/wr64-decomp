@@ -173,7 +173,7 @@ void func_801EA3EC(void);
 void func_801EA730(void);
 void func_801EAA6C(void);
 void func_801EADB0(void);
-Gfx* func_801E80B0(Gfx*, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, f32);
+Gfx* func_801E80B0(Gfx*, s32, u32, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, f32);
 void func_801EC9C8(void);
 void func_801ED004(void);
 void func_i15_802C6CAC(s32);

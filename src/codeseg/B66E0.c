@@ -31,12 +31,119 @@ extern u8 D_7000000[];
 extern u8 D_2000A40[];
 extern Gfx D_106F030[];
 extern Gfx D_106F0A8[];
-extern s32 D_80226E2C;
+extern s32 D_80226E2C; /* font of the last glyph drawn */
+extern u8 D_1033CB8[]; /* glyph textures, font 0 (IA8, 24x20) */
+extern u8 D_10387C0[]; /* font 1 (IA8, 8x8) */
+extern u8 D_1039248[]; /* font 2 (IA8, 16x12) */
+extern u32 D_103B4D0[]; /* fonts 3 and 4 (RGBA32, 12x16) */
+extern u32 D_103D8D8[]; /* font 5 (RGBA32, 16x20) */
 
 extern UnkStruct_80228A78 D_80228A78;
 extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 */
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E80B0.s")
+/* Draws glyph of font at (x, y): culls it off screen, loads its texture (IA8 fonts 0-2, RGBA32 fonts 3-5), then a
+ * texture rectangle, or in mode 2 a scaled Gouraud quad (func_801E8800). */
+Gfx* func_801E80B0(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
+    u8* tex;
+    s32 visible;
+    u32 w;
+    s32 rect;
+    u32 h;
+    s32 rgba32;
+
+    rect = 1;
+    if (mode == 2) {
+        rect = 0;
+    }
+    switch (font) {
+        case 0:
+            if (glyph >= 40) {
+                glyph = 0;
+            }
+            w = 24;
+            h = 20;
+            tex = D_1033CB8 + glyph * 0x1E0;
+            rgba32 = 0;
+            break;
+        case 1:
+            if (glyph >= 42) {
+                glyph = 0;
+            }
+            w = 8;
+            h = 8;
+            tex = D_10387C0 + glyph * 0x40;
+            rgba32 = 0;
+            break;
+        case 2:
+            if (glyph >= 46) {
+                glyph = 0;
+            }
+            w = 16;
+            h = 12;
+            tex = D_1039248 + glyph * 0xC0;
+            rgba32 = 0;
+            break;
+        case 3:
+            if (glyph >= 12) {
+                glyph = 0;
+            }
+            w = 12;
+            h = 16;
+            tex = (u8*) (D_103B4D0 + glyph * 0xC0);
+            rgba32 = 1;
+            break;
+        case 4:
+            if (glyph >= 10) {
+                glyph = 0;
+            }
+            w = 12;
+            h = 16;
+            tex = (u8*) (D_103B4D0 + glyph * 0xC0);
+            rgba32 = 1;
+            break;
+        case 5:
+            if (glyph >= 11) {
+                glyph = 0;
+            }
+            w = 16;
+            h = 20;
+            tex = (u8*) (D_103D8D8 + glyph * 0x140);
+            rgba32 = 1;
+            break;
+    }
+    visible = 1;
+    if (x >= 320) {
+        visible = 0;
+    } else if ((s32) (w * scale) + x < 0) {
+        visible = 0;
+    } else if (y >= 240) {
+        visible = 0;
+    } else if ((s32) (h * scale) + y < 0) {
+        visible = 0;
+    }
+    if (visible == 0) {
+        return gdl;
+    }
+    if (font != D_80226E2C) {
+        D_80226E2C = font;
+    }
+    if (rgba32 == 0) {
+        gDPLoadTextureBlock(gdl++, tex, G_IM_FMT_IA, G_IM_SIZ_8b, w, h, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK,
+                            G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    } else if (rgba32 == 1) {
+        gDPLoadTextureBlock(gdl++, tex, G_IM_FMT_RGBA, G_IM_SIZ_32b, w, h, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK,
+                            G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    }
+    if (rect == 1) {
+        gSPScisTextureRectangle(gdl++, x << 2, y << 2, (x + (s32) w) << 2, (y + (s32) h) << 2, G_TX_RENDERTILE, 0, 0,
+                                1 << 10, 1 << 10);
+    } else {
+        gdl = func_801E8800(gdl, w, h, x, y, (u8) r0, (u8) g0, (u8) b0, (u8) r1, (u8) g1, (u8) b1, (u8) r2, (u8) g2,
+                            (u8) b2, (u8) r3, (u8) g3, (u8) b3, scale);
+    }
+    return gdl;
+}
 
 /* Draws a w x h quad at (x, y), scaled, with corner colours r0..b3 (Gouraud), from the D_801CE5F8->unk40 vertex pool. */
 Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2,
