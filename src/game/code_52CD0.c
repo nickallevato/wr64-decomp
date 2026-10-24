@@ -2385,8 +2385,6 @@ void func_800AD3C4(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AD418.s")
 
-#ifdef NEEDS_RODATA
-
 s32 func_800ADC8C(s32 arg0) {
     s32 ret;
 
@@ -2427,9 +2425,6 @@ s32 func_800ADC8C(s32 arg0) {
     }
     return ret;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800ADC8C.s")
-#endif
 
 // TO CHECK
 void func_800ADD14(void) {
