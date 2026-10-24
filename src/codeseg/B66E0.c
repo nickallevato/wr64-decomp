@@ -90,6 +90,8 @@ Gfx* func_801E80B0(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0,
             }
             w = 12;
             h = 16;
+            // The RGBA32 textures are declared u32[] (one texel per element), so glyph * 0xC0 texels is
+            // glyph * 0x300 bytes; IDO's register use matches only with this u32 arithmetic.
             tex = (u8*) (D_103B4D0 + glyph * 0xC0);
             rgba32 = 1;
             break;
@@ -266,7 +268,7 @@ Gfx* func_801E8B24(Gfx* gdl, s32 font, s32 time, s32 x, s32 y) {
             sep2W = D_80226E0C[0];
             break;
     }
-    cx = x;
+    cx = x; // FAKE: this copy gives IDO's prologue order
     min = (time / 1000 / 60) % 10;
     gdl = func_801E80B0(gdl, font, min, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
                         D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
