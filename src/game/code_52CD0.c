@@ -4384,10 +4384,8 @@ extern f32 D_801D06F0;
 extern f32 D_801D06F8;
 
 #ifdef NON_MATCHING
-// Score 2655 of 86400: the original keeps sp20 and the FABS temporary in one slot at 0x20 (0x2C and 0x24 here); scheduling around the COS/SIN * 1 steps.
+// Score 1810 of 86400: the state-7 step loads unk24 and unk2C later in the original (after the COS/SIN products).
 void func_800A9D48(s32 arg0) {
-    f32 sp20;
-
     if (gCurrentPauseMenuOption == -1) {
         if (D_801CF060[arg0].unk8 == 2) {
             switch (gCourseID) {
@@ -4435,8 +4433,9 @@ void func_800A9D48(s32 arg0) {
                     D_801CF060[arg0].unk18 = func_8009D564(
                         func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC, -(D_801CF060[arg0].unk14 - D_801D06C4)));
                 } else {
-                    sp20 = func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC, -(D_801CF060[arg0].unk14 - D_801D06C4));
-                    D_801CF060[arg0].unk18 = Math_Normalize_Angle((s32) ((SysUtils_Rand() & 0xFF) - 0x80) + sp20);
+                    D_801CF060[arg0].unk18 = Math_Normalize_Angle(
+                        func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC, -(D_801CF060[arg0].unk14 - D_801D06C4)) +
+                        (s32) ((SysUtils_Rand() & 0xFF) - 0x80));
                 }
             }
             if (D_801D0758 < SQ(D_801CF060[arg0].unk70)) {
@@ -4444,8 +4443,9 @@ void func_800A9D48(s32 arg0) {
                     D_801CF060[arg0].unk18 = func_8009D564(
                         func_8009D3AC(D_801CF060[arg0].unkC - D_801D06F0, -(D_801CF060[arg0].unk14 - D_801D06F8)));
                 } else {
-                    sp20 = func_8009D3AC(D_801CF060[arg0].unkC - D_801D06F0, -(D_801CF060[arg0].unk14 - D_801D06F8));
-                    D_801CF060[arg0].unk18 = Math_Normalize_Angle((s32) ((SysUtils_Rand() & 0xFF) - 0x80) + sp20);
+                    D_801CF060[arg0].unk18 = Math_Normalize_Angle(
+                        func_8009D3AC(D_801CF060[arg0].unkC - D_801D06F0, -(D_801CF060[arg0].unk14 - D_801D06F8)) +
+                        (s32) ((SysUtils_Rand() & 0xFF) - 0x80));
                 }
             }
             if ((D_801D0754 < SQ(D_801CF060[arg0].unk70)) || (D_801D0758 < SQ(D_801CF060[arg0].unk70))) {
