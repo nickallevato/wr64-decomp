@@ -1019,7 +1019,9 @@ typedef struct UnkStruct_80192690 {
     /* 0x0E98 */ f32 unkE98;                        /* inferred */
     /* 0x0E9C */ f32 unkE9C;                        /* inferred */
     /* 0x0EA0 */ f32 unkEA0;                        /* inferred */
-    /* 0x0EA4 */ char padEA4[0x588];                /* maybe part of unkEA0[0x163]? */
+    /* 0x0EA4 */ char padEA4[0x580];                /* maybe part of unkEA0[0x163]? */
+    /* 0x1424 */ s32 unk1424;
+    /* 0x1428 */ char pad1428[4];
     /* 0x142C */ f32 unk142C;
     /* 0x1430 */ f32 unk1430;
     /* 0x1434 */ f32 unk1434;
@@ -1028,7 +1030,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x1440 */ f32 unk1440;
     /* 0x1444 */ s16 unk1444;
     /* 0x1446 */ s16 unk1446;
-    /* 0x1448 */ char pad1448[0x120];
+    /* 0x1448 */ UnkStruct_80052C6C_2 unk1448[6];
+    /* 0x1520 */ Vec3f unk1520[6];
     /* 0x1568 */ f32 unk1568;
     /* 0x156C */ f32 unk156C;
     /* 0x1570 */ f32 unk1570;
