@@ -4960,7 +4960,7 @@ extern s32 D_800E62D4;
 extern s32 D_801CB340;
 
 #ifdef NON_MATCHING
-// Score 18015 of 116800: registers and scheduling; the per-course loops are written over D_801CF060[i] where the original steps pointers.
+// Score 16915 of 116800: registers and scheduling; the per-course loops are written over D_801CF060[i] where the original steps pointers.
 void func_800AC184(void) {
     UnkStruct_80192690* rider;
     UnkStruct_80192690* rider2;
@@ -5048,19 +5048,21 @@ void func_800AC184(void) {
             func_800C123C((u8*) &D_801D0668);
             D_800E62D0 = 0;
             if (gPlayers == ONE_PLAYER) {
+                D_801CF060[0].unk2C = 0.0f;
+                D_801CF060[0].unk10 = -20.0f;
+                D_801CF060[0].unk6C = D_801CF060[0].unk14 = D_801AEE20[0].unk8 + 100.0f;
                 D_801CF060[0].unk0 = 6;
                 D_801CF060[0].unk7C = 0xFF;
                 D_801CF060[0].unk8 = 5;
                 D_801CF060[0].unk9C = 1;
                 D_801CF060[0].unk64 = D_801CF060[0].unkC = D_801AEE20[0].unk0 - 200.0f;
-                D_801CF060[0].unk68 = D_801CF060[0].unk10 = -20.0f;
-                D_801CF060[0].unk6C = D_801CF060[0].unk14 = D_801AEE20[0].unk8 + 100.0f;
                 D_801CF060[0].unk50 = 0;
                 D_801CF060[0].unk54 = 0;
                 D_801CF060[0].unk74 = 5;
                 D_801CF060[0].unk78 = 10;
                 D_801CF060[0].unk18 = 0.0f;
-                D_801CF060[0].unk1C = D_801CF060[0].unk24 = D_801CF060[0].unk28 = D_801CF060[0].unk2C = 0.0f;
+                D_801CF060[0].unk1C = D_801CF060[0].unk24 = D_801CF060[0].unk28 = D_801CF060[0].unk2C;
+                D_801CF060[0].unk68 = D_801CF060[0].unk10;
                 if (D_800E62D4 > 0) {
                     D_801CF060[1].unk0 = 6;
                 }
