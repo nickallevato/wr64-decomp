@@ -207,7 +207,8 @@ typedef struct {
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ s32 unk70;
     /* 0x74 */ s32 unk74;
-    /* 0x78 */ char pad78[0x14]; /* maybe part of unk74[6]? */
+    /* 0x78 */ s32 unk78;
+    /* 0x7C */ char pad7C[0x10];
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ s32 unk90;
     /* 0x94 */ s32 unk94;
@@ -1262,8 +1263,8 @@ typedef struct UnkStruct_801C43F8_s {
     char pad1C0[0x410];
     Mtx unk5D0[1];
     char pad610[0x2fc0];
-    Lights0 unk35D8[1];
-    char pad35E8[0x44];
+    Lights0 unk35D8[2];
+    Lights0 unk3600[2];
 } UnkStruct_801C43F8;
 
 typedef struct UnkStruct_801CE5F8_s {

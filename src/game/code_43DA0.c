@@ -18,7 +18,21 @@ typedef struct UnkStruct_8008962C_s {
 } UnkStruct_8008962C; // Might be the same as UnkStruct_801CEFF8
 
 typedef struct UnkStruct_801CB058_s {
-    /* 0x000 */ char pad0[0x88];
+    /* 0x000 */ s32 unk0;
+    /* 0x004 */ s32 unk4;
+    /* 0x008 */ s32 unk8;
+    /* 0x00C */ s32 unkC;
+    /* 0x010 */ s32 unk10;
+    /* 0x014 */ s32 unk14;
+    /* 0x018 */ char pad18[0x30];
+    /* 0x048 */ s32 unk48;
+    /* 0x04C */ s32 unk4C;
+    /* 0x050 */ s32 unk50;
+    /* 0x054 */ s32 unk54;
+    /* 0x058 */ char pad58[0x20];
+    /* 0x078 */ s32 unk78;
+    /* 0x07C */ s32 unk7C;
+    /* 0x080 */ char pad80[8];
     /* 0x088 */ s32 unk88;        /* inferred */
     /* 0x08C */ s32 unk8C;        /* inferred */
     /* 0x090 */ s32 unk90;        /* inferred */
@@ -29,7 +43,18 @@ typedef struct UnkStruct_801CB058_s {
     /* 0x0AC */ f32 unkAC;
     /* 0x0B0 */ f32 unkB0;
     /* 0x0B4 */ f32 unkB4;
-    /* 0x0B8 */ char padB8[0x58];
+    /* 0x0B8 */ char padB8[0x14];
+    /* 0x0CC */ s32 unkCC;
+    /* 0x0D0 */ s32 unkD0;
+    /* 0x0D4 */ s32 unkD4;
+    /* 0x0D8 */ s32 unkD8;
+    /* 0x0DC */ s32 unkDC;
+    /* 0x0E0 */ s32 unkE0;
+    /* 0x0E4 */ char padE4[0x18];
+    /* 0x0FC */ f32 unkFC;
+    /* 0x100 */ f32 unk100;
+    /* 0x104 */ f32 unk104;
+    /* 0x108 */ char pad108[8];
 } UnkStruct_801CB058; /* size = 0x110 */
 
 typedef struct UnkStruct_801C41A0_s {
@@ -60,6 +85,7 @@ extern s32 D_801C4160;
 extern s32 D_801C4164;
 extern s32 D_801C4168;
 extern s32 D_80192498;
+extern struct UnkStruct_801C3C60 D_801C3C60[];
 extern s32 D_800DA914;
 extern s32 D_8035C800[];
 extern s32 D_8035D200[];
@@ -458,7 +484,38 @@ Gfx* Draw_WaterEffects(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_800916B4.s")
+Gfx* func_800916B4(Gfx* gdl) {
+    SysUtils_LightsSetSource((Lights1*) &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C], D_801CB058[D_800DAB2C].unkC,
+                             D_801CB058[D_800DAB2C].unk10, D_801CB058[D_800DAB2C].unk14, D_801CB058[D_800DAB2C].unk0,
+                             D_801CB058[D_800DAB2C].unk4, D_801CB058[D_800DAB2C].unk8, D_801CB058[D_800DAB2C].unkAC,
+                             D_801CB058[D_800DAB2C].unkB0, D_801CB058[D_800DAB2C].unkB4);
+    SysUtils_LightsSetSource((Lights1*) &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C], D_801CB058[D_800DAB2C].unkD8,
+                             D_801CB058[D_800DAB2C].unkDC, D_801CB058[D_800DAB2C].unkE0, D_801CB058[D_800DAB2C].unkCC,
+                             D_801CB058[D_800DAB2C].unkD0, D_801CB058[D_800DAB2C].unkD4, D_801CB058[D_800DAB2C].unkFC,
+                             D_801CB058[D_800DAB2C].unk100, D_801CB058[D_800DAB2C].unk104);
+    if (gCourseID == TWILIGHT_CITY) {
+        D_801C3C58 = &D_801C3C60[D_800DAB2C].unk0;
+        if (D_801C3C58->unk78 != 0) {
+            gSPNumLights(gdl++, NUMLIGHTS_2);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C].l[0], 1);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].l[0], 2);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 3);
+        } else {
+            gSPNumLights(gdl++, NUMLIGHTS_1);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk35D8[D_800DAB2C].l[0], 1);
+            gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 2);
+        }
+    } else {
+        gSPNumLights(gdl++, NUMLIGHTS_1);
+        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].l[0], 1);
+        gSPLight(gdl++, &D_801C43F8[D_8011F8E0].unk3600[D_800DAB2C].a, 2);
+    }
+    gDPPipeSync(gdl++);
+    gDPSetFogColor(gdl++, D_801CB058[D_800DAB2C].unk48, D_801CB058[D_800DAB2C].unk4C, D_801CB058[D_800DAB2C].unk50,
+                   D_801CB058[D_800DAB2C].unk54);
+    gSPFogPosition(gdl++, D_801CB058[D_800DAB2C].unk78, D_801CB058[D_800DAB2C].unk7C);
+    return gdl;
+}
 
 Gfx* func_80091CD8(Gfx* gdl) {
     gSPNumLights(gdl++, NUMLIGHTS_0);
