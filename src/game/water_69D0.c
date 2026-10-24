@@ -243,11 +243,8 @@ extern s32 D_800D4774;
 extern s32 D_800D4778;
 extern f32 D_800D477C;
 extern s32 D_80192460[];
-extern f32 D_801924B4;
-extern f32 D_801924C0;
 extern f32 D_801924CC;
 extern f32 D_801924D0;
-extern s32 D_80223934;
 
 #ifdef NON_MATCHING
 // 20/18500: the D_800D4774 load and the last tc add use other temp registers ($t0/$t4 for $t8/$t3); everything else matches
@@ -1345,8 +1342,6 @@ void func_80050204(s32 view, Vtx* arena) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050204.s")
 #endif
 
-extern s32 D_801924A8;
-
 /*
  * Casts the four corner rays of the camera's view onto the plane at gWaterLevel + D_800D49B0, keeps
  * the shortest forward distance (capped), and returns the point that far ahead of the camera along
@@ -1451,11 +1446,6 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")
 #endif
-
-extern UnkStruct_80160430 D_80160430[];
-extern UnkStruct_80160A98 D_80160A98[];
-extern UnkStruct_80192420 D_80192420[];
-extern s32 D_8019249C;
 
 void func_8004EAA4(void);
 void func_80050204(s32 view, Vtx* vtx);
