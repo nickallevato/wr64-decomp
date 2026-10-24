@@ -50,7 +50,72 @@ void func_800762D0(struct_800762D0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_8007687C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80077F5C.s")
+extern s32 D_801C1FD4;
+extern s32 D_801C26C0[];
+
+void func_80077F5C(void) {
+    s32 i;
+    s32 j;
+    s32 lap;
+    f32 dist;
+    f32 speed;
+    UnkStruct_801AEE20* prev;
+    UnkStruct_80192690* craft;
+    RiderStruct* rider;
+
+    if (D_801C1FD4 == 0) {
+        D_801C1FD4 = 1;
+        for (i = 0, rider = D_801C2938; i < gRiders; i++, rider++) {
+            if ((rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+                j = rider->unkC;
+                lap = D_801AEE20[j].unkA8; // lap holds the previous record's index here
+                prev = &D_801AEE20[lap];
+                craft = &D_80192690[i];
+                dist = (prev->unk74 * (craft->unk44.z - prev->unk8)) + ((craft->unk44.x - prev->unk0) * prev->unk70);
+                if (dist < 0.0f) {
+                    dist = 0.0f;
+                }
+                dist = 1.0f - (dist / prev->unk88);
+                if (dist < 0.0f) {
+                    dist = 0.0f;
+                }
+                dist *= 20.0f;
+                speed = 80.0f - (rider->racePosition * 5.0f);
+                lap = rider->lapCount;
+                while ((D_801AEE20[j].unk98 != 3) || (lap < D_801CE728[0])) {
+                    if (D_801AEE20[j].unk98 == 3) {
+                        lap++;
+                    }
+                    dist += D_801AEE20[j].unk88;
+                    j = D_801AEE20[j].unkA0;
+                }
+                rider->unk19C += (dist / (speed / 1.8f)) * 50.0f;
+            }
+        }
+        for (i = 0; i < gRiders; i++) {
+            if (D_801C2938[i].unk19C >= 600000) {
+                D_801C2938[i].unk19C = 599999;
+            }
+            if ((D_801C2938[i].unk2F4 == 0) && (D_801C2938[i].unk2EC == 0)) {
+                for (j = 0; j < gRiders; j++) {
+                    if ((D_801C2938[j].unk2F4 == 0) && (D_801C2938[j].unk2EC == 0) && (j != i)) {
+                        if ((D_801C2938[i].racePosition < D_801C2938[j].racePosition) &&
+                            (D_801C2938[j].unk19C < D_801C2938[i].unk19C)) {
+                            lap = D_801C2938[i].racePosition;
+                            D_801C2938[i].racePosition = D_801C2938[j].racePosition;
+                            D_801C2938[j].racePosition = lap;
+                        }
+                    }
+                }
+            }
+        }
+        if (gCourseID != DOLPHIN_PARK) {
+            for (i = 0; i < gRiders; i++) {
+                D_801C26C0[i] = D_801C2938[i].racePosition;
+            }
+        }
+    }
+}
 
 void func_80078264(void) {
     RiderStruct* temp_a0;
