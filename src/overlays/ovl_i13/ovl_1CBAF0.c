@@ -28,6 +28,8 @@ extern s32 D_802C8E90;
 extern s32 D_802C8E94;
 extern s32 D_802C8E9C;
 
+s32 func_i13_802C6700(void);
+
 s32 func_8007BDB8(void);
 void func_800C3010(u32);
 s32 Save_PfsDeleteFile(void);
@@ -48,7 +50,59 @@ void func_800C3E6C(s32);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C5F6C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C6068.s")
+void func_i13_802C6068(void) {
+    s32 pad; // stack pad: needed for match (shifts var_v1 stack slot)
+    s32 var_v1;
+
+    switch (D_801CE640) {
+        case 0:
+            var_v1 = func_i13_802C61E0();
+            break;
+        case 1:
+        case 2:
+            var_v1 = func_i13_802C62EC();
+            break;
+        case 3:
+            var_v1 = func_i13_802C64AC();
+            break;
+        case 4:
+            var_v1 = func_i13_802C65D4();
+            break;
+        case 8:
+            var_v1 = func_i13_802C6700();
+            break;
+        case 5:
+            var_v1 = func_i13_802C69CC();
+            break;
+        case 6:
+            var_v1 = func_i13_802C6ABC();
+            break;
+        case 7:
+            var_v1 = func_i13_802C6BC4();
+            break;
+        case 11:
+            var_v1 = func_i13_802C6CE4();
+            break;
+        case 10:
+            var_v1 = func_i13_802C6E48();
+            break;
+        case 9:
+            var_v1 = func_i13_802C6F0C();
+            break;
+    }
+
+    if (var_v1 == 1) {
+        AudioGeneral_PlaySound(0x11, 0);
+    } else if (var_v1 == 2) {
+        AudioGeneral_PlaySound(0x16, 0);
+    } else if (var_v1 == 3) {
+        AudioGeneral_PlaySound(0x10, 0);
+    } else if (var_v1 == 4) {
+        AudioGeneral_PlaySound(0x10, 0);
+    } else if (var_v1 == 5) {
+        AudioGeneral_PlaySound(0x37, 0);
+    }
+}
 
 s32 func_i13_802C61E0(void) {
     s32 var_v1 = 0;
