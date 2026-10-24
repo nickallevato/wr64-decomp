@@ -22,6 +22,14 @@ typedef struct PortraitPos {
     /* 0x10 */ s32 bobPhase; /* index into gPortraitBob (& 7) */
 } PortraitPos; /* size = 0x14 */
 
+typedef struct UnkStruct_80228B88 {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+} UnkStruct_80228B88; /* size = 0x14 */
+
 void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 color);
 
 extern Gfx D_1014708[];
@@ -72,6 +80,7 @@ extern s32 D_80228ABC;
 extern s32 D_80228AC0;
 extern s32 D_80228B50;
 extern s32 D_80228B54;
+extern UnkStruct_80228B88 D_80228B88[2][4];
 extern UnkStruct_80228C30 D_80228C30[];
 extern s8 D_80228CF8[5];
 extern u16 D_80228D24;
@@ -1615,7 +1624,115 @@ void func_801F9520(Gfx** gdlp) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F9EA0.s")
 
+#ifdef NON_MATCHING
+// Score 5600: the rider loops count j by 1, not in 0x14-byte steps against gRiders * 20 as the original does, which shifts registers.
+extern Gfx D_10147C8[];
+extern Gfx D_10149F8[];
+extern u8 D_10448D0[];
+
+// Draw the radar: a white square, an arrow and a face per rider other than the player.
+void func_801FA3C0(Gfx** gdlp) {
+    Gfx* gdl;
+    UnkStruct_80228B88* b;
+    s32 i;
+    s32 j;
+    s32 x;
+    s32 y;
+    s32 face;
+
+    gdl = *gdlp;
+    gSPClearGeometryMode(gdl++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(gdl++, G_SHADE);
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetCombineMode(gdl++, G_CC_SHADE, G_CC_SHADE);
+    gDPSetRenderMode(gdl++, IM_RD | CVG_DST_FULL | CVG_X_ALPHA | FORCE_BL | GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1MA),
+                     GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1MA));
+    gDPSetAlphaCompare(gdl++, G_AC_NONE);
+    gDPSetFillColor(gdl++, 0xFFFFFFFF);
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            b = &D_80228B88[i][j];
+            if (b->unk10 != 0) {
+                if (gPlayers == ONE_PLAYER) {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 190.0f;
+                } else if (i == 0) {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 96.0f;
+                } else {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 206.0f;
+                }
+                gDPFillRectangle(gdl++, x - 10, y - 10, x + 10, y + 10);
+            }
+        }
+    }
+    gSPDisplayList(gdl++, D_10147C8);
+    gDPSetEnvColor(gdl++, D_80228AAC, D_80228AB0, D_80228AB4, 255);
+    gDPLoadTextureBlock(gdl++, D_10448D0, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 24, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    gSPMatrix(gdl++, &D_5000000->unk4040, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            b = &D_80228B88[i][j];
+            if (b->unk10 != 0) {
+                if (gPlayers == ONE_PLAYER) {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 190.0f;
+                } else if (i == 0) {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 96.0f;
+                } else {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 206.0f;
+                }
+                func_801EDFFC(&D_801AE948->unk4140[D_801AE950], x, y, 0.0f);
+                gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                func_801EE228(&D_801AE948->unk4140[D_801AE950], -b->unk8, 0.0f, 0.0f, 1.0f);
+                gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+                gSPDisplayList(gdl++, D_10149F8);
+            }
+        }
+    }
+    gDPPipeSync(gdl++);
+    gDPSetTexturePersp(gdl++, G_TP_NONE);
+    gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+    gDPSetRenderMode(gdl++, G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2);
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            b = &D_80228B88[i][j];
+            face = 0;
+            if (b->unk10 != 0) {
+                if (gPlayers == ONE_PLAYER) {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 190.0f;
+                } else if (i == 0) {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 96.0f;
+                } else {
+                    x = b->unk0 + 160.0f;
+                    y = b->unk4 + 206.0f;
+                }
+                if ((gPlayers == TWO_PLAYERS) &&
+                    (((j == D_800D48DC) && (D_801CE6F4[0] != 0)) || ((j == D_800D48E0) && (D_801CE6F4[1] != 0)))) {
+                    face = 4;
+                }
+                gDPLoadTextureBlock(gdl++, gPortraitFaces[D_80192690[j].unkB68 + face], G_IM_FMT_RGBA, G_IM_SIZ_16b,
+                                    20, 20, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
+                                    G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                x -= 5;
+                y -= 5;
+                gSPTextureRectangle(gdl++, x << 2, y << 2, (x + 10) << 2, (y + 10) << 2, G_TX_RENDERTILE, 0, 0,
+                                    2 << 10, 2 << 10);
+            }
+        }
+    }
+    *gdlp = gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FA3C0.s")
+#endif
 
 // Rasterise a line from (x0, y0) to (x1, y1) (Bresenham): writes the points into xs/ys and their count.
 void func_801FAD68(s32 x0, s32 y0, s32 x1, s32 y1, s32* count, s32* xs, s32* ys) {
