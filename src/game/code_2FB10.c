@@ -668,7 +668,494 @@ void func_80076378(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80076378.s")
 #endif
 
+extern s32 D_800D4B00;
+extern s32 D_801B2F20[];
+extern s32 D_801B7020[];
+extern s16 D_801CE628;
+extern s32 D_80223934;
+extern s16 D_801CE72E;
+extern s32 D_80228A98;
+extern f32 D_801C39A0[];
+
+void func_800C1B30(void);
+void func_800C1EB8(s32);
+
+#ifdef NON_MATCHING
+// 43091: same blocks and calls, 4 instructions shorter; register allocation and scheduling differ
+// throughout.
+void func_8007687C(s32 arg0) {
+    s32 isHuman;
+    s32 cur;
+    s32 inGate;
+    s32 passed;
+    s32 sameZone;
+    s32 zoneA;
+    s32 zoneB;
+    s32 zoneC;
+    s32 zoneD;
+    s32 type;
+    s32 frac;
+    s32 time;
+    s32 ref;
+    s32 sfx;
+    s32 laps;
+    s32 i;
+    s32 r;
+    s32 r1;
+    s32 r2;
+    s32 r3;
+    s32 beyond;
+    s32 nearLine;
+    f32 px;
+    f32 pz;
+    f32 dirX;
+    f32 dirZ;
+    f32 dx;
+    f32 dz;
+    f32 len;
+    f32 dot;
+    f32 dPos;
+    f32 dPrev;
+    f32 progress;
+    f32 segLen;
+    RiderStruct* rider;
+    UnkStruct_801AEE20* e;
+    UnkStruct_801AEE20* next;
+    UnkStruct_801AEE20* from;
+
+    if (arg0 == D_800D48DC) {
+        D_801C2658 = 0;
+    }
+    isHuman = (arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0));
+    rider = &D_801C2938[arg0];
+    rider->unk314 = 0;
+    if (rider->unk300 != 0) {
+        rider->unk300--;
+    }
+    if ((gCourseID == DRAKE_LAKE) && (D_801C1FD0 == 0) && isHuman && (rider->unk19C >= 50001)) {
+        D_801C1FD0 = 1;
+    }
+    if (gCourseID == GLACIER_COAST) {
+        if (D_801C1FCC >= 2) {
+            rider->unk350 = (struct UnkStruct_801C3C54*) D_801B7020;
+        } else if (D_801C1FCC > 0) {
+            rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
+        }
+    }
+    if ((gCourseID == RIDER_SELECTION) && (arg0 == D_800D48E0)) {
+        rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
+    }
+    if (((D_801CE628 == 1) && (arg0 == D_800D48DC)) ||
+        ((gPlayers == TWO_PLAYERS) && (D_801CE628 == 2) && (arg0 == D_800D48E0))) {
+        if (rider->unk2EC == 0) {
+            func_800762D0((struct_800762D0*) rider);
+        }
+        return;
+    }
+    // The race clock; 9'59"99 retires (except in Dolphin Park).
+    if ((D_801CE638 == 1) && (rider->unk2F4 == 0) && (rider->unk2EC == 0) && (D_800D817C == 0) && (D_801C1FD4 == 0)) {
+        rider->unk168 += 50;
+        if (rider->unk168 >= 599999) {
+            rider->unk168 = 599999;
+        }
+        rider->unk19C += 50;
+        if (rider->unk19C >= 599999) {
+            rider->unk19C = 599999;
+            if (gCourseID != DOLPHIN_PARK) {
+                func_800762D0((struct_800762D0*) rider);
+            }
+        }
+        rider->unk16C = D_800D4B00 & 0xFFFF;
+    }
+
+    // The next record (unkC): a point 25 behind it on its side (unk80/unk84), and for gates
+    // whether the rider is between the posts (with D_801C39C4 of slack).
+    cur = rider->unkC;
+    e = &D_801AEE20[cur];
+    px = e->unk0 - (e->unk80 * 50.0f * 0.5f);
+    pz = e->unk8 - (e->unk84 * 50.0f * 0.5f);
+    if (e->unk9C == 1) {
+        dx = e->unkC - e->unk18;
+        dz = e->unk14 - e->unk20;
+        len = sqrtf((dx * dx) + (dz * dz));
+        if (len > 0.0f) {
+            dx /= len;
+            dz /= len;
+        }
+        dot = ((D_801C3780 - e->unk18) * dx) + ((D_801C3788 - e->unk20) * dz);
+        if (dot >= 0.0f) {} // an empty test, as in the original
+        if (D_801C1F90 == 0) {
+            inGate = dot <= ((e->unk8C * 2.0f) + D_801C39C4);
+        } else {
+            inGate = -D_801C39C4 <= dot;
+        }
+    } else {
+        type = e->unk98;
+        if ((type == 8) || (type == 9)) {
+            dot = ((D_801C3780 - e->unk0) * e->unk78) + ((D_801C3788 - e->unk8) * e->unk7C);
+            if (!(dot >= 0.0f)) {
+                dot = -dot;
+            }
+            if (dot <= e->unk8C) {} // an empty test, as in the original
+        }
+    }
+    dirX = e->unk70;
+    dirZ = e->unk74;
+    dx = D_801C3780 - px;
+    dz = D_801C3788 - pz;
+    len = sqrtf((dx * dx) + (dz * dz));
+    if (len > 0.0f) {
+        dx /= len;
+        dz /= len;
+    }
+    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0.0f)) {
+        if (((dirZ * dx) - (dirX * dz)) >= 0.0f) {
+            rider->unk1C = 1;
+        } else {
+            rider->unk1C = 0;
+        }
+    } else if (((dirX * dx) + (dirZ * dz)) <= 0.0f) {
+        rider->unk1C = -1;
+    }
+    if ((rider->unk20 == 0) && (rider->unk1C == -1)) {
+        rider->unk20 = 1;
+    }
+    func_80074368(D_801C3780, D_801C3788, &zoneA, &zoneB);
+    func_80074368(e->unk0, e->unk8, &zoneC, &zoneD);
+    if ((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) {
+        sameZone = true;
+    } else {
+        sameZone = false;
+        if ((zoneB != -1) && ((zoneB == zoneC) || (zoneB == zoneD))) {
+            sameZone = true;
+        }
+    }
+    passed = false;
+    rider->unk28 = 0;
+    if ((rider->unk20 != 0) && (rider->unk1C >= 0)) {
+        type = e->unk98;
+        if (rider->unk320 != rider->lapCount) {
+            rider->unk20 = 0;
+        }
+        if ((e->unk9C == 1) && !inGate) {
+            rider->unk20 = 0;
+        }
+        if ((e->unkC8 != 0) && !sameZone) {
+            rider->unk20 = 0;
+        }
+        if ((gCourseID == MARINE_FORTRESS) && (gGameModes != GMODE_STUNT) && (type == 4) && !sameZone) {
+            rider->unk20 = 0;
+        }
+        passed = true;
+        rider->unk2F0 = 0;
+        // A buoy: power up on the correct side (type 0 on the left, 1 on the right), else a miss.
+        if ((e->unk9C == 0) && (rider->unk2F4 == 0) && (rider->unk2EC == 0) && (type != 8) && (type != 9)) {
+            if (((type == 0) && (rider->unk1C == 0)) || ((type == 1) && (rider->unk1C == 1))) {
+                if (e->unkC8 != 0) {
+                    if (rider->unk12C < 5) {
+                        rider->unk12C++;
+                        rider->unk314 = 1;
+                    }
+                    rider->unk28 = 1;
+                    if (isHuman) {
+                        if ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0)) {
+                            sfx = 0x80;
+                        } else {
+                            sfx = 0;
+                        }
+                        if (type == 0) {
+                            AudioGeneral_PlaySound(0x26, sfx);
+                        } else {
+                            AudioGeneral_PlaySound(0x27, sfx);
+                        }
+                    }
+                }
+            } else if (((type == 0) || (type == 1)) && (D_801CE72E != 0) && (D_801CE638 == 1) && (e->unkC8 != 0)) {
+                if (isHuman) {
+                    rider->unk130++;
+                    rider->unk134++;
+                }
+                if (rider->unk134 >= gBuoyMisses) {
+                    rider->unk13C = 1;
+                    if (isHuman && (gBuoyMisses == 0)) {
+                        func_800762D0((struct_800762D0*) rider);
+                    }
+                }
+                rider->unk28 = 2;
+                if (isHuman) {
+                    sfx = gBuoyMisses - rider->unk134;
+                    if (sfx < 0) {
+                        sfx = 0;
+                    }
+                    if ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0)) {
+                        sfx += 0x80;
+                    }
+                    if (type == 0) {
+                        AudioGeneral_PlaySound(0x29, sfx);
+                    } else {
+                        AudioGeneral_PlaySound(0x28, sfx);
+                    }
+                }
+            }
+        }
+        rider->unkC = e->unkA0;
+        if (sameZone) {
+            rider->unk310 = cur;
+        }
+        rider->unk1C = -1;
+        rider->unk20 = 1;
+        // Marine Fortress, above normal difficulty: once, near the type 2 object, a sound cue.
+        if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_801C1FC8 == 0) && (rider->lapCount >= 2) &&
+            (((D_800DAB68 == 0) && (e->unk98 == 6)) || (D_800DAB68 != 0))) {
+            D_801C1FC8 = 1;
+            dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].unk4C;
+            dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].unk54;
+            if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                func_800C1B30();
+            } else if (gPlayers == TWO_PLAYERS) {
+                dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].unk4C;
+                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].unk54;
+                if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                    func_800C1B30();
+                }
+            }
+        }
+    }
+    if (passed && (rider->unk13C == 0) && (rider->unk2F4 == 0) && (rider->unk2EC == 0) && (gCourseID != DOLPHIN_PARK)) {
+        // A checkpoint gate: its time, and the gap shown against the time trial record
+        // (D_801C24A0) or, in a race, asked of func_80079528 (unk2FC 10).
+        if ((e->unk9C == 1) && (rider->lapCount > 0)) {
+            dPos = ((D_801C3780 - e->unk0) * dirX) + ((D_801C3788 - e->unk8) * dirZ);
+            if (!(dPos >= 0.0f)) {
+                dPos = -dPos;
+            }
+            dPrev = ((D_80192690[arg0].unkBE4 - e->unk0) * dirX) + ((D_80192690[arg0].unkBEC - e->unk8) * dirZ);
+            if (!(dPrev >= 0.0f)) {
+                dPrev = -dPrev;
+            }
+            frac = (dPos / (dPos + dPrev)) * 50.0f;
+            if (e->unk98 == 3) {
+                rider->unk164 = 0;
+            }
+            time = rider->unk19C - frac;
+            rider->unk1A4[rider->lapCount - 1][rider->unk164] = time;
+            if ((D_801CE638 == 1) && (D_801C1FC4 == 0) && (D_801C1FD8 == 0) &&
+                ((cur != D_801BB12C) || (rider->lapCount < D_801CE728[0]))) {
+                if ((gGameModes == GMODE_TIME_TRIALS) && (D_800DAB68 == 0) && (cur == D_801BB12C) &&
+                    (rider->lapCount < 3)) {
+                    ref = D_801C24A0[gCourseID][rider->lapCount - 1];
+                    if (ref > 0) {
+                        if (ref < time) {
+                            rider->unk2FC = 1;
+                            rider->unk2F8 = time - ref;
+                        } else {
+                            rider->unk2FC = 2;
+                            rider->unk2F8 = ref - time;
+                        }
+                        rider->unk300 = 40;
+                    }
+                } else if ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_2P_VS)) {
+                    rider->unk2FC = 10;
+                } else {
+                    rider->unk2FC = 0;
+                }
+            }
+        }
+        // The line: the lap time and best lap, lap sounds, the last lap.
+        if (cur == D_801BB12C) {
+            if (rider->lapCount > 0) {
+                rider->unk168 -= frac;
+                if (D_801CE638 == 1) {
+                    if (rider->lapCount < 10) {
+                        rider->unk178[rider->lapCount - 1] = rider->unk168;
+                        rider->unk140[rider->lapCount - 1] = rider->unk130;
+                    } else {
+                        for (i = 0; i < 8; i++) {
+                            rider->unk178[i] = rider->unk178[i + 1];
+                            rider->unk140[i] = rider->unk140[i + 1];
+                        }
+                        rider->unk178[8] = rider->unk168;
+                        rider->unk140[8] = rider->unk130;
+                    }
+                    if (rider->unk168 < rider->unk170) {
+                        rider->unk170 = rider->unk168;
+                        rider->unk174 = rider->lapCount;
+                    }
+                    if ((gPlayers == ONE_PLAYER) && (arg0 == D_800D48DC)) {
+                        if (rider->unk170 < D_801C1FE0) {
+                            D_801C1FE0 = rider->unk170;
+                            D_801C2658 = 1;
+                            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->lapCount < D_801CE728[0])) {
+                                D_80228A98 = 1;
+                            }
+                            if (rider->lapCount < D_801CE728[0]) {
+                                sfx = 1;
+                                if (D_801CE728[0] == rider->lapCount + 1) {
+                                    sfx = 0x81;
+                                }
+                                AudioGeneral_PlaySound(0x21, sfx);
+                            }
+                        } else if (rider->lapCount < D_801CE728[0]) {
+                            sfx = 0;
+                            if (D_801CE728[0] == rider->lapCount + 1) {
+                                sfx = 0x80;
+                            }
+                            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->unk2FC == 2)) {
+                                sfx += 2;
+                            }
+                            AudioGeneral_PlaySound(0x21, sfx);
+                        }
+                    } else if ((gPlayers == TWO_PLAYERS) && isHuman) {
+                        if (rider->lapCount < D_801CE728[0]) {
+                            sfx = 0;
+                            if (D_801CE728[0] == rider->lapCount + 1) {
+                                sfx = 0x80;
+                            }
+                            AudioGeneral_PlaySound(0x21, sfx);
+                        }
+                    }
+                }
+                rider->unk168 = frac;
+                if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_800D8240 == 0) && (rider->lapCount > 0)) {
+                    rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
+                }
+                if ((gCourseID == GLACIER_COAST) && isHuman && (D_801C1FCC < rider->lapCount)) {
+                    D_801C1FCC++;
+                }
+                if (isHuman && (rider->lapCount < D_801CE728[0])) {
+                    switch (rider->racePosition) {
+                        case 0:
+                            func_800C1EB8(2);
+                            break;
+                        case 1:
+                            func_800C1EB8(1);
+                            break;
+                        case 2:
+                            func_800C1EB8(0);
+                            break;
+                    }
+                }
+                if ((rider->lapCount >= D_801CE728[0]) && (D_800D8178 == 0) && (D_801C1FD4 == 0)) {
+                    rider->unk2F4 = 1;
+                    rider->unk32C = D_801C39B0;
+                    D_801C39B0 -= 10000.0f;
+                    laps = D_801CE728[0];
+                    if (laps >= 10) {
+                        laps = 9;
+                    }
+                    rider->unk19C = 0;
+                    for (i = 0; i < laps; i++) {
+                        rider->unk19C += rider->unk178[i];
+                    }
+                    if (!isHuman) {
+                        rider->unk12C = 0;
+                    }
+                }
+            }
+            if ((D_800D8178 == 0) || (rider->lapCount == 0)) {
+                if (rider->lapCount < D_801CE728[0]) {
+                    rider->lapCount++;
+                    rider->unk320 = rider->lapCount;
+                }
+            }
+            rider->unk130 = 0;
+            for (i = 1; i < D_801BB120; i++) {
+                rider->unk2C[i] = 0;
+            }
+            if ((rider->lapCount >= 2) && (rider->unk2F4 == 0)) {
+                rider->unk308 = 1;
+            }
+        }
+        rider->unk2C[cur] = 1;
+    }
+    if (rider->unk12C != rider->unk138) {
+        if (rider->unk12C - rider->unk138 == 0) {
+            i = 0;
+        } else if (rider->unk12C - rider->unk138 > 0) {
+            i = 1;
+        } else {
+            i = -1;
+        }
+        rider->unk138 += i;
+    }
+    if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
+        rider->unk8 = 0;
+        rider->unk32C = 0.0f;
+        D_801C39A0[arg0] = 0.0f;
+    }
+
+    // Crossing the line backwards or forwards near it (within one record of it, four on
+    // Sunset Bay) moves the lap counter unk320.
+    r1 = D_801AEE20[rider->unk310].unkA0;
+    r2 = D_801AEE20[r1].unkA0;
+    r3 = D_801AEE20[r2].unkA0;
+    beyond = false;
+    if (((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
+         ((D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70)) > 0.0f) {
+        beyond = true;
+    }
+    nearLine = (D_801BB12C == rider->unk310) || (r1 == D_801BB12C);
+    if (gCourseID == SUNSET_BAY) {
+        nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (D_801AEE20[r3].unkA0 == D_801BB12C);
+    }
+    if (func_80076240(D_801C3780, D_801C3788, D_801AEE20[D_801BB12C].unk0, D_801AEE20[D_801BB12C].unk8) &&
+        nearLine) {
+        if (beyond && (rider->unk324 == 0) && (rider->unk320 < rider->lapCount)) {
+            rider->unk320++;
+        } else if (!beyond && (rider->unk324 != 0)) {
+            if (rider->unk320 >= -49) {
+                rider->unk320--;
+            }
+        }
+    }
+    rider->unk324 = beyond;
+
+    // Progress: the last record the rider is past (walking back from unk310), and how far along
+    // the segment to the next one; unk32C orders the riders.
+    r = rider->unk310;
+    segLen = 0.0f;
+    progress = 0.0f;
+    for (i = 0; i < D_801BB120; i++) {
+        e = &D_801AEE20[r];
+        dz = D_801C3788 - e->unk8;
+        dx = D_801C3780 - e->unk0;
+        if (!(((e->unk74 * dz) + (dx * e->unk70)) <= 0.0f)) {
+            if ((gCourseID == MARINE_FORTRESS) && (e->unk98 == 4) && (e->unkC0 == 1) &&
+                (func_80074448(D_801C3780, D_801C3788) != 0)) {
+                from = &D_801AEE20[e->unkA8];
+            } else {
+                from = &D_801AEE20[r];
+            }
+            next = &D_801AEE20[e->unkA0];
+            dirX = next->unk0 - from->unk0;
+            dirZ = next->unk8 - from->unk8;
+            segLen = sqrtf((dirX * dirX) + (dirZ * dirZ));
+            if (segLen > 0.0f) {
+                dirX /= segLen;
+                dirZ /= segLen;
+            }
+            progress = (dx * dirX) + (dz * dirZ);
+            break;
+        }
+        r = e->unkA8;
+    }
+    rider->unk8 = r;
+    if (segLen > 0.0f) {
+        len = progress / segLen;
+    } else {
+        len = 0.0f;
+    }
+    if (len >= 1.0f) {
+        len = 1.0f;
+    }
+    if ((rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+        rider->unk32C = ((rider->unk320 * 1000) + (r * 10)) + len;
+        D_801C39A0[arg0] = progress;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_8007687C.s")
+#endif
 
 extern s32 D_801C1FD4;
 
@@ -810,13 +1297,10 @@ typedef struct UnkStruct_800D92BC {
 
 extern UnkStruct_800D92BC D_800D92BC;
 extern s32 D_800D92B8;
-extern s32 D_800D4B00;
 extern s32 D_800D8178;
 extern s16 D_800DAB60;
 extern s32 D_801BB134;
 extern s32 D_80228A94;
-extern s32 D_801B2F20[];
-extern s16 D_801CE628;
 
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
