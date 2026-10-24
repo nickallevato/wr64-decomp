@@ -48,6 +48,23 @@ typedef struct UnkStruct_801DC0AC {
 } UnkStruct_801DC0AC;
 
 extern UnkStruct_801DC0AC D_80225D94;
+
+typedef struct UnkStruct_801DD2D0_Pos {
+    f32 unk0[2][6];
+} UnkStruct_801DD2D0_Pos;
+
+typedef struct UnkStruct_801DD2D0_Group {
+    u32 start;
+    u32 end;
+    UnkStruct_801DB0E4_arg1 data;
+} UnkStruct_801DD2D0_Group; // size = 0x3C
+
+typedef struct UnkStruct_801DD2D0_Groups {
+    UnkStruct_801DD2D0_Group unk0[2];
+} UnkStruct_801DD2D0_Groups;
+
+extern UnkStruct_801DD2D0_Pos D_80225E68;
+extern UnkStruct_801DD2D0_Groups D_80225E98;
 extern UnkStruct_801DBF68_s0 D_80225E0C;
 
 void func_800AB92C(void);
@@ -509,7 +526,75 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DCD34.s")
 
+#ifdef NON_MATCHING
+// Stack layout and loop strength reduction differ (the D_80228110 load moves above the unk8 store; s7/s8 swap).
+void func_801DD2D0(UnkA95D0_Runner* runner) {
+    UnkStruct_801DB0E4_arg0* e;
+    f32 vec[3];
+    f32 mag;
+    s32 i;
+    s32 j;
+    UnkStruct_801DD2D0_Pos spDC = D_80225E68;
+    UnkStruct_801DD2D0_Groups sp64 = D_80225E98;
+
+    if (runner->step - D_802245B4 != 2) {
+        return;
+    }
+    D_802287A8 = 16;
+    if (runner->frame == 1) {
+        func_800AB92C();
+        for (i = 0; i < 2; i++) {
+            e = &D_80228190[i];
+            e->unk0 = 3;
+            e->unk4 = 0;
+            e->unk8 = 0;
+            for (j = 0; j < 3; j++) {
+                e->unkC[j] = spDC.unk0[i][j];
+            }
+            e->unk24 = 0.0f;
+            e->unk28 = 1.0f;
+            e->unk2C = 0.0f;
+            e->unk30 = 0.1f;
+            if (i == 0) {
+                D_80228110[i] = 6;
+            } else {
+                D_80228110[i] = 0xFFFF;
+            }
+        }
+        for (i = 0; i < 2; i++) {
+            func_801DB284(&D_80228190[sp64.unk0[i].start], &sp64.unk0[i].data, D_80228120,
+                          sp64.unk0[i].end - sp64.unk0[i].start);
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        e = &D_80228190[i];
+        e->unk8 += (e->unk8 < 0x10) ? 2 : 1;
+        if (D_80228110[i] > 0) {
+            if (e->unk8 >= 0x10) {
+                e->unk8 = 0;
+                D_80228110[i]--;
+            }
+        } else if (e->unk8 >= 0x2D) {
+            e->unk8 = 0x19;
+        }
+        for (j = 0; j < 3; j++) {
+            vec[j] = spDC.unk0[i][j + 3] + (f32) (SysUtils_Rand() & 3);
+        }
+        mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
+        for (j = 0; j < 3; j++) {
+            e->unk14[j] = vec[j] / mag;
+            e->unkC[j] += e->unk14[j] * 12.0f;
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        func_801DB430(&D_80228190[sp64.unk0[i].start], &sp64.unk0[i].data, D_80228120,
+                      sp64.unk0[i].end - sp64.unk0[i].start);
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD2D0.s")
+#endif
+
 
 void func_801DD6B4(UnkA95D0_Runner* runner) {
     void (*func)(UnkA95D0_Runner*);
