@@ -119,7 +119,7 @@ void func_80095A28(DmaEntry* entry);
 void func_80097EC8(void*, void*, u32);
 void func_80097E68(void);
 s32 SegmentedToVirtual(u32);
-void func_801E6A4C(u16 arg0, u16 arg1);
+void func_801E6A4C(u16 kind, u16 param);
 void func_800C21F4(s32 arg0, int courseID);
 void func_80096960(s32, s32, s32, s32, s32);
 void func_800B9F90(s32 arg0, s32 arg1, s32 arg2);

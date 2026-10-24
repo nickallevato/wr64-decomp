@@ -1040,19 +1040,19 @@ typedef struct {
 
 
 typedef struct UnkStruct_menu_buffer_1_s {
-    /* 0x00 */ u16 unk_0;
-    /* 0x02 */ u16 unk2;
-    /* 0x04 */ s16 unk4;
-    /* 0x06 */ u16 unk_6;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
+    /* 0x00 */ u16 type;                            /* 0 free, 1 and 2 cards, 3 spinning cursor, 4 eight-strip card */
+    /* 0x02 */ u16 state;                           /* 0 sliding in, 1 settled (2 for type 4) */
+    /* 0x04 */ s16 index;                           /* own slot number; picks the card's matrix */
+    /* 0x06 */ u16 active;                          /* set by func_801E5470 each frame; func_801E5554 draws only these */
+    /* 0x08 */ s32 x;
+    /* 0x0C */ s32 y;
     /* 0x10 */ char pad10[4];
     /* 0x14 */ f32 unk14;                           /* inferred */
-    /* 0x18 */ s32 unk18;
+    /* 0x18 */ s32 frame;                           /* animation counter (the cursor's wraps at 40) */
     /* 0x1C */ s32 unk1C;                           /* inferred */
     /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ s32 unk28;
+    /* 0x24 */ s32 menuY;                           /* the pause cursor's y for option 0 (+15 per option) */
+    /* 0x28 */ s32 variant;                         /* type 2: 0 place card, else wide card; type 4: 176 wide */
 } UnkStruct_menu_buffer_1;                          /* size = 0x2C */
 
 typedef struct UnkStruct_80198368_s {

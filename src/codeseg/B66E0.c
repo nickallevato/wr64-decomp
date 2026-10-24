@@ -1,8 +1,8 @@
 #include "common.h"
 
-Gfx* func_801E9858(Gfx*, s32, char*, s32, s32);
-extern f32 D_80226E24;
-extern s16 D_80226E28;
+Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y);
+extern f32 gPrinterScale;   /* glyph scale, set by func_801E93B4 */
+extern s16 gPrinterScaled;  /* 1 while the scaled printer is in use; func_801E93B4 leaves it set */
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E80B0.s")
 
@@ -12,21 +12,23 @@ extern s16 D_80226E28;
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8B24.s")
 
-void func_801E92FC(Gfx* arg0, s32 arg1, char* buf, s32 arg3, s32 arg4, s32 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
-                   u8 arg10, u8 arg11, u8 arg12, u8 arg13, u8 arg14, u8 arg15, u8 arg16, u8 arg17) {
-    D_80226E24 = 1.0f;
-    arg0 = func_801E946C(arg0, arg5, (s32) arg6, (s32) arg7, (s32) arg8, (s32) arg9, (s32) arg10, (s32) arg11,
-                         (s32) arg12, (s32) arg13, (s32) arg14, (s32) arg15, (s32) arg16, (s32) arg17);
-    D_80226E28 = 0;
-    func_801E9858(arg0, arg1, buf, arg3, arg4);
+/* r0..b3: RGB of the four glyph-quad corners (the recomp passes top, top, bottom, bottom). */
+void func_801E92FC(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
+    gPrinterScale = 1.0f;
+    gdl = func_801E946C(gdl, mode, (s32) r0, (s32) g0, (s32) b0, (s32) r1, (s32) g1, (s32) b1,
+                        (s32) r2, (s32) g2, (s32) b2, (s32) r3, (s32) g3, (s32) b3);
+    gPrinterScaled = 0;
+    func_801E9858(gdl, font, str, x, y);
 }
 
-Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
-                   u8 arg10, u8 arg11, u8 arg12, u8 arg13, u8 arg14, u8 arg15, u8 arg16, u8 arg17, f32 scale) {
-    D_80226E24 = scale;
-    gdl = func_801E946C(gdl, mode, (s32) arg6, (s32) arg7, (s32) arg8, (s32) arg9, (s32) arg10, (s32) arg11,
-                        (s32) arg12, (s32) arg13, (s32) arg14, (s32) arg15, (s32) arg16, (s32) arg17);
-    D_80226E28 = 1;
+/* Prints str in font at (x, y) at the given scale: sets the printer's mode and corner colours, then prints. */
+Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
+    gPrinterScale = scale;
+    gdl = func_801E946C(gdl, mode, (s32) r0, (s32) g0, (s32) b0, (s32) r1, (s32) g1, (s32) b1,
+                        (s32) r2, (s32) g2, (s32) b2, (s32) r3, (s32) g3, (s32) b3);
+    gPrinterScaled = 1;
     return func_801E9858(gdl, font, str, x, y);
 }
 
