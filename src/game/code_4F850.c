@@ -154,9 +154,9 @@ u32* func_800965B8(s32 arg0);
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
 #ifdef NON_MATCHING
-// Score 2038 of 63000: the list pointers of the race-results and stunt-results cases are in a3 (a2 here) and
-// their lui is scheduled earlier; the list walk keeps the next entry in v1; fromState67 is 4 bytes higher on the
-// stack; the ceremony loop's second pointer step is scheduled later.
+// Score 913 of 63000: the frame is 0x18 smaller here (the original spills the list walk pointer at sp18 and keeps
+// the five saved entries on the stack); the list walk keeps the next entry in v1; the race-list choice and the
+// two list lui are scheduled differently.
 void unk_game_load(void) {
     s32 fromState67;
     DmaEntry** list;
@@ -406,57 +406,59 @@ void unk_game_load(void) {
         D_800D45F0 = D_800DCE84[buffer];
         D_801CE6D0 = osVirtualToPhysical(D_800D45F0);
         D_801CE730 = 0;
-        D_801CE734 = 0;
-        D_801CE738 = 0;
-        p = list;
-        while (*p != NULL) {
-            func_80095A28(*p++);
-        }
-        if (D_801CE730 > 0) {
-            if (D_801CE760[0] != -1) {
-                saved30 = D_80227A60[0].unk30[0];
-                saved34 = D_80227A60[0].unk30[1];
-                saved38 = D_80227A60[0].unk30[2];
-                saved3C = D_80227A60[0].unk30[3];
-                saved40 = D_80227A60[0].unk30[4];
-                src = &D_80227A60[D_801CE760[0]];
-                D_80227A60[0].unk30[0] = src->unk30[0];
-                D_80227A60[0].unk30[1] = src->unk30[1];
-                D_80227A60[0].unk30[2] = src->unk30[2];
-                D_80227A60[0].unk30[3] = src->unk30[3];
-                D_80227A60[0].unk30[4] = src->unk30[4];
+        if (1) { // FAKE: a permuter find; changes the register allocation of the block
+            D_801CE734 = 0;
+            D_801CE738 = 0;
+            p = list;
+            while (*p != NULL) {
+                func_80095A28(*p++);
             }
-            if (D_801CE760[1] != -1) {
-                if ((D_801CE760[1] == 0) && (D_801CE760[0] != -1)) {
-                    D_80227AD4 = saved30;
-                    D_80227AD8 = saved34;
-                    D_80227ADC = saved38;
-                    D_80227AE0 = saved3C;
-                    D_80227AE4 = saved40;
-                } else {
-                    src = &D_80227A60[D_801CE760[1]];
-                    D_80227AD4 = src->unk30[0];
-                    D_80227AD8 = src->unk30[1];
-                    D_80227ADC = src->unk30[2];
-                    D_80227AE0 = src->unk30[3];
-                    D_80227AE4 = src->unk30[4];
+            if (D_801CE730 > 0) {
+                if (D_801CE760[0] != -1) {
+                    saved30 = D_80227A60[0].unk30[0];
+                    saved34 = D_80227A60[0].unk30[1];
+                    saved38 = D_80227A60[0].unk30[2];
+                    saved3C = D_80227A60[0].unk30[3];
+                    saved40 = D_80227A60[0].unk30[4];
+                    src = &D_80227A60[D_801CE760[0]];
+                    D_80227A60[0].unk30[0] = src->unk30[0];
+                    D_80227A60[0].unk30[1] = src->unk30[1];
+                    D_80227A60[0].unk30[2] = src->unk30[2];
+                    D_80227A60[0].unk30[3] = src->unk30[3];
+                    D_80227A60[0].unk30[4] = src->unk30[4];
                 }
-            }
-            if (D_801CE73C == 4) {
-                D_80227A60[4].unk0[3] = D_80227A60[2].unk0[3];
-                D_80227A60[5].unk0[3] = D_80227A60[3].unk0[3];
-                D_80227A60[2].unk0[1] = D_80227A60[0].unk0[1];
-                D_80227A60[2].unk0[3] = D_80227A60[0].unk0[3];
-                D_80227A60[3].unk0[1] = D_80227A60[1].unk0[1];
-                D_80227A60[3].unk0[3] = D_80227A60[1].unk0[3];
-            }
-            if (gGameState == GAME_STATE_CEREMONY) {
-                for (i = 0, src = D_80227A60; i < 4; i++, src++) {
-                    D_801CE9A0[i] = src->unk0[2];
-                    e = &D_800DCE98[D_800DA9B0[i]];
-                    src->unk0[2] = D_8090510;
-                    src->unk0[3] = e->unk0;
-                    src->unk0[8] = e->unk4;
+                if (D_801CE760[1] != -1) {
+                    if ((D_801CE760[1] == 0) && (D_801CE760[0] != -1)) {
+                        D_80227AD4 = saved30;
+                        D_80227AD8 = saved34;
+                        D_80227ADC = saved38;
+                        D_80227AE0 = saved3C;
+                        D_80227AE4 = saved40;
+                    } else {
+                        src = &D_80227A60[D_801CE760[1]];
+                        D_80227AD4 = src->unk30[0];
+                        D_80227AD8 = src->unk30[1];
+                        D_80227ADC = src->unk30[2];
+                        D_80227AE0 = src->unk30[3];
+                        D_80227AE4 = src->unk30[4];
+                    }
+                }
+                if (D_801CE73C == 4) {
+                    D_80227A60[4].unk0[3] = D_80227A60[2].unk0[3];
+                    D_80227A60[5].unk0[3] = D_80227A60[3].unk0[3];
+                    D_80227A60[2].unk0[1] = D_80227A60[0].unk0[1];
+                    D_80227A60[2].unk0[3] = D_80227A60[0].unk0[3];
+                    D_80227A60[3].unk0[1] = D_80227A60[1].unk0[1];
+                    D_80227A60[3].unk0[3] = D_80227A60[1].unk0[3];
+                }
+                if (gGameState == GAME_STATE_CEREMONY) {
+                    for (i = 0, src = D_80227A60; i < 4; i++, src++) {
+                        D_801CE9A0[i] = src->unk0[2];
+                        e = &D_800DCE98[D_800DA9B0[i]];
+                        src->unk0[2] = D_8090510;
+                        src->unk0[3] = e->unk0;
+                        src->unk0[8] = e->unk4;
+                    }
                 }
             }
         }
