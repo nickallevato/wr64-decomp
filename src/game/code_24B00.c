@@ -3,9 +3,10 @@
 #include "camera.h"
 
 typedef struct UnkStruct_801BB138_s {
-    /* 0x00 */ char pad0[4];
+    /* 0x00 */ f32 unk0;
     /* 0x04 */ f32 unk4;     /* inferred */
-    /* 0x08 */ char pad8[8]; /* maybe part of unk4[3]? */
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ char padC[4];
     /* 0x10 */ s32 unk10;    /* inferred */
     /* 0x14 */ char pad14[4];
 } UnkStruct_801BB138; /* size = 0x18 */
@@ -36,7 +37,10 @@ typedef struct UnkStruct_801C0C80_s {
     char pad58[0x20];
     s32 unk78;
     s32 unk7C;
-    char pad80[0x2C];
+    char pad80[0x20];
+    s32 unkA0;
+    s32 unkA4;
+    char padA8[0x4];
     f32 unkAC;
     f32 unkB0;
     f32 unkB4;
@@ -1250,4 +1254,700 @@ void func_8006E3A8(void) {
     }
 }
 
+extern s16 D_801C05C0[];
+extern s16 D_801C0640[];
+extern s16 D_801C08C0[];
+extern u8 D_801C0B40[];
+extern u8 D_801C0B80[];
+extern Mtx D_801C0CD0[];
+extern UnkStruct_801C0C80 D_801CB058[];
+extern s32 D_800D4B04;
+extern s32 D_800D5440;
+extern s32 D_800D5444;
+extern s32 D_800D5448;
+extern s32 D_800D5450;
+extern Gfx* D_801C1CD0;
+extern Gfx* D_801C1CD4;
+extern Gfx* D_801C1CD8;
+extern Gfx* D_801C1CDC;
+extern Gfx* D_801C1CE0;
+extern Gfx* D_801C1CE4;
+extern Mtx D_2000A40[];
+extern u16 D_D4B18[];
+extern u16 D_D4D18[];
+extern u16 D_D4F18[];
+extern u16 D_D5118[];
+extern u8 D_101F978[];
+extern u16 D_1016A38[];
+extern u16 D_1017A38[];
+extern Gfx D_1014438[];
+extern Gfx D_1018AA8[];
+extern Gfx D_1018D58[];
+extern Gfx D_1029BE0[];
+extern Gfx D_1029C88[];
+extern Gfx D_102AD90[];
+extern Gfx D_102AE38[];
+extern Gfx D_102CB78[];
+extern Gfx D_102CC58[];
+extern Gfx D_102CC70[];
+extern Gfx D_102CCE8[];
+extern Gfx D_102CD00[];
+extern Gfx D_102CD78[];
+extern Gfx D_102CD90[];
+extern Gfx D_102CE08[];
+extern Gfx D_102CE20[];
+extern Gfx D_102CF10[];
+extern Gfx D_102CF28[];
+extern Gfx D_D02B640[];
+extern Gfx D_8029FA70[];
+extern Gfx D_8029FAD0[];
+extern Gfx D_8029FC50[];
+extern Gfx D_8029FCD8[];
+extern Gfx D_8029FDC8[];
+extern Gfx D_8029FF58[];
+extern u8 D_E00F478[];
+extern u8 D_E011480[];
+extern u8 D_E013488[];
+extern Gfx D_E010DF0[];
+extern Gfx D_E010ED0[];
+
+f32 func_801ED090(f32 arg0);
+void func_800B4ABC(Gfx** gdl);
+
+// The visibility fade of a record at distance d: 0 within near, rising to 255 at far.
+#define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
+
+#ifdef NON_MATCHING
+// 135881: same passes, commands, loops and calls; register allocation and scheduling differ
+// throughout, and this C is about 76 instructions longer (most of it in the visibility loops).
+void func_8006E674(Gfx** gdl) {
+    camera_unk_1* cam;
+    UnkStruct_80192690* craft;
+    UnkStruct_801AEE20* e;
+    UnkStruct_801AEE20* e2;
+    UnkStruct_801AEE20* e3;
+    UnkStruct_801BB138* b;
+    UnkStruct_801BC940* o;
+    s32 cur;
+    s32 i;
+    s32 n;
+    s32 slot;
+    s32 near;
+    s32 far;
+    s32 idx;
+    f32 dirX;
+    f32 dirZ;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 d;
+    f32 lim;
+    f32 upY;
+    f32 upZ;
+    f32 angle;
+    u8* tex;
+    u8* tex2;
+    Gfx* dlA;
+    Gfx* dlA2;
+    Gfx* dlB;
+    Gfx* dlB2;
+    MtxF mf;
+    Gfx* gdlh;
+
+    gdlh = *gdl;
+    if (D_800DAB2C == 0) {
+        cam = &gCameraPerspective[D_80223930];
+        cur = D_801C2938[D_800D48DC].unkC;
+        craft = &D_80192690[D_800D48DC];
+    } else {
+        cam = &gCameraPerspective[D_80223934];
+        cur = D_801C2938[D_800D48E0].unkC;
+        craft = &D_80192690[D_800D48E0];
+    }
+    D_801C0C80 = &D_801CB058[D_800DAB2C];
+    sqrtf((craft->unk6C * craft->unk6C) + (craft->unk74 * craft->unk74));
+    dirX = cam->unk64;
+    dirZ = cam->unk6C;
+    d = sqrtf((dirX * dirX) + (dirZ * dirZ));
+    if (d > 0.0f) {
+        dirX /= d;
+        dirZ /= d;
+    }
+    // The next buoy (not a gate, unkC8 set) from the human's next record, the one after it,
+    // and the one before it; the results are not used.
+    e = &D_801AEE20[cur];
+    if ((e->unk9C != 0) || (e->unkC8 == 0)) {
+        for (n = D_801BB120 - 1; n > 0; n--) {
+            e = &D_801AEE20[e->unkA0];
+            if ((e->unk9C == 0) && (e->unkC8 != 0)) {
+                break;
+            }
+        }
+    }
+    e2 = &D_801AEE20[e->unkA0];
+    if ((e2->unk9C != 0) || (e2->unkC8 == 0)) {
+        for (n = D_801BB120 - 1; n > 0; n--) {
+            e2 = &D_801AEE20[e2->unkA0];
+            if ((e2->unk9C == 0) && (e2->unkC8 != 0)) {
+                break;
+            }
+        }
+    }
+    e3 = &D_801AEE20[e->unkA8];
+    if ((e3->unk9C != 0) || (e3->unkC8 == 0)) {
+        for (n = D_801BB120 - 1; n > 0; n--) {
+            e3 = &D_801AEE20[e3->unkA8];
+            if ((e3->unk9C == 0) && (e3->unkC8 != 0)) {
+                break;
+            }
+        }
+    }
+
+    // Visibility marks: -1 hidden, else a fade 0-255 between the view's near and far.
+    near = D_801C0C80->unkA0;
+    far = D_801C0C80->unkA4;
+    for (i = 0; i < D_801BB120; i++) {
+        e = &D_801AEE20[i];
+        if (e->unkC0 >= 2) {
+            if ((D_800D4B04 & 1) || (D_800D5444 == 0)) {
+                D_801C0840[i] = -1;
+                continue;
+            }
+        } else if ((e->unkC8 == 0) && (D_800D5448 == 0)) {
+            D_801C0840[i] = -1;
+            continue;
+        }
+        dx = e->unk0 - cam->unk4C;
+        dz = e->unk8 - cam->unk54;
+        d = sqrtf((dx * dx) + (dz * dz));
+        if (e->unk9C == 1) {
+            lim = (f32) far + (f32) far;
+        } else {
+            lim = far;
+        }
+        if (d < lim) {
+            if (d > 0.0f) {
+                dx /= d;
+                dz /= d;
+            }
+            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (e->unk9C == 1) || (e->unk98 == 8) || (e->unk98 == 9)) {
+                if (d <= (f32) near) {
+                    D_801C0840[i] = 0;
+                } else {
+                    D_801C0840[i] = BUOY_FADE(d, near, far);
+                }
+                if (D_801C0840[i] >= 256) {
+                    D_801C0840[i] = 255;
+                }
+            } else {
+                D_801C0840[i] = -1;
+            }
+        } else {
+            D_801C0840[i] = -1;
+        }
+    }
+    for (i = 0; i < D_801BC938; i++) {
+        b = &D_801BB138[i];
+        dx = b->unk0 - cam->unk4C;
+        dz = b->unk8 - cam->unk54;
+        if ((b->unk10 == 4) || (b->unk10 == 5)) {
+            D_801C08C0[i] = -1;
+            continue;
+        }
+        d = sqrtf((dx * dx) + (dz * dz));
+        if (d < (f32) far) {
+            if (d > 0.0f) {
+                dx /= d;
+                dz /= d;
+            }
+            if (((dx * dirX) + (dz * dirZ)) > 0.5f) {
+                if (d <= (f32) near) {
+                    D_801C08C0[i] = 0;
+                } else {
+                    D_801C08C0[i] = BUOY_FADE(d, near, far);
+                }
+            } else {
+                D_801C08C0[i] = -1;
+            }
+        } else {
+            D_801C08C0[i] = -1;
+        }
+    }
+    for (i = 0; i < D_801BFA40; i++) {
+        o = &D_801BC940[i];
+        dx = o->unk0 - cam->unk4C;
+        dz = o->unk8 - cam->unk54;
+        d = sqrtf((dx * dx) + (dz * dz));
+        if (d < (f32) far) {
+            if (d > 0.0f) {
+                dx /= d;
+                dz /= d;
+            }
+            if ((((dx * dirX) + (dz * dirZ)) > 0.0f) || (o->unk4C == 1) || (o->unk4C == 2)) {
+                if (d <= (f32) near) {
+                    D_801C0AC0[i] = 0;
+                } else {
+                    D_801C0AC0[i] = BUOY_FADE(d, near, far);
+                }
+            } else {
+                D_801C0AC0[i] = -1;
+            }
+        } else {
+            D_801C0AC0[i] = -1;
+        }
+    }
+
+    gSPDisplayList(gdlh++, D_1014438);
+    gSPDisplayList(gdlh++, D_102CB78);
+    gDPPipeSync(gdlh++);
+    gDPSetTextureLUT(gdlh++, G_TT_RGBA16);
+    // Table A: a matrix slot (of 32) for each visible buoy, facing the camera.
+    for (i = 0, slot = 0; i < D_801BC938; i++) {
+        if (D_801C08C0[i] < 0) {
+            continue;
+        }
+        b = &D_801BB138[i];
+        dx = cam->unk4C - b->unk0;
+        dy = cam->unk50 - b->unk4;
+        dz = cam->unk54 - b->unk8;
+        if ((dx != 0.0f) || (dz != 0.0f)) {
+            upY = 1.0f;
+            upZ = 0.0f;
+        } else {
+            upY = 0.0f;
+            upZ = 1.0f;
+        }
+        SysUtils_MatrixLookAt(&D_801AE948->unkA1C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, b->unk0,
+                              b->unk4, b->unk8);
+        D_801C0B80[i] = slot;
+        if (++slot >= 32) {
+            break;
+        }
+    }
+    // The texture set and display lists by the sun's side (D_801C0C80's light direction): 18
+    // steps of 20 degrees, mirrored above 9.
+    dx = -D_801C0C80->unkAC;
+    dz = -D_801C0C80->unkB4;
+    d = sqrtf((dx * dx) + (dz * dz));
+    if (d > 0.0f) {
+        dx /= d;
+        dz /= d;
+    }
+    angle = func_801ED090((dirX * dx) + (dirZ * dz));
+    if (((dirX * dz) - (dirZ * dx)) > 0.0f) {
+        angle = 360.0f - angle;
+    }
+    idx = (angle / 360.0f) * 18.0f;
+    if (idx < 0) {
+        idx = 0;
+    }
+    if (idx >= 18) {
+        idx = 17;
+    }
+    if (idx < 10) {
+        dlB = D_102CC58;
+        dlB2 = D_102CC70;
+        dlA2 = D_102CD90;
+        dlA = D_102CD78;
+    } else {
+        dlB = D_102CCE8;
+        dlB2 = D_102CD00;
+        dlA2 = D_102CE20;
+        dlA = D_102CE08;
+        idx = 18 - idx;
+    }
+    tex = D_101F978 + (idx << 12);
+    tex2 = tex + 0x800;
+
+    // Table A, type 0 (palette D_D4F18) and type 1 (D_D5118): two layers each; then types 2
+    // and 3 in RGBA16.
+    gDPLoadTLUT_pal256(gdlh++, D_D4F18);
+    gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BC938; i++) {
+        D_801C0640[i] = -1;
+        if ((D_801BB138[i].unk10 == 0) && (D_801C08C0[i] >= 0)) {
+            D_801C0640[i] = D_801C08C0[i];
+            gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C08C0[i]);
+            gSPDisplayList(gdlh++, dlA);
+        }
+    }
+    gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BC938; i++) {
+        if (D_801C0640[i] >= 0) {
+            gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[i]);
+            gSPDisplayList(gdlh++, dlA2);
+        }
+    }
+    gDPLoadTLUT_pal256(gdlh++, D_D5118);
+    gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BC938; i++) {
+        D_801C0640[i] = -1;
+        if ((D_801BB138[i].unk10 == 1) && (D_801C08C0[i] >= 0)) {
+            D_801C0640[i] = D_801C08C0[i];
+            gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C08C0[i]);
+            gSPDisplayList(gdlh++, dlA);
+        }
+    }
+    gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BC938; i++) {
+        if (D_801C0640[i] >= 0) {
+            gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[i]);
+            gSPDisplayList(gdlh++, dlA2);
+        }
+    }
+    gDPPipeSync(gdlh++);
+    gDPSetTextureLUT(gdlh++, G_TT_NONE);
+    gDPLoadTextureBlock(gdlh++, D_1016A38, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BC938; i++) {
+        D_801C0640[i] = -1;
+        if (((D_801BB138[i].unk10 == 2) || (D_801BB138[i].unk10 == 3)) && (D_801C08C0[i] >= 0)) {
+            D_801C0640[i] = D_801C08C0[i];
+            gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C08C0[i]);
+            gSPDisplayList(gdlh++, D_102CF10);
+        }
+    }
+    gDPLoadTextureBlock(gdlh++, D_1017A38, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BC938; i++) {
+        if (D_801C0640[i] >= 0) {
+            gSPMatrix(gdlh++, &D_5000000->unkA1C0[D_800DAB2C][D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[i]);
+            gSPDisplayList(gdlh++, D_102CF28);
+        }
+    }
+
+    // Table B: a matrix slot (of 12) for each visible record: buoys face the camera, with a second
+    // matrix for the arrow above them; gates sit between their posts and face along the course.
+    gDPPipeSync(gdlh++);
+    gDPSetTextureLUT(gdlh++, G_TT_RGBA16);
+    for (i = 0, slot = 0, e = D_801AEE20; i < D_801BB120; i++, e++) {
+        if (D_801C0840[i] < 0) {
+            continue;
+        }
+        if (D_801AEE20[i].unk9C == 0) {
+            dx = cam->unk4C - e->unk0;
+            dy = cam->unk50 - e->unk4;
+            dz = cam->unk54 - e->unk8;
+            if ((dx != 0.0f) || (dz != 0.0f)) {
+                upY = 1.0f;
+                upZ = 0.0f;
+            } else {
+                upY = 0.0f;
+                upZ = 1.0f;
+            }
+            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, e->unk0,
+                                  e->unk4, e->unk8);
+            dx = e->unk60 - e->unk0;
+            dy = (e->unk64 + gWaterLevel) - e->unk4;
+            dz = e->unk68 - e->unk8;
+            if ((dx != 0.0f) || (dz != 0.0f)) {
+                upY = 1.0f;
+                upZ = 0.0f;
+            } else {
+                upY = 0.0f;
+                upZ = 1.0f;
+            }
+            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, e->unk0,
+                                  e->unk4, e->unk8);
+        } else {
+            e->unk0 = (e->unkC + e->unk18) * 0.5f;
+            if (gCourseID != GLACIER_COAST) {
+                e->unk4 = (e->unk10 + e->unk1C) * 0.5f;
+            } else {
+                e->unk4 = 0.0f;
+            }
+            e->unk8 = (e->unk14 + e->unk20) * 0.5f;
+            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, -e->unk70, 0.0f, -e->unk74, 0.0f, 1.0f,
+                                  0.0f, e->unk0, e->unk4, e->unk8);
+        }
+        D_801C0B40[i] = slot;
+        if (++slot >= 12) {
+            break;
+        }
+    }
+    // The buoys of table B by type: 0 (palette D_1029978) and 1 (D_D4B18), and with D_800D5448
+    // the types 4, 6 and 10 (D_D4D18); two layers each.
+    gDPLoadTLUT_pal256(gdlh++, D_1029978);
+    gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BB120; i++) {
+        D_801C05C0[i] = -1;
+        if ((D_801C0840[i] >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = D_801C0840[i];
+            gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+            gSPDisplayList(gdlh++, dlB);
+        }
+    }
+    gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BB120; i++) {
+        if (D_801C05C0[i] >= 0) {
+            gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C05C0[i]);
+            gSPDisplayList(gdlh++, dlB2);
+        }
+    }
+    gDPLoadTLUT_pal256(gdlh++, D_D4B18);
+    gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BB120; i++) {
+        D_801C05C0[i] = -1;
+        if ((D_801C0840[i] >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = D_801C0840[i];
+            gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+            gSPDisplayList(gdlh++, dlB);
+        }
+    }
+    gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < D_801BB120; i++) {
+        if (D_801C05C0[i] >= 0) {
+            gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPPipeSync(gdlh++);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C05C0[i]);
+            gSPDisplayList(gdlh++, dlB2);
+        }
+    }
+    if (D_800D5448 != 0) {
+        gDPLoadTLUT_pal256(gdlh++, D_D4D18);
+        gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+        for (i = 0; i < D_801BB120; i++) {
+            D_801C05C0[i] = -1;
+            if ((D_801C0840[i] >= 0) &&
+                ((D_801AEE20[i].unk98 == 4) || (D_801AEE20[i].unk98 == 6) || (D_801AEE20[i].unk98 == 10))) {
+                D_801C05C0[i] = D_801C0840[i];
+                gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]],
+                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gDPPipeSync(gdlh++);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+                gSPDisplayList(gdlh++, dlB);
+            }
+        }
+        gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+        for (i = 0; i < D_801BB120; i++) {
+            if (D_801C05C0[i] >= 0) {
+                gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]],
+                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gDPPipeSync(gdlh++);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C05C0[i]);
+                gSPDisplayList(gdlh++, dlB2);
+            }
+        }
+    }
+
+    // Lit, fogged geometry: the gates, the arrows, the objects and the course's own lists.
+    gSPClearGeometryMode(gdlh++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(gdlh++, G_ZBUFFER | G_SHADE | G_FOG | G_LIGHTING | G_SHADING_SMOOTH);
+    gSPTexture(gdlh++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    gSPSetLights0(gdlh++, D_6000000->unk35D8[D_800DAB2C]);
+    gSPFogFactor(gdlh++, 0x1F400 / ((s32) D_801C0C80->unk7C - (s32) D_801C0C80->unk78),
+                 (((0x1F4 - (s32) D_801C0C80->unk78) * 256) / ((s32) D_801C0C80->unk7C - (s32) D_801C0C80->unk78)));
+    gDPPipeSync(gdlh++);
+    gDPSetTextureLUT(gdlh++, G_TT_NONE);
+    gDPSetCycleType(gdlh++, G_CYC_2CYCLE);
+    gDPSetTexturePersp(gdlh++, G_TP_PERSP);
+    gDPSetTextureFilter(gdlh++, G_TF_BILERP);
+    gDPSetCombineMode(gdlh++, G_CC_MODULATEIDECALA, G_CC_PASS2);
+    gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+    gDPSetFogColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0C80->unk54);
+    gDPSetAlphaCompare(gdlh++, G_AC_NONE);
+    if (gCourseID != RIDER_SELECTION) {
+        // The gates: the start/finish line (types 3 and 5) by course, else the ordinary gate.
+        for (i = 0; i < D_801BB120; i++) {
+            if ((D_801C0840[i] < 0) || (D_801AEE20[i].unk9C != 1)) {
+                continue;
+            }
+            gSPMatrix(gdlh++, &D_5000000->unk95C0[D_800DAB2C][D_801C0B40[i]], G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            if ((D_801AEE20[i].unk98 == 3) || (D_801AEE20[i].unk98 == 5)) {
+                if ((gCourseID == DOLPHIN_PARK) && (gGameModes != GMODE_STUNT)) {
+                    gSPDisplayList(gdlh++, D_D02B640);
+                } else if (gCourseID == SUNSET_BAY) {
+                    gSPDisplayList(gdlh++, D_8029FDC8);
+                    gDPPipeSync(gdlh++);
+                    gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                    gSPDisplayList(gdlh++, D_8029FAD0);
+                } else if (gCourseID == GLACIER_COAST) {
+                    gSPDisplayList(gdlh++, D_8029FF58);
+                    gDPPipeSync(gdlh++);
+                    gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                    gSPDisplayList(gdlh++, D_8029FC50);
+                } else {
+                    gSPDisplayList(gdlh++, D_8029FCD8);
+                    gDPPipeSync(gdlh++);
+                    gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                    gSPDisplayList(gdlh++, D_8029FA70);
+                }
+            } else {
+                gSPDisplayList(gdlh++, D_1018D58);
+                gDPPipeSync(gdlh++);
+                gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                gSPDisplayList(gdlh++, D_1018AA8);
+            }
+        }
+    }
+    // With one player, the arrow above each visible buoy (type 0 or 1).
+    if (gPlayers == ONE_PLAYER) {
+        gSPSetGeometryMode(gdlh++, G_CULL_BACK);
+        gDPPipeSync(gdlh++);
+        gDPSetCombineMode(gdlh++, G_CC_MODULATEIDECALA, G_CC_PASS2);
+        for (i = 0; i < D_801BB120; i++) {
+            if ((D_801C0840[i] < 0) || (D_801AEE20[i].unk9C != 0) || (D_801AEE20[i].unkC8 == 0)) {
+                continue;
+            }
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+            gSPMatrix(gdlh++, &D_5000000->unk9BC0[D_800DAB2C][D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            if (D_801AEE20[i].unk98 == 0) {
+                gSPDisplayList(gdlh++, D_102AE38);
+                gDPPipeSync(gdlh++);
+                gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                gSPDisplayList(gdlh++, D_102AD90);
+            } else {
+                gSPDisplayList(gdlh++, D_1029C88);
+                gDPPipeSync(gdlh++);
+                gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                gSPDisplayList(gdlh++, D_1029BE0);
+            }
+        }
+    }
+    // The objects of class 1 (unk54): their own matrix (unk58) or D_801C0CD0's, then the
+    // opaque (unkB4, culled) and edged (unkB8) lists.
+    gDPPipeSync(gdlh++);
+    gDPSetCombineMode(gdlh++, G_CC_MODULATEIDECALA, G_CC_PASS2);
+    for (i = 0; i < D_801BFA40; i++) {
+        if (D_801C0AC0[i] < 0) {
+            continue;
+        }
+        o = &D_801BC940[i];
+        if (o->unk54 != 1) {
+            continue;
+        }
+        if (o->unk58 != 0) {
+            _MtxF_to_Mtx(&o->unk74, &D_801AE948->unk4140[D_801AE950]);
+            gSPMatrix(gdlh++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        } else {
+            gSPMatrix(gdlh++, &D_801C0CD0[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        }
+        gSPSetGeometryMode(gdlh++, G_CULL_BACK);
+        if (o->unkB4 != NULL) {
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+            gSPDisplayList(gdlh++, o->unkB4);
+        }
+        gSPClearGeometryMode(gdlh++, G_CULL_BACK);
+        if (o->unkB8 != NULL) {
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+            gSPDisplayList(gdlh++, o->unkB8);
+        }
+    }
+    // Twilight City: the animated segment pointers of its lists.
+    if (gCourseID == TWILIGHT_CITY) {
+        gSPSegment(gdlh++, 9, (u8*) SegmentedToVirtual((u32) D_E00F478) + (D_801C0CBC << 6));
+        gSPSegment(gdlh++, 10, (u8*) SegmentedToVirtual((u32) D_E011480) + (D_801C0CBC << 6));
+        gSPSegment(gdlh++, 11, (u8*) SegmentedToVirtual((u32) D_E013488) + (D_801C0CC0 << 12));
+    }
+    gSPClearGeometryMode(gdlh++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(gdlh++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_FOG | G_LIGHTING | G_SHADING_SMOOTH);
+    gSPTexture(gdlh++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    gDPPipeSync(gdlh++);
+    gDPSetCombineMode(gdlh++, G_CC_MODULATEIDECALA, G_CC_PASS2);
+    gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+    gSPMatrix(gdlh++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    // The course's lists D_801C1CD0..D_801C1CE4 (D_801CE638 21 draws the first two unfogged).
+    if (D_800D5440 != 0) {
+        if (D_801CE638 == 21) {
+            gDPSetRenderMode(gdlh++, G_RM_PASS, G_RM_AA_ZB_OPA_SURF2);
+            gSPDisplayList(gdlh++, D_801C1CD0);
+            gSPClearGeometryMode(gdlh++, G_CULL_BACK);
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_PASS, G_RM_AA_ZB_TEX_EDGE2);
+            gSPDisplayList(gdlh++, D_801C1CD4);
+        } else {
+            if (D_801C1CD0 != NULL) {
+                gSPDisplayList(gdlh++, D_801C1CD0);
+            }
+            if (gCourseID == PORT_BLUE) {
+                if ((gGameModes == GMODE_STUNT) || (gDifficulty == DIFFICULTY_NORMAL)) {
+                    gSPDisplayList(gdlh++, D_E010ED0);
+                } else if (gDifficulty == DIFFICULTY_EXPERT) {
+                    gSPDisplayList(gdlh++, D_E010DF0);
+                }
+            }
+            if (D_801C1CD4 != NULL) {
+                gSPClearGeometryMode(gdlh++, G_CULL_BACK);
+                gDPPipeSync(gdlh++);
+                gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+                gSPDisplayList(gdlh++, D_801C1CD4);
+            }
+        }
+        if (gCourseID != PORT_BLUE) {
+            gSPSetGeometryMode(gdlh++, G_CULL_BACK);
+        }
+        gSPClearGeometryMode(gdlh++, G_LIGHTING);
+        if (D_801C1CD8 != NULL) {
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+            gSPDisplayList(gdlh++, D_801C1CD8);
+        }
+        if (D_801C1CDC != NULL) {
+            gSPClearGeometryMode(gdlh++, G_CULL_BACK);
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
+            gSPDisplayList(gdlh++, D_801C1CDC);
+        }
+        gSPSetGeometryMode(gdlh++, G_CULL_BACK);
+        gSPClearGeometryMode(gdlh++, G_FOG);
+        gDPPipeSync(gdlh++);
+        gDPSetCycleType(gdlh++, G_CYC_1CYCLE);
+        if (D_801C1CE0 != NULL) {
+            gDPSetRenderMode(gdlh++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+            gSPDisplayList(gdlh++, D_801C1CE0);
+        }
+        if (D_801C1CE4 != NULL) {
+            gSPClearGeometryMode(gdlh++, G_CULL_BACK);
+            gDPPipeSync(gdlh++);
+            gDPSetRenderMode(gdlh++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            gSPDisplayList(gdlh++, D_801C1CE4);
+        }
+    }
+    if ((gPlayers == ONE_PLAYER) && (gCourseID == TWILIGHT_CITY)) {
+        func_8006CB98(&gdlh);
+        func_8006CDE8(&gdlh);
+    }
+    func_8006D034(&gdlh);
+    func_800B4ABC(&gdlh);
+    if (gGameModes == GMODE_STUNT) {
+        func_8006D494(&gdlh);
+    }
+    if (D_800D5450 != 0) {
+        func_8006E01C((s32) &gdlh); // its definition takes an s32
+    }
+    *gdl = gdlh;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_24B00/func_8006E674.s")
+#endif

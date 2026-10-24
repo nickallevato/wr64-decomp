@@ -1233,7 +1233,9 @@ typedef struct UnkStruct_801AE948_s {
     /* 0x81C0 */ Vtx unk81C0[0xC0];
     /* 0x8DC0 */ Vtx unk8DC0[4][16];
     /* 0x91C0 */ Vtx unk91C0[4][16];
-    /* 0x95C0 */ char pad95C0[0x1C00];
+    /* 0x95C0 */ Mtx unk95C0[2][12]; /* table B buoys, per view */
+    /* 0x9BC0 */ Mtx unk9BC0[2][12]; /* their arrows */
+    /* 0xA1C0 */ Mtx unkA1C0[2][32]; /* table A buoys, per view */
     /* 0xB1C0 */ Vtx unkB1C0[4];
     /* 0xB200 */ Vtx unkB200[4];
     /* 0xB240 */ Vtx unkB240[4];
