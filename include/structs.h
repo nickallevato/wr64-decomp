@@ -654,13 +654,13 @@ struct UnkStruct_8004B0F8 {
     /* 0x00 */ char pad0[4];
     /* 0x04 */ f32 unk4;       /* inferred */
     /* 0x08 */ f32 unk8;       /* inferred */
-    /* 0x0C */ char padC[4];
+    /* 0x0C */ f32 unkC;
     /* 0x10 */ f32 unk10;
     /* 0x14 */ f32 unk14;
     /* 0x18 */ f32 unk18;
     /* 0x1C */ f32 unk1C;
     /* 0x20 */ f32 unk20;
-    /* 0x24 */ char pad24[4];
+    /* 0x24 */ s32 unk24;
     /* 0x28 */ u32 unk28;
     /* 0x2C */ s32 unk2C;
     /* 0x30 */ UnkStruct_8004B0F8_1* unk30;
