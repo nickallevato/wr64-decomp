@@ -24,7 +24,21 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC20C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC304.s")
+void func_801EC304(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_OPTIONS_MENU;
+    D_801CE638 = 7;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    D_800E5134 = 0;
+    func_800C21F4(9, 0);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC3AC.s")
 
