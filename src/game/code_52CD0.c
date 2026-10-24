@@ -2251,14 +2251,12 @@ Gfx* func_8009FCB0(Gfx* gdl, s32 arg1) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 16 of 68200: spE0's stack slot is 0xDC instead of 0xE0; the code is otherwise identical. FAKE: unk78 is read into spE0 in the pause check.
 Gfx* func_800A063C(Gfx* gdl, s32 arg1) {
     UnkStruct_801CE780_unk4** v1;
     StructVarS0* e;
     s32 index;
-    UnkStruct_801CE780_unk4* temp_s2;
     s32 spE0;
+    UnkStruct_801CE780_unk4* temp_s2;
     UNUSED s32 pad[2]; // stack pad
     s32 k;
     s32 var_s3;
@@ -2335,9 +2333,6 @@ Gfx* func_800A063C(Gfx* gdl, s32 arg1) {
     gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A063C.s")
-#endif
 
 Gfx* func_800A10E4(Gfx* gdl, s32 arg1) {
     UnkStruct_801CE780_unk4** v1;
