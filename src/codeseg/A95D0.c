@@ -1367,7 +1367,24 @@ void func_801E0454(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
     func_801DF2F8(runner->obj, pos, &out[3], &out[6], NULL);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E05A4.s")
+void func_801E05A4(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[7];
+    f32 pos[3];
+    f32 yawDeg;
+    f32 pitchDeg;
+    UnkA95D0_Payload2* p;
+
+    func_801DEDE8(out, runner->cursors, splines);
+    p = &runner->obj->u.p2;
+    p->unkC[0] = func_801ED154(*runner->unk10[5], *runner->unk10[3]);
+    yawDeg = p->unkC[0] + out[1];
+    p->unkC[1] = 0.0f;
+    pitchDeg = out[2];
+    pos[0] = *runner->unk10[0] + (out[0] * COS(DEG_TO_BINANG(pitchDeg))) * COS(DEG_TO_BINANG(yawDeg));
+    pos[1] = *runner->unk10[1] + out[0] * SIN(DEG_TO_BINANG(pitchDeg));
+    pos[2] = *runner->unk10[2] + (out[0] * COS(DEG_TO_BINANG(pitchDeg))) * SIN(DEG_TO_BINANG(yawDeg));
+    func_801DF2F8(runner->obj, pos, &out[3], NULL, &out[6]);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E06F8.s")
 
