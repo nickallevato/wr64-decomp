@@ -300,19 +300,31 @@ typedef struct RiderStruct {
     /* 0x010 */ s32 unk10;
     /* 0x014 */ char pad14[0xC];                    /* maybe part of unk10[4]? */
     /* 0x020 */ s32 unk20;                          /* inferred */
-    /* 0x024 */ char pad24[0x178];                  /* maybe part of unk20[0x5F]? */
+    /* 0x024 */ char pad24[0x110];
+    /* 0x134 */ s32 unk134;
+    /* 0x138 */ s32 unk138;
+    /* 0x13C */ char pad13C[0x30];
+    /* 0x16C */ s32 unk16C;
+    /* 0x170 */ char pad170[8];
+    /* 0x178 */ s32 unk178[9]; /* lap split times */
     /* 0x19C */ s32 unk19C;
-    /* 0x1A0 */ char pad1A0[0x14C]; /* maybe part of unk19C[0x54]? */
+    /* 0x1A0 */ char pad1A0[0x124];
+    /* 0x2C4 */ s32 unk2C4;
+    /* 0x2C8 */ char pad2C8[0x24];
     /* 0x2EC */ s32 unk2EC;
     /* 0x2F0 */ char pad2F0[4];
     /* 0x2F4 */ s32 unk2F4;
-    /* 0x2F8 */ char pad2F8[0x28];                  /* maybe part of unk2F4[0xB]? */
+    /* 0x2F8 */ s32 unk2F8;
+    /* 0x2FC */ s32 unk2FC;
+    /* 0x300 */ s32 unk300;
+    /* 0x304 */ char pad304[0x1C];
     /* 0x320 */ s32 unk320;                         /* inferred */
     /* 0x324 */ char pad324[0xC];                   /* maybe part of unk320[4]? */
     /* 0x330 */ f32 unk330;        /* inferred */
     char pad334[0x4];
     s32 unk338;
-    char pad33C[0x14];
+    /* 0x33C */ s32 unk33C;
+    char pad340[0x10];
     /* 0x350 */ struct UnkStruct_801C3C54* unk350;
     /* 0x354 */ char pad354[0x24]; /* maybe part of unk350[0xA]? */
 } RiderStruct;              /* size = 0x378 */
