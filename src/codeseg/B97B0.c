@@ -302,7 +302,67 @@ void func_801EB91C(void) {
     func_800C21F4(2, gCourseID);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EBD28.s")
+void func_801EBD28(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_RIDER_SELECT;
+    D_801CE638 = 4;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gGameModes = GMODE_TIME_TRIALS;
+    if (D_801CE608.player == 1) {
+        gPlayers = ONE_PLAYER;
+        gRiders = 1;
+    } else {
+        gPlayers = TWO_PLAYERS;
+        gRiders = 2;
+    }
+    D_800D49B0 = 0xA;
+    gBuoyMisses = 5;
+    D_801CE728[0] = 3;
+    gCourseID = RIDER_SELECTION;
+    if (D_800DA9AC != 0) {
+        D_800DA9C0[0] = 0;
+        D_800DA9C0[1] = 3;
+        D_800DA9C8[0] = D_800DA9C8[1] = 0;
+    }
+    D_80192690[D_800D48DC].unkB68 = D_80226EF0[D_800DA9C0[0]];
+    D_80192690[D_800D48DC].unkB6C = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[0];
+    D_80192690[D_800D48DC].unkB70 = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[1];
+    D_80192690[D_800D48DC].unkB74 = D_800DA950[D_80192690[D_800D48DC].unkB68].unk_B[2];
+    if (gPlayers == TWO_PLAYERS) {
+        D_80192690[D_800D48E0].unkB68 = D_80226EF0[D_800DA9C0[1]];
+        D_80192690[D_800D48E0].unkB6C = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[0];
+        D_80192690[D_800D48E0].unkB70 = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[1];
+        D_80192690[D_800D48E0].unkB74 = D_800DA950[D_80192690[D_800D48E0].unkB68].unk_B[2];
+    }
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 2;
+    gGameModeState = GMODE_STATE_STARTED;
+    D_800DAB64 = 0;
+    func_80096960(3, 0, 1, 2, 3);
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 2;
+    gCameraPerspective[1].viewMode = 2;
+    switch (D_801CE608.gameMode) {
+        case GMODE_CHAMPIONSHIP:
+            func_800C21F4(1, 0);
+            break;
+        case GMODE_TIME_TRIALS:
+            func_800C21F4(1, 2);
+            break;
+        case GMODE_STUNT:
+            func_800C21F4(1, 3);
+            break;
+        case GMODE_2P_VS:
+            func_800C21F4(1, 1);
+            break;
+    }
+}
 
 void func_801EBFE4(void) {
     gPrevGameState = gGameState;
