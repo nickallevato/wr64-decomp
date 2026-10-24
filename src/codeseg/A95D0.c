@@ -94,8 +94,7 @@ typedef struct UnkA95D0_Payload1 {
 
 typedef struct UnkA95D0_Payload2 {
     /* 0x00 */ f32 unk0[3];
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
+    /* 0x0C */ f32 unkC[2];
     /* 0x14 */ UnkA95D0_Ease unk14[3];
 } UnkA95D0_Payload2; // size = 0x38
 
@@ -241,6 +240,8 @@ void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner
 void func_801DEEC4(UnkA95D0_Obj* obj);
 void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key);
 f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count);
+// Degrees to a gSinTable index (4096 steps per turn).
+#define DEG_TO_BINANG(x) ((s32) (((x) * 4096.0f) / 360.0f))
 void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
 void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
@@ -1052,7 +1053,38 @@ void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF38C.s")
+void func_801DF38C(UnkA95D0_Obj* obj) {
+    UnkA95D0_Payload2* p = &obj->u.p2;
+    UnkA95D0_Base* b = &obj->base;
+    f32 yawDeg;
+    f32 pitchDeg;
+    f32 offset[3];
+    s32 i;
+
+    p->unk14[0].value += (p->unk14[0].target - p->unk14[0].value) * p->unk14[0].rate;
+    p->unk14[1].value += (p->unk14[1].target - p->unk14[1].value) * p->unk14[1].rate;
+    p->unk14[2].value += (p->unk14[2].target - p->unk14[2].value) * p->unk14[2].rate;
+    yawDeg = p->unk14[1].value + p->unkC[0];
+    pitchDeg = p->unk14[2].value + p->unkC[1];
+    offset[0] = (p->unk14[0].value * COS(DEG_TO_BINANG(pitchDeg))) * COS(DEG_TO_BINANG(yawDeg));
+    offset[1] = p->unk14[0].value * SIN(DEG_TO_BINANG(pitchDeg));
+    offset[2] = (p->unk14[0].value * COS(DEG_TO_BINANG(pitchDeg))) * SIN(DEG_TO_BINANG(yawDeg));
+    switch (obj->type) {
+        case 2:
+            for (i = 0; i < 3; i++) {
+                b->unk0[i] = p->unk0[i];
+                b->unkC[i] = p->unk0[i] + offset[i];
+            }
+            break;
+        case 3:
+            for (i = 0; i < 3; i++) {
+                b->unkC[i] = p->unk0[i];
+                b->unk0[i] = p->unk0[i] + offset[i];
+            }
+            break;
+    }
+    func_801DEEC4(obj);
+}
 
 void func_801DF578(UnkA95D0_Obj* obj, UnkA95D0_Base* base, UnkA95D0_Payload5* p) {
     obj->type = 5;
@@ -1293,6 +1325,10 @@ void func_801E02B4(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
 }
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0304.s")
+
+
+
+
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0454.s")
 
