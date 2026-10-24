@@ -185,6 +185,12 @@ extern UnkA95D0_Runner D_80228058[];
 extern UnkA95D0_Obj D_80227E98[];
 void func_800AB95C(s32, s32);
 extern UnkA95D0_Step D_80223F7C[];
+extern UnkA95D0_Cursor D_802280C8[][4];
+extern f32 D_80228108;
+void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj);
+void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors);
+void func_801DFDA8(UnkA95D0_Runner* runner, f32* arg1, f32* arg2, f32* arg3, f32* arg4, f32* arg5, f32* arg6,
+                   f32* arg7, f32* arg8, f32* arg9, f32* arg10);
 extern RiderStruct D_801C2C70[];
 void func_801DB8F0(UnkA95D0_Runner* runner);
 void func_801DC0AC(UnkA95D0_Runner* runner);
@@ -535,7 +541,22 @@ void func_801DD6B4(UnkA95D0_Runner* runner) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD85C.s")
+void func_801DD85C(void) {
+    s32 i;
+
+    for (i = 0; i < 2; i++) {
+        gCameraPerspective[i].unkE8 = i;
+        gCameraPerspective[i].unkEC = 1;
+        gCameraPerspective[i].unkF8 = 0;
+        gCameraPerspective[i].camViewY = 0.0f;
+        func_801DFD8C(&D_80228058[i], &D_80227E98[i]);
+        func_801DFDA0(&D_80228058[i], D_802280C8[i]);
+        func_801DFDA8(&D_80228058[i], &gCameraPerspective[i].unk4, (f32*) &gCameraPerspective[i].unk8,
+                      &gCameraPerspective[i].unkC, &gCameraPerspective[i].unk1C, &gCameraPerspective[i].unk20,
+                      &gCameraPerspective[i].unk24, &gCameraPerspective[i].unk10, &gCameraPerspective[i].unk14,
+                      &gCameraPerspective[i].unk18, &D_80228108);
+    }
+}
 
 void func_801DDA24(void) {
     s32 i;
