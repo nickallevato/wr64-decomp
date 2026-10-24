@@ -58,8 +58,8 @@ extern s32 D_802287AC;
 // A keyframed object (type 1, 2, 3 or 5) and the script runner that drives it.
 // Layouts come from the copies and stores in func_801DEF84..func_801DFE80 and func_801E0F8C.
 typedef struct UnkA95D0_Base {
-    /* 0x00 */ Vec3f unk0;
-    /* 0x0C */ Vec3f unkC;
+    /* 0x00 */ f32 unk0[3];
+    /* 0x0C */ f32 unkC[3];
     /* 0x18 */ f32 unk18[3];
     /* 0x24 */ f32 unk24[3];
     /* 0x30 */ f32 unk30;
@@ -73,9 +73,9 @@ typedef struct UnkA95D0_Base {
 
 typedef struct UnkA95D0_Payload1 {
     /* 0x00 */ f32 unk0[3];
-    /* 0x0C */ u8 padC[4];
+    /* 0x0C */ f32 unkC;
     /* 0x10 */ f32 unk10[3];
-    /* 0x1C */ u8 pad1C[4];
+    /* 0x1C */ f32 unk1C;
 } UnkA95D0_Payload1; // size = 0x20
 
 typedef struct UnkA95D0_Payload2 {
@@ -155,6 +155,7 @@ void func_801DF38C(UnkA95D0_Obj* obj);
 void func_801DF128(UnkA95D0_Obj* obj);
 void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner);
+void func_801DEEC4(UnkA95D0_Obj* obj);
 void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
 void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
@@ -494,7 +495,17 @@ void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF128.s")
+void func_801DF128(UnkA95D0_Obj* obj) {
+    UnkA95D0_Payload1* p = &obj->u.p1;
+    UnkA95D0_Base* b = &obj->base;
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        b->unk0[i] += (p->unk0[i] - b->unk0[i]) * p->unkC;
+        b->unkC[i] += (p->unk10[i] - b->unkC[i]) * p->unk1C;
+    }
+    func_801DEEC4(obj);
+}
 
 void func_801DF1F8(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Base* base, UnkA95D0_Payload2* p) {
     obj->type = type;
@@ -691,12 +702,12 @@ void func_801E02B4(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0DB8.s")
 
 void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
-    cam->unk4C = obj->base.unkC.x;
-    cam->unk50 = obj->base.unkC.y;
-    cam->unk54 = obj->base.unkC.z;
-    cam->unk7C = obj->base.unk0.x;
-    cam->unk80 = obj->base.unk0.y;
-    cam->unk84 = obj->base.unk0.z;
+    cam->unk4C = obj->base.unkC[0];
+    cam->unk50 = obj->base.unkC[1];
+    cam->unk54 = obj->base.unkC[2];
+    cam->unk7C = obj->base.unk0[0];
+    cam->unk80 = obj->base.unk0[1];
+    cam->unk84 = obj->base.unk0[2];
     cam->unk70 = obj->base.unk18[0];
     cam->unk74 = obj->base.unk18[1];
     cam->unk78 = obj->base.unk18[2];
