@@ -1,5 +1,9 @@
 #include "common.h"
 
+extern Vp D_i5_802C7A08;
+extern s16 D_802C7B04;
+extern u16 D_802C7B06;
+
 extern s32 D_801CB288[];
 extern s32 D_801CB334;
 
@@ -26,7 +30,37 @@ void func_i5_802C5800(void) {
     func_i5_802C5850();
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5850.s")
+void func_i5_802C5850(void) {
+    s32 i;
+    f32 temp_fv1; // FAKE: temp needed for match
+    f32 temp_fa0; // FAKE: temp needed for match
+    MtxF sp174;
+    MtxF sp134;
+    MtxF spF4;
+    Mtx spB0;
+    Mtx sp70;
+
+    D_802C7B04 = 0x28 - D_i5_802C7A00;
+    func_800481E0(D_801CE5F8->unkA40, &D_802C7B06, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_80048A88(&spB0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.04f);
+    temp_fv1 = COS(0) * 500.0f;
+    temp_fa0 = SIN(0) * 500.0f;
+    // FAKE: arg3 is an int 0 literal to match (li a3, 0)
+    func_800484C8(&sp70, &sp134, temp_fv1, 0, temp_fa0, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SysUtils_MtxToMtxF(&spB0, &sp174);
+    SysUtils_MatrixAffineMultiply(&sp134, &sp174, &spF4);
+
+    for (i = 0; i < 4; i++) {
+        SysUtils_MtxFToMtx(&spF4, &D_801CE5F8->unkA80[i]);
+        D_801CE5F8->unk1280[i] = D_i5_802C7A08;
+        if (i & 1) {
+            D_801CE5F8->unk1280[i].vp.vtrans[0] = (D_802C7B04 + 0x42) << 2;
+        } else {
+            D_801CE5F8->unk1280[i].vp.vtrans[0] = (D_i5_802C7A00 + 0x42) << 2;
+        }
+        D_801CE5F8->unk1280[i].vp.vtrans[1] = ((i * 0x20) + 0x58) << 2;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5A98.s")
 
