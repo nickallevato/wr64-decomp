@@ -3202,9 +3202,12 @@ typedef struct UnkStruct_800E6C78 {
 extern UnkStruct_800E6C78* D_800E6C78[];
 
 #ifdef NON_MATCHING
-// Score 920 of 61500: float registers; the original keeps the node's unk14 and -1.0f in registers across the unk54/unk50 stores, and one COS/SIN block is scheduled differently.
+// Score 320 of 61500: the D_801D06D4 address is loaded before the unk10 checks instead of after the -2.0f test; everything else matches. FAKE: node2 (found with the permuter).
 void func_800A52D8(s32 arg0, f32 arg1) {
     f32 temp;
+    f32 temp2;
+    UnkStruct_800E6C78* node;
+    UnkStruct_800E6C78* node2;
 
     if (D_801CF060[arg0].unk9C >= 0) {
         D_801D0754 = D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk8;
@@ -3276,19 +3279,21 @@ void func_800A52D8(s32 arg0, f32 arg1) {
     if ((func_8009D4DC(D_801CF060[arg0].unkC - D_801D0754, D_801CF060[arg0].unk14 - D_801D075C) < SQ(arg1)) &&
         (D_801CF060[arg0].unk9C >= 0)) {
         if (func_8009D4A8(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4) <
-            D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk18) {
+            (node2 = &D_800E6C78[gCourseID][D_801CF060[arg0].unk9C])->unk18) {
             D_801CF060[arg0].unkC +=
                 (D_801CF060[arg0].unk24 = COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
             D_801CF060[arg0].unk14 +=
                 (D_801CF060[arg0].unk2C = SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
-            if (D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk14 > -1.0f) {
+            node = node2; // FAKE
+            temp2 = node->unk14;
+            if (temp2 > -1.0f) {
                 D_801CF060[arg0].unk54 = 0;
-                D_801CF060[arg0].unk50 = D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk14;
+                D_801CF060[arg0].unk50 = temp2;
             }
-            if (D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk10 != -1.0f) {
-                D_801CF060[arg0].unk4C = D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk10;
+            if (node->unk10 != -1.0f) {
+                D_801CF060[arg0].unk4C = node->unk10;
             }
-            if (D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk10 == -2.0f) {
+            if (node->unk10 == -2.0f) {
                 D_801CF060[arg0].unk4C = D_801D06D4;
                 if (D_801D06D4 < 30.0f) {
                     D_801CF060[arg0].unk4C = 30.0f;
