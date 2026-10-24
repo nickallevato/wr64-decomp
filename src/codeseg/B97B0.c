@@ -198,7 +198,22 @@ void func_801ECAF4(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ECF18.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801ED004.s")
+void func_801ED004(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = 0x39;
+    D_801CE638 = 0x17;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gRiderGameModes = 1;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    gCameraPerspective->viewMode = 1;
+}
 
 f32 func_801ED090(f32 arg0) {
     if ((arg0 < -1.0f) || (arg0 > 1.0f)) {
