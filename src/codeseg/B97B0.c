@@ -18,7 +18,30 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EBD28.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EBFE4.s")
+void func_801EBFE4(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_COURSE_SELECT;
+    D_801CE638 = 5;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 2;
+    gPlayers = ONE_PLAYER;
+    gCourseID = SUNNY_BEACH;
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 1;
+    gGameModeState = GMODE_STATE_0;
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 1;
+    if (D_800DA9AC != 0) {
+        D_800DA9D0 = 0;
+    }
+    func_800C21F4(0xA, 0);
+    osViBlack(1);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC0D4.s")
 
