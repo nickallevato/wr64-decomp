@@ -6,17 +6,6 @@ typedef struct UnkStruct_801C3B90 {
     /* 0x8 */ s32 unk8;
 } UnkStruct_801C3B90; // size = 0xC
 
-// The water window of each view (water_69D0.c has the same layout).
-typedef struct UnkStruct_80192420 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-} UnkStruct_80192420; /* size = 0x1C */
-
 extern s16 D_800D9640[16][2];
 extern UnkStruct_801C3B90 D_801C3B90[16];
 extern UnkStruct_80192420 gWaterWindow[];

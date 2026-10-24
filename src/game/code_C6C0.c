@@ -348,14 +348,6 @@ typedef struct RiderSphere {
 
 #define RIDER_SPHERES(rider) ((RiderSphere*) &(rider)->unk160C)
 
-typedef struct UnkStruct_80192420 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ char pad8[0x14];
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ s32 unk20;
-} UnkStruct_80192420;
-
 typedef struct UnkStruct_801C3D14 {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ char pad4[0xE4];
@@ -450,7 +442,7 @@ extern Vec3f D_80192650;
 extern Vec3f D_80192660;
 extern Vec3f D_80192670;
 extern Vec3f D_80192680;
-extern UnkStruct_80192420 gWaterWindow;
+extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_80192498;
 extern f32 D_801C1FB4;
 extern s32 D_800D49AC;
@@ -7157,8 +7149,8 @@ void func_800665B0(void) {
     if (gRiderGameModes != PAUSE_MODE) {
         r = D_80192498;
         cam = &gCameraPerspective[D_80223930];
-        sx = gWaterWindow.unk0 + (r * cam->unkF0);
-        sz = gWaterWindow.unk4 + (r * cam->unkF4);
+        sx = gWaterWindow[0].unk0 + (r * cam->unkF0);
+        sz = gWaterWindow[0].unk4 + (r * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
             player = &D_80192690[gPlayer1Rider];
             dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
@@ -7184,8 +7176,8 @@ void func_800665B0(void) {
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
             }
             cam = &gCameraPerspective[D_80223934];
-            sx = gWaterWindow.unk1C + (r * cam->unkF0);
-            sz = gWaterWindow.unk20 + (r * cam->unkF4);
+            sx = gWaterWindow[1].unk0 + (r * cam->unkF0);
+            sz = gWaterWindow[1].unk4 + (r * cam->unkF4);
             dx = sx - D_80192690[gPlayer1Rider].unk44.x;
             dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {

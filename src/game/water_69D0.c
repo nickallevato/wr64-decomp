@@ -18,17 +18,6 @@ extern UnkStruct_80162420 gWaterField[];
 #define WATER_CELL(cu, cv) \
     ((UnkStruct_80162420*) ((s32) gWaterField + (((((cv) + ((cu) & ~0x7F) + 0x600) % 384) * 128) + ((cu) & 0x7F)) * 4))
 
-/* 0x1C bytes per view; Water_UpdateWindow writes the window centre here */
-typedef struct UnkStruct_80192420_s {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-} UnkStruct_80192420; /* size = 0x1C */
-
 /* the window's cell offsets, 2 bytes a cell */
 typedef struct UnkStruct_80160430_s {
     /* 0x0 */ s8 unk0;

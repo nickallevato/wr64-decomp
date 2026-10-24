@@ -90,16 +90,6 @@ typedef struct UnkStruct_800DA624_s {
     u8 alpha[3];
 } UnkStruct_800DA624;
 
-typedef struct UnkStruct_80192420_s {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ f32 unkC;
-    /* 0x10 */ f32 unk10;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-} UnkStruct_80192420; /* size = 0x1C, as in water_69D0.c */
-
 typedef struct UnkStruct_800DA8B4_s {
     s32 unk0[3];
 } UnkStruct_800DA8B4;

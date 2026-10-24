@@ -1416,4 +1416,16 @@ typedef struct UnkStruct_80227A60 {
     /* 0x30 */ Gfx* unk30[5];
 } UnkStruct_80227A60; /* size = 0x44 */
 
+// One view's water window (gWaterWindow[], 0x1C bytes per view): the snapped centre as integer world x and z, the
+// window centre, its radius squared and the snap offsets (Water_UpdateWindow writes them).
+typedef struct UnkStruct_80192420_s {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+} UnkStruct_80192420; /* size = 0x1C */
+
 #endif /* STRUCTS_H */
