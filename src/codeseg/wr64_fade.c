@@ -294,8 +294,78 @@ void func_801E76C0(FadeTransition* fade) {
     }
 }
 
-// https://decomp.me/scratch/udOjy 86.02%
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/wr64_fade/func_801E7908.s")
+// Fields of sCurrentFadeTransitionProps, which the asm addresses by their own symbols.
+extern s16 D_80228A14; // unk_4
+extern s16 D_80228A18; // fadeTimer
+extern s16 D_80228A1C; // fadeInTime
+extern s16 D_80228A20; // r
+extern s16 D_80228A22; // g
+extern s16 D_80228A24; // b
+extern s16 D_80228A26; // alpha
+extern s16 D_80228A36;
+extern Gfx* D_80226CE4[2][2];
+extern Gfx* D_80226CF4[2][2];
+extern Mtx D_7001300[];
+extern Mtx D_7001340[];
+extern Gfx D_106F5B0[];
+
+Gfx* func_801E7908(Gfx* gdl) {
+    FadeTransition* fade = &sCurrentFadeTransitionProps;
+    Gfx** dl;
+    Gfx* dl0;
+    Gfx* dl1;
+
+    if ((sCurrentFadeTransitionProps.state == 0) || (D_80228A14 == 0)) {
+        return gdl;
+    }
+    if (D_80228A30 != D_80228A36) {
+        return gdl;
+    }
+    switch (fade->state) {
+        case 1:
+        case 2:
+            if (gPlayers == ONE_PLAYER) {
+                gdl = func_801E7C58(gdl, 8, 20, 310, 218, D_80228A20, D_80228A22,
+                                    D_80228A24, D_80228A26);
+            } else {
+                gdl = func_801E7C58(gdl, 8, 12, 310, 228, D_80228A20, D_80228A22,
+                                    D_80228A24, D_80228A26);
+            }
+            break;
+        case 3:
+        case 7:
+            if (gPlayers == ONE_PLAYER) {
+                gdl = func_801E7C58(gdl, 8, 20, 310, 218, D_80228A20, D_80228A22,
+                                    D_80228A24, D_80228A26);
+            } else {
+                gdl = func_801E7C58(gdl, 8, 12, 310, 228, D_80228A20, D_80228A22,
+                                    D_80228A24, D_80228A26);
+            }
+            break;
+        case 4:
+        case 5:
+        case 6:
+            gSPPerspNormalize(gdl++, D_80228A34);
+            gSPMatrix(gdl++, D_7001300, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+            gSPMatrix(gdl++, D_7001340, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(gdl++, D_106F5B0);
+            if (D_80228A1C == 0) {
+                dl = D_80226CE4[D_80228A18 & 1];
+            } else {
+                dl = D_80226CF4[D_80228A18 & 1];
+            }
+            dl0 = dl[0];
+            dl1 = dl[1];
+            gDPPipeSync(gdl++);
+            gSPDisplayList(gdl++, dl0);
+            gDPPipeSync(gdl++);
+            gDPSetRenderMode(gdl++, G_RM_PASS, G_RM_XLU_SURF2);
+            gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 0, 0, 319, 239);
+            gSPDisplayList(gdl++, dl1);
+            break;
+    }
+    return gdl;
+}
 
 Gfx* func_801E7C58(Gfx* dList, u32 ulx, u32 uly, u32 lrx, u32 lry, u32 r, u32 g, u32 b, u32 a) {
     if (r > 255) {

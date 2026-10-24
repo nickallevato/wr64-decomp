@@ -63,7 +63,12 @@ typedef struct UnkStruct_801AEE20_s {
     /* 0x000 */ f32 unk0;
     /* 0x004 */ f32 unk4;
     /* 0x008 */ f32 unk8;
-    /* 0x00C */ char padC[0x18];  /* maybe part of unk8[7]? */
+    /* 0x00C */ f32 unkC;
+    /* 0x010 */ f32 unk10;
+    /* 0x014 */ f32 unk14;
+    /* 0x018 */ f32 unk18;
+    /* 0x01C */ f32 unk1C;
+    /* 0x020 */ f32 unk20;
     /* 0x024 */ s32 unk24;        /* inferred */
     /* 0x028 */ s32 unk28;        /* inferred */
     /* 0x02C */ char pad2C[0x44]; /* maybe part of unk28[0x12]? */
@@ -300,26 +305,47 @@ typedef struct RiderStruct {
     /* 0x010 */ s32 unk10;
     /* 0x014 */ char pad14[0xC];                    /* maybe part of unk10[4]? */
     /* 0x020 */ s32 unk20;                          /* inferred */
-    /* 0x024 */ char pad24[0x110];
+    /* 0x024 */ char pad24[4];
+    /* 0x028 */ s32 unk28;
+    /* 0x02C */ char pad2C[0x100];
+    /* 0x12C */ s32 unk12C;
+    /* 0x130 */ char pad130[4];
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
-    /* 0x13C */ char pad13C[0x30];
+    /* 0x13C */ s32 unk13C;
+    /* 0x140 */ char pad140[0x2C];
     /* 0x16C */ s32 unk16C;
     /* 0x170 */ char pad170[8];
     /* 0x178 */ s32 unk178[9]; /* lap split times */
     /* 0x19C */ s32 unk19C;
     /* 0x1A0 */ char pad1A0[0x124];
     /* 0x2C4 */ s32 unk2C4;
-    /* 0x2C8 */ char pad2C8[0x24];
+    /* 0x2C8 */ s32 unk2C8;
+    /* 0x2CC */ s32 unk2CC;
+    /* 0x2D0 */ s32 unk2D0;
+    /* 0x2D4 */ s32 unk2D4;
+    /* 0x2D8 */ s32 unk2D8;
+    /* 0x2DC */ s32 unk2DC;
+    /* 0x2E0 */ s32 unk2E0;
+    /* 0x2E4 */ s32 unk2E4;
+    /* 0x2E8 */ s32 unk2E8;
     /* 0x2EC */ s32 unk2EC;
-    /* 0x2F0 */ char pad2F0[4];
+    /* 0x2F0 */ s32 unk2F0;
     /* 0x2F4 */ s32 unk2F4;
     /* 0x2F8 */ s32 unk2F8;
     /* 0x2FC */ s32 unk2FC;
     /* 0x300 */ s32 unk300;
-    /* 0x304 */ char pad304[0x1C];
+    /* 0x304 */ char pad304[4];
+    /* 0x308 */ s32 unk308;
+    /* 0x30C */ char pad30C[4];
+    /* 0x310 */ s32 unk310;
+    /* 0x314 */ s32 unk314;
+    /* 0x318 */ char pad318[4];
+    /* 0x31C */ s32 unk31C;
     /* 0x320 */ s32 unk320;                         /* inferred */
-    /* 0x324 */ char pad324[0xC];                   /* maybe part of unk320[4]? */
+    /* 0x324 */ char pad324[4];
+    /* 0x328 */ s32 unk328;
+    /* 0x32C */ char pad32C[4];
     /* 0x330 */ f32 unk330;        /* inferred */
     char pad334[0x4];
     s32 unk338;
@@ -849,7 +875,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x0948 */ f32 unk948;                        /* inferred */
     /* 0x094C */ char pad94C[0x20A];                /* maybe part of unk948[0x83]? */
     /* 0x0B56 */ u16 unkB56;
-    /* 0x0B58 */ char padB58[8];                    /* maybe part of unkB56[5]? */
+    /* 0x0B58 */ u16 unkB58;
+    /* 0x0B5A */ char padB5A[6];
     /* 0x0B60 */ s32 unkB60;
     /* 0x0B64 */ char padB64[4];
     /* 0x0B68 */ s32 unkB68;
@@ -861,7 +888,12 @@ typedef struct UnkStruct_80192690 {
     /* 0x0B80 */ f32 unkB80;
     /* 0x0B84 */ char padB84[0xC];                  /* maybe part of unkB80[4]? */
     /* 0x0B90 */ f32 unkB90;
-    /* 0x0B94 */ char padB94[0x5C];                 /* maybe part of unkB90[0x18]? */
+    /* 0x0B94 */ char padB94[4];
+    /* 0x0B98 */ f32 unkB98;
+    /* 0x0B9C */ char padB9C[0x20];
+    /* 0x0BBC */ f32 unkBBC;
+    /* 0x0BC0 */ f32 unkBC0;
+    /* 0x0BC4 */ char padBC4[0x2C];
     /* 0x0BF0 */ f32 unkBF0;
     /* 0x0BF4 */ f32 unkBF4;
     /* 0x0BF8 */ char padBF8[4];
@@ -959,7 +991,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x15B4 */ f32 unk15B4;
     /* 0x15B8 */ f32 unk15B8;
     /* 0x15BC */ f32 unk15BC;
-    /* 0x15C0 */ char pad15C0[0x1E];                /* maybe part of unk15BC[8]? */
+    /* 0x15C0 */ s32 unk15C0;
+    /* 0x15C4 */ char pad15C4[0x1A];
     /* 0x15DE */ s16 unk15DE;
     /* 0x15E0 */ char pad15E0[0x28];                /* maybe part of unk15DE[0x15]? */
     /* 0x1608 */ u16 unk1608;
@@ -982,7 +1015,9 @@ typedef struct UnkStruct_80192690 {
     /* 0x16C0 */ char pad16C0[0x8];
     /* 0x16C8 */ s32 unk16C8;
     /* 0x16CC */ u16 unk16CC;
-    /* 0x16CE */ char pad16CE[0xA];                 /* maybe part of unk16CC[6]? */
+    /* 0x16CE */ char pad16CE[2];
+    /* 0x16D0 */ s32 unk16D0;
+    /* 0x16D4 */ char pad16D4[4];
     /* 0x16D8 */ s32 unk16D8;
     /* 0x16DC */ char pad16DC[4];
     /* 0x16E0 */ u16 unk16E0;
@@ -992,10 +1027,18 @@ typedef struct UnkStruct_80192690 {
 typedef struct UnkStruct_801AE948_s {
     char pad[0x35D0];
     Lights0 unk35D8[1];
-    char pad35DC[0xB14];
+    char pad35E8[0xA18];
+    /* 0x4000 */ Mtx unk4000;
+    /* 0x4040 */ Mtx unk4040;
+    /* 0x4080 */ Mtx unk4080;
+    /* 0x40C0 */ Mtx unk40C0;
     Mtx unk4100[1];
     Mtx unk4140[1];
-    char pad4180[0x7140];
+    char pad4180[0x7040];
+    /* 0xB1C0 */ Vtx unkB1C0[4];
+    /* 0xB200 */ Vtx unkB200[4];
+    /* 0xB240 */ Vtx unkB240[4];
+    /* 0xB280 */ Vtx unkB280[4];
     LookAt unkB2C0[1];
     Hilite unkB2E0[1];
 } UnkStruct_801AE948;
@@ -1064,7 +1107,12 @@ typedef struct UnkStruct_80198368_s {
     /* 0x81C0 */ Vtx unk81C0[0xC0];
     /* 0x8DC0 */ Vtx unk8DC0[4][16];                         /* inferred */
     /* 0x91C0 */ Vtx unk91C0[4][16];                         /* inferred */
-    /* 0x95C0 */ char pad95C0[0x1D30];
+    /* 0x95C0 */ char pad95C0[0x1C00];
+    /* 0xB1C0 */ Vtx unkB1C0[4];
+    /* 0xB200 */ Vtx unkB200[4];
+    /* 0xB240 */ Vtx unkB240[4];
+    /* 0xB280 */ Vtx unkB280[4];
+    /* 0xB2C0 */ char padB2C0[0x30];
 } UnkStruct_80198368;                               /* size = 0xB2F0 */
 
 typedef struct UnkStruct_801C43F8_s {
@@ -1081,7 +1129,9 @@ typedef struct UnkStruct_801CE5F8_s {
     char pad7C0[0x280];
     Mtx unkA40[1];
     Mtx unkA80[1];
-    char padA80[0x7C0-0x40];
+    char padAC0[0x1C0];
+    Mtx unkC80[9]; /* three per rider model on the records screen */
+    char padEC0[0x380];
     char pad2[0x40];
     Vp unk1280[3];
     char pad12B0[0x50];
