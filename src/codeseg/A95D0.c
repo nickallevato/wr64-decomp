@@ -493,7 +493,12 @@ void func_801E0044(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
     func_801DF08C(runner->obj, &out[0], &out[3], &out[6], &out[9]);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0094.s")
+void func_801E0094(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[6];
+
+    func_801DED44(out, runner->cursors, splines);
+    func_801DF2F8(runner->obj, &out[0], &out[3], NULL, NULL);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E00E0.s")
 
