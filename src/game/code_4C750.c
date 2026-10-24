@@ -967,7 +967,7 @@ void func_8009345C(void) {
                     if (D_801CB32C == 0) {
                         var_v1 = &D_800DA950[D_80192690[var_a2].unkB68];
                     } else {
-                        var_v1 = &D_801CB298[D_80192690[var_a2].unkB68];
+                        var_v1 = &gPlayerNames[D_80192690[var_a2].unkB68];
                     }
 
                     D_80192690[var_a2].unkB6C = (s32) var_v1->unk_B[0];

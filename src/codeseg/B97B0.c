@@ -272,25 +272,25 @@ void GameState_EnterCourseOverview(void) {
         func_80096960(1, rider, rand, 0, 0);
     }
     D_80192690[gPlayer1Rider].unkB68 = D_800DA9B0[gPlayer1Rider];
-    D_80192690[gPlayer1Rider].unkB6C = D_801CB298[D_80192690[gPlayer1Rider].unkB68].unk_B[0];
-    D_80192690[gPlayer1Rider].unkB70 = D_801CB298[D_80192690[gPlayer1Rider].unkB68].unk_B[1];
-    D_80192690[gPlayer1Rider].unkB74 = D_801CB298[D_80192690[gPlayer1Rider].unkB68].unk_B[2];
+    D_80192690[gPlayer1Rider].unkB6C = gPlayerNames[D_80192690[gPlayer1Rider].unkB68].unk_B[0];
+    D_80192690[gPlayer1Rider].unkB70 = gPlayerNames[D_80192690[gPlayer1Rider].unkB68].unk_B[1];
+    D_80192690[gPlayer1Rider].unkB74 = gPlayerNames[D_80192690[gPlayer1Rider].unkB68].unk_B[2];
     if (gCourseID == SUNSET_BAY) {
         D_80192690[gPlayer2Rider].unkB68 = D_800DA9B0[gPlayer1Rider];
     } else {
         D_80192690[gPlayer2Rider].unkB68 = D_800DA9B0[gPlayer2Rider];
     }
-    D_80192690[gPlayer2Rider].unkB6C = D_801CB298[D_80192690[gPlayer2Rider].unkB68].unk_B[0];
-    D_80192690[gPlayer2Rider].unkB70 = D_801CB298[D_80192690[gPlayer2Rider].unkB68].unk_B[1];
-    D_80192690[gPlayer2Rider].unkB74 = D_801CB298[D_80192690[gPlayer2Rider].unkB68].unk_B[2];
+    D_80192690[gPlayer2Rider].unkB6C = gPlayerNames[D_80192690[gPlayer2Rider].unkB68].unk_B[0];
+    D_80192690[gPlayer2Rider].unkB70 = gPlayerNames[D_80192690[gPlayer2Rider].unkB68].unk_B[1];
+    D_80192690[gPlayer2Rider].unkB74 = gPlayerNames[D_80192690[gPlayer2Rider].unkB68].unk_B[2];
     D_80192690[2].unkB68 = D_800DA9B0[2];
-    D_80192690[2].unkB6C = D_801CB298[D_80192690[2].unkB68].unk_B[0];
-    D_80192690[2].unkB70 = D_801CB298[D_80192690[2].unkB68].unk_B[1];
-    D_80192690[2].unkB74 = D_801CB298[D_80192690[2].unkB68].unk_B[2];
+    D_80192690[2].unkB6C = gPlayerNames[D_80192690[2].unkB68].unk_B[0];
+    D_80192690[2].unkB70 = gPlayerNames[D_80192690[2].unkB68].unk_B[1];
+    D_80192690[2].unkB74 = gPlayerNames[D_80192690[2].unkB68].unk_B[2];
     D_80192690[3].unkB68 = D_800DA9B0[3];
-    D_80192690[3].unkB6C = D_801CB298[D_80192690[3].unkB68].unk_B[0];
-    D_80192690[3].unkB70 = D_801CB298[D_80192690[3].unkB68].unk_B[1];
-    D_80192690[3].unkB74 = D_801CB298[D_80192690[3].unkB68].unk_B[2];
+    D_80192690[3].unkB6C = gPlayerNames[D_80192690[3].unkB68].unk_B[0];
+    D_80192690[3].unkB70 = gPlayerNames[D_80192690[3].unkB68].unk_B[1];
+    D_80192690[3].unkB74 = gPlayerNames[D_80192690[3].unkB68].unk_B[2];
     course = gCourseID;
     if (course < DOLPHIN_PARK) {
         course = DOLPHIN_PARK;

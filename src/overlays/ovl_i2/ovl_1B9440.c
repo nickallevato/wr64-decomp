@@ -103,7 +103,7 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5E28.s")
 
 s32 func_i2_802C676C(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -116,7 +116,7 @@ s32 func_i2_802C676C(s32 arg0, s32 arg1) {
 }
 
 s32 func_i2_802C67E4(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -200,7 +200,7 @@ void func_i2_802C6864(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C7C50.s")
 
 void func_i2_802C84EC(s32 arg0) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
     UnkStruct_func_i8_802C6E00* entry;
     s32 player;
     s32 i;

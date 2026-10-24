@@ -441,11 +441,11 @@ void func_8007B630(void) {
         Save_UnpackRecord5((Unkstruct_8007B1AC_arg1*) gSaveImage->unk1D8[i], (UnkStruct_8007B110*) &D_801C23B0[(i + 1) * 0x14]);
     }
     for (i = 0; i < 4; i++) {
-        Libc_strncpy(&D_801CB298[i], gSaveImage->unk10[i], 10);
-        D_801CB298[i].unk_0[10] = 0;
+        Libc_strncpy(&gPlayerNames[i], gSaveImage->unk10[i], 10);
+        gPlayerNames[i].unk_0[10] = 0;
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 3; j++) {
-                D_801CB298[(k * 4) + i].unk_B[j] = gSaveImage->unk38[k][i][j];
+                gPlayerNames[(k * 4) + i].unk_B[j] = gSaveImage->unk38[k][i][j];
             }
         }
     }
@@ -492,10 +492,10 @@ void func_8007B930(void) {
                       (UnkStruct_func_8007AF78_2*) gSaveImage->unk1D8[i]);
     }
     for (i = 0; i < 4; i++) {
-        Libc_strncpy(gSaveImage->unk10[i], &D_801CB298[i], 10);
+        Libc_strncpy(gSaveImage->unk10[i], &gPlayerNames[i], 10);
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 3; j++) {
-                gSaveImage->unk38[k][i][j] = D_801CB298[(k * 4) + i].unk_B[j];
+                gSaveImage->unk38[k][i][j] = gPlayerNames[(k * 4) + i].unk_B[j];
             }
         }
     }
@@ -731,10 +731,10 @@ s32 Save_EepromWriteNames(void) {
     var_s1 = &D_801CB308[0];
 
     for (var_s2 = 0; var_s2 < 4; var_s2++) {
-        Libc_strncpy(&D_801AEA28[var_s2 * 10], (&D_801CB298[var_s2]), 10);
+        Libc_strncpy(&D_801AEA28[var_s2 * 10], (&gPlayerNames[var_s2]), 10);
         for (k = 0; k < 2; k++) {
             for (var_v0 = 0; var_v0 < 3; var_v0++) {
-                gSaveImage->unk38[k][var_s2][var_v0] = D_801CB298[(k * 4) + var_s2].unk_B[var_v0];
+                gSaveImage->unk38[k][var_s2][var_v0] = gPlayerNames[(k * 4) + var_s2].unk_B[var_v0];
             }
         }
     }

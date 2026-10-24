@@ -307,3 +307,20 @@ gMapScale = 0x801C1F98;
 // camera
 Camera_SetOrbitMatrices = 0x80069798;
 Spray_Init = 0x800AE7C4;
+gPlayerNames = 0x801CB298;
+
+// overlays: names for the screens (segment as in the yaml)
+SaveLoad_Update = 0x802C6068; //segment:ovl_i13
+SaveLoad_PakTransfer = 0x802C6CE4; //segment:ovl_i13
+SaveLoad_PakTransferRecords = 0x802C6E48; //segment:ovl_i13
+SaveLoad_EraseOrReset = 0x802C6F0C; //segment:ovl_i13
+SaveLoad_OpenResultMessage = 0x802C81AC; //segment:ovl_i13
+SaveLoad_OpenPromptMessage = 0x802C82A4; //segment:ovl_i13
+SaveLoad_Leave = 0x802C8CBC; //segment:ovl_i13
+ChangeNames_DeleteChar = 0x802C6DA8; //segment:ovl_i8
+ChangeNames_StoreName = 0x802C6E00; //segment:ovl_i8
+ChangeNames_LoadName = 0x802C6E68; //segment:ovl_i8
+ChangeNames_StringWidth = 0x802C6EB8; //segment:ovl_i8
+CourseSelect_Input = 0x802C6C2C; //segment:ovl_i4
+CourseSelect_DifficultyInput = 0x802C70C0; //segment:ovl_i4
+RaceResults_Update = 0x802C6CC4; //segment:ovl_i5

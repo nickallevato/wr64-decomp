@@ -684,7 +684,7 @@ void Initials_SaveToRecords(void) {
 
     if (gInitialsEntered[0] == 0) {
         for (i = 0; i < 3; i++) {
-            gInitialsEntered[i] = D_801CB298[D_800DA9B0[0]].unk_0[i];
+            gInitialsEntered[i] = gPlayerNames[D_800DA9B0[0]].unk_0[i];
         }
         gInitialsEntered[i] = 0;
         D_800DAB6C = 1;

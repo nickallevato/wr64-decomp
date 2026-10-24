@@ -55,7 +55,7 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C6D58.s")
 
-void func_i8_802C6DA8(void) {
+void ChangeNames_DeleteChar(void) {
     s8* src;
     s8* dst;
 
@@ -72,14 +72,14 @@ void func_i8_802C6DA8(void) {
     }
 }
 
-void func_i8_802C6E00(void) {
+void ChangeNames_StoreName(void) {
     if (D_802C7548[0] != 0) {
-        func_i8_802C6FD4(D_802C7548, (s8*) &D_801CB298[D_i8_802C74F8[D_i8_802C7040]].unk_0, 11);
+        func_i8_802C6FD4(D_802C7548, (s8*) &gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, 11);
     }
     D_802C756C = 1;
 }
 
-void func_i8_802C6E68(void* arg0) {
+void ChangeNames_LoadName(void* arg0) {
     func_i8_802C6FD4(arg0, D_802C7548, 0xB);
     D_802C7564 = Strlen2(D_802C7548);
     if (D_802C7564 >= 9) {
@@ -87,7 +87,7 @@ void func_i8_802C6E68(void* arg0) {
     }
 }
 
-s32 func_i8_802C6EB8(s8* str, s32 arg1) {
+s32 ChangeNames_StringWidth(s8* str, s32 arg1) {
     s32 width = 0;
     s32 idx;
     s32 charWidth;
