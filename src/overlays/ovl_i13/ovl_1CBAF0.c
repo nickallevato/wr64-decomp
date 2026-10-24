@@ -1,5 +1,7 @@
 #include "global.h"
 
+extern s32 D_i13_802C8DD4;
+
 extern s32 D_i13_802C8DC4;
 extern s32 D_i13_802C8DC8;
 extern s32 D_i13_802C8DCC;
@@ -246,7 +248,40 @@ s32 func_i13_802C6ABC(void) {
     return var_v1;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C6BC4.s")
+s32 func_i13_802C6BC4(void) {
+    s32 var_v1 = 0;
+
+    if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+        var_v1 = 1;
+        if (D_i13_802C8D70 == 0) {
+            var_v1 = 5;
+            D_801CE640 = 0xB;
+            func_i13_802C82A4(3);
+        } else {
+            D_801CE640 = 4;
+            D_i13_802C8DC8 = 0;
+            D_i13_802C8DD4 = 0;
+            D_i13_802C8DD0 = 0;
+        }
+    } else if (D_801CE65A[0].unk0 & B_BUTTON) {
+        D_801CE640 = 4;
+        D_i13_802C8DC8 = 0;
+        D_i13_802C8DD4 = 0;
+        var_v1 = 2;
+        D_i13_802C8DD0 = 0;
+    } else if (D_801CE65A[0].unk0 & L_JPAD) {
+        var_v1 = 3;
+        if (--D_i13_802C8D70 < 0) {
+            D_i13_802C8D70 = 1;
+        }
+    } else if (D_801CE65A[0].unk0 & R_JPAD) {
+        var_v1 = 4;
+        if (++D_i13_802C8D70 >= 2) {
+            D_i13_802C8D70 = 0;
+        }
+    }
+    return var_v1;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C6CE4.s")
 
