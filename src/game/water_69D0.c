@@ -81,7 +81,6 @@ s32 D_800D4778 = 0;
 f32 D_800D477C = 0.75f;
 f32 D_800D4780[] = { 0.0f, 0.0f, -51.2f, 38.4f, 38.4f, 51.2f, 50.0f };
 s32 D_800D479C[] = { 30, 30, 100, 0, 30, 0, 0, 0, 0 };
-s32 D_800D47C0 = 0;
 
 extern f32 D_801924B4;
 extern f32 D_801924C0;
@@ -404,8 +403,8 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
  * on each call and wraps at period.
  */
 void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
-    s32* pp = &D_800D47C0; // FAKE: through a pointer, the global gets its own lui at each access
-    s32 t;                 // FAKE
+    static s32 D_800D47C0 = 0;
+    s32 t; // FAKE
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -417,13 +416,12 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
     s32 h;
     f32 end;
 
-    phase = *pp;
-    phase += step;
-    if (phase >= period) {
-        phase -= period;
+    D_800D47C0 += step;
+    if (D_800D47C0 >= period) {
+        D_800D47C0 -= period;
     }
+    phase = D_800D47C0;
     amplitude = (s32) (SIN((phase << 12) / period) * amplitude) << 8; // FAKE: h computed in amplitude
-    *pp = phase;
     h = amplitude;
     // the radius is not a local: as one, it takes the original's register for end
     end = (D_80192498 >> 2) + x;
