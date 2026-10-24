@@ -266,7 +266,31 @@ void func_801EA0B0(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EA3EC.s")
+/* Colour cycle for D_80228A78 by phase: green -> yellow -> white -> yellow -> green. */
+void func_801EA3EC(void) {
+    switch (D_80228A78.unk2) {
+        case 0:
+            D_80228A78.r = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            D_80228A78.g = 255;
+            D_80228A78.b = 0;
+            break;
+        case 1:
+            D_80228A78.r = 255;
+            D_80228A78.g = 255;
+            D_80228A78.b = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            break;
+        case 2:
+            D_80228A78.r = 255;
+            D_80228A78.g = 255;
+            D_80228A78.b = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            break;
+        case 3:
+            D_80228A78.r = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            D_80228A78.g = 255;
+            D_80228A78.b = 0;
+            break;
+    }
+}
 
 /* Colour cycle for D_80228A78 by phase: black -> green -> yellow -> green -> black. */
 void func_801EA730(void) {
