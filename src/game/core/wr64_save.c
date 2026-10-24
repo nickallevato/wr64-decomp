@@ -410,7 +410,59 @@ void func_8007B370(UnkStruct_8007CB68_2* arg) {
     }
 }
 
+extern UnkStruct_func_8007AF78_1 D_801C1FF0[][3];
+extern UnkStruct_func_8007AF78_1 D_801C22C0[];
+extern s32 D_801C24A0[][9];
+
+// Unpacks the EEPROM image into the records (courses 1-8 and the D_801C26E8 table), the four names and the options.
+#ifdef NON_MATCHING
+// Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
+// loop and spills the D_801C22C0 pointer. Score 4527.
+void func_8007B630(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007AFF4((func_8007AFF4_arg0*) D_801AEA18->unk60[i][j], (func_8007AFF4_arg1*) &D_801C1FF0[i + 1][j]);
+        }
+        func_8007AFF4((func_8007AFF4_arg0*) D_801AEA18->unk60[i][j], (func_8007AFF4_arg1*) &D_801C22C0[i + 1]);
+        for (j = 0; j < 2; j++) {
+            D_801C24A0[i + 1][j] = func_8007B2E4((UnkStruct_8007B2E4*) D_801AEA18->unk1A8[i][j]);
+        }
+    }
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007B220((UnkStruct_8007B2BC*) D_801AEA18->unk120[i][j], (UnkStruct_8007B2BC*) &D_801C26E8[i][j]);
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        func_8007B110((Unkstruct_8007B1AC_arg1*) D_801AEA18->unk1D8[i], (UnkStruct_8007B110*) &D_801C23B0[(i + 1) * 0x14]);
+    }
+    for (i = 0; i < 4; i++) {
+        Libc_strncpy(&D_801CB298[i], D_801AEA18->unk10[i], 10);
+        D_801CB298[i].unk_0[10] = 0;
+        for (k = 0; k < 2; k++) {
+            for (j = 0; j < 3; j++) {
+                D_801CB298[(k * 4) + i].unk_B[j] = D_801AEA18->unk38[k][i][j];
+            }
+        }
+    }
+    D_801CB280 = D_801AEA24;
+    for (i = 0; i < 4; i++) {
+        (&D_801CB288)[i] = (s8) D_801AEA18->unk4[4 + i];
+    }
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            D_801CB308[i][j] = (s8) D_801AEA18->unk50[i][j];
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B630.s")
+#endif
+
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B930.s")
 
 void func_8007BBE8() {
@@ -518,9 +570,6 @@ s32 func_8007BE64(void) {
     return func_8007BD20();
 }
 
-extern UnkStruct_func_8007AF78_1 D_801C1FF0[][3];
-extern UnkStruct_func_8007AF78_1 D_801C22C0[];
-extern s32 D_801C24A0[][9];
 extern s32 D_800D82B0[];
 extern u8 D_801AEBC0[];
 
