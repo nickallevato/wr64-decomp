@@ -463,7 +463,52 @@ void func_8007B630(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B630.s")
 #endif
 
+// Packs the records, the names and the options (func_8007B31C) into the EEPROM image; the inverse of func_8007B630.
+#ifdef NON_MATCHING
+// Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
+// loop and spills the D_801C22C0 pointer. Score 5825.
+void func_8007B930(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007AF78(&D_801C1FF0[i + 1][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        }
+        func_8007AF78(&D_801C22C0[i + 1], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+        for (j = 0; j < 2; j++) {
+            func_8007B2BC(D_801C24A0[i + 1][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+        }
+    }
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 3; j++) {
+            func_8007B1AC((Unkstruct_8007B1AC_arg0*) &D_801C26E8[i][j],
+                          (Unkstruct_8007B1AC_arg1*) D_801AEA18->unk120[i][j]);
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        func_8007B09C((UnkStruct_func_8007AF78_1*) &D_801C23B0[(i + 1) * 0x14],
+                      (UnkStruct_func_8007AF78_2*) D_801AEA18->unk1D8[i]);
+    }
+    for (i = 0; i < 4; i++) {
+        Libc_strncpy(D_801AEA18->unk10[i], &D_801CB298[i], 10);
+        for (k = 0; k < 2; k++) {
+            for (j = 0; j < 3; j++) {
+                D_801AEA18->unk38[k][i][j] = D_801CB298[(k * 4) + i].unk_B[j];
+            }
+        }
+    }
+    func_8007B31C();
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            D_801AEA18->unk50[i][j] = D_801CB308[i][j];
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B930.s")
+#endif
 
 void func_8007BBE8() {
 }
