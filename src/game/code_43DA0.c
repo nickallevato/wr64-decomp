@@ -1579,7 +1579,7 @@ Gfx* func_8008FB74(Gfx* gdl) {
 }
 
 Gfx* Draw_WaterEffects(Gfx* gdl) {
-    s32 pad;
+    s32 pad; // stack pad
 
     if ((gCourseID == DRAKE_LAKE) && (gPlayers == ONE_PLAYER)) {
         gSPClearGeometryMode(gdl++, G_ZBUFFER | G_TEXTURE_ENABLE | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING |

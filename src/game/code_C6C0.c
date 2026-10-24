@@ -2768,7 +2768,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk120.unk14.x = (rider->unk84 * temp_fs0_22) + (rider->unk78 * temp_fs1_22) + (rider->unk6C * temp_fs2_23);
         arg1->unk120.unk14.y = (rider->unk88 * temp_fs0_22) + (rider->unk7C * temp_fs1_22) + (rider->unk70 * temp_fs2_23);
         arg1->unk120.unk14.z = (rider->unk8C * temp_fs0_22) + (rider->unk80 * temp_fs1_22) + (rider->unk74 * temp_fs2_23);
-        goto block_45; // the two branches share the store to part 6
+        goto block_45; // m2c goto: the two branches share the store to part 6
     }
     temp_v1_12 = rider->unk15B0;
     if (temp_v1_12 >= 0) {
@@ -2852,7 +2852,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk144.unk14.z = rider->unk80;
         func_80052A20(temp_s2_3);
         var_t6 = 2;
-block_45:
+block_45: // m2c label name
         RIDER_PARTS(rider)[6].unk0 = var_t6;
     }
     temp_s2_4 = &arg1->unk1B0;
@@ -4739,7 +4739,7 @@ void func_8005DE24(s32 arg0) {
         temp_a2_4 = rider->unkC54;
         if (temp_a2_4 == 0xF) {
             if ((gGameModeState == GMODE_STATE_2) || (gGameModeState == GMODE_STATE_STARTED)) {
-                goto block_299;
+                goto block_299; // m2c goto, see the label
             }
         } else if (temp_a2_4 == 7) {
             if (frame >= 0x4D) {
@@ -4787,7 +4787,7 @@ void func_8005DE24(s32 arg0) {
             } else if (frame == 0x18) {
                 temp_v1_4 = &gRiderRaceState[arg0];
                 if ((temp_v1_4->unk2F4 != 0) || (temp_v1_4->finishState != 0)) {
-                    goto block_299;
+                    goto block_299; // m2c goto, see the label
                 }
                 if (rider->unkB50.stick_y < 0x23) {
                     rider->unkC68 = 0;
@@ -4798,11 +4798,11 @@ void func_8005DE24(s32 arg0) {
                     if (rider->unkB50.stick_y < -0x23) {
                         rider->unkC58 = 0x28;
                     } else {
-                        goto block_299;
+                        goto block_299; // m2c goto, see the label
                     }
                 }
             } else {
-                goto block_299;
+                goto block_299; // m2c goto, see the label
             }
         } else if (temp_a2_4 == 9) {
             if (frame >= 0x54) {
@@ -4826,10 +4826,10 @@ void func_8005DE24(s32 arg0) {
                 }
             } else if (frame == 0x2E) {
                 if ((rider->unkB50.stick_y >= -0x22) || (temp_v1_5 = &gRiderRaceState[arg0], (temp_v1_5->unk2F4 != 0)) || (temp_v1_5->finishState != 0)) {
-                    goto block_299;
+                    goto block_299; // m2c goto, see the label
                 }
             } else {
-                goto block_299;
+                goto block_299; // m2c goto, see the label
             }
         } else if (temp_a2_4 == 8) {
             if (frame == 0x1E) {
@@ -4839,10 +4839,10 @@ void func_8005DE24(s32 arg0) {
                 }
             } else if (frame == 0x1F) {
                 if ((rider->unkB50.stick_y < 0x23) || (temp_v1_6 = &gRiderRaceState[arg0], (temp_v1_6->unk2F4 != 0)) || (temp_v1_6->finishState != 0)) {
-                    goto block_299;
+                    goto block_299; // m2c goto, see the label
                 }
             } else {
-                goto block_299;
+                goto block_299; // m2c goto, see the label
             }
         } else if ((temp_a2_4 >= 0x12) && (temp_a2_4 < 0x16)) {
             rider->unkC58 = frame;
@@ -4862,7 +4862,7 @@ void func_8005DE24(s32 arg0) {
                 }
             }
         } else {
-        block_299: // several cases above end in the plain frame store
+        block_299: // m2c label name: several cases above end in the plain frame store
             rider->unkC58 = frame;
         }
     }

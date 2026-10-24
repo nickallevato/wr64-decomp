@@ -555,7 +555,7 @@ void func_80095CE8(u8* arg0, s32 arg1) {
 
     s32 var_v0;
     s32 sp60;
-    s32 pad;
+    s32 pad; // stack pad
     s32 var_s1;
     s16* var_a2;
     u32 var_s5;
@@ -930,7 +930,7 @@ void func_800967EC(u32* arg0, s32 arg1) {
     u32* var_v0;
 
     var_v0 = arg0;
-loop_1:
+loop_1: // m2c label: the loop is written as a goto; a do-while was not tried
     temp_t6 = (u32) *var_v0 >> 0x18;
     if (temp_t6 != 0xB8) {
         var_a0 = 0;
@@ -944,7 +944,7 @@ loop_1:
             *temp_v1 += arg1;
         }
         var_v0 += 2;
-        goto loop_1;
+        goto loop_1; // m2c goto (loop back to loop_1)
     }
 }
 

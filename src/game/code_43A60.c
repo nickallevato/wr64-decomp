@@ -49,6 +49,9 @@ void func_80088EA0(void) {
 }
 
 #ifdef NON_MATCHING
+// Score 225 / 13100 (330 in an earlier measurement). Same blocks and calls. The original takes the rand index
+// (srl a0) through three copies (a1, v0, a0) before the lookup; this C uses two (a1, v1, a0) and is one
+// instruction shorter, so the rand/loop registers differ (the address immediates in the diff only move with the size).
 void func_80088EA8(void) {
     s32 var_s4;
     s32 var_s6;

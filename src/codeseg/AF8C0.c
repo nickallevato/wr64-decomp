@@ -109,7 +109,7 @@ s32 D_802261F8 = 0;
 
 void Initials_Update(void) {
     static f32 D_802261FC = 50.0f;
-    static f32 D_80226200 = -50.0f;
+    static f32 D_80226200 = -50.0f; // UNUSED: only its .data slot after D_802261FC is needed
     s32 i;
     s32 splash;
     s32 side;
