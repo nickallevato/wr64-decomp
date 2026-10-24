@@ -1,6 +1,9 @@
 #include "global.h"
 #include "camera.h"
 
+// Degrees to a gSinTable index.
+#define DEG_TO_BINANG(x) ((s32) (((x) * 4096.0f) / 360.0f))
+
 #define LERP(startPosition, targetPosition, factor) ((targetPosition - startPosition) * factor) + startPosition
 
 typedef struct UnkStruct_80052C6C_1_s {
@@ -309,6 +312,22 @@ typedef struct RiderPart {
 
 #define RIDER_PARTS(rider) ((RiderPart*) (rider)->unk660)
 
+typedef struct UnkStruct_80069798_1 {
+    /* 0x00 */ s32 unk0[6];
+} UnkStruct_80069798_1; /* size = 0x18 */
+
+typedef struct UnkStruct_80069798 {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ Vec3f unk8;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+    /* 0x1C */ f32 unk1C;
+    /* 0x20 */ f32 unk20;
+    /* 0x24 */ char pad24[4];
+    /* 0x28 */ UnkStruct_80069798_1 unk28;
+} UnkStruct_80069798; /* size = 0x40 */
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -355,6 +374,8 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern f32 D_800D4AF0;
+extern f32 D_800D4AF4;
 extern Gfx D_1007968[];
 extern UnkStruct_80227A60 D_80227A60[];
 
@@ -384,6 +405,7 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80051EC0.s")
@@ -2559,4 +2581,31 @@ void func_8006977C(void* arg0, s32 arg1) {
     *(Vec3f*) arg0 = *(Vec3f*) arg1;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80069798.s")
+// arg4 and arg5 are void* in functions.h; typed views of them:
+#define CAM ((UnkStruct_80069798*) arg4)
+#define SCALE ((Vec3f*) arg5)
+
+void func_80069798(void* arg0, void* arg1, void* arg2, void* arg3, void* arg4, void* arg5) {
+    f32 eye[3];
+    f32 r;
+    MtxF lookAt;
+    MtxF scaleMtx;
+    MtxF result;
+
+    r = CAM->unk14 * SCALE->y;
+    eye[0] = ((r * COS(DEG_TO_BINANG(CAM->unk20))) * COS(DEG_TO_BINANG(CAM->unk18))) + CAM->unk8.x;
+    eye[1] = (SIN(DEG_TO_BINANG(CAM->unk20)) * r) + CAM->unk8.y;
+    eye[2] = ((r * COS(DEG_TO_BINANG(CAM->unk20))) * SIN(DEG_TO_BINANG(CAM->unk18))) + CAM->unk8.z;
+    r = CAM->unk18 + (CAM->unk1C * SCALE->z);
+    CAM->unk18 = (r + ((r > 360.0f) ? -360.0f : 0.0f)) + ((r < 0.0f) ? 360.0f : 0.0f);
+    func_800484C8(arg0, &lookAt, eye[0], eye[1], eye[2], CAM->unk8.x, CAM->unk8.y, CAM->unk8.z, 0.0f, 1.0f, 0.0f);
+    r = CAM->unk0 * SCALE->x;
+    func_801EE91C(scaleMtx.mf, r, r, r);
+    SysUtils_MatrixAffineMultiply(&lookAt, &scaleMtx, &result);
+    SysUtils_MtxFToMtx(&result, arg0);
+    *(UnkStruct_80069798_1*) arg1 = CAM->unk28;
+    func_800481E0(arg2, arg3, CAM->unk4, 1.0f, D_800D4AF0, D_800D4AF4, 0.0f, 0.0f);
+}
+
+#undef CAM
+#undef SCALE
