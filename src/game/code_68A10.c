@@ -630,13 +630,10 @@ extern struct camera_unk_1* D_801D7970;
 void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 
 #ifdef NON_MATCHING
-// 11460: same loops, calls and stores. Register allocation and scheduling differ from the
-// first loop on (the original keeps 0xFF, 24 and the side-vector addresses in saved registers
-// and spills more); the frame is 0xD0, not 0xE8.
+// 666: same loops, calls and stores. Only the last loop differs: the original loads
+// D_800E6D80 before unk1C38, numbers its registers differently and has one extra dead
+// li t0, 0xDF in front of it.
 void func_800AFBD0(s32 arg0) {
-    f32 sideX;
-    f32 sideY;
-    f32 sideZ;
     s32 i;
     s32 alpha;
     f32 size;
@@ -648,6 +645,9 @@ void func_800AFBD0(s32 arg0) {
     f32 x;
     f32 y;
     f32 z;
+    f32 sideX;
+    f32 sideY;
+    f32 sideZ;
     Vtx* vtx;
 
     // Records of unk0, oldest first: a three-vertex streak along the record's velocity.
@@ -675,24 +675,21 @@ void func_800AFBD0(s32 arg0) {
             h = size * 1.2f;
             vtx->v.ob[0] = D_800E6D64->unk0 + (h * dx);
             vtx->v.ob[1] = D_800E6D64->unk4 + (h * dy);
-            vtx->v.cn[3] = alpha;
             vtx->v.ob[2] = D_800E6D64->unk8 + (h * dz);
+            vtx->v.cn[3] = alpha;
             vtx++;
             func_801EDAE0(D_800E6D64->unk0 - D_801D796C->unk4C, D_800E6D64->unk4 - D_801D796C->unk50,
                           D_800E6D64->unk8 - D_801D796C->unk54, dx, dy, dz, &sideX, &sideY, &sideZ);
             h = size * 0.5f;
-            x = h * sideX;
-            vtx->v.ob[0] = x + D_800E6D64->unk0;
-            y = h * sideY;
-            vtx->v.ob[1] = y + D_800E6D64->unk4;
-            z = h * sideZ;
+            vtx->v.ob[0] = (x = h * sideX) + D_800E6D64->unk0;
+            vtx->v.ob[1] = (y = h * sideY) + D_800E6D64->unk4;
+            vtx->v.ob[2] = (z = h * sideZ) + D_800E6D64->unk8;
             vtx->v.cn[3] = alpha;
-            vtx->v.ob[2] = z + D_800E6D64->unk8;
             vtx++;
             vtx->v.ob[0] = D_800E6D64->unk0 - x;
             vtx->v.ob[1] = D_800E6D64->unk4 - y;
-            vtx->v.cn[3] = alpha;
             vtx->v.ob[2] = D_800E6D64->unk8 - z;
+            vtx->v.cn[3] = alpha;
             vtx++;
             D_800E6D60->unk1C20++;
         }
@@ -720,21 +717,21 @@ void func_800AFBD0(s32 arg0) {
                 h = size * 1.2f;
                 vtx->v.ob[0] = D_800E6D64->unk0 + (h * dx);
                 vtx->v.ob[1] = D_800E6D64->unk4 + (h * dy);
-                vtx->v.cn[3] = alpha;
                 vtx->v.ob[2] = D_800E6D64->unk8 + (h * dz);
+                vtx->v.cn[3] = alpha;
                 vtx++;
                 func_801EDAE0(D_800E6D64->unk0 - D_801D7970->unk4C, D_800E6D64->unk4 - D_801D7970->unk50,
                               D_800E6D64->unk8 - D_801D7970->unk54, dx, dy, dz, &sideX, &sideY, &sideZ);
                 h = size * 0.5f;
                 vtx->v.ob[0] = D_800E6D64->unk0 + (h * sideX);
                 vtx->v.ob[1] = D_800E6D64->unk4 + (h * sideY);
-                vtx->v.cn[3] = alpha;
                 vtx->v.ob[2] = D_800E6D64->unk8 + (h * sideZ);
+                vtx->v.cn[3] = alpha;
                 vtx++;
                 vtx->v.ob[0] = D_800E6D64->unk0 - (h * sideX);
                 vtx->v.ob[1] = D_800E6D64->unk4 - (h * sideY);
-                vtx->v.cn[3] = alpha;
                 vtx->v.ob[2] = D_800E6D64->unk8 - (h * sideZ);
+                vtx->v.cn[3] = alpha;
                 vtx++;
             }
         }
@@ -750,23 +747,20 @@ void func_800AFBD0(s32 arg0) {
                 if (alpha < 0) {
                     alpha = 0;
                 }
-                x = D_800E6D6C->unk0;
-                y = D_800E6D6C->unk4;
-                z = D_800E6D6C->unk8;
-                vtx->v.ob[0] = x;
-                vtx->v.ob[1] = y;
+                vtx->v.ob[0] = x = D_800E6D6C->unk0;
+                vtx->v.ob[1] = y = D_800E6D6C->unk4;
+                vtx->v.ob[2] = z = D_800E6D6C->unk8;
                 vtx->v.cn[3] = alpha;
-                vtx->v.ob[2] = z;
                 vtx++;
                 vtx->v.ob[0] = (D_801D7980 * size) + x;
                 vtx->v.ob[1] = (D_801D7984 * size) + y;
-                vtx->v.cn[3] = alpha;
                 vtx->v.ob[2] = (D_801D7988 * size) + z;
+                vtx->v.cn[3] = alpha;
                 vtx++;
                 vtx->v.ob[0] = (D_801D798C * size) + x;
                 vtx->v.ob[1] = (D_801D7990 * size) + y;
-                vtx->v.cn[3] = alpha;
                 vtx->v.ob[2] = (D_801D7994 * size) + z;
+                vtx->v.cn[3] = alpha;
                 vtx++;
                 D_800E6D60->unk1C24++;
             }
@@ -776,14 +770,17 @@ void func_800AFBD0(s32 arg0) {
     vtx = D_801AE948->unk8DC0[arg0];
     for (i = 0, D_800E6D74 = D_800E6D78; i < 4; i++, D_800E6D74++) {
         if (D_800E6D74->unk20 != 0) {
+            x = D_800E6D74->unk0;
+            y = D_800E6D74->unk4;
+            z = D_800E6D74->unk8;
             size = D_800E6D74->unk18;
             if ((D_801D7A08 != 0) && (arg0 == gRiders)) {
                 size *= 2.0f;
             }
-            h = size / 2.0f;
-            x = D_800E6D74->unk0 - (h * (D_801D7980 + D_801D798C));
-            y = D_800E6D74->unk4 - (h * (D_801D7984 + D_801D7990));
-            z = D_800E6D74->unk8 - (h * (D_801D7988 + D_801D7994));
+            h = size / 2;
+            x -= h * (D_801D7980 + D_801D798C);
+            y -= h * (D_801D7984 + D_801D7990);
+            z -= h * (D_801D7988 + D_801D7994);
             vtx->v.ob[0] = x;
             vtx->v.ob[1] = y;
             vtx->v.ob[2] = z;
@@ -806,11 +803,14 @@ void func_800AFBD0(s32 arg0) {
         vtx = D_801AE948->unk8DC0[arg0 + 2];
         for (i = 0, D_800E6D74 = D_800E6D78; i != 4; i++, D_800E6D74++) {
             if (D_800E6D74->unk20 != 0) {
+                x = D_800E6D74->unk0;
+                y = D_800E6D74->unk4;
+                z = D_800E6D74->unk8;
                 size = D_800E6D74->unk18;
-                h = size / 2.0f;
-                x = D_800E6D74->unk0 - (h * (D_801D79A4 + D_801D79B0));
-                y = D_800E6D74->unk4 - (h * (D_801D79A8 + D_801D79B4));
-                z = D_800E6D74->unk8 - (h * (D_801D79AC + D_801D79B8));
+                h = size / 2;
+                x -= h * (D_801D79A4 + D_801D79B0);
+                y -= h * (D_801D79A8 + D_801D79B4);
+                z -= h * (D_801D79AC + D_801D79B8);
                 vtx->v.ob[0] = x;
                 vtx->v.ob[1] = y;
                 vtx->v.ob[2] = z;
@@ -836,13 +836,13 @@ void func_800AFBD0(s32 arg0) {
         D_800E6D7C = &D_800E6D80[(D_800E6D60->unk1C38 + i) % 8];
         vtx->v.ob[0] = D_800E6D7C->unk0;
         vtx->v.ob[1] = D_800E6D7C->unk4;
-        vtx->v.cn[3] = 0xFF;
         vtx->v.ob[2] = D_800E6D7C->unk8;
+        vtx->v.cn[3] = 0xFF;
         vtx++;
         vtx->v.ob[0] = D_800E6D7C->unkC;
         vtx->v.ob[1] = D_800E6D7C->unk10;
-        vtx->v.cn[3] = 0xFF;
         vtx->v.ob[2] = D_800E6D7C->unk14;
+        vtx->v.cn[3] = 0xFF;
         vtx++;
         D_800E6D7C->unk28++;
     }
