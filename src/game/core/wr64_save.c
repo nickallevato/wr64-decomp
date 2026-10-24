@@ -466,7 +466,7 @@ void func_8007B630(void) {
 // Packs the records, the names and the options (func_8007B31C) into the EEPROM image; the inverse of func_8007B630.
 #ifdef NON_MATCHING
 // Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
-// loop and spills the D_801C22C0 pointer. Score 5825.
+// loop and spills the D_801C22C0 pointer. Score 4557.
 void func_8007B930(void) {
     s32 i;
     s32 j;
