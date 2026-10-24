@@ -578,7 +578,25 @@ void func_801EE8C0(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE91C.s")
+void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z) {
+    arg0[0][0] = x;
+    arg0[1][1] = y;
+    arg0[2][2] = z;
+
+    arg0[1][0] = 0.0f;
+    arg0[2][0] = 0.0f;
+    arg0[0][1] = 0.0f;
+    arg0[2][1] = 0.0f;
+    arg0[0][2] = 0.0f;
+    arg0[1][2] = 0.0f;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][0] = 0.0f;
+    arg0[3][1] = 0.0f;
+    arg0[3][2] = 0.0f;
+    arg0[3][3] = 1.0f;
+}
 
 void func_801EE97C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
     MtxF mtx;
