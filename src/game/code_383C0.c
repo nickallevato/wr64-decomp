@@ -306,7 +306,94 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
                   (UnkStruct_8007E938*) &arg0->unk90[9]);
 }
 
+// Pushes each of arg1's points out of the collision triangles of its grid cell (the lookup of func_8007F448):
+// removes the velocity into the triangle, records the strongest push and its normal in arg0, and moves arg1's first
+// twelve points out by the depth.
+#ifdef NON_MATCHING
+// Same blocks; float registers differ: the original keeps 0.0f/16.0f in f28/f30 and the point's velocity in f22-f26,
+// and saves one more FP register pair. Score 245.
+void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
+    UnkStruct_801C3B84* tri;
+    UnkStruct_8004B0F8_1* pt;
+    UnkStruct_8004B0F8_1* q;
+    s16* cell;
+    u16* list;
+    s32 x;
+    s32 z;
+    s32 idx;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 d;
+    f32 depth;
+    f32 push;
+    f32 px;
+    f32 py;
+    f32 pz;
+
+    for (pt = &arg1->unk30[arg1->unk28]; (u32) pt >= (u32) arg1->unk30; pt--) {
+        x = (s32) pt->unk0 - D_801C3B44;
+        if ((x < 0) || (x >= D_801C3B4C)) {
+            continue;
+        }
+        z = (s32) pt->unk8 - D_801C3B50;
+        if ((z < 0) || (z >= D_801C3B58)) {
+            continue;
+        }
+        if (D_801C3B40 != 0) {
+            cell = &(0, D_801C3B7C)[(z >> D_801C3B78) | ((x >> D_801C3B70) << D_801C3B68)]; // FAKE (0, ...) as in func_8007F448
+        } else {
+            cell = &(0, D_801C3B7C)[(x >> D_801C3B70) | ((z >> D_801C3B78) << D_801C3B60)];
+        }
+        list = &D_801C3B80[(u16) *cell];
+        while ((idx = *(++list)) != 0) {
+            idx--;
+            tri = &D_801C3B84[idx];
+            dx = tri->unk0 - pt->unk0;
+            dy = tri->unk4 - pt->unk4;
+            dz = tri->unk8 - pt->unk8;
+            if (((tri->unk18 * dx) + (dy * tri->unk1C) + (dz * tri->unk20)) < 0.0f) {
+                continue;
+            }
+            if (((tri->unk24 * dx) + (dy * tri->unk28) + (dz * tri->unk2C)) < 0.0f) {
+                continue;
+            }
+            d = (tri->unk30 * dx) + (dy * tri->unk34) + (dz * tri->unk38);
+            if (d >= 0.0f || d < tri->unk3C) {
+                continue;
+            }
+            depth = (tri->unkC * dx) + (dy * tri->unk10) + (dz * tri->unk14);
+            if (depth < 0.0f || depth > 16.0f) {
+                continue;
+            }
+            push = -pt->unkC * tri->unkC - pt->unk10 * tri->unk10 - pt->unk14 * tri->unk14;
+            if (push <= 0.0f) {
+                continue;
+            }
+            if (arg0->unkC4C < push) {
+                arg0->unkC4C = push;
+                arg0->unk15B4 = tri->unkC;
+                arg0->unk15B8 = tri->unk10;
+                arg0->unk15BC = tri->unk14;
+            }
+            pt->unkC += push * tri->unkC;
+            pt->unk10 += push * tri->unk10;
+            pt->unk14 += push * tri->unk14;
+            px = tri->unkC * depth;
+            py = tri->unk10 * depth;
+            if (!dy) {} // FAKE: found by the permuter, moves the float registers closer
+            pz = tri->unk14 * depth;
+            for (q = arg1->unk30; (u32) q < (u32) &arg1->unk30[12]; q++) {
+                q->unk0 += px;
+                q->unk4 += py;
+                q->unk8 += pz;
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_383C0/func_8007F030.s")
+#endif
 
 f32 func_8007F448(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg5) {
     UnkStruct_801C3B84* temp_a0;
