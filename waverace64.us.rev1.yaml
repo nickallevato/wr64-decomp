@@ -242,6 +242,8 @@ segments:
       - [0x8EDF0, data]
       - [0x8EE30, .data, sys/sys_audio]
       - [0x8EE40, data]
+      # code_5480's .data, 0x800D4650..0x800D467F (the grid effect's state and fill colours)
+      - [0x8EE50, .data, game/code_5480]
       - [0x8EE80, .data, game/water_69D0]
       - [0x8EFE0, .data, game/code_BD30]
       - [0x8F000, data]
@@ -327,6 +329,9 @@ segments:
 
       # Game bss
       - { type: bss, start: 0xA95D0, vram: 0x800EEDD0, name: bss1 }
+      # code_5480's .bss, 0x80158450..0x8016042F
+      - { type: .bss, start: 0xA95D0, vram: 0x80158450, name: game/code_5480 }
+      - { type: bss, start: 0xA95D0, vram: 0x80160430, name: bss2 }
 
       # Libultra bss
       - { type: .bss, start: 0xA95D0, vram: 0x801D86B0, name: libultra/os/sptask }

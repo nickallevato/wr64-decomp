@@ -11,22 +11,25 @@ typedef struct UnkStruct_801603E0_s {
     /* 0x1C */ s32 unk1C;
 } UnkStruct_801603E0; /* size = 0x20 */
 
-extern UnkStruct_801603E0 D_80160400[];
-extern UnkStruct_801603E0 D_801603E0[];
-extern UnkStruct_801603E0 D_80158520[];
-extern Vec3f D_80158450[];
+// .bss
+Vec3f D_80158450[17];
+UnkStruct_801603E0 D_80158520[0x3F6];
+UnkStruct_801603E0 D_801603E0[1];
+UnkStruct_801603E0 D_80160400[1];
+s32 D_80160420;
+
+// .data
+s32 D_800D4650 = 0;
+s32 D_800D4654 = 0;
+s32 D_800D4658[] = { 0x31493149, 0x310B310B, 0x218B218B, 0x29892989, 0x214D214D, 0x290D290D };
+s32 D_800D4670 = 0;
+s32 D_800D4674 = 0;
+f32 D_800D4678 = 6.0f;
+u16 D_800D467C = 1;
 extern s32 D_800D4610;
-extern s32 D_80160420;
-extern s32 D_800D4654;
-extern s32 D_800D4670;
-extern s32 D_800D4674;
-extern f32 D_800D4678;
-extern u16 D_800D467C;
 
 extern s32 D_1000140;
 extern s32 D_10001E0;
-extern s32 D_800D4650;
-extern s32 D_800D4658[];
 extern Mtx D_8011F860;
 extern Mtx D_8011F8A0;
 extern s16 D_8011F8AA;
