@@ -440,7 +440,7 @@ void func_801DB430(struct UnkStruct_801DB0E4_arg0* arg0, struct UnkStruct_801DB0
 }
 
 #ifdef NON_MATCHING
-// Frame is 0x10 bytes larger and one more FP register is saved; the first loop keeps a sqrt result in fs0.
+// Close: register allocation drifts by one temp in the second loop, and the first sqrt result sits in fa1, not fa0.
 void func_801DB8F0(UnkA95D0_Runner* runner) {
     s32 j;
     s32 i;
@@ -457,8 +457,7 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
     D_802287A8 = 11;
     if ((runner->frame >= 860) && (runner->frame < 1501)) {
         if (runner->frame == 860) {
-            for (i = 0; i < 4; i++) {
-                e = &D_80228190[i];
+            for (i = 0, e = D_80228190; i < 4; i++, e++) {
                 e->unk0 = 3;
                 e->unk4 = 0;
                 e->unk8 = SysUtils_Rand() % 15U;
@@ -470,23 +469,22 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
                 } else {
                     sign = -1.0f;
                 }
+                e->unkC[2] = sign * mag + origin.z;
                 e->unk24[0] = 0.0f;
                 e->unk24[1] = 1.0f;
                 e->unk24[2] = 0.0f;
                 e->unk30 = 0.1f;
-                e->unkC[2] = sign * mag + origin.z;
                 D_80228110[i] = (SysUtils_Rand() & 0xF) + 3;
                 D_80228120[i][0] = 0.0f;
                 D_80228120[i][1] = (2.0f * (f32) ((SysUtils_Rand() & 3) + 1)) * sqrtf((f32) i / 4) + 11.0f;
             }
             for (i = 0; i < (SysUtils_Rand() & 3) + 2; i++) {
-                j = sqrtf(sqrtf((f32) (SysUtils_Rand() & 3) / 4)) * 4.0f;
+                j = sqrtf(sqrtf((f32) (SysUtils_Rand() & 3) / 4)) * 4;
                 D_80228110[j] = 0xFFFF;
                 D_80228120[j][1] = (f32) (SysUtils_Rand() & 3) + 12.5f;
             }
         }
-        for (i = 0; i < 4; i++) {
-            e = &D_80228190[i];
+        for (i = 0, e = D_80228190; i < 4; i++, e++) {
             e->unk8 += (e->unk8 < 0x10) ? 2 : 1;
             if (D_80228110[i] > 0) {
                 if (e->unk8 >= 0x10) {
@@ -508,15 +506,15 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
             }
             mag = e->unkC[2] - origin.z;
             if (mag >= 0.0f) {
-                mag = sqrtf(mag);
+                sign = sqrtf(mag);
             } else {
-                mag = -sqrtf(-mag);
+                sign = -sqrtf(-mag);
             }
-            D_80228120[i][0] += mag / 180.0f;
+            D_80228120[i][0] += sign / 180.0f;
         }
     } else {
-        for (i = 0; i < 4; i++) {
-            D_80228190[i].unk0 = 0;
+        for (i = 0, e = D_80228190; i < 4; i++, e++) {
+            e->unk0 = 0;
         }
     }
     if (runner->frame >= 800) {
@@ -525,8 +523,8 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
         }
         func_801DB430(&D_80228190[4], &sp7C, &D_80228120[4], 7);
     } else {
-        for (i = 4; i < 11; i++) {
-            D_80228190[i].unk0 = 0;
+        for (i = 0, e = &D_80228190[4]; i < 7; i++, e++) {
+            e->unk0 = 0;
         }
     }
 }
