@@ -112,7 +112,18 @@ s32 func_i2_802C676C(s32 arg0, s32 arg1) {
     return ret;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C67E4.s")
+s32 func_i2_802C67E4(s32 arg0, s32 arg1) {
+    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) D_801CB298;
+    s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
+    s32 ret = 1;
+
+    tbl[arg0][idx].unk_B[arg1]++;
+    if (tbl[arg0][idx].unk_B[arg1] == 12) {
+        ret = 0;
+        tbl[arg0][idx].unk_B[arg1] = 11;
+    }
+    return ret;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C6864.s")
 
