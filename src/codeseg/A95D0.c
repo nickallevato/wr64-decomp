@@ -754,18 +754,14 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 #endif
 
 #ifdef NON_MATCHING
-// IDO keeps the D_80228190 and D_802287DC addresses in registers here; the original loads each with its own lui.
+// IDO keeps the D_802287DC address in a saved register here; the original loads it with a lui each time.
 extern f32 D_802287B0[3];
 extern f32 D_802287C0[3];
 extern f32 D_802287D0[3];
 extern f32 D_802287DC;
-extern s32 D_80228198;
-extern f32 D_8022819C;
-extern f32 D_802281A0;
-extern f32 D_802281A4;
-extern f32 D_802281C0;
 
 void func_801DCD34(UnkA95D0_Runner* runner) {
+    UnkStruct_801DB0E4_arg0* e = D_80228190;
     s32 i;
     f32 d;
     f32 v;
@@ -784,44 +780,45 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
     D_802287C0[2] = -5650.0f;
     if (runner->frame == 1) {
         func_800AB92C();
-        D_80228190[0].unk0 = 12;
-        D_80228190[0].unk4 = 0;
-        D_80228198 = 0;
+        e->unk0 = 12;
+        e->unk4 = 0;
+        e->unk8 = 0;
         D_802287B0[0] = D_802287C0[0] - 2600.0f;
         D_802287B0[1] = D_802287C0[1] + 450.0f;
         D_802287B0[2] = D_802287C0[2] - 950.0f;
         D_80228120[0][0] = 70.0f;
-        D_802281C0 = 0.25f;
+        e->unk30 = 0.25f;
     }
     for (i = 0; i < 3; i++) {
         d = D_802287C0[i] - D_802287B0[i];
-        D_802287DC = d;
         if (d >= 0.0f) {
+            D_802287DC = d;
             v = sqrtf(d);
         } else {
+            D_802287DC = d;
             v = -sqrtf(-d);
         }
         D_802287B0[i] += v * 0.3f;
     }
-    D_8022819C = D_802287B0[0] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 8.0f)) * 20.0f;
-    D_802281A0 = D_802287B0[1] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 4.5f)) * 12.0f;
-    D_802281A4 = D_802287B0[2] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 7.5f)) * 25.0f;
+    e->unkC[0] = D_802287B0[0] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 8.0f)) * 20.0f;
+    e->unkC[1] = D_802287B0[1] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 4.5f)) * 12.0f;
+    e->unkC[2] = D_802287B0[2] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 7.5f)) * 25.0f;
     D_802287D0[0] = COS(DEG_TO_BINANG(D_80228120[0][0]));
     D_802287D0[2] = SIN(DEG_TO_BINANG(D_80228120[0][0]));
     D_802287D0[1] = (f32) (runner->frame / runner->step->duration) * 0.9f + -0.2f;
     D_802287DC = sqrtf(SQ(D_802287D0[0]) + SQ(D_802287D0[1]) + SQ(D_802287D0[2]));
     for (i = 0; i < 3; i++) {
-        D_80228190[0].unk14[i] = D_802287D0[i] / D_802287DC;
+        e->unk14[i] = D_802287D0[i] / D_802287DC;
     }
     D_80228120[0][0] += 160.0f / runner->step->duration;
-    D_802287D0[0] = D_802287B0[0] - D_8022819C;
+    D_802287D0[0] = D_802287B0[0] - e->unkC[0];
     D_802287D0[1] = (f32) (SysUtils_Rand() & 0x1F) + 600.0f;
-    D_802287D0[2] = D_802287B0[2] - D_802281A4;
+    D_802287D0[2] = D_802287B0[2] - e->unkC[2];
     D_802287DC = sqrtf(SQ(D_802287D0[0]) + SQ(D_802287D0[1]) + SQ(D_802287D0[2]));
     for (i = 0; i < 3; i++) {
-        D_80228190[0].unk24[i] = D_802287D0[i] / D_802287DC;
+        e->unk24[i] = D_802287D0[i] / D_802287DC;
     }
-    D_80228198 = (D_80228198 + 1) % 2;
+    e->unk8 = (e->unk8 + 1) % 2;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DCD34.s")
