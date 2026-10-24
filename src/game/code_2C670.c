@@ -1103,9 +1103,6 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_800735EC.s")
 #endif
 
-#ifdef NON_MATCHING
-// 2265: same loops. In the first loop the original stores the new bounds with lui at and keeps
-// the record's coordinate in fs3; here the stores use the hoisted addresses and the registers differ.
 void func_80073E6C(void) {
     s32 i;
     s32 j;
@@ -1119,15 +1116,12 @@ void func_80073E6C(void) {
     f32 z0;
     f32 z1;
     UnkStruct_801BB138* p;
-    s32 type;
 
-    D_801C1CEC = 524287.0f;
-    D_801C1CF4 = -524288.0f;
-    D_801C1CE8 = D_801C1CEC;
-    D_801C1CF0 = D_801C1CF4;
-    for (i = 0, p = D_801BB138; i < D_801BC938; i++, p++) {
-        type = p->unk10;
-        if (type != 5) {
+    D_801C1CE8 = D_801C1CEC = 524287.0f;
+    D_801C1CF0 = D_801C1CF4 = -524288.0f;
+    for (k = 0; k < D_801BC938; k++) {
+        p = &D_801BB138[k];
+        if (p->unk10 != 5) {
             p->unk4 = 0.0f;
         }
         if (p->unk0 < D_801C1CE8) {
@@ -1143,10 +1137,15 @@ void func_80073E6C(void) {
             D_801C1CF4 = p->unk8;
         }
         p->unkC = 25.0f;
-        if ((type != 2) && (type != 3) && (type != 4)) {
-            p->unk14 = 0;
-        } else {
-            p->unk14 = 1;
+        switch (p->unk10) {
+            case 2:
+            case 3:
+            case 4:
+                p->unk14 = 1;
+                break;
+            default:
+                p->unk14 = 0;
+                break;
         }
     }
     D_801C1CE8 -= 25.0f;
@@ -1185,9 +1184,6 @@ void func_80073E6C(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_80073E6C.s")
-#endif
 
 s32 func_800741A4(f32 arg0, f32 arg1, u8** arg2) {
     s32 row = (arg0 - D_801C1CE8) / D_801C1CF8 * 4.0f;
