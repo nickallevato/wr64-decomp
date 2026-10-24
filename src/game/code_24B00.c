@@ -158,7 +158,8 @@ void func_800B4750(void);
 void func_801EDFFC(s32, f32, f32, f32);
 void func_8004CC7C(UnkStruct_801BFB70*); /* extern */
 void func_8004F520(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5);
-void func_801EE6F4(s32*, s32, s32, f32, f32, f32, f32); /* extern */
+void func_801EE6F4(s32*, f32, f32, f32, f32, f32, f32); /* extern */
+void func_801EDC60(s32*, f32, f32, f32, f32*, f32*, f32*); /* extern */
 void func_80079528(void);                               /* extern */
 void func_8007DBC0(void);                               /* extern */
 void func_800B49C4(void);

@@ -714,33 +714,46 @@ struct UnkStruct_8004B0F8 {
 
 
 typedef struct UnkStruct_801BC940_unk60_s {
-    /* 0x00 */ s32 unk0;                            /* inferred */
-    /* 0x04 */ s32 unk4;                            /* inferred */
-    /* 0x08 */ s32 unk8;                            /* inferred */
-    /* 0x0C */ char padC[0x34];                     /* maybe part of unk8[0xE]? */
-} UnkStruct_801BC940_unk60;                         /* size = 0x40 */
-
-typedef struct UnkStruct_801BC940 {
     /* 0x00 */ f32 unk0;
     /* 0x04 */ f32 unk4;
     /* 0x08 */ f32 unk8;
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
     /* 0x14 */ f32 unk14;
     /* 0x18 */ f32 unk18;
     /* 0x1C */ f32 unk1C;
     /* 0x20 */ f32 unk20;
     /* 0x24 */ f32 unk24;
-    /* 0x28 */ char pad28[4];
+    /* 0x28 */ f32 unk28;
+    /* 0x2C */ f32 unk2C;
+    /* 0x30 */ f32 unk30;
+    /* 0x34 */ f32 unk34;
+    /* 0x38 */ f32 unk38;
+    /* 0x3C */ s32 unk3C;
+} UnkStruct_801BC940_unk60; /* size = 0x40 */
+
+typedef struct UnkStruct_801BC940 {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+    /* 0x1C */ f32 unk1C;
+    /* 0x20 */ f32 unk20;
+    /* 0x24 */ f32 unk24;
+    /* 0x28 */ f32 unk28;
     /* 0x2C */ f32 unk2C;
     /* 0x30 */ f32 unk30;
     /* 0x34 */ f32 unk34;
     /* 0x38 */ f32 unk38;
     /* 0x3C */ f32 unk3C;
-    /* 0x40 */ f32 unk40;                           /* inferred */
-    /* 0x44 */ char pad44[8];                       /* maybe part of unk40[3]? */
+    /* 0x40 */ f32 unk40;
+    /* 0x44 */ f32 unk44;
+    /* 0x48 */ f32 unk48;
     /* 0x4C */ s32 unk4C;
-    /* 0x50 */ char pad50[4];
+    /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
     /* 0x58 */ s32 unk58;
     /* 0x5C */ s32 unk5C;                           /* inferred */
@@ -748,7 +761,7 @@ typedef struct UnkStruct_801BC940 {
     /* 0x64 */ s32 unk64;
     /* 0x68 */ s32 unk68;
     /* 0x6C */ s32 unk6C;
-    /* 0x70 */ char pad70[4];
+    /* 0x70 */ s32 unk70;
     /* 0x74 */ MtxF unk74;
     /* 0xB4 */ Gfx* unkB4;
     /* 0xB8 */ Gfx* unkB8;
