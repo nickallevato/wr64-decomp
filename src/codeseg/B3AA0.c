@@ -179,7 +179,45 @@ Gfx* func_801E5554(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E62A8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E66F4.s")
+extern s32 D_802C6BD0;
+
+void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
+
+void func_801E66F4(UnkStruct_menu_buffer_1* arg0) {
+    MtxF mf;
+    MtxF unused[2]; // never touched; keeps the 0x100 frame
+    f32 angle;
+
+    switch (arg0->unk2) {
+        case 0:
+            arg0->unkC = D_802C6BD0 + 6 + D_802C6EE4 * 20;
+            angle = 2.0f * (arg0->unk18 / 40.0f) * 3.1415927f;
+            // The last argument is the double 0.0: with 0.0f IDO shares one zero register for both.
+            func_80049A94((Mtx*) ((u8*) D_801CE5F8 + ((u16) arg0->unk4 << 6) + 0x900), &mf, angle, angle, 0.0f,
+                          arg0->unk8, arg0->unkC, 0.0);
+            arg0->unk18++;
+            if (arg0->unk18 >= 40) {
+                arg0->unk18 -= 40;
+            }
+            arg0->unk20 += 4;
+            break;
+        case 1:
+            if (gCurrentPauseMenuOption == -1) {
+                arg0->unk_0 = 0;
+                break;
+            }
+            arg0->unkC = arg0->unk24 + gCurrentPauseMenuOption * 15;
+            angle = 2.0f * (arg0->unk18 / 40.0f) * 3.1415927f;
+            func_80049A94((Mtx*) ((u8*) D_801CE5F8 + ((u16) arg0->unk4 << 6) + 0x900), &mf, angle, angle, 0.0f,
+                          arg0->unk8, arg0->unkC, 0.0);
+            arg0->unk18++;
+            if (arg0->unk18 >= 40) {
+                arg0->unk18 -= 40;
+            }
+            arg0->unk20 += 4;
+            break;
+    }
+}
 
 void func_801E68EC(UnkStruct_menu_buffer_1* arg0) {
     switch (arg0->unk2) { /* irregular */
