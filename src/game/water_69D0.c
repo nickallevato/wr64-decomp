@@ -690,8 +690,6 @@ void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
 
 extern s32 D_80192494;
 
-#ifdef NON_MATCHING
-// 1405/29200: the first two loops; the original recomputes 2N +- i every row, IDO here strength-reduces it (registers then shift by one). The rest matches
 void func_8004E614(void) {
     s32 i;
     s32 j;
@@ -700,14 +698,16 @@ void func_8004E614(void) {
 
     n = 0;
     for (i = -D_80192494; i < 0; i++) {
-        for (j = 0; j <= (D_80192494 * 2) + i; j++) {
+        len = D_80192494 * 2;
+        for (j = 0; j <= len + i; j++) {
             D_80160430[n].unk0 = -D_80192494 + j;
             D_80160430[n].unk1 = i;
             n++;
         }
     }
     for (i = 0; i <= D_80192494; i++) {
-        for (j = 0; j <= (D_80192494 * 2) - i; j++) {
+        len = D_80192494 * 2;
+        for (j = 0; j <= len - i; j++) {
             D_80160430[n].unk0 = -D_80192494 + i + j;
             D_80160430[n].unk1 = i;
             n++;
@@ -740,9 +740,6 @@ void func_8004E614(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004E614.s")
-#endif
 
 extern s32 D_800D4724;
 extern s32 D_800D472C;
