@@ -271,7 +271,68 @@ f32 func_8004D30C(f32 x, f32 z) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004DAF0.s")
 
+#ifdef NON_MATCHING
+// 9025/29700: register allocation; the original keeps arg0 in $t3 and reloads it from the stack after sqrtf, keeps the four integer corner values in saved registers and 1.0f/4096.0f in $fs4/$fs5
+void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
+    f32 max;
+    f32 inv;
+    f32 nx;
+    f32 ny;
+    f32 nz;
+    f32 depth;
+    struct UnkStruct_8004B0F8_1* var_v0;
+    s32 v;
+    s32 cv;
+    s32 u;
+    s32 cu;
+    s32 h00;
+    s32 h;
+    s32 fu;
+    s32 fv;
+    s32 d0;
+    s32 d1;
+
+    max = arg0->unk1C * arg0->unk40 * arg0->unk18;
+    for (var_v0 = &arg0->unk30[arg0->unk28]; (u32) var_v0 >= (u32) arg0->unk30; var_v0--) {
+        u = (s32) ((DIRLIGHT_DIRECTION * var_v0->unk8) + var_v0->unk0) % 24576;
+        cu = u >> 6;
+        v = (s32) (TWO_OVER_SQRT_3 * var_v0->unk8) % 24576;
+        cv = v >> 6;
+        h00 = WATER_CELL(cu, cv)->unk0 >> 8;
+        fu = (cu << 6) - u;
+        fv = (cv << 6) - v;
+        if (fv < fu) {
+            h = WATER_CELL(cu, cv + 1)->unk0 >> 8;
+            d1 = h00 - h;
+            d0 = h - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+        } else {
+            h = WATER_CELL(cu + 1, cv)->unk0 >> 8;
+            d0 = h00 - h;
+            d1 = h - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+        }
+        inv = 1.0f / sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
+        nx = d0 * inv;
+        ny = 4096.0f * inv;
+        nz = d1 * inv;
+        depth = (fu * nx) + (ny * ((arg1 + h00) - var_v0->unk4)) + (nz * fv);
+        if (depth >= 0.0f) {
+            var_v0->unk1C |= 1;
+            depth *= arg0->unk18;
+            if (max < depth) {
+                depth = max;
+            }
+            var_v0->unkC += depth * (nx - (0.5f * nz));
+            var_v0->unk10 += depth * ny;
+            var_v0->unk14 += depth * (0.8660254f * nz);
+        } else {
+            var_v0->unk1C &= 0xFFFE;
+        }
+    }
+    func_8004DAF0(arg0);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004E0A4.s")
+#endif
 
 void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     f32 temp_f0;
