@@ -992,7 +992,11 @@ typedef struct UnkStruct_80192690 {
 typedef struct UnkStruct_801AE948_s {
     char pad[0x35D0];
     Lights0 unk35D8[1];
-    char pad35DC[0xB14];
+    char pad35E8[0xA18];
+    /* 0x4000 */ Mtx unk4000;
+    /* 0x4040 */ Mtx unk4040;
+    /* 0x4080 */ Mtx unk4080;
+    /* 0x40C0 */ Mtx unk40C0;
     Mtx unk4100[1];
     Mtx unk4140[1];
     char pad4180[0x7140];
