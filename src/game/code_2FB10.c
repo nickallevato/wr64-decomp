@@ -545,7 +545,7 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// 4195: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
+// 2675: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
 // stack as in the original; the frame is 0x98, not 0x88, and the registers differ.
 void func_80076378(s32 arg0) {
     s32 best;
@@ -576,6 +576,7 @@ void func_80076378(s32 arg0) {
     f32 d;
     f32 dz;
 
+    rider = &D_801C2938[arg0];
     if (D_801CE638 == 2) {
         D_801C3780 = D_801C3720[arg0].unk0;
         D_801C3784 = 0.0f;
@@ -587,7 +588,6 @@ void func_80076378(s32 arg0) {
     }
     isHuman = (arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0));
     if (D_801CE638 == 1) {
-        rider = &D_801C2938[arg0];
         cur = rider->unk310;
         best = cur;
         x = D_801C3780;
@@ -620,7 +620,6 @@ void func_80076378(s32 arg0) {
         }
     }
     if (gCourseID == DRAKE_LAKE) {
-        rider = &D_801C2938[arg0];
         rider->unk318 = 0;
         n = 6;
         if (gDifficulty < 2) {
@@ -638,7 +637,6 @@ void func_80076378(s32 arg0) {
         }
     }
     if ((gCourseID == PORT_BLUE) || (gCourseID == TWILIGHT_CITY)) {
-        rider = &D_801C2938[arg0];
         wasIn = rider->unk31C;
         if (gCourseID == PORT_BLUE) {
             rect = &D_800D8204;
