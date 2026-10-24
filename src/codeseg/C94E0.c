@@ -25,6 +25,7 @@ extern s32 D_80228E08[];
 extern UnkStruct_80228AE0 D_80228AE0[];
 extern s32 D_80228D14;
 extern s32 D_80228D18;
+extern s8 D_80228CF8[];
 
 void func_801EE9C0(void);
 void func_801EF3C4(void);
@@ -54,7 +55,6 @@ extern f32 D_80227A54;
 extern s32 D_80228B60[2];
 extern s32 D_80228B68[2];
 extern s32 D_80228B70[2];
-extern char D_80228CF8[];
 
 // Flash "LAP n" (or the final-lap message) for each player when a lap starts.
 void func_801FAEB8(Gfx** gdlp) {
@@ -125,8 +125,8 @@ void func_801FAEB8(Gfx** gdlp) {
                     }
                 }
                 gdl = func_801E93B4(gdl, 0, D_802279F8, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
-                sprintf(D_80228CF8, D_802279FC, rider->lapCount);
-                gdl = func_801E9858(gdl, 0, D_80228CF8, x + w, y);
+                sprintf((char*) D_80228CF8, D_802279FC, rider->lapCount);
+                gdl = func_801E9858(gdl, 0, (char*) D_80228CF8, x + w, y);
             } else {
                 x = 100;
                 if (gPlayers == ONE_PLAYER) {
@@ -183,7 +183,175 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
     D_80228D14 = D_80228D18 = 0;
 }
 
+#ifdef NON_MATCHING
+// Score 10384: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered.
+extern u8 D_80246D0[];
+extern u8 D_8024858[];
+extern u8 D_8024A40[];
+extern u8 D_80269D0[];
+extern s32 D_801C26E4;
+extern char D_80227A0C[];
+extern char D_80227A14[];
+extern char D_80227A1C[];
+extern s32 D_80228A94;
+
+// Draw the stunt-score popups (D_80228AE0) and add them to the stunt totals as they finish.
+void func_801FB514(Gfx** gdlp) {
+    Gfx* gdl;
+    UnkStruct_80228AE0* p;
+    f32 f;
+    f32 g;
+    u8* img;
+    s32 w;
+    s32 x;
+    s32 y;
+    s32 alpha;
+    s32 n;
+    s32 count;
+    s32 k;
+    s8* digit;
+
+    gdl = *gdlp;
+    f = (2 - D_80228D18) / (f32) 2;
+    g = 1.0f - f;
+    D_80228D18++;
+    if (D_80228D18 >= 2) {
+        D_80228D14++;
+        D_80228D18 = 0;
+        D_80228D14 &= 3;
+    }
+    gSPClearGeometryMode(gdl++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(gdl++, G_SHADE);
+    gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetTexturePersp(gdl++, G_TP_NONE);
+    gDPSetTextureFilter(gdl++, G_TF_BILERP);
+    gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetAlphaCompare(gdl++, G_AC_NONE);
+    for (p = D_80228AE0; p != &D_80228AE0[4]; p++) {
+        if (p->unk0 == 0) {
+            continue;
+        }
+        count = 0;
+        if (p->unk8 < 4) {
+            alpha = p->unk8 * 255 / 4;
+        } else {
+            alpha = 255;
+            if (p->unk8 >= 20) {
+                alpha = (23 - p->unk8) * 255 / 4;
+            }
+        }
+        gDPPipeSync(gdl++);
+        switch (p->unk0) {
+            case 1:
+                img = D_80246D0;
+                w = 32;
+                x = 144;
+                gDPSetEnvColor(gdl++, 255, 133, 255, alpha);
+                break;
+            case 2:
+                img = D_8024858;
+                w = 40;
+                x = 140;
+                gDPSetEnvColor(gdl++, 100, 255, 100, alpha);
+                break;
+            case 3:
+                img = D_8024A40;
+                w = 32;
+                x = 144;
+                gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
+                break;
+        }
+        gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+        y = p->unk10 + p->unk18 + 116;
+        x += p->unkC;
+        gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
+                            1 << 10);
+        n = p->unk4;
+        digit = &D_80228CF8[4];
+        for (;;) {
+            *digit = n % 10;
+            n /= 10;
+            if (n == 0) {
+                break;
+            }
+            count++;
+            digit--;
+            if (count >= 5) {
+                break;
+            }
+        }
+        count++;
+        if (count >= 6) {
+            count = 5;
+        }
+        x = (304 - count * 14) / 2 + p->unkC + 8;
+        y = p->unk10 + p->unk18 + 128;
+        for (k = 0; k < count; k++) {
+            gDPLoadTextureBlock(gdl++, &D_80269D0[D_80228CF8[5 - count + k] << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
+                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                                G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(gdl++, x << 2, y << 2, (x + 16) << 2, (y + 16) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
+                                1 << 10);
+            x += 14;
+        }
+        p->unk10 += p->unk14;
+        if (p->unk14 >= -8) {
+            p->unk14++;
+        }
+        if (p->unk10 >= 0) {
+            p->unk14 = -10;
+            p->unk10 = 0;
+        }
+        if (p->unk14 == -10) {
+            p->unkC -= 10;
+        }
+        p->unk8++;
+        if (p->unk8 >= 23) {
+            D_801C26D0 += p->unk4;
+            if (D_801C26D0 >= 100000) {
+                D_801C26D0 = 99999;
+            }
+            switch (p->unk0) {
+                case 1:
+                    D_801C26D4 += p->unk4;
+                    if (D_801C26D4 >= 100000) {
+                        D_801C26D4 = 99999;
+                    }
+                    break;
+                case 2:
+                    D_801C26DC += p->unk4;
+                    if (D_801C26DC >= 100000) {
+                        D_801C26DC = 99999;
+                    }
+                    break;
+                case 3:
+                    D_801C26D8 += p->unk4;
+                    if (D_801C26D8 >= 100000) {
+                        D_801C26D8 = 99999;
+                    }
+                    break;
+            }
+            p->unk0 = 0;
+        }
+    }
+    if (D_80228A94 != 0) {
+        D_80228A94--;
+        gdl = func_801E92FC(func_801E92FC(gdl, 0, D_80227A0C, 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
+                            D_80227A14, 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    if ((D_80227740 != 0) && (D_801C26E4 != 0)) {
+        sprintf((char*) D_80228CF8, D_80227A1C, D_801C26E4);
+        gdl = func_801E92FC(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    *gdlp = gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/C94E0/func_801FB514.s")
+#endif
 
 #ifdef NON_MATCHING
 // Score 9598: the loop's register allocation and constant hoisting differ throughout; frame 0xD8, not 0xE0.
