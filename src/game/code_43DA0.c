@@ -86,6 +86,7 @@ extern s32 D_801C4164;
 extern s32 D_801C4168;
 extern s32 D_80192498;
 extern struct UnkStruct_801C3C60 D_801C3C60[];
+extern u8 D_8004400[];
 extern s32 D_800DA914;
 extern s32 D_8035C800[];
 extern s32 D_8035D200[];
@@ -333,7 +334,47 @@ Gfx* func_8008CFEC(Gfx* gdl) {
     return gdl;
 }
 
+#ifdef NON_MATCHING
+// Score 2180 of 31800: same instructions; register allocation differs (x is in t3, not t2, which renumbers the
+// temps of both rectangles), and the second rectangle's setup is scheduled differently around the gdl spill.
+Gfx* func_8008D454(Gfx* gdl) {
+    s32 pad[2]; // stack pad
+    s32 x;
+    s32 y;
+
+    x = D_801C4188.unk0 + D_801C4188.unkC;
+    y = D_801C4188.unk4 - D_801C4188.unk10;
+
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0);
+    gDPSetTexturePersp(gdl++, G_TP_NONE);
+    if (D_801C4188.unk14 >= 0.0f) {
+        gDPLoadTextureBlock(gdl++, D_8004400, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+        gDPSetPrimColor(gdl++, 0, 0, 0xF0, 0xF0, 0x1C, 0x6E);
+        if ((x >= -12) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
+            gSPTextureRectangle(gdl++, MAX((x - 12) << 2, 0), MAX((y - 12) << 2, 0), MAX((x + 12) << 2, 0),
+                                MAX((y + 12) << 2, 0), 0, 0 - MIN((((x - 12) << 15) >> 7), 0),
+                                0 - MIN((((y - 12) << 15) >> 7), 0), 0x600, 0x600);
+        }
+    }
+    if (D_801C4188.unk14 >= 0.0f) {
+        gDPLoadTextureBlock(gdl++, D_8004400, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+        gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+        if ((x >= -12) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
+            gSPTextureRectangle(gdl++, MAX((x - 12) << 2, 0), MAX((y - 12) << 2, 0), MAX((x + 12) << 2, 0),
+                                MAX((y + 12) << 2, 0), 0, 0 - MIN((((x - 12) << 15) >> 7), 0),
+                                0 - MIN((((y - 12) << 15) >> 7), 0), 0x600, 0x600);
+        }
+    }
+    return gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008D454.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008D94C.s")
 
