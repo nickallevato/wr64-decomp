@@ -154,6 +154,7 @@ void func_801DF744(UnkA95D0_Obj* obj);
 void func_801DF38C(UnkA95D0_Obj* obj);
 void func_801DF128(UnkA95D0_Obj* obj);
 void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
+void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner);
 void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
 void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
@@ -391,7 +392,13 @@ void func_801DDA24(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDAB8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDE48.s")
+void func_801DDE48(void) {
+    s32 i;
+
+    for (i = 0; i < gPlayers; i++) {
+        func_801DDEDC(&gCameraPerspective[i], &D_80227E98[i], &D_80228058[i]);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDEDC.s")
 
