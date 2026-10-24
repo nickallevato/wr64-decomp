@@ -139,6 +139,8 @@ typedef struct UnkA95D0_Runner {
     /* 0x10 */ s32 unk10[10];
 } UnkA95D0_Runner; // size = 0x38
 
+void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
+
 // TODO: Improve these matches
 void func_801DAFA0(void** arg0, s32 arg1) {
     *(f32*) (((u8*) (*arg0)) + 0x50) = 3.0f;
@@ -421,7 +423,9 @@ void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFDA8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFDF0.s")
+void func_801DFDF0(UnkA95D0_Runner* runner, s32 count) {
+    func_801DEA94(runner->cursors, count);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFE10.s")
 
