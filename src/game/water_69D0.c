@@ -10,6 +10,29 @@ typedef struct UnkStruct_80162420_s {
 
 extern UnkStruct_80162420 D_80162420[];
 
+/* 0x1C bytes per view; func_80050F8C writes the window centre here */
+typedef struct UnkStruct_80192420_s {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+} UnkStruct_80192420; /* size = 0x1C */
+
+/* the window's cell offsets, 2 bytes a cell */
+typedef struct UnkStruct_80160430_s {
+    /* 0x0 */ s8 unk0;
+    /* 0x1 */ s8 unk1;
+} UnkStruct_80160430;
+
+/* 8 bytes a cell */
+typedef struct UnkStruct_80160A98_s {
+    /* 0x0 */ s32 unk0;
+    /* 0x4 */ s32 unk4;
+} UnkStruct_80160A98;
+
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C998.s")
@@ -91,6 +114,53 @@ void func_8004F3D4(f32 arg0, f32 arg1, s32 arg2) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050F8C.s")
+extern UnkStruct_80160430 D_80160430[];
+extern UnkStruct_80160A98 D_80160A98[];
+extern UnkStruct_80192420 D_80192420[];
+extern s32 D_8019249C;
+
+void func_8004EAA4(void);
+void func_80050204(s32 view, Vtx* vtx);
+
+void func_80050F8C(s32 view, f32 x, f32 z) {
+    UnkStruct_80192420* w;
+    s32 u;
+    s32 cu;
+    s32 v;
+    s32 cv;
+    f32 fcv;
+    f32 fv;
+    UnkStruct_80160430* off;
+    UnkStruct_80160A98* cell;
+    s32 col;
+    s32 row;
+    s32 pad; // stack pad: puts the spill of w at sp+0x1C
+
+    w = &D_80192420[view];
+    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    cu = (u + 0x20) >> 6;
+    v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
+    cv = (v + 0x20) >> 6;
+    fcv = cv << 6;
+    fv = v;
+    w->unk14 = ((f32) (cu << 6) - (0.5f * fcv)) - ((f32) u - (0.5f * fv));
+    w->unk0 = w->unk14 + x;
+    w->unk18 = (0.8660254f * fcv) - (0.8660254f * fv);
+    w->unk4 = w->unk18 + z;
+    for (off = &D_80160430[D_8019249C - 1], cell = &D_80160A98[D_8019249C - 1]; off >= D_80160430; off--, cell--) {
+        col = off->unk0 + (cu & 0x7F);
+        // (cu >> 7) << 7 is cu & ~0x7F; the original's sra/sll needs the shifts
+        row = off->unk1 + ((cv + ((cu >> 7) << 7) + 0x600) % 384);
+        cell->unk0 = ((((((col & ~0x7F) + row) + 0x600) % 384) << 7) + (col & 0x7F)) * 4;
+    }
+    if (gRiderGameModes != PAUSE_MODE) {
+        func_8004EAA4();
+    }
+    if (w == D_80192420) {
+        func_80050204(0, gGfxPool->unk13D68);
+    } else {
+        func_80050204(1, gGfxPool->unk170D8);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80051238.s")
