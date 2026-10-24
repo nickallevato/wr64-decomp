@@ -1109,7 +1109,159 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F9E0.s")
 #endif
 
+extern s32 D_800D4720;
+
+/*
+ * Fills a view's vertex arena from the window's cells, row by row: x and z from the window centre
+ * plus each cell's offsets; on the boundary y is gWaterLevel, inside it is the field height (>> 8)
+ * plus gWaterLevel and the texture coordinates come from the slopes to the neighbouring rows.
+ * Then places the six skirt vertices out at D_800D4720 and stores the window's centre and
+ * D_800D4720 squared in D_80192420[view].
+ */
+
+#ifdef NON_MATCHING
+// 26108/60500: registers and stack (frame 0x90 here, 0x78 in the original) throughout; the row loops follow the original control flow
+void func_80050204(s32 view, Vtx* arena) {
+    UnkStruct_80192420* w;
+    UnkStruct_80160A98* e;
+    UnkStruct_80160A98* end;
+    Vtx* vtx;
+    Vtx* c;
+    Vtx* v;
+    s32* idx;
+    s32 i;
+    s32 hA;
+    s32 hB;
+    s32 sx;
+    s32 sz;
+    s32 ox;
+    s32 oz;
+    f32 k;
+    f32 dx;
+    f32 dz;
+
+    e = D_80160A98;
+    vtx = arena;
+    w = &D_80192420[view];
+    for (end = &D_80160A98[D_80192494]; end >= e;) {
+        vtx->v.ob[0] = w->unk0 + e->unk4;
+        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[2] = e->unk6 + w->unk4;
+        e++;
+        vtx++;
+    }
+    for (i = 1 - D_80192494; i < 0; i++) {
+        vtx->v.ob[0] = w->unk0 + e->unk4;
+        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[2] = e->unk6 + w->unk4;
+        e++;
+        vtx++;
+        for (end = e + ((D_80192494 * 2) + i - 2); end >= e;) {
+            hA = WATER_CELL_AT((e + (-((D_80192494 * 2) + i + 1)))->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT((e + ((D_80192494 * 2) + i + 1))->unk0)->unk0 >> 7;
+            sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (hA - hB) * 55;
+            k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
+            e++;
+            vtx++;
+            vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
+            vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
+            vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + gWaterLevel;
+            vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
+            vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
+        }
+        vtx->v.ob[0] = w->unk0 + e->unk4;
+        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[2] = e->unk6 + w->unk4;
+        e++;
+        vtx++;
+    }
+    vtx->v.ob[0] = w->unk0 + e->unk4;
+    vtx->v.ob[1] = gWaterLevel;
+    vtx->v.ob[2] = e->unk6 + w->unk4;
+    e++;
+    vtx++;
+    for (end = e + ((D_80192494 * 2) - 2); end >= e;) {
+            hA = WATER_CELL_AT((e + (-((D_80192494 * 2) + 1)))->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT((e + (D_80192494 * 2))->unk0)->unk0 >> 7;
+            sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (hA - hB) * 55;
+            k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
+            e++;
+            vtx++;
+            vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
+            vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
+            vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + gWaterLevel;
+            vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
+            vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
+    }
+    vtx->v.ob[0] = w->unk0 + e->unk4;
+    vtx->v.ob[1] = gWaterLevel;
+    vtx->v.ob[2] = e->unk6 + w->unk4;
+    e++;
+    vtx++;
+    for (i = 1; i < D_80192494; i++) {
+        vtx->v.ob[0] = w->unk0 + e->unk4;
+        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[2] = e->unk6 + w->unk4;
+        e++;
+        vtx++;
+        for (end = e + ((D_80192494 * 2) - i - 2); end >= e;) {
+            hA = WATER_CELL_AT((e + (-((D_80192494 * 2) - i + 2)))->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT((e + ((D_80192494 * 2) - i))->unk0)->unk0 >> 7;
+            sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (hA - hB) * 55;
+            k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
+            e++;
+            vtx++;
+            vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
+            vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
+            vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + gWaterLevel;
+            vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
+            vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
+        }
+        vtx->v.ob[0] = w->unk0 + e->unk4;
+        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[2] = e->unk6 + w->unk4;
+        e++;
+        vtx++;
+    }
+    for (end = &D_80160A98[D_8019249C - 1]; end >= e;) {
+        vtx->v.ob[0] = w->unk0 + e->unk4;
+        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[2] = e->unk6 + w->unk4;
+        e++;
+        vtx++;
+    }
+    k = (f32) D_800D4720 / (f32) D_80192498;
+    for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
+        c = &arena[D_80192460[0]];
+        v = &arena[idx[6]];
+        arena[*idx].v.ob[0] = c->v.ob[0] + (s32) (k * (v->v.ob[0] - c->v.ob[0]));
+        arena[*idx].v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * (v->v.ob[2] - c->v.ob[2]));
+        arena[*idx].v.ob[1] = gWaterLevel;
+    }
+    if (w != D_80192420) {
+        dx = gCameraPerspective[1].unkF0;
+        dz = gCameraPerspective[1].unkF4;
+    } else {
+        dx = gCameraPerspective[0].unkF0;
+        dz = gCameraPerspective[0].unkF4;
+    }
+    k = (f32) (D_800D4720 - D_80192498) * 0.866f;
+    ox = SysUtils_Round(k * dx);
+    oz = SysUtils_Round(k * dz);
+    for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
+        arena[*idx].v.ob[0] += ox;
+        arena[*idx].v.ob[2] += oz;
+    }
+    w->unk8 = ((f32) (arena[D_80192460[4]].v.ob[0] + arena[D_80192460[1]].v.ob[0]) * 0.5f) - w->unk14;
+    w->unkC = ((f32) (arena[D_80192460[4]].v.ob[2] + arena[D_80192460[1]].v.ob[2]) * 0.5f) - w->unk18;
+    w->unk10 = D_800D4720 * D_800D4720;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050204.s")
+#endif
 
 extern s32 D_801924A8;
 
