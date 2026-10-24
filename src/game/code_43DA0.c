@@ -86,6 +86,11 @@ extern s32 D_801C4164;
 extern s32 D_801C4168;
 extern s32 D_80192498;
 extern struct UnkStruct_801C3C60 D_801C3C60[];
+extern s32 D_800D98CC;
+extern s32 D_800D98D0;
+extern s32 D_800D98D4;
+extern u8 D_2000A40[];
+extern Vtx D_6000310[];
 extern u8 D_8004400[];
 extern s32 D_800DA914;
 extern s32 D_8035C800[];
@@ -378,7 +383,67 @@ Gfx* func_8008D454(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008D94C.s")
 
+#ifdef NON_MATCHING
+// Score 2745 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
+// move/addiu pairs here, where the original chains addiu from the previous command's pointer; the setup of the
+// texture-load words is also scheduled later.
+Gfx* func_8008DFD0(Gfx* gdl) {
+    s32 pad[2]; // stack pad
+    camera_unk_1* cam;
+    Vtx* vtx;
+    UnkStruct_801C43F8* p;
+    f32 x;
+    f32 y;
+    f32 z;
+
+    gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPClearGeometryMode(gdl++, 0xFFFFFFFF);
+    gSPSetGeometryMode(gdl++, G_SHADE | G_SHADING_SMOOTH);
+    gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
+    gDPSetTexturePersp(gdl++, G_TP_PERSP);
+
+    cam = &gCameraPerspective[D_80223930];
+    p = &D_801C43F8[D_8011F8E0];
+    vtx = p->unk310;
+    x = (cam->unk68 * cam->unk78) - (cam->unk6C * cam->unk74);
+    y = (cam->unk6C * cam->unk70) - (cam->unk64 * cam->unk78);
+    z = (cam->unk64 * cam->unk74) - (cam->unk68 * cam->unk70);
+    vtx[0].v.ob[0] = (s32) (((cam->unk70 * -1.0f) - x) * 48.0f) + D_800D98CC;
+    vtx[0].v.ob[1] = (s32) (((cam->unk74 * -1.0f) - y) * 48.0f) + D_800D98D0;
+    vtx[0].v.ob[2] = (s32) (((cam->unk78 * -1.0f) - z) * 48.0f) + D_800D98D4;
+    vtx[0].v.tc[0] = 0;
+    vtx[0].v.tc[1] = 0;
+    vtx[1].v.ob[0] = (s32) ((cam->unk70 - x) * 48.0f) + D_800D98CC;
+    vtx[1].v.ob[1] = (s32) ((cam->unk74 - y) * 48.0f) + D_800D98D0;
+    vtx[1].v.ob[2] = (s32) ((cam->unk78 - z) * 48.0f) + D_800D98D4;
+    vtx[1].v.tc[0] = 0x800;
+    vtx[1].v.tc[1] = 0;
+    vtx[2].v.ob[0] = (s32) (((cam->unk70 * -1.0f) + x) * 48.0f) + D_800D98CC;
+    vtx[2].v.ob[1] = (s32) (((cam->unk74 * -1.0f) + y) * 48.0f) + D_800D98D0;
+    vtx[2].v.ob[2] = (s32) (((cam->unk78 * -1.0f) + z) * 48.0f) + D_800D98D4;
+    vtx[2].v.tc[0] = 0;
+    vtx[2].v.tc[1] = 0x800;
+    vtx[3].v.ob[0] = (s32) ((cam->unk70 + x) * 48.0f) + D_800D98CC;
+    vtx[3].v.ob[1] = (s32) ((cam->unk74 + y) * 48.0f) + D_800D98D0;
+    vtx[3].v.ob[2] = (s32) ((cam->unk78 + z) * 48.0f) + D_800D98D4;
+    vtx[3].v.tc[0] = 0x800;
+    vtx[3].v.tc[1] = 0x800;
+
+    gDPLoadTextureBlock(gdl++, D_8004400, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                        G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+    gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0x00);
+    gSPVertex(gdl++, D_6000310, 4, 0);
+    gSP1Triangle(gdl++, 0, 1, 2, 0);
+    gSP1Triangle(gdl++, 1, 2, 3, 0);
+    return gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008DFD0.s")
+#endif
 
 void func_8008E4B0(void) {
     s32 i;
