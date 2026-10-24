@@ -47,59 +47,80 @@ typedef struct UnkStruct_800E6D90_s {
     u8 unk2;
 } UnkStruct_800E6D90;
 
-extern UnkStruct_801D0798 D_801D0798[];
-extern f32 D_801D79BC;
-extern f32 D_801D79C0;
-extern f32 D_801D79C4;
-extern f32 D_801D79C8;
-extern f32 D_801D79CC;
-extern f32 D_801D79D0;
-extern f32 D_801D79D4;
-extern f32 D_801D79D8;
-extern f32 D_801D79DC;
-extern f32 D_801D79E0;
-extern f32 D_801D79E4;
-extern f32 D_801D79E8;
-extern f32 D_801D79EC;
-extern f32 D_801D79F0;
-extern f32 D_801D79F4;
-extern f32 D_801D79F8;
-extern f32 D_801D79FC;
-extern f32 D_801D7A00;
-extern s32 D_801D7A04;
-extern s32 D_801D7A08;
-extern s32 D_801D7A0C;
-extern s32 D_801D7A10;
-extern s32 D_801D7A14;
-extern s32 D_801D7ADC;
-extern f32 D_801D7AE0;
-extern f32 D_801D7AE4;
-extern f32 D_801D7AE8;
-extern s32 D_801D7B10;
-extern s32 D_801D7AD8;
+// The file's .bss, 0x801D0790..0x801D7B6F, in address order.
+s32 D_801D0790;
+UnkStruct_801D0798 D_801D0798[4];
+struct camera_unk_1* D_801D7968;
+struct camera_unk_1* D_801D796C;
+struct camera_unk_1* D_801D7970;
+f32 D_801D7974;
+f32 D_801D7978;
+f32 D_801D797C;
+f32 D_801D7980;
+f32 D_801D7984;
+f32 D_801D7988;
+f32 D_801D798C;
+f32 D_801D7990;
+f32 D_801D7994;
+f32 D_801D7998;
+f32 D_801D799C;
+f32 D_801D79A0;
+f32 D_801D79A4;
+f32 D_801D79A8;
+f32 D_801D79AC;
+f32 D_801D79B0;
+f32 D_801D79B4;
+f32 D_801D79B8;
+f32 D_801D79BC;
+f32 D_801D79C0;
+f32 D_801D79C4;
+f32 D_801D79C8;
+f32 D_801D79CC;
+f32 D_801D79D0;
+f32 D_801D79D4;
+f32 D_801D79D8;
+f32 D_801D79DC;
+f32 D_801D79E0;
+f32 D_801D79E4;
+f32 D_801D79E8;
+f32 D_801D79EC;
+f32 D_801D79F0;
+f32 D_801D79F4;
+f32 D_801D79F8;
+f32 D_801D79FC;
+f32 D_801D7A00;
+s32 D_801D7A04;
+s32 D_801D7A08;
+s32 D_801D7A0C;
+s32 D_801D7A10;
+s32 D_801D7A14;
+UnkStruct_801D7A18 D_801D7A18[8];
+s32 D_801D7AD8;
+s32 D_801D7ADC;
+f32 D_801D7AE0;
+f32 D_801D7AE4;
+f32 D_801D7AE8;
+UnkStruct_801D7AF0 D_801D7AF0[2];
+s32 D_801D7B10;
+s64 D_801D7B18;
+s64 D_801D7B20;
+s64 D_801D7B28;
+s64 D_801D7B30;
+s64 D_801D7B38;
+s64 D_801D7B40;
+s64 D_801D7B48;
+s64 D_801D7B50;
+s64 D_801D7B58;
+s32 D_801D7B60;
+s32 D_801D7B64;
+s32 D_801D7B68;
+
 extern UnkStruct_801D0798* D_800E6D60;
 extern UnkStruct_801D0798_unk1AA0* D_800E6D7C;
 extern s32 D_800E6D84;
 extern s32 D_800E6D88;
 extern s32 D_800E6D8C;
 extern s32 D_800E6DB4;
-extern s32 D_801D0790;
-extern f32 D_801D79BC;
-extern f32 D_801D79C0;
-extern f32 D_801D79C4;
-extern f32 D_801D7A00;
-extern s32 D_801D7A04;
-extern s32 D_801D7A08;
-extern s32 D_801D7A14;
-extern s32 D_801D7AD8;
-extern s32 D_801D7ADC;
-extern f32 D_801D7AE0;
-extern f32 D_801D7AE4;
-extern f32 D_801D7AE8;
-extern s32 D_801D7B10;
-extern s32 D_801D7B60;
-extern s32 D_801D7B68;
-extern UnkStruct_801D7A18 D_801D7A18[];
 extern s32 D_1049C80;
 extern s32 D_104A488;
 extern s32 D_104AC90;
@@ -115,8 +136,6 @@ extern s32 D_800E6D8C;
 extern s32 D_801AE950;
 extern s32 D_80223934;
 
-extern UnkStruct_801D7A18 D_801D7A18[];
-extern UnkStruct_801D0798 D_801D0798[];
 extern UnkStruct_800E6D90 D_800E6D90[];
 extern UnkStruct_80198368 D_80198368[];
 
@@ -218,13 +237,6 @@ void func_800AE210(s32 rider) {
 }
 
 #ifdef NEEDS_BSS
-s64 D_801D7B20;
-s64 D_801D7B28;
-s64 D_801D7B30;
-s64 D_801D7B40;
-s64 D_801D7B48;
-s64 D_801D7B50;
-s64 D_801D7B58;
 
 void func_800AE7C4(void) {
     s32 var_a1;
@@ -426,7 +438,6 @@ void func_800AF40C(f32 arg0, f32 arg1, f32 arg2) {
     D_801D7AE8 = arg2;
 }
 
-extern UnkStruct_801D7AF0 D_801D7AF0[];
 void func_800AF43C(f32 arg0, f32 arg1, f32 arg2) {
     UnkStruct_801D7AF0* temp_v0;
 
