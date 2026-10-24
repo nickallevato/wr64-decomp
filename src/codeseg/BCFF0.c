@@ -5,7 +5,7 @@ typedef struct UnkStruct_80228C30_sub {
     /* 0x04 */ f32 unk4;
     /* 0x08 */ f32 unk8;
     /* 0x0C */ f32 unkC;
-    /* 0x10 */ char pad10[4];
+    /* 0x10 */ f32 unk10;
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
 } UnkStruct_80228C30_sub; /* size = 0x1C */
@@ -411,7 +411,168 @@ void func_801F06A0(Gfx** gdlp) {
     *gdlp = gdl;
 }
 
+#ifdef NON_MATCHING
+// Score 10592: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
+extern f32 D_80227A44;
+extern f32 D_80227A48;
+extern s32 D_80228C28;
+extern s32 D_80228C2C;
+
+void func_801F0E7C(void) {
+    s32 i;
+    s32 j;
+    RiderStruct* rider;
+    UnkStruct_80228C30* m;
+    UnkStruct_80228C30_sub* e;
+    s32 tx;
+    s32 ty;
+
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            rider = &D_801C2938[D_800D48E0];
+        }
+        if ((rider->unk28 != 0) && (((m = &D_80228C30[i])->unk0[0].unk18 == 0) || (rider->unk13C == 0))) {
+            D_80228C28 = 0;
+            D_80228C2C = 0;
+            if ((rider->unk28 == 1) && ((rider->unk314 != 0) || (m->unk0[1].unk18 == 3))) {
+                e = &m->unk0[2];
+                if (m->unk0[1].unk18 == 3) {
+                    m->unk0[1].unk18 = 0;
+                    rider->unk12C = 1;
+                }
+                m->unk0[2].unk18 = 2;
+                if (gPlayers == ONE_PLAYER) {
+                    e->unk10 = 1.0f;
+                } else {
+                    e->unk10 = D_80227A48;
+                }
+                e->unk8 = e->unk10 * 64.0f;
+                e->unkC = e->unk10 * 10.0f;
+                if (gPlayers == ONE_PLAYER) {
+                    e->unk0 = 300.0f;
+                    e->unk4 = 206.0f;
+                } else if (i == 0) {
+                    e->unk0 = 300.0f;
+                    e->unk4 = 105.0f;
+                } else {
+                    e->unk0 = 300.0f;
+                    e->unk4 = 215.0f;
+                }
+                if (rider->unk12C < 5) {
+                    e->unk14 = 12;
+                } else {
+                    e->unk14 = 0;
+                }
+            } else if ((rider->unk28 == 2) && (gBuoyMisses >= rider->unk134)) {
+                m->unk0[0].unk18 = 1;
+                if (rider->unk12C >= 5) {
+                    m->unk0[2].unk18 = 0;
+                }
+                if (gPlayers == ONE_PLAYER) {
+                    m->unk0[0].unk0 = 160.0f;
+                    m->unk0[0].unk4 = 77.0f;
+                    ty = 211;
+                    tx = (gBuoyMisses - rider->unk134) * 14 + 62;
+                } else if (i == 0) {
+                    m->unk0[0].unk0 = 160.0f;
+                    m->unk0[0].unk4 = 36.0f;
+                    ty = 110;
+                    tx = (gBuoyMisses - rider->unk134) * 14 + 30;
+                } else {
+                    m->unk0[0].unk0 = 160.0f;
+                    m->unk0[0].unk4 = 146.0f;
+                    ty = 220;
+                    tx = (gBuoyMisses - rider->unk134) * 14 + 30;
+                }
+                m->unk0[0].unk14 = 16;
+                m->unk0[0].unk8 = (tx - m->unk0[0].unk0) / 8;
+                m->unk0[0].unkC = (ty - m->unk0[0].unk4) / 8;
+                if ((rider->unk12C > 0) && (m->unk0[1].unk18 != 3)) {
+                    m->unk0[1].unk18 = 3;
+                    e = &m->unk0[1];
+                    if (gPlayers == ONE_PLAYER) {
+                        e->unk0 = 160.0f;
+                        ty = 211;
+                        e->unk4 = 121.0f;
+                    } else if (i == 0) {
+                        e->unk0 = 160.0f;
+                        ty = 110;
+                        e->unk4 = 78.0f;
+                    } else {
+                        e->unk0 = 160.0f;
+                        ty = 220;
+                        e->unk4 = 188.0f;
+                    }
+                    tx = 198;
+                    e->unk14 = 16;
+                    e->unk10 = 1.0f;
+                    e->unk8 = (tx - e->unk0) / 8;
+                    e->unkC = (ty - e->unk4) / 8;
+                }
+            }
+        }
+        for (j = 0; j < 3; j++) {
+            e = &D_80228C30[i].unk0[j];
+            switch (e->unk18) {
+                case 1:
+                    if (e->unk14 < 9) {
+                        e->unk0 += e->unk8;
+                        e->unk4 += e->unkC;
+                    }
+                    e->unk10 = (e->unk14 + 0.5f) / 8.5f;
+                    if (e->unk10 > 1.0f) {
+                        e->unk10 = 1.0f;
+                    }
+                    e->unk14--;
+                    if (e->unk14 < 0) {
+                        e->unk18 = 0;
+                        if (rider->unk13C != 0) {
+                            func_800762D0((struct_800762D0*) rider);
+                        }
+                    }
+                    break;
+                case 3:
+                    if (e->unk14 < 9) {
+                        e->unk0 += e->unk8;
+                        e->unk4 += e->unkC;
+                    }
+                    e->unk10 = (e->unk14 + 0.5f) / 8.5f;
+                    if (e->unk10 > 1.0f) {
+                        e->unk10 = 1.0f;
+                    }
+                    e->unk14--;
+                    if (e->unk14 < 0) {
+                        e->unk18 = 0;
+                        rider->unk12C = 0;
+                    }
+                    break;
+                case 2:
+                    if (rider->unk12C < 5) {
+                        e->unk14--;
+                        if (e->unk14 < 0) {
+                            e->unk18 = 0;
+                        }
+                    } else {
+                        if (e->unk14 < 255) {
+                            e->unk14++;
+                        }
+                        if (e->unk14 >= 20) {
+                            e->unk10 -= D_80227A44;
+                            if (e->unk10 < D_80227A48) {
+                                e->unk10 = D_80227A48;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F14B4.s")
 

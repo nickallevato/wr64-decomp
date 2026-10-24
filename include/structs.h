@@ -307,7 +307,8 @@ typedef struct RiderStruct {
     /* 0x130 */ char pad130[4];
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
-    /* 0x13C */ char pad13C[0x30];
+    /* 0x13C */ s32 unk13C;
+    /* 0x140 */ char pad140[0x2C];
     /* 0x16C */ s32 unk16C;
     /* 0x170 */ char pad170[8];
     /* 0x178 */ s32 unk178[9]; /* lap split times */
