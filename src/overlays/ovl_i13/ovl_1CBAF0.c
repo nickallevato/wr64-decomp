@@ -1,5 +1,9 @@
 #include "global.h"
 
+extern s32 D_i13_802C8D58;
+extern s32 D_i13_802C8D70;
+extern s32 D_i13_802C8D74;
+
 extern s32 D_i13_802C8D54;
 
 extern s32 D_i13_802C8D50;
@@ -9,6 +13,9 @@ extern s32 D_i13_802C8D84;
 extern s32 D_802C8E90;
 extern s32 D_802C8E94;
 extern s32 D_802C8E9C;
+
+s32 Save_PfsCheckFree(void);
+s32 Save_PfsFindFile(void);
 
 void func_i13_802C8CBC(void);
 
@@ -51,7 +58,51 @@ s32 func_i13_802C61E0(void) {
     return var_v1;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C62EC.s")
+s32 func_i13_802C62EC(void) {
+    s32 var_a1 = 0;
+
+    if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+        var_a1 = 1;
+        if (D_801CE640 == 1) {
+            if (D_i13_802C8D54 == 0) {
+                D_i13_802C8D74 = Save_PfsFindFile();
+            } else {
+                D_i13_802C8D74 = Save_PfsFindFile();
+                if (D_i13_802C8D74 == 4) {
+                    D_i13_802C8D74 = Save_PfsCheckFree();
+                }
+            }
+            if (D_i13_802C8D74 == 0) {
+                D_801CE640 = 3;
+                D_i13_802C8D58 = 0;
+            }
+        } else {
+            if (D_i13_802C8D54 == 1) {
+                D_i13_802C8D74 = Save_PfsFindFile();
+            }
+            if (D_i13_802C8D74 == 0) {
+                D_801CE640 = 5;
+                D_i13_802C8D70 = 1;
+                func_800C3E6C(3);
+            }
+        }
+    } else if (D_801CE65A[0].unk0 & B_BUTTON) {
+        D_801CE640 = 0;
+        var_a1 = 2;
+        D_i13_802C8D54 = 0;
+    } else if (D_801CE65A[0].unk0 & L_JPAD) {
+        var_a1 = 3;
+        if (--D_i13_802C8D54 < 0) {
+            D_i13_802C8D54 = 1;
+        }
+    } else if (D_801CE65A[0].unk0 & R_JPAD) {
+        var_a1 = 4;
+        if (++D_i13_802C8D54 >= 2) {
+            D_i13_802C8D54 = 0;
+        }
+    }
+    return var_a1;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C64AC.s")
 
