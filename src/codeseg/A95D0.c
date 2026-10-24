@@ -390,7 +390,11 @@ void func_801DED88(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines
     func_801DEC00(out + 6, &cursors[2], &splines[2]);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEDE8.s")
+void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
+    func_801DEC00(out, &cursors[0], &splines[0]);
+    func_801DEC00(out + 3, &cursors[1], &splines[1]);
+    func_801DEB08(out + 6, &cursors[2], (UnkA95D0_Spline1*) &splines[2]);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEE48.s")
 
