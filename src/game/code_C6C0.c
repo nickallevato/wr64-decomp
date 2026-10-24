@@ -407,6 +407,7 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern Vec3f D_800D4840[12];
 extern f32 D_800D4AC0;
 extern f32 D_800D4AC4;
 extern f32 D_800D4AD0;
@@ -506,7 +507,65 @@ void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
+#ifdef NON_MATCHING
+// Far off: the original keeps the 18 differences in stack homes (frame 0x88) with a different
+// register assignment. Control flow matches: the plane tests short-circuit in the same order, then
+// the 12 points are reset from D_800D4840 in the rider's basis.
+void func_80051EC0(s32 arg0) {
+    UnkStruct_80192690* rider = &D_80192690[arg0];
+    UnkStruct_8004B0F8_1* p = rider->unk90;
+    Vec3f* t;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 dz2;
+    f32 dx2;
+    f32 dy2;
+    f32 dz1;
+    f32 dx1;
+    f32 dy1;
+    f32 dz0;
+    f32 dx0;
+    f32 dy0;
+    f32 dz5;
+    f32 dx5;
+    f32 dy5;
+    f32 dz4;
+    f32 dx4;
+    f32 dy4;
+    f32 dz3;
+    f32 dx3;
+    f32 dy3;
+
+    z = rider->unk44.z;
+    x = rider->unk44.x;
+    y = rider->unk44.y;
+    if (((dz2 = p[2].unk8 - z, dx2 = p[2].unk0 - x, dy2 = p[2].unk4 - y), ((rider->unk84 * dx2) + (rider->unk88 * dy2) + (dz2 * rider->unk8C)) < 0.0f) ||
+        ((dz5 = p[5].unk8 - z, dx5 = p[5].unk0 - x, dy5 = p[5].unk4 - y), ((rider->unk84 * dx5) + (rider->unk88 * dy5) + (dz5 * rider->unk8C)) < 0.0f) ||
+        ((dz0 = p[0].unk8 - z, dx0 = p[0].unk0 - x, dy0 = p[0].unk4 - y), ((rider->unk84 * dx0) + (rider->unk88 * dy0) + (dz0 * rider->unk8C)) > 0.0f) ||
+        ((dz3 = p[3].unk8 - z, dx3 = p[3].unk0 - x, dy3 = p[3].unk4 - y), ((rider->unk84 * dx3) + (rider->unk88 * dy3) + (dz3 * rider->unk8C)) > 0.0f) ||
+        ((dz1 = p[1].unk8 - z, dx1 = p[1].unk0 - x, dy1 = p[1].unk4 - y), ((rider->unk78 * dx1) + (rider->unk7C * dy1) + (dz1 * rider->unk80)) < 0.0f) ||
+        ((dz4 = p[4].unk8 - z, dx4 = p[4].unk0 - x, dy4 = p[4].unk4 - y), ((rider->unk78 * dx4) + (rider->unk7C * dy4) + (dz4 * rider->unk80)) < 0.0f) ||
+        (((rider->unk78 * dx0) + (rider->unk7C * dy0) + (dz0 * rider->unk80)) > 0.0f) ||
+        (((rider->unk78 * dx2) + (rider->unk7C * dy2) + (dz2 * rider->unk80)) > 0.0f) ||
+        (((rider->unk78 * dx3) + (rider->unk7C * dy3) + (dz3 * rider->unk80)) > 0.0f) ||
+        (((rider->unk78 * dx5) + (rider->unk7C * dy5) + (dz5 * rider->unk80)) > 0.0f) ||
+        (((rider->unk6C * dx3) + (rider->unk70 * dy3) + (dz3 * rider->unk74)) < 0.0f) ||
+        (((rider->unk6C * dx4) + (rider->unk70 * dy4) + (dz4 * rider->unk74)) < 0.0f) ||
+        (((rider->unk6C * dx5) + (rider->unk70 * dy5) + (dz5 * rider->unk74)) < 0.0f) ||
+        (((rider->unk6C * dx0) + (rider->unk70 * dy0) + (dz0 * rider->unk74)) > 0.0f) ||
+        (((rider->unk6C * dx1) + (rider->unk70 * dy1) + (dz1 * rider->unk74)) > 0.0f) ||
+        (((rider->unk6C * dx2) + (rider->unk70 * dy2) + (dz2 * rider->unk74)) > 0.0f)) {
+        for (t = D_800D4840; t != &D_800D4840[12]; t++, p++) {
+            p->unk0 = (rider->unk84 * t->x) + (rider->unk78 * t->y) + (rider->unk6C * t->z) + x;
+            p->unk4 = (rider->unk88 * t->x) + (rider->unk7C * t->y) + (rider->unk70 * t->z) + y;
+            p->unk8 = (rider->unk8C * t->x) + (rider->unk80 * t->y) + (rider->unk74 * t->z) + z;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80051EC0.s")
+#endif
 
 void func_80052480(s32 arg0, struct UnkStruct_80052480* arg1) {
     char pad[0x4];
