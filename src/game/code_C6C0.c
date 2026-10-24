@@ -4813,17 +4813,16 @@ void func_80064C0C(s32 arg0) {
         rider->unk90[9].unk10 += g;
         rider->unk90[0].unk10 += g;
     } else {
-        g = rider->unk0.f;
         f = (rider->unk1590 * ((rider->unk84 * rider->unkC20) + (rider->unk88 * rider->unkC24) + (rider->unk8C * rider->unkC28))) +
             rider->unk15CC;
-        rider->unk90[5].unk10 += g + f;
-        rider->unk90[7].unk10 += g + f;
-        rider->unk90[10].unk10 += g + f;
-        rider->unk90[2].unk10 += g + f;
-        rider->unk90[3].unk10 += g - f;
-        rider->unk90[6].unk10 += g - f;
-        rider->unk90[9].unk10 += g - f;
-        rider->unk90[0].unk10 += g - f;
+        rider->unk90[5].unk10 += rider->unk0.f + f;
+        rider->unk90[7].unk10 += rider->unk0.f + f;
+        rider->unk90[10].unk10 += rider->unk0.f + f;
+        rider->unk90[2].unk10 += rider->unk0.f + f;
+        rider->unk90[3].unk10 += rider->unk0.f - f;
+        rider->unk90[6].unk10 += rider->unk0.f - f;
+        rider->unk90[9].unk10 += rider->unk0.f - f;
+        rider->unk90[0].unk10 += rider->unk0.f - f;
     }
     if (rider->unkBF8 != 0.0f) {
         x = rider->unkBF8 * rider->unk84;
