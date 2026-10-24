@@ -365,6 +365,11 @@ typedef struct UnkStruct_80192420 {
     /* 0x20 */ s32 unk20;
 } UnkStruct_80192420;
 
+typedef struct UnkStruct_801C3D14 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ char pad4[0xE4];
+} UnkStruct_801C3D14; /* size = 0xE8 */
+
 typedef struct UnkStruct_8005A280_s {
     char pad0[4];
     f32 unk4;
@@ -411,6 +416,19 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern f32 D_800D9630;
+extern f32 D_800D49C4;
+extern f32 D_800D49C8;
+extern s32 D_800D4990;
+extern f32 D_800D4950;
+extern f32 D_800D498C;
+extern f32 D_800D49D8;
+extern f32 D_800D4988;
+extern f32 D_800D49D0;
+extern f32 D_800D49D4;
+extern f32 D_800D4ACC;
+extern f32 D_800D4AD4;
+extern UnkStruct_801C3D14 D_801C3D14[];
 extern f32 D_800D4AC8;
 extern f32 D_800D4938;
 extern f32 D_800D92F0[];
@@ -543,6 +561,16 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_8004E0A4(UnkStruct_80192690*, f32);
+void func_8004E548(struct UnkStruct_8004B0F8*, f32);
+void func_80051740(struct UnkStruct_801C3C50*, struct UnkStruct_8004B0F8*);
+void func_8007F030(UnkStruct_80192690*, UnkStruct_80192690*);
+void func_8007F700(UnkStruct_80192690*);
+void func_8007E8C8(UnkStruct_80192690*);
+void func_8007EF80(UnkStruct_80192690*);
+void func_8007ECBC(UnkStruct_80192690*);
+void func_8004B1B4(struct UnkStruct_8004B0F8*);
+void func_8004F3D4(f32, f32, s32);
 Gfx* func_80091CD8(Gfx*);
 Gfx* func_8006719C(Gfx*, s32);
 void func_800683A0(s32);
@@ -3953,7 +3981,306 @@ void func_80063C88(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80063C88.s")
 #endif
 
+#ifdef NON_MATCHING
+// Same size as the original and close: float register allocation differs in a few blocks
+// (the g +/- f sums, the 0.5f moves, the unk10 tail). Control flow matches.
+void func_80064C0C(s32 arg0) {
+    UnkStruct_80192690* rider = &D_80192690[arg0];
+    UnkStruct_8004B0F8_1* point;
+    f32 thrust;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 f;
+    f32 g;
+    f32 len;
+    s32 ang;
+
+    if (rider->unk16B4 >= 40) {
+        thrust = rider->unkBBC;
+    } else if (rider->unkC4C != 0.0f) {
+        thrust = rider->unkBBC * D_800D9630;
+    } else {
+        if (rider->unk68 >= 11.111112f) {
+            f = rider->unkBCC * rider->unkBC4;
+        } else if (rider->unkBD0 <= rider->unk68) {
+            ang = (rider->unk68 - rider->unkBD0) * rider->unkBDC;
+            f = (1.0f - ((1.0f - COS(ang)) * rider->unkBE0)) * rider->unkBC4;
+        } else {
+            ang = (rider->unkBD0 - rider->unk68) * rider->unkBD4;
+            f = (1.0f - ((1.0f - COS(ang)) * rider->unkBD8)) * rider->unkBC4;
+        }
+        f += rider->unkB9C;
+        thrust = f * sqrtf(1.0f - SQ(rider->unk70));
+        if (!((rider->unk90[0].unk1C | rider->unk90[2].unk1C) & 1)) {
+            thrust *= D_800D49C4;
+        }
+        thrust *= rider->unk1578;
+    }
+    if (rider->unkC66 != 0) {
+        rider->unkB98 = thrust;
+    } else if ((D_800D49C8 < rider->unkB98) && (rider->unkC54 != 23)) {
+        rider->unkB98 -= D_800D49C8;
+    } else {
+        rider->unkB98 = 0.0f;
+    }
+    rider->unkBA0 = rider->unk15E0 * rider->unk6C;
+    rider->unkBA4 = rider->unk15E0 * rider->unk70;
+    rider->unkBA8 = rider->unk15E0 * rider->unk74;
+    rider->unkBAC = rider->unk15E4 * rider->unk84;
+    rider->unkBB0 = rider->unk15E4 * rider->unk88;
+    rider->unkBB4 = rider->unk15E4 * rider->unk8C;
+    x = rider->unkBA0 + rider->unkBAC;
+    y = rider->unkBA4 + rider->unkBB0;
+    z = rider->unkBA8 + rider->unkBB4;
+    len = SQ(x) + SQ(z);
+    if (len != 0.0f) {
+        f = rider->unkB98 / sqrtf(len);
+    } else {
+        f = 0.0f;
+    }
+    x *= f;
+    y *= rider->unkB98;
+    z *= f;
+    rider->unk90[2].unkC += x;
+    rider->unk90[2].unk10 += y;
+    rider->unk90[2].unk14 += z;
+    rider->unk90[0].unkC += x;
+    rider->unk90[0].unk10 += y;
+    rider->unk90[0].unk14 += z;
+    if (rider->unk15C4 != 0.0f) {
+        x = RIDER_PARTS(rider)[2].unk4.x - rider->unk44.x;
+        y = RIDER_PARTS(rider)[2].unk4.y - rider->unk44.y;
+        z = RIDER_PARTS(rider)[2].unk4.z - rider->unk44.z;
+        f = (rider->unk6C * x) + (y * rider->unk70) + (z * rider->unk74);
+        x -= f * rider->unk6C;
+        y -= f * rider->unk70;
+        z -= f * rider->unk74;
+        len = 1.0f / sqrtf(SQ(x) + SQ(y) + SQ(z));
+        x *= len;
+        y *= len;
+        z *= len;
+        f = (rider->unk78 * x) + (y * rider->unk7C) + (z * rider->unk80);
+        f = SQ(f);
+        if (f > 1.0f) {
+            f = 1.0f;
+        }
+        f = (1.0f - (sqrtf(1.0f - SQ(f)) * rider->unk1568)) * rider->unk15C4;
+        x *= f;
+        y *= f;
+        z *= f;
+        rider->unk90[7].unkC -= x;
+        rider->unk90[7].unk10 -= y;
+        rider->unk90[7].unk14 -= z;
+        rider->unk90[6].unkC -= x;
+        rider->unk90[6].unk10 -= y;
+        rider->unk90[6].unk14 -= z;
+        rider->unk90[10].unkC += x;
+        rider->unk90[10].unk10 += y;
+        rider->unk90[10].unk14 += z;
+        rider->unk90[9].unkC += x;
+        rider->unk90[9].unk10 += y;
+        rider->unk90[9].unk14 += z;
+        x *= 3.0f;
+        y *= 3.0f;
+        z *= 3.0f;
+        rider->unk90[5].unkC -= x;
+        rider->unk90[5].unk10 -= y;
+        rider->unk90[5].unk14 -= z;
+        rider->unk90[3].unkC -= x;
+        rider->unk90[3].unk10 -= y;
+        rider->unk90[3].unk14 -= z;
+        rider->unk90[2].unkC += x;
+        rider->unk90[2].unk10 += y;
+        rider->unk90[2].unk14 += z;
+        rider->unk90[0].unkC += x;
+        rider->unk90[0].unk10 += y;
+        rider->unk90[0].unk14 += z;
+    }
+    if (rider->unkC54 == 23) {
+        if ((rider->unk7C < 0.6f) && (rider->unk7C > -0.6f) &&
+            (((rider->unkB90 < 8.333334f) && (rider->unkC78 >= 4)) || (rider->unkC74 >= D_800D4990))) {
+            g = rider->unk0.f;
+            rider->unk90[1].unk10 += D_800D4950;
+            rider->unk90[4].unk10 += D_800D4950;
+            rider->unk90[8].unk10 += D_800D4950;
+            rider->unk90[11].unk10 += D_800D4950;
+        } else {
+            g = rider->unk0.f * 0.6666667f;
+            rider->unk90[1].unk10 += g;
+            rider->unk90[4].unk10 += g;
+            rider->unk90[8].unk10 += g;
+            rider->unk90[11].unk10 += g;
+        }
+        rider->unk90[5].unk10 += g;
+        rider->unk90[7].unk10 += g;
+        rider->unk90[10].unk10 += g;
+        rider->unk90[2].unk10 += g;
+        rider->unk90[3].unk10 += g;
+        rider->unk90[6].unk10 += g;
+        rider->unk90[9].unk10 += g;
+        rider->unk90[0].unk10 += g;
+    } else {
+        g = rider->unk0.f;
+        f = (rider->unk1590 * ((rider->unk84 * rider->unkC20) + (rider->unk88 * rider->unkC24) + (rider->unk8C * rider->unkC28))) +
+            rider->unk15CC;
+        rider->unk90[5].unk10 += g + f;
+        rider->unk90[7].unk10 += g + f;
+        rider->unk90[10].unk10 += g + f;
+        rider->unk90[2].unk10 += g + f;
+        rider->unk90[3].unk10 += g - f;
+        rider->unk90[6].unk10 += g - f;
+        rider->unk90[9].unk10 += g - f;
+        rider->unk90[0].unk10 += g - f;
+    }
+    if (rider->unkBF8 != 0.0f) {
+        x = rider->unkBF8 * rider->unk84;
+        y = rider->unkBF8 * rider->unk88;
+        z = rider->unkBF8 * rider->unk8C;
+        rider->unk90[3].unkC -= x;
+        rider->unk90[3].unk10 -= y;
+        rider->unk90[3].unk14 -= z;
+        rider->unk90[4].unkC -= x;
+        rider->unk90[4].unk10 -= y;
+        rider->unk90[4].unk14 -= z;
+        rider->unk90[5].unkC -= x;
+        rider->unk90[5].unk10 -= y;
+        rider->unk90[5].unk14 -= z;
+        rider->unk90[0].unkC += x;
+        rider->unk90[0].unk10 += y;
+        rider->unk90[0].unk14 += z;
+        rider->unk90[1].unkC += x;
+        rider->unk90[1].unk10 += y;
+        rider->unk90[1].unk14 += z;
+        rider->unk90[2].unkC += x;
+        rider->unk90[2].unk10 += y;
+        rider->unk90[2].unk14 += z;
+    }
+    if ((rider->unk1598 == 2) || (rider->unk1598 == 1)) {
+        x = rider->unk15AC * rider->unk84;
+        z = rider->unk15AC * rider->unk8C;
+        g = rider->unk0.f * 0.5f;
+        y = (rider->unk15AC * rider->unk88) - g;
+        rider->unk90[2].unkC += x;
+        rider->unk90[2].unk10 += y;
+        rider->unk90[2].unk14 += z;
+        rider->unk90[10].unkC += x;
+        rider->unk90[10].unk10 += y;
+        rider->unk90[10].unk14 += z;
+        rider->unk90[0].unkC += x;
+        rider->unk90[0].unk10 += y;
+        rider->unk90[0].unk14 += z;
+        rider->unk90[9].unkC += x;
+        rider->unk90[9].unk10 += y;
+        rider->unk90[9].unk14 += z;
+        rider->unk90[1].unkC -= x;
+        rider->unk90[1].unk10 -= y;
+        rider->unk90[1].unk14 -= z;
+        rider->unk90[11].unkC -= x;
+        rider->unk90[11].unk10 -= y;
+        rider->unk90[11].unk14 -= z;
+        rider->unk90[4].unk10 += g;
+        rider->unk90[8].unk10 += g;
+    } else if (rider->unk1598 == 4) {
+        x = rider->unk15AC * rider->unk78;
+        f = rider->unk15AC * rider->unk7C;
+        z = rider->unk15AC * rider->unk80;
+        g = rider->unk0.f * 0.5f;
+        y = f - g;
+        len = f + g;
+        rider->unk90[3].unkC += x;
+        rider->unk90[3].unk10 += y;
+        rider->unk90[3].unk14 += z;
+        rider->unk90[4].unkC += x;
+        rider->unk90[4].unk10 += len;
+        rider->unk90[4].unk14 += z;
+        rider->unk90[5].unkC += x;
+        rider->unk90[5].unk10 += y;
+        rider->unk90[5].unk14 += z;
+        rider->unk90[0].unkC -= x;
+        rider->unk90[0].unk10 -= len;
+        rider->unk90[0].unk14 -= z;
+        rider->unk90[1].unkC -= x;
+        rider->unk90[1].unk10 -= y;
+        rider->unk90[1].unk14 -= z;
+        rider->unk90[2].unkC -= x;
+        rider->unk90[2].unk10 -= len;
+        rider->unk90[2].unk14 -= z;
+        rider->unk90[8].unk10 += g;
+        rider->unk90[6].unk10 -= g;
+        rider->unk90[11].unk10 += g;
+        rider->unk90[9].unk10 -= g;
+        rider->unk90[7].unk10 -= g;
+        rider->unk90[10].unk10 -= g;
+    }
+    if ((rider->unkC78 == 0) && (rider->unk1598 == 0)) {
+        f = ((rider->unk50 * rider->unk78) + (rider->unk58 * rider->unk80)) * D_800D498C;
+        x = (rider->unk78 * f) * 0.1;
+        y = rider->unk7C * f;
+        z = (rider->unk80 * f) * 0.1;
+        for (point = &rider->unk90[rider->unk28]; point >= rider->unk90; point--) {
+            point->unkC += x;
+            point->unk10 += y;
+            point->unk14 += z;
+        }
+    }
+    if (rider->unk1598 == 3) {
+        rider->unk18 = D_800D49D8;
+    } else {
+        f = rider->unk70 * D_800D4988 *
+            ((rider->unk50 * rider->unk6C) + (rider->unk54 * rider->unk70) + (rider->unk58 * rider->unk74));
+        if (f < 0.0f) {
+            f = D_800D49D0;
+        } else if (f > 1.0f) {
+            f = D_800D49D4;
+        } else {
+            f = ((D_800D49D4 - D_800D49D0) * f) + D_800D49D0;
+        }
+        if (rider->unk18 < D_800D49D4) {
+            rider->unk18 += 0.001f;
+        } else {
+            rider->unk18 = f;
+        }
+    }
+    if (D_801C3D14[arg0].unk0 != 0) {
+        func_8004E0A4(rider, rider->unk15D4);
+    } else {
+        func_8004E548((struct UnkStruct_8004B0F8*) rider, rider->unk15D4);
+    }
+    f = rider->unkB5F / 70.0f;
+    if (f < 0.0f) {
+        rider->unk10 = ((D_800D4ACC - D_800D4AD0) * SQ(f)) + D_800D4AD0;
+    } else {
+        rider->unk10 = ((D_800D4AD4 - D_800D4AD0) * (f * ((rider->unk18 - D_800D49D4) / (D_800D49D0 - D_800D49D4)))) + D_800D4AD0;
+    }
+    if ((u16) D_800D496C != 0) {
+        func_80051740((struct UnkStruct_801C3C50*) rider, (struct UnkStruct_8004B0F8*) rider);
+    }
+    if ((u16) D_800D4974 != 0) {
+        func_8007F030(rider, rider);
+    }
+    func_8007F700(rider);
+    if ((u16) D_800D4978 != 0) {
+        func_8007E8C8(rider);
+    }
+    func_8007EF80(rider);
+    func_8007ECBC(rider);
+    func_8004B1B4((struct UnkStruct_8004B0F8*) rider);
+    func_800624CC(rider);
+    if (rider->unkC7C != 0) {
+        f = rider->unkB90 * -0.018f;
+        if (f < -1.0f) {
+            f = -1.0f;
+        } else if ((f > -0.5f) && (rider->unkC66 != 0)) {
+            f = -0.5f;
+        }
+        func_8004F3D4(rider->unk44.x - (120.0f * rider->unk5C), rider->unk44.z - (120.0f * rider->unk64),
+                      (s32) (rider->unk15D0 * f));
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80064C0C.s")
+#endif
 
 #ifdef NON_MATCHING
 // Register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,

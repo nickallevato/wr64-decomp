@@ -798,7 +798,10 @@ typedef struct UnkStruct_80192690 {
     /* 0x0050 */ f32 unk50;
     /* 0x0054 */ f32 unk54;
     /* 0x0058 */ f32 unk58;
-    /* 0x005C */ char pad5C[0x10];                  /* maybe part of unk58[5]? */
+    /* 0x005C */ f32 unk5C;
+    /* 0x0060 */ f32 unk60;
+    /* 0x0064 */ f32 unk64;
+    /* 0x0068 */ f32 unk68;
     /* 0x006C */ f32 unk6C;
     /* 0x0070 */ f32 unk70;
     /* 0x0074 */ f32 unk74;
