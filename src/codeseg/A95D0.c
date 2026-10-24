@@ -428,7 +428,19 @@ void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors) {
     runner->cursors = cursors;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFDA8.s")
+void func_801DFDA8(UnkA95D0_Runner* runner, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                   s32 arg8, s32 arg9, s32 arg10) {
+    runner->unk10[0] = arg1;
+    runner->unk10[1] = arg2;
+    runner->unk10[2] = arg3;
+    runner->unk10[3] = arg4;
+    runner->unk10[4] = arg5;
+    runner->unk10[5] = arg6;
+    runner->unk10[6] = arg7;
+    runner->unk10[7] = arg8;
+    runner->unk10[8] = arg9;
+    runner->unk10[9] = arg10;
+}
 
 void func_801DFDF0(UnkA95D0_Runner* runner, s32 count) {
     func_801DEA94(runner->cursors, count);
