@@ -178,6 +178,9 @@ extern UnkA95D0_Runner D_80228058[];
 extern UnkA95D0_Obj D_80227E98[];
 void func_800AB95C(s32, s32);
 extern UnkA95D0_Step D_80223F7C[];
+extern UnkA95D0_Step D_80224B14[];
+extern UnkStruct_801DB0E4_arg1 D_80225E34;
+extern f32 D_80228120[][2];
 void func_801DF744(UnkA95D0_Obj* obj);
 void func_801DF38C(UnkA95D0_Obj* obj);
 void func_801DF128(UnkA95D0_Obj* obj);
@@ -392,7 +395,28 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC274.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC404.s")
+void func_801DC404(UnkA95D0_Runner* runner) {
+    f32 t;
+    s32 index;
+    UnkStruct_801DB0E4_arg1 sp54 = D_80225E34;
+    UnkStruct_801DB0E4_arg1 sp20 = sp54;
+
+    index = runner->step - D_80224B14;
+
+    if (index != 2) {
+        return;
+    }
+    D_802287A8 = 8;
+    if (runner->frame == 1) {
+        func_800AB92C();
+        func_801DB284(&D_80228190, &sp20, D_80228120, 8);
+    }
+    t = runner->frame / runner->step->duration;
+    sp20.unk0[0] += 300.0f * t;
+    sp20.unk0[1] += -200.0f * t;
+    sp20.unk0[2] += -200.0f * t;
+    func_801DB430(&D_80228190, &sp20, D_80228120, 8);
+}
 
 void func_801DC5A8(UnkA95D0_Runner* runner) {
     s32 index = runner->step - D_80223F7C;
