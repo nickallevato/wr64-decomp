@@ -2,11 +2,6 @@
 
 #ifdef NON_MATCHING
 // Score 588: isBlock and segs swap v0/v1 and are stored to the stack after the loop guard (before it in the original).
-typedef struct TexEntry {
-    /* 0x0 */ u8* img;
-    /* 0x4 */ u32 width;
-} TexEntry; /* size = 0x8 */
-
 extern TexEntry D_802263C0[];
 extern TexEntry D_802264F8[];
 extern TexEntry D_80226568[];

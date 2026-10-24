@@ -447,6 +447,11 @@ typedef struct {
     s32 unkE8;
 } UnkStruct_func_8009CCE8;
 
+typedef struct TexEntry {
+    /* 0x0 */ u8* img;
+    /* 0x4 */ u32 width;
+} TexEntry; /* size = 0x8 */
+
 typedef struct UnkStruct_802C96A8 {
     /* 0x00 */ s32 unk_0;
     /* 0x04 */ char pad_4[0x20];
