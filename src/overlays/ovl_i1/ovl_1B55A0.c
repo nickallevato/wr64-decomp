@@ -361,13 +361,9 @@ Gfx* func_i1_802C7D00(Gfx* dList) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C7E48.s")
 
-// https://decomp.me/scratch/7qW05
-#ifndef NON_MATCHING
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C8E70.s")
-#else
 void func_i1_802C8E70(void) {
-    s32 pad;
-    s32 var_v0;
+    s32 i;
+    s32 count; // also case 6's done flag: one variable in the original
     s32 flag = 0;
 
     switch (D_i1_802C9520) {
@@ -396,7 +392,6 @@ void func_i1_802C8E70(void) {
                     D_802C96D0 = 0;
                     AudioGeneral_PlaySound(0x11, 0);
                 } else {
-                    // if (1) {}
                     if (D_802C96D0 >= 0x258) {
                         D_i1_802C9520 = 3;
                         D_802C96D0 = 0;
@@ -425,36 +420,29 @@ void func_i1_802C8E70(void) {
             break;
 
         case 5:
-            var_v0 = 0;
-            if (D_i1_802C9534 == 0x14) {
-                var_v0++;
+            count = 0;
+            for (i = 0; i < 4; i++) {
+                if (D_i1_802C9534[i] == 0x14) {
+                    count++;
+                }
             }
-            if (D_i1_802C9538 == 0x14) {
-                var_v0++;
-            }
-            if (D_i1_802C953C == 0x14) {
-                var_v0++;
-            }
-            if (D_i1_802C9540 == 0x14) {
-                var_v0++;
-            }
-            if (var_v0 == 4) {
+            if (i == count) {
                 D_i1_802C9520 = 6;
                 D_802C96D0 = 0;
             }
             break;
 
         case 6:
-            var_v0 = 0;
+            count = 0;
             D_802C96D0++;
             if (D_802C96D0 >= 0x190) {
-                var_v0 = 1;
+                count = 1;
             }
             if ((D_802C96D0 >= 0x28) && (D_801CE65A[0].unk0 & 0xB000)) {
                 AudioGeneral_PlaySound(0x11, 0);
-                var_v0 = 1;
+                count = 1;
             }
-            if (var_v0 != 0) {
+            if (count != 0) {
                 D_i1_802C9520 = 7;
                 D_802C96D0 = 0;
                 D_i1_802C9558 = 1;
@@ -471,7 +459,6 @@ void func_i1_802C8E70(void) {
         AudioGeneral_PlaySound(0x31, 0);
     }
 }
-#endif
 
 Gfx* func_i1_802C913C(Gfx* dList) {
     s32 var_v0;
