@@ -10,6 +10,9 @@ extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 extern s32 D_802C96A4;
 extern s32 D_800D817C;
+extern RiderStruct gRiderRaceState[];
+// The asm names this array D_801CE6FC + 0xC; its symbol is in linker_scripts/us/rev1/resolve.txt.
+extern s32 D_801CE708[4];
 extern s32 D_i1_802C9444[][3];
 extern TexEntry D_80226890[];
 
@@ -185,7 +188,57 @@ Gfx* func_i1_802C6B38(Gfx* dList) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C6BD8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C6DCC.s")
+void func_i1_802C6DCC(void) {
+    s32 i;
+    u16 param;
+
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = 0x29;
+    D_801CE638 = 1;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    D_802C96A4 = 0;
+    D_802C96A0 = 0;
+
+    if (D_801CE608.gameMode == 4) {
+        for (i = 0; i < 4; i++) {
+            if (D_801CE708[i] >= gRiderRaceState[i].racePosition) {
+                D_801CB3F8[i] = 1;
+            } else {
+                D_801CB3F8[i] = 0;
+            }
+        }
+    }
+
+    if (gPlayers == ONE_PLAYER) {
+        if (D_i1_802C9510 != 0) {
+            D_i1_802C950C = 120;
+        } else {
+            FadeTransition_SetProps(1, 4, 120);
+        }
+    }
+    Popup_Spawn(0, 0);
+
+    if (gPlayers == ONE_PLAYER) {
+        param = 0;
+        if (gRiderRaceState[gPlayer1Rider].finishState == 1) {
+            param = 0;
+        } else if (gRiderRaceState[gPlayer1Rider].finishState == 2) {
+            param = 1;
+        }
+        Popup_Spawn(4, param);
+    }
+
+    D_801CE62A = 0;
+    func_800BFD34();
+    func_800BFD68();
+    func_800C1F60(4);
+    func_800C21F4(4, 0);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C6FE0.s")
 

@@ -8,3 +8,5 @@ func_840019E8 = 0x840019E8;
 osViExtendVStart = 0x80047E44;
 D_801CE704 = 0x801CE704;
 D_801CE700 = 0x801CE700;
+/* func_i1_802C6DCC (ovl_i1) reads D_801CE708[4], which the asm names D_801CE6FC + 0xC. */
+D_801CE708 = 0x801CE708;
