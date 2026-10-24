@@ -1,5 +1,7 @@
 #include "global.h"
 
+extern u16 D_80A0008[];
+
 void func_i4_802C7344(void);
 
 void func_i4_802C5800(void) {
@@ -63,7 +65,25 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C6778.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C69C4.s")
+Gfx* func_i4_802C69C4(Gfx* dList, s32 x, s32 y) {
+    s32 offset;
+    s32 i;
+    s32 posY;
+    s32 height;
+
+    for (offset = 0, i = 0, posY = y; i < 0x50; i += 0x10, posY += 0x10, offset += 0x760) {
+        if (i != 0x40) {
+            height = 0x10;
+        } else {
+            height = 3;
+        }
+        gDPLoadTextureTile(dList++, D_80A0008 + offset, G_IM_FMT_RGBA, G_IM_SIZ_16b, 118, height, 0, 0, 117, height - 1,
+                           0, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+        gSPTextureRectangle(dList++, x << 2, posY << 2, (x + 0x76) << 2, (posY + height) << 2, 0, 0, 0, 1 << 10,
+                            1 << 10);
+    }
+    return dList;
+}
 
 void func_i4_802C6BAC(void) {
     switch (D_i4_802C7538) {
