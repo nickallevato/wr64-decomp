@@ -309,8 +309,18 @@ typedef struct UnkStruct_80227A60 {
 // The rider's 19 entries of 0x28 bytes at 0x660 (unk660 .. 0x958).
 typedef struct RiderPart {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ char pad4[0x24];
+    /* 0x04 */ Vec3f unk4;
+    /* 0x10 */ Vec3f unk10;
+    /* 0x1C */ char pad1C[0xC];
 } RiderPart; /* size = 0x28 */
+
+// The rider's 3 x 18 entries of 0x24 bytes at 0xC88 (unkC88 .. 0x1420).
+typedef struct UnkStruct_80192690_C88 {
+    /* 0x00 */ Vec3f unk0;
+    /* 0x0C */ char padC[0x18];
+} UnkStruct_80192690_C88; /* size = 0x24 */
+
+#define RIDER_C88(rider) ((UnkStruct_80192690_C88(*)[18]) &(rider)->unkC88)
 
 #define RIDER_PARTS(rider) ((RiderPart*) (rider)->unk660)
 
@@ -2352,7 +2362,91 @@ void func_80061708(s32 arg0, s32 arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800618F4.s")
+void func_800618F4(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
+    RiderPart* part;
+    UnkStruct_8004B0F8_1* point;
+    UnkStruct_80192690_C88(*row)[18];
+
+    for (part = &RIDER_PARTS(arg0)[24]; part >= RIDER_PARTS(arg0); part--) {
+        part->unk4.x += arg1;
+        part->unk10.x += arg1;
+        part->unk4.y += arg2;
+        part->unk10.y += arg2;
+        part->unk4.z += arg3;
+        part->unk10.z += arg3;
+    }
+    for (point = &arg0->unk90[arg0->unk28]; point >= arg0->unk90; point--) {
+        point->unk0 += arg1;
+        point->unk4 += arg2;
+        point->unk8 += arg3;
+    }
+    arg0->unkC14 += arg1;
+    arg0->unkC18 += arg2;
+    arg0->unkC1C += arg3;
+    arg0->unk44.x += arg1;
+    arg0->unk44.y += arg2;
+    arg0->unk44.z += arg3;
+    arg0->unkBE4 += arg1;
+    arg0->unkBE8 += arg2;
+    arg0->unkBEC += arg3;
+    // The entries are moved in this order in the original.
+    for (row = RIDER_C88(arg0); row <= &RIDER_C88(arg0)[2]; row++) {
+        (*row)[17].unk0.x += arg1;
+        (*row)[17].unk0.y += arg2;
+        (*row)[17].unk0.z += arg3;
+        (*row)[16].unk0.x += arg1;
+        (*row)[16].unk0.y += arg2;
+        (*row)[16].unk0.z += arg3;
+        (*row)[15].unk0.x += arg1;
+        (*row)[15].unk0.y += arg2;
+        (*row)[15].unk0.z += arg3;
+        (*row)[7].unk0.x += arg1;
+        (*row)[7].unk0.y += arg2;
+        (*row)[7].unk0.z += arg3;
+        (*row)[14].unk0.x += arg1;
+        (*row)[14].unk0.y += arg2;
+        (*row)[14].unk0.z += arg3;
+        (*row)[6].unk0.x += arg1;
+        (*row)[6].unk0.y += arg2;
+        (*row)[6].unk0.z += arg3;
+        (*row)[10].unk0.x += arg1;
+        (*row)[10].unk0.y += arg2;
+        (*row)[10].unk0.z += arg3;
+        (*row)[13].unk0.x += arg1;
+        (*row)[13].unk0.y += arg2;
+        (*row)[13].unk0.z += arg3;
+        (*row)[9].unk0.x += arg1;
+        (*row)[9].unk0.y += arg2;
+        (*row)[9].unk0.z += arg3;
+        (*row)[12].unk0.x += arg1;
+        (*row)[12].unk0.y += arg2;
+        (*row)[12].unk0.z += arg3;
+        (*row)[8].unk0.x += arg1;
+        (*row)[8].unk0.y += arg2;
+        (*row)[8].unk0.z += arg3;
+        (*row)[11].unk0.x += arg1;
+        (*row)[11].unk0.y += arg2;
+        (*row)[11].unk0.z += arg3;
+        (*row)[2].unk0.x += arg1;
+        (*row)[2].unk0.y += arg2;
+        (*row)[2].unk0.z += arg3;
+        (*row)[5].unk0.x += arg1;
+        (*row)[5].unk0.y += arg2;
+        (*row)[5].unk0.z += arg3;
+        (*row)[1].unk0.x += arg1;
+        (*row)[1].unk0.y += arg2;
+        (*row)[1].unk0.z += arg3;
+        (*row)[4].unk0.x += arg1;
+        (*row)[4].unk0.y += arg2;
+        (*row)[4].unk0.z += arg3;
+        (*row)[0].unk0.x += arg1;
+        (*row)[0].unk0.y += arg2;
+        (*row)[0].unk0.z += arg3;
+        (*row)[3].unk0.x += arg1;
+        (*row)[3].unk0.y += arg2;
+        (*row)[3].unk0.z += arg3;
+    }
+}
 
 void func_80061FEC(void) {
     UnkStruct_80192690* a;
