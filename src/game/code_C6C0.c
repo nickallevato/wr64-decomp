@@ -2403,8 +2403,8 @@ void func_8005A280(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 // reach clamps.
 void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 sp84;
-    f32 sp88;
-    f32 sp90;
+    f64 sp88;
+    f64 sp90;
     f32 spA8;
     UnkStruct_80052C6C_2* spB4;
     UnkStruct_80052C6C_2* spB8;
@@ -2486,7 +2486,7 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fs1_6;
     f32 temp_fs1_7;
     f32 temp_fs1_8;
-    f32 temp_fs1_9;
+    f64 temp_fs1_9;
     f32 temp_fs2;
     f32 temp_fs2_10;
     f32 temp_fs2_11;
@@ -2500,7 +2500,7 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fs2_5;
     f32 temp_fs2_6;
     f32 temp_fs2_7;
-    f32 temp_fs2_8;
+    f64 temp_fs2_8;
     f32 temp_fs2_9;
     f32 temp_fs3;
     f32 temp_fs3_10;
@@ -2516,12 +2516,12 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fs3_8;
     f32 temp_fs3_9;
     f32 temp_fs4;
-    f32 temp_fs4_2;
+    f64 temp_fs4_2;
     f32 temp_fs4_3;
     f32 temp_fs4_4;
     f32 temp_fs4_5;
     f32 temp_fs5;
-    f32 temp_fs5_2;
+    f64 temp_fs5_2;
     f32 temp_fs5_3;
     f32 temp_fs5_4;
     f32 temp_ft4;
@@ -2557,13 +2557,13 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fv0_2;
     f32 temp_fv0_3;
     f32 temp_fv0_4;
-    f32 temp_fv0_5;
-    f32 temp_fv0_6;
+    f64 temp_fv0_5;
+    f64 temp_fv0_6;
     f32 temp_fv0_7;
-    f32 temp_fv0_8;
+    f64 temp_fv0_8;
     f32 temp_fv0_9;
     f32 temp_fv1;
-    f32 temp_fv1_10;
+    f64 temp_fv1_10;
     f32 temp_fv1_11;
     f32 temp_fv1_12;
     f32 temp_fv1_13;
