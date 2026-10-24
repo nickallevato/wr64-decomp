@@ -4991,7 +4991,51 @@ void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AB95C.s")
 #endif
 
+// The entries func_800AC098 copies into D_801CF060 (the same layout as code_C6C0.c's UnkStruct_80192540).
+typedef struct UnkStruct_800AC098 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ Vec3f unkC;
+    /* 0x18 */ Vec3f unk18;
+    /* 0x24 */ Vec3f unk24;
+    /* 0x30 */ f32 unk30;
+} UnkStruct_800AC098; /* size = 0x34 */
+
+#ifdef NON_MATCHING
+// Score 1980 of 5900: the loop; the original counts i (30-entry limit) and j (end) separately and tests j < end with slt, where this C gets a != test and other scheduling.
+void func_800AC098(UnkStruct_800AC098* arg0, s32 arg1) {
+    s32 end = D_800E62CC + arg1;
+    s32 i;
+    s32 j;
+
+    if (D_800E62CC < 30) {
+        for (i = D_800E62CC, j = D_800E62CC; j < end; j++, arg0++) {
+            D_801CF060[j].unkB8 = 1;
+            D_801CF060[j].unk0 = arg0->unk0;
+            D_801CF060[j].unk74 = arg0->unk4;
+            D_801CF060[j].unk78 = arg0->unk8;
+            D_801CF060[j].unkC = arg0->unkC.x;
+            D_801CF060[j].unk10 = arg0->unkC.y;
+            D_801CF060[j].unk14 = arg0->unkC.z;
+            D_801CF060[j].unk30 = arg0->unk18.x;
+            D_801CF060[j].unk34 = arg0->unk18.y;
+            D_801CF060[j].unk38 = arg0->unk18.z;
+            D_801CF060[j].unk3C = arg0->unk24.x;
+            D_801CF060[j].unk40 = arg0->unk24.y;
+            D_801CF060[j].unk44 = arg0->unk24.z;
+            D_801CF060[j].unk48 = arg0->unk30;
+            i++;
+            if (i >= 30) {
+                return;
+            }
+        }
+        D_800E62CC = end;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC098.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC184.s")
 
