@@ -476,7 +476,71 @@ void func_801F1CFC(void) {
     }
 }
 
+#ifdef NON_MATCHING
+// Score 300: temp registers are off by one from the first index product on (the original has one more temp early).
+extern char D_802279D0[];
+extern char D_802279D8[];
+extern char D_802279DC[];
+
+void func_801F2060(Gfx** gdlp) {
+    RiderStruct* rider;
+    UnkStruct_80192690* p;
+    s32 i;
+    s32 y;
+    s32 mode;
+    s32 r0;
+    s32 g0;
+    s32 r1;
+    s32 g1;
+    s32 n;
+    s32 x;
+    s32 t; // unused; with x it fills the 0x30 bytes of locals above gdl
+    Gfx* gdl;
+
+    gdl = *gdlp;
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            p = &D_80192690[D_800D48DC];
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            p = &D_80192690[D_800D48E0];
+            rider = &D_801C2938[D_800D48E0];
+        }
+        if ((rider->unk2E4 != 0) && (rider->unk2E8 <= D_80228B5C) && (rider->unk2EC == 0) && (rider->unk2F4 == 0)) {
+            if (gPlayers == ONE_PLAYER) {
+                y = 90;
+            } else if (i == 0) {
+                y = 50;
+            } else {
+                y = 160;
+            }
+            if (((rider->unk2E8 % 20) != 0) || (p->unkC54 == 23) || (p->unkC54 == 7)) {
+                mode = 2;
+                r0 = 255;
+                g0 = 0;
+                r1 = 0;
+                g1 = 0;
+            } else {
+                mode = 1;
+                r0 = 128;
+                g0 = 128;
+                r1 = 255;
+                g1 = 255;
+            }
+            gdl = func_801E92FC(gdl, 0, D_802279D0, 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = func_801E92FC(gdl, 0, D_802279D8, 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            n = rider->unk2E8 / 20;
+            sprintf((char*) D_80228CF8, D_802279DC, n);
+            x = 223 - (n >= 10) * 5;
+            gdl = func_801E92FC(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
+                                255, r1, g1, 255, r1, g1);
+        }
+    }
+    *gdlp = gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F2060.s")
+#endif
 
 void func_801F23A0(void) {
     s32 i;
