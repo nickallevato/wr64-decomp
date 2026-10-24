@@ -5008,14 +5008,15 @@ typedef struct UnkStruct_800AC098 {
 } UnkStruct_800AC098; /* size = 0x34 */
 
 #ifdef NON_MATCHING
-// Score 1980 of 5900: the loop; the original counts i (30-entry limit) and j (end) separately and tests j < end with slt, where this C gets a != test and other scheduling.
+// Score 1710 of 5900: the D_801CF060 pointer steps at the end of the loop in the original and the loop test keeps slt; registers differ.
 void func_800AC098(UnkStruct_800AC098* arg0, s32 arg1) {
     s32 end = D_800E62CC + arg1;
     s32 i;
     s32 j;
 
     if (D_800E62CC < 30) {
-        for (i = D_800E62CC, j = D_800E62CC; j < end; j++, arg0++) {
+        i = j = D_800E62CC;
+        while (j < end) {
             D_801CF060[j].unkB8 = 1;
             D_801CF060[j].unk0 = arg0->unk0;
             D_801CF060[j].unk74 = arg0->unk4;
@@ -5030,8 +5031,9 @@ void func_800AC098(UnkStruct_800AC098* arg0, s32 arg1) {
             D_801CF060[j].unk40 = arg0->unk24.y;
             D_801CF060[j].unk44 = arg0->unk24.z;
             D_801CF060[j].unk48 = arg0->unk30;
-            i++;
-            if (i >= 30) {
+            arg0++;
+            j++;
+            if (++i >= 30) {
                 return;
             }
         }
