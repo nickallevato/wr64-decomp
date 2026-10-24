@@ -428,27 +428,35 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
 #endif
 
 #ifdef NON_MATCHING
-// 2820/19900: the original keeps -0x80 and 0x180 in registers ($ra, $t3) and starts the first row division before the second div check; registers differ from there. Frame and spill slots match
+// 24/19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
+// CU and CV are macros so that IDO keeps them as common subexpressions: as named locals they add
+// stack slots
+#define CU (((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6)
+#define CV (((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6)
 f32 func_8004D30C(f32 x, f32 z) {
-    s32 cv;
+    s32 du;
     s32 h00;
-    s32 cu;
+    s32 dv;
     s32 d0;
     s32 d1;
 
-    cv = ((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6;
-    cu = ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6;
-    h00 = WATER_CELL(cu, cv)->unk0 >> 8;
-    if (((cv << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576)) < ((cu << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576))) {
-        d1 = h00 - (WATER_CELL(cu, cv + 1)->unk0 >> 8);
-        d0 = (WATER_CELL(cu, cv + 1)->unk0 >> 8) - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+    du = (CU << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576);
+    h00 = WATER_CELL(CU, CV)->unk0 >> 8;
+    dv = (CV << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576);
+    if (dv < du) {
+        d0 = WATER_CELL(CU, CV + 1)->unk0 >> 8;
+        d1 = h00 - d0;
+        d0 -= WATER_CELL(CU + 1, CV + 1)->unk0 >> 8;
     } else {
-        d0 = h00 - (WATER_CELL(cu + 1, cv)->unk0 >> 8);
-        d1 = (WATER_CELL(cu + 1, cv)->unk0 >> 8) - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+        d1 = WATER_CELL(CU + 1, CV)->unk0 >> 8;
+        d0 = h00 - d1;
+        d1 -= WATER_CELL(CU + 1, CV + 1)->unk0 >> 8;
     }
-    return (f32) ((d0 * ((cu << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576))) + ((gWaterLevel + h00) << 12) + (d1 * ((cv << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576)))) /
+    return (f32) ((d0 * du) + ((gWaterLevel + h00) << 12) + (d1 * dv)) /
            sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
 }
+#undef CU
+#undef CV
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D30C.s")
 #endif
