@@ -3525,13 +3525,12 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 50659 of 259500: far off in registers and scheduling. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
+// Score 17031 of 259500: registers and scheduling; the frame is 0x78 against 0x70. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
     camera_unk_1* cam;
     f32 sp4C;
     f32 sp48;
     StructVarS0* lead;
-    f32 x;
     f32 diff;
     s32 t;
     UnkStruct_801CE780_unk4_unk4* node;
@@ -3553,7 +3552,7 @@ void func_800A68A4(s32 arg0) {
         D_801D0668.unk_5 = 1;
     }
     D_801D0668.unk_0 = func_8009D4A8(D_801CF060[arg0].unk64 - D_801D06BC, D_801CF060[arg0].unk6C - D_801D06C4) / 100.0f;
-    D_801D0668.unk_6 = ((func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) / 90.0f) * 120.0f);
+    D_801D0668.unk_6 = (s32) ((func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) / 90.0f) * 120.0f);
     angle = (s32) ((D_801CF060[arg0].unk18 / 360.0f) * 4096.0f);
     D_801CF060[arg0].unk34 = 0.0f;
     D_801CF060[arg0].unk30 = COS(angle);
@@ -3591,26 +3590,25 @@ void func_800A68A4(s32 arg0) {
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
-            diff = D_801D0760;
-            if (diff >= 2.0f) {
+            if (D_801D0760 >= 2) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
                 if (D_801D0760 > 45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
                 }
             }
-            if (diff <= -2.0f) {
+            if (D_801D0760 <= -2) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
                 if (D_801D0760 < -45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
                 }
             }
-            if (FABS(diff) < 2.0f) {
+            if (FABS(D_801D0760) < 2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(
                     func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
             }
-            D_801CF060[arg0].unk1C =
-                Math_Normalize_Angle((f32) (((f64) Math_Normalize_Angle((diff / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                                            (f64) D_801CF060[arg0].unk1C));
+            D_801CF060[arg0].unk1C = Math_Normalize_Angle(
+                (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
+                       (f64) D_801CF060[arg0].unk1C));
             if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
@@ -3626,39 +3624,39 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
             D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             func_800A2B24(arg0);
+            return;
         }
         if (D_801CF060[arg0].unk8 == 1) {
             D_801D0754 = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
             D_801D0758 = func_8004D30C(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) +
                          (D_801B2F20[D_801CF060[arg0].unk9C].unk4 - 20.0f);
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
-            x = D_801D06BC;
-            if ((x > 0.0f) && (D_801D06C4 < -4000.0f)) {
+            if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = 7000.0f;
                 D_801D075C = -2650.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((x <= 0.0f) && (D_801D06C4 < -4000.0f)) {
+            if ((D_801D06BC <= 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = -7000.0f;
                 D_801D075C = -2650.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((x > 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
+            if ((D_801D06BC > 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
                 D_801D0754 = 5600.0f;
                 D_801D075C = 0.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((x <= 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
+            if ((D_801D06BC <= 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
                 D_801D0754 = -5600.0f;
                 D_801D075C = 2000.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((x > 3300.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 1000.0f)) {
+            if ((D_801D06BC > 3300.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 1000.0f)) {
                 D_801D0754 = 5000.0f;
                 D_801D075C = 1000.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
             }
-            if ((x <= -3700.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 2000.0f)) {
+            if ((D_801D06BC <= -3700.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 2000.0f)) {
                 D_801D0754 = -5000.0f;
                 D_801D075C = 2500.0f;
                 D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
@@ -3666,26 +3664,25 @@ void func_800A68A4(s32 arg0) {
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
-            diff = D_801D0760;
-            if (diff >= 2.0f) {
+            if (D_801D0760 >= 2) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
                 if (D_801D0760 > 45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
                 }
             }
-            if (diff <= -2.0f) {
+            if (D_801D0760 <= -2) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
                 if (D_801D0760 < -45.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
                 }
             }
-            if (FABS(diff) < 2.0f) {
+            if (FABS(D_801D0760) < 2.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(
                     func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
             }
-            D_801CF060[arg0].unk1C =
-                Math_Normalize_Angle((f32) (((f64) Math_Normalize_Angle((diff / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                                            (f64) D_801CF060[arg0].unk1C));
+            D_801CF060[arg0].unk1C = Math_Normalize_Angle(
+                (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
+                       (f64) D_801CF060[arg0].unk1C));
             if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
@@ -3861,20 +3858,19 @@ void func_800A68A4(s32 arg0) {
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
             if (D_801CF060[arg0].unk74 != 5) {
-                diff = D_801D0760;
-                if (diff >= 2.0f) {
+                if (D_801D0760 >= 2) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
                     if (D_801D0760 > 45.0f) {
                         D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 5.0f);
                     }
                 }
-                if (diff <= -2.0f) {
+                if (D_801D0760 <= -2) {
                     D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
                     if (D_801D0760 < -45.0f) {
                         D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
                     }
                 }
-                if (FABS(diff) < 2.0f) {
+                if (FABS(D_801D0760) < 2.0f) {
                     D_801CF060[arg0].unk18 = func_8009D564(
                         func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
                 }
