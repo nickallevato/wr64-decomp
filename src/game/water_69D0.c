@@ -1,7 +1,8 @@
 #include "global.h"
 
 #define TWO_OVER_SQRT_3 1.1547005f
-#define DIRLIGHT_DIRECTION (0.57735026f)
+/* 1 / sqrt(3): the water lattice is triangular, a cell at (x, z) is at u = x + z / sqrt(3) along its skewed axis */
+#define INV_SQRT3 (0.57735026f)
 
 typedef struct UnkStruct_80162420_s {
     s16 unk0;
@@ -362,7 +363,7 @@ void Water_StampPhasedSine(UnkStruct_8004CC7C* arg0) {
                 pz = z;
                 h = (s32) (SIN(phase) * arg0->unk18) << 8;
                 for (j = 0; j < arg0->unk1C; j++) {
-                    u = (s32) ((DIRLIGHT_DIRECTION * pz) + px) % 24576;
+                    u = (s32) ((INV_SQRT3 * pz) + px) % 24576;
                     v = (s32) (TWO_OVER_SQRT_3 * pz) % 24576;
                     cv = v >> 6;
                     cu = u >> 6;
@@ -417,7 +418,7 @@ void Water_StampDiagonalSine(f32 x, f32 z, s32 amplitude, s32 period, s32 step) 
     x -= D_80192498 >> 2;
     z -= D_80192498 >> 2;
     while (x <= end) {
-        u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+        u = (s32) ((INV_SQRT3 * z) + x) % 24576;
         v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
         t = v >> 6; // FAKE: the copy through t gives the original register choice, as in Water_StampLine
         cv = t;
@@ -440,7 +441,7 @@ void Water_StampDiagonalSine(f32 x, f32 z, s32 amplitude, s32 period, s32 step) 
 // 24/19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
 // CU and CV are macros so that IDO keeps them as common subexpressions: as named locals they add
 // stack slots
-#define CU (((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6)
+#define CU (((s32) ((INV_SQRT3 * z) + x) % 24576) >> 6)
 #define CV (((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6)
 f32 func_8004D30C(f32 x, f32 z) {
     s32 du;
@@ -449,7 +450,7 @@ f32 func_8004D30C(f32 x, f32 z) {
     s32 d0;
     s32 d1;
 
-    du = (CU << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576);
+    du = (CU << 6) - ((s32) ((INV_SQRT3 * z) + x) % 24576);
     h00 = WATER_CELL(CU, CV)->unk0 >> 8;
     dv = (CV << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576);
     if (dv < du) {
@@ -492,7 +493,7 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
     for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
-        u = (s32) ((DIRLIGHT_DIRECTION * pt->unk8) + pt->unk0) % 24576;
+        u = (s32) ((INV_SQRT3 * pt->unk8) + pt->unk0) % 24576;
         cu = u >> 6;
         v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
         cv = v >> 6;
@@ -653,7 +654,7 @@ void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
     for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
-        u = (s32) ((DIRLIGHT_DIRECTION * pt->unk8) + pt->unk0) % 24576;
+        u = (s32) ((INV_SQRT3 * pt->unk8) + pt->unk0) % 24576;
         cu = u >> 6;
         v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
         cv = v >> 6;
@@ -897,7 +898,7 @@ void Water_StampPoint(f32 x, f32 z, s32 height) {
     s32 cu;
     s32 cv;
 
-    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    u = (s32) ((INV_SQRT3 * z) + x) % 24576;
     v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
     cv = v >> 6;
     cu = u >> 6;
@@ -925,7 +926,7 @@ void Water_StampPointTimed(f32 x, f32 z, s32 height, s32 arg3) {
     s32 cu;
     s32 cv;
 
-    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    u = (s32) ((INV_SQRT3 * z) + x) % 24576;
     v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
     cv = v >> 6;
     cu = u >> 6;
@@ -951,7 +952,7 @@ void func_8004F3D4(f32 arg0, f32 arg1, s32 arg2) {
     s32 temp_hi;
     s32 temp_hi_2;
 
-    temp_hi = (s32) ((DIRLIGHT_DIRECTION * arg1) + arg0) % 24576;
+    temp_hi = (s32) ((INV_SQRT3 * arg1) + arg0) % 24576;
     temp_hi_2 = (s32) (TWO_OVER_SQRT_3 * arg1) % 24576;
     temp_a0 = temp_hi_2 >> 6;
     temp_a1 = temp_hi >> 6;
@@ -984,7 +985,7 @@ void Water_StampLine(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
         h = (s32) height << 8;
         do {
             count--;
-            u = (s32) ((DIRLIGHT_DIRECTION * pz) + px) % 24576;
+            u = (s32) ((INV_SQRT3 * pz) + px) % 24576;
             v = (s32) (TWO_OVER_SQRT_3 * pz) % 24576;
             t = v >> 6; // FAKE: the copy through t gives the original register choice
             cv = t;
@@ -1487,7 +1488,7 @@ void Water_UpdateWindow(s32 view, f32 x, f32 z) {
     s32 pad; // stack pad: puts the spill of w at sp+0x1C
 
     w = &gWaterWindow[view];
-    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    u = (s32) ((INV_SQRT3 * z) + x) % 24576;
     cu = (u + 0x20) >> 6;
     v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
     cv = (v + 0x20) >> 6;
