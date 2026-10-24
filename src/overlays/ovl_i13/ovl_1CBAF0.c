@@ -28,6 +28,10 @@ extern s32 D_802C8E90;
 extern s32 D_802C8E94;
 extern s32 D_802C8E9C;
 
+s32 func_8007BDB8(void);
+void func_800C3010(u32);
+s32 Save_PfsDeleteFile(void);
+
 s32 func_8007D2D4(s32);
 s32 func_8007D614(s32);
 
@@ -356,7 +360,49 @@ s32 func_i13_802C6E48(void) {
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C6F0C.s")
+s32 func_i13_802C6F0C(void) {
+    s32 var_a1 = 0;
+    s8 temp_v1;
+
+    if (D_i13_802C8D80 == 0) {
+        return 0;
+    }
+    D_i13_802C8D80 = 0;
+    D_i13_802C8D84 = 0;
+    if (D_i13_802C8D54 == 0) {
+        func_8007BDB8();
+        var_a1 = 1;
+        temp_v1 = D_801CB280 & 0xC0;
+        D_801CE640 = 0;
+        if (temp_v1 & 0x40) {
+            D_800DA9EC[0] = 1;
+            func_800C3010(3);
+        } else if (temp_v1 & 0x80) {
+            D_800DA9EC[0] = 2;
+            func_800C3010(1);
+        } else {
+            D_800DA9EC[0] = 0;
+            func_800C3010(0);
+        }
+        if (D_801CB280 & 0x20) {
+            D_800DA9EC[1] = 0;
+            func_800C3044();
+        } else {
+            D_800DA9EC[1] = 1;
+            func_800C3034();
+        }
+    } else {
+        D_i13_802C8D74 = Save_PfsDeleteFile();
+        if (D_i13_802C8D74 == 0) {
+            var_a1 = 1;
+        }
+        D_801CE640 = 0;
+    }
+    if (var_a1 != 0) {
+        func_800C3E6C(2);
+    }
+    return 0;
+}
 
 void func_i13_802C7060(void) {
     switch (D_i13_802C8D78) {
