@@ -63,6 +63,8 @@ extern s32 D_801CE734;
 extern s32 D_801CE738;
 extern u16 D_800DCEC8[];
 extern u8 D_8000D9C;
+extern u8 D_8002C00;
+extern u8 D_8002FA8;
 extern u8 D_8003578;
 
 void func_80095CE8(u8* arg0, s32 arg1);
@@ -292,7 +294,41 @@ void func_80095CE8(u8* arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096048.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_800961B8.s")
+u32* func_800961B8(s32 arg0, s32 arg1) {
+    s32 pad; // stack pad
+    s32 count;
+    s32 pad2; // stack pad
+    u32* sp38;
+    u8* sp34;
+    s32 i;
+    u32* temp_s0;
+
+    switch (arg0) {
+        case 3:
+            sp34 = &D_8002FA8;
+            count = 1;
+            break;
+        case 6:
+            sp34 = &D_8002C00;
+            count = 1;
+            break;
+    }
+    // For any other arg0, sp34 and count are used uninitialized, as in the original.
+    sp38 = (u32*) (SegmentedToVirtual((u32) sp34) + arg1);
+    for (i = 0; i < count; i++) {
+        temp_s0 = (u32*) (SegmentedToVirtual(sp38[i]) + arg1);
+        sp38[i] = (u32) temp_s0;
+        temp_s0[1] = SegmentedToVirtual(temp_s0[1]) + arg1;
+        temp_s0[2] = SegmentedToVirtual(temp_s0[2]) + arg1;
+        temp_s0[3] = SegmentedToVirtual(temp_s0[3]) + arg1;
+        temp_s0[4] = SegmentedToVirtual(temp_s0[4]) + arg1;
+        temp_s0[5] = SegmentedToVirtual(temp_s0[5]) + arg1;
+        temp_s0[6] = SegmentedToVirtual(temp_s0[6]) + arg1;
+        temp_s0[7] = SegmentedToVirtual(temp_s0[7]) + arg1;
+        temp_s0[8] = SegmentedToVirtual(temp_s0[8]) + arg1;
+    }
+    return sp38;
+}
 
 u32* func_800962F0(s32 arg0) {
     s32 pad[2];
