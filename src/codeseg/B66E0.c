@@ -3,6 +3,20 @@
 extern f32 gPrinterScale;   /* glyph scale, set by func_801E93B4 */
 extern s16 gPrinterScaled;  /* 1 while the scaled printer is in use; func_801E93B4 leaves it set */
 
+typedef struct {
+    /* 0x00 */ s16 unk0;  /* nonzero: func_801EAFB4 steps unk2 */
+    /* 0x02 */ s16 unk2;  /* 0..3, advanced every unk8 frames */
+    /* 0x04 */ s32 unk4;  /* frame counter */
+    /* 0x08 */ s32 unk8;  /* frames per step */
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+} UnkStruct_80228A78; /* size = 0x14 */
+
+extern UnkStruct_80228A78 D_80228A78;
+extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 */
+
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E80B0.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8800.s")
@@ -49,7 +63,9 @@ Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0,
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EADB0.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EAF78.s")
+void func_801EAF78(void) {
+    D_80228A78 = D_80226E30;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EAFB4.s")
 
