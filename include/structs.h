@@ -1428,4 +1428,14 @@ typedef struct UnkStruct_80192420_s {
     /* 0x18 */ f32 unk18;
 } UnkStruct_80192420; /* size = 0x1C */
 
+// A record of gCoursePoints (table A): buoys by type and difficulty, course-edge points and points with a height.
+typedef struct UnkStruct_801BB138_s {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} UnkStruct_801BB138; /* size = 0x18 */
+
 #endif /* STRUCTS_H */

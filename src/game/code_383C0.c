@@ -35,13 +35,6 @@ struct UnkStruct_801AEE20 {
     /* 0x0C8 */ char padC8[0x3C]; /* maybe part of unkC4[0x10]? */
 };
 
-typedef struct UnkStruct_801BB138_s {
-    /* 0x00 */ f32 unk0;       /* inferred */
-    /* 0x04 */ f32 unk4;       /* inferred */
-    /* 0x08 */ f32 unk8;       /* inferred */
-    /* 0x0C */ char padC[0xC]; /* maybe part of unk8[4]? */
-} UnkStruct_801BB138;          /* size = 0x18 */
-
 typedef struct UnkStruct_801C3B84_s {
     f32 unk0;
     f32 unk4;

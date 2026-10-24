@@ -2,15 +2,6 @@
 #include "rider.h"
 #include "camera.h"
 
-typedef struct UnkStruct_801BB138_s {
-    /* 0x00 */ f32 unk0;
-    /* 0x04 */ f32 unk4;     /* inferred */
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ char padC[4];
-    /* 0x10 */ s32 unk10;    /* inferred */
-    /* 0x14 */ char pad14[4];
-} UnkStruct_801BB138; /* size = 0x18 */
-
 typedef struct UnkStruct_801BFA48_s {
     /* 0x00 */ f32 unk0;  /* inferred */
     /* 0x04 */ f32 unk4;  /* inferred */

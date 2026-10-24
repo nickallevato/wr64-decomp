@@ -39,13 +39,6 @@ static const char devstr2[] = "dolphin condition full\n";
 static const char devstr3[] = "rank value adjust\n";
 static const char devstr4[] = "simultaneously goal !!\n";
 
-typedef struct UnkStruct_801BB138 {
-    /* 0x00 */ f32 unk0;
-    /* 0x04 */ f32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ char padC[0xC];
-} UnkStruct_801BB138; /* size = 0x18 */
-
 extern UnkStruct_801BB138 gCoursePoints[];
 extern UnkStruct_801C1FF0 D_800D81B0;
 extern UnkStruct_801C26E8 D_800D81C4;
