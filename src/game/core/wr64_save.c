@@ -700,7 +700,62 @@ int func_8007C50C(void) {
     return SAVE_SUCCESS;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007C604.s")
+// Resets course's records to the defaults (D_800D82F8, D_800D8728) and writes them to the EEPROM.
+s32 func_8007C604(s32 course) {
+    s32 off1;
+    s32 off2;
+    s32 off3;
+    s32 i;
+    s32 j;
+    UnkStruct_func_8007AF78_1* lap;
+
+    i = course - 1;
+    for (j = 0; j < 3; j++) {
+        D_801C1FF0[course][j] = D_800D82F8[i][j];
+    }
+    D_801C22C0[course] = D_800D82F8[i][j];
+    for (j = 0; j < 2; j++) {
+        D_801C24A0[course][j] = D_800D82F8[i][3].unk0 * (j + 1);
+    }
+    lap = (UnkStruct_func_8007AF78_1*) &D_801C23B0[course * 0x14];
+    *lap = *(UnkStruct_func_8007AF78_1*) D_800D8728;
+    for (j = 0; j < 3; j++) {
+        func_8007AF78(&D_801C1FF0[course][j], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    }
+    func_8007AF78(&D_801C22C0[course], (UnkStruct_func_8007AF78_2*) D_801AEA18->unk60[i][j]);
+    for (j = 0; j < 2; j++) {
+        func_8007B2BC(D_801C24A0[course][j], (UnkStruct_8007B2BC*) D_801AEA18->unk1A8[i][j]);
+    }
+    func_8007B09C(lap, (UnkStruct_func_8007AF78_2*) D_801AEA18->unk1D8[i]);
+    func_8007B31C();
+    D_801AEA18->unk2 = Save_GenCheckSum((u8*) D_801AEA18);
+    if (D_800D8260 == 0) {
+        return 1;
+    }
+    if (osEepromLongWrite(&D_801540D0, 0U, (u8*) D_801AEA18, 0x10) != 0) {
+        return 3;
+    }
+    if (osEepromLongWrite(&D_801540D0, ((u32) D_801AEA18->unk60[i] - (u32) D_801AEA18) >> 3,
+                          (u8*) D_801AEA18->unk60[i], 0x18) != 0) {
+        return 3;
+    }
+    off1 = D_800D826C[course];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) &D_801AEB38 - (uintptr_t) &D_801AEA18) + off1) >> 3,
+                          (u8*) D_801AEA18->unk120 + off1, 0x18) != 0) {
+        return 3;
+    }
+    off2 = D_800D82B0[i];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBC0 - (uintptr_t) &D_801AEA18) + off2) >> 3,
+                          (u8*) D_801AEA18->unk1A8 + off2, 0x10) != 0) {
+        return 3;
+    }
+    off3 = *(s32*) &D_800D8290[i * 4];
+    if (osEepromLongWrite(&D_801540D0, (((uintptr_t) D_801AEBF0 - (uintptr_t) &D_801AEA18) + off3) >> 3,
+                          (u8*) D_801AEA18->unk1D8 + off3, 0x10) != 0) {
+        return 3;
+    }
+    return 0;
+}
 
 s32 func_8007C9D4(s32 arg0) {
     s32 temp_v0;
