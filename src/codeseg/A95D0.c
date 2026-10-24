@@ -185,6 +185,7 @@ void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 void func_801DDEDC(camera_unk_1* cam, UnkA95D0_Obj* obj, UnkA95D0_Runner* runner);
 void func_801DEEC4(UnkA95D0_Obj* obj);
 void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key);
+f32 func_801DE690(f32 t, s32 seg, f32* points, s32 count);
 void func_801DF08C(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4);
 void func_801DEE48(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
 void func_801DEDE8(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines);
@@ -445,7 +446,20 @@ void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEB08.s")
+void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline) {
+    s32 duration;
+
+    while ((duration = spline->durations[cursor->seg]) == 0) {
+        cursor->seg++;
+    }
+    *out = func_801DE690((f32) cursor->frame / duration, cursor->seg, spline->points, spline->count);
+    if (++cursor->frame >= spline->durations[cursor->seg]) {
+        cursor->frame = 0;
+        if (++cursor->seg >= spline->count - 3) {
+            cursor->seg = -1;
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEC00.s")
 
