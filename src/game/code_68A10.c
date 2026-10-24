@@ -1539,7 +1539,7 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// 19814: same blocks, display-list commands and loops; register allocation and scheduling
+// 19969: same blocks, display-list commands and loops; register allocation and scheduling
 // differ (the original keeps more command words in saved registers).
 void func_800B305C(Gfx** gdl) {
     s32 i;
@@ -1592,8 +1592,8 @@ void func_800B305C(Gfx** gdl) {
                     tex = D_1049478;
                     break;
             }
-            gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             for (j = 63; j >= 0; j--) {
                 if (D_800E6D68[j].unk38 != 0) {
                     D_800E6D64 = &D_800E6D68[j];
