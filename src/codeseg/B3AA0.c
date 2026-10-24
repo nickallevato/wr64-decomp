@@ -214,7 +214,45 @@ void func_801E6074(UnkStruct_menu_buffer_1* slot) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E62A8.s")
+void func_801E62A8(UnkStruct_menu_buffer_1* slot) {
+    MtxF mf;
+    f32 t;
+
+    switch (slot->state) {
+        case 0:
+            t = (slot->frame / 5.0f) * 1.5f;
+            // An int 1, as in func_801E6074; the asm converts to unsigned, hence the (u32) casts.
+            if (slot->variant != 0) {
+                slot->x = (u32) (((1 - t) * 102.0f) + 58.0f);
+                slot->y = (u32) (((1 - t) * 15.0f) + 93.0f);
+            } else {
+                slot->x = (u32) (((1 - t) * 38.0f) + 120.0f);
+                slot->y = (u32) (((1 - t) * 20.0f) + 93.0f);
+            }
+            func_80048A88((Mtx*) ((u8*) D_801CE5F8 + ((u16) slot->index << 6) + 0x900), 0.0f, 0.0f, 1.0f, 0.0f,
+                          1.0f, 0.0f, slot->x, slot->y, 0.0f, t);
+            slot->frame++;
+            if (slot->frame >= 6) {
+                slot->state = 1;
+                if (slot->variant != 0) {
+                    slot->x = 58;
+                } else {
+                    slot->x = 120;
+                }
+                slot->y = 93;
+                slot->frame = 0;
+            }
+            break;
+        case 1:
+            SysUtils_MatrixLookAt((Mtx*) ((u8*) D_801CE5F8 + ((u16) slot->index << 6) + 0x900), &mf, 0.0f, 0.0f,
+                                  1.0f, 0.0f, 1.0f, 0.0f, slot->x, slot->y, 0.0f);
+            slot->frame++;
+            if (slot->frame >= 31) {
+                slot->type = 0;
+            }
+            break;
+    }
+}
 
 extern s32 D_802C6BD0;
 
