@@ -461,7 +461,23 @@ void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline) 
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEC00.s")
+void func_801DEC00(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline) {
+    s32 i;
+
+    while (spline->durations[cursor->seg] == 0) {
+        cursor->seg++;
+    }
+    for (i = 0; i < 3; i++) {
+        out[i] = func_801DE690((f32) cursor->frame / spline->durations[cursor->seg], cursor->seg, spline->points[i],
+                               spline->count);
+    }
+    if (++cursor->frame >= spline->durations[cursor->seg]) {
+        cursor->frame = 0;
+        if (++cursor->seg >= spline->count - 3) {
+            cursor->seg = -1;
+        }
+    }
+}
 
 void func_801DED44(f32* out, UnkA95D0_Cursor* cursors, UnkA95D0_Spline3* splines) {
     func_801DEC00(out, &cursors[0], &splines[0]);
