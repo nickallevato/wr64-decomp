@@ -4822,24 +4822,11 @@ void func_800AB92C(void) {
     func_8009D5C0();
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AB95C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC098.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC184.s")
-
-void func_800AD3C4(void) {
-    switch (gCourseID) {
-        case DRAKE_LAKE:
-            func_800C1DEC();
-            break;
-        case PORT_BLUE:
-            func_800C1B98();
-            break;
-        default:
-            break;
-    }
-}
+// The entries func_800AB95C adds to D_801CF060: a type and a count.
+typedef struct UnkStruct_800AB95C {
+    /* 0x0 */ s32 unk0;
+    /* 0x4 */ s32 unk4;
+} UnkStruct_800AB95C; /* size = 0x8 */
 
 extern struct UnkStruct_801C2938 D_801C2938[];
 extern s32 D_80192460[];
@@ -4880,6 +4867,146 @@ extern s32 D_801D0750;
 void func_800A68A4(s32);
 void func_800A9D48(s32);
 void func_800AB25C(s32);
+
+#ifdef NON_MATCHING
+// Score 5153 of 46300: frame 0x70 against 0x98; the original keeps the camera pointer on the stack (0x5C) and the list pointer in fp. sp94 is read but never written, as in the original.
+void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
+    UnkStruct_80192690* rider;
+    UnkStruct_80192690* rider2;
+    camera_unk_1* cam;
+    s32 i;
+    s32 j;
+    s32 sp94;
+
+    rider = &D_80192690[D_800D48DC];
+    cam = &gCameraPerspective[D_80223930];
+    if (gPlayers == TWO_PLAYERS) {
+        rider2 = &D_80192690[D_800D48E0];
+    } else {
+        rider2 = rider;
+    }
+    D_800E62C4++;
+    D_801D0778 = gGfxPool->unk13D68[D_80192460[0]].v.ob[0];
+    D_801D0780 = gGfxPool->unk13D68[D_80192460[0]].v.ob[2];
+    D_801D06BC = rider->unk44.x;
+    D_801D06C0 = rider->unk44.y;
+    D_801D06C4 = rider->unk44.z;
+    D_801D06C8 = rider->unk5C;
+    D_801D06CC = rider->unk60;
+    D_801D06D0 = rider->unk64;
+    D_801D06D8 = D_801D06BC - D_801D06E4;
+    D_801D06DC = D_801D06C0 - D_801D06E8;
+    D_801D06E0 = D_801D06C4 - D_801D06EC;
+    D_801D06E4 = D_801D06BC;
+    D_801D06E8 = D_801D06C0;
+    D_801D06EC = D_801D06C4;
+    D_801D06D4 = sqrtf(SQ(D_801D06D8) + SQ(D_801D06E0));
+    if (D_801D0724 < D_801D06D4) {
+        D_801D0724 = D_801D06D4;
+    }
+    D_801D0730 = D_801C2938[D_800D48DC].unkC;
+    D_801D0738 = D_801C2938[D_800D48DC].unk0;
+    D_801D0734 = D_801C2938[D_800D48DC].unk4;
+    D_801D073C = D_801C2938[D_800D48DC].unk2F4;
+    if (gPlayers == TWO_PLAYERS) {
+        D_801D0784 = gGfxPool->unk13D68[D_80192460[1]].v.ob[0];
+        D_801D078C = gGfxPool->unk13D68[D_80192460[1]].v.ob[2];
+    } else {
+        D_801D0784 = gGfxPool->unk13D68[D_80192460[0]].v.ob[0];
+        D_801D078C = gGfxPool->unk13D68[D_80192460[0]].v.ob[2];
+    }
+    D_801D06F0 = rider2->unk44.x;
+    D_801D06F4 = rider2->unk44.y;
+    D_801D06F8 = rider2->unk44.z;
+    D_801D06FC = rider2->unk5C;
+    D_801D0700 = rider2->unk60;
+    D_801D0704 = rider2->unk64;
+    D_801D070C = D_801D06F0 - D_801D0718;
+    D_801D0710 = D_801D06F4 - D_801D071C;
+    D_801D0714 = D_801D06F8 - D_801D0720;
+    D_801D0718 = D_801D06F0;
+    D_801D071C = D_801D06F4;
+    D_801D0720 = D_801D06F8;
+    D_801D0708 = sqrtf(SQ(D_801D06D8) + SQ(D_801D06E0));
+    if (D_801D0728 < D_801D0708) {
+        D_801D0728 = D_801D0708;
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        D_801D0744 = D_801C2938[D_800D48E0].unkC;
+        D_801D074C = D_801C2938[D_800D48E0].unk0;
+        D_801D0748 = D_801C2938[D_800D48E0].unk4;
+        D_801D0750 = D_801C2938[D_800D48E0].unk2F4;
+    } else {
+        D_801D0744 = D_801C2938[D_800D48DC].unkC;
+        D_801D074C = D_801C2938[D_800D48DC].unk0;
+        D_801D0748 = D_801C2938[D_800D48DC].unk4;
+        D_801D0750 = D_801C2938[D_800D48DC].unk2F4;
+    }
+    if (D_800E62CC < 30) {
+        if (arg0 == (UnkStruct_800AB95C*) 1) {
+            D_801CF060[0].unkC = 6000.0f;
+            D_801CF060[0].unk9C = 2;
+            D_801CF060[0].unk8 = 11;
+            D_801CF060[0].unk0 = 6;
+            D_801CF060[1].unk8 = 12;
+            D_801CF060[1].unk0 = 6;
+            D_801CF060[1].unk7C = 0;
+            D_801CF060[2].unk7C = 0;
+            D_801CF060[2].unk8 = 2;
+            D_801CF060[2].unk0 = 6;
+            D_800E62CC = 3;
+            D_800E62C8 = 3;
+            D_801CF060[0].unk14 = 4000.0f;
+            D_801CF060[2].unk14 = 4000.0f;
+            D_801CF060[0].unk18 = 90.0f;
+            D_801CF060[0].unk4C = 25.0f;
+            D_801CF060[2].unkC = 4800.0f;
+            D_801CF060[2].unk18 = 180.0f;
+            return;
+        }
+        for (i = 0; i < arg1; i++) {
+            for (j = 0; j < arg0[i].unk4; j++) {
+                D_801CF060[D_800E62C8].unk0 = arg0[sp94].unk0; // sp94 is never set
+                if ((D_801CF060[D_800E62C8].unk0 == 7) || (D_801CF060[D_800E62C8].unk0 == 8) ||
+                    (D_801CF060[D_800E62C8].unk0 == 9) || (D_801CF060[D_800E62C8].unk0 == 10)) {
+                    D_801CF060[D_800E62C8].unkC = (COS(SysUtils_Rand()) * 500.0f) + cam->unk4C;
+                    D_801CF060[D_800E62C8].unk7C = 0xFF;
+                    D_801CF060[D_800E62C8].unk14 = (SIN(SysUtils_Rand()) * 500.0f) + cam->unk4C;
+                    D_801CF060[D_800E62C8].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
+                    D_801CF060[D_800E62C8].unk8 = 5;
+                    D_801CF060[D_800E62C8].unk80 = 100000.0f;
+                    D_801CF060[D_800E62C8].unk84 = 100000.0f;
+                    D_801CF060[D_800E62C8].unk88 = 100000.0f;
+                }
+                D_800E62C8++;
+                D_800E62CC++;
+                if (D_800E62CC >= 30) {
+                    return;
+                }
+            }
+        }
+    }
+}
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AB95C.s")
+#endif
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC098.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC184.s")
+
+void func_800AD3C4(void) {
+    switch (gCourseID) {
+        case DRAKE_LAKE:
+            func_800C1DEC();
+            break;
+        case PORT_BLUE:
+            func_800C1B98();
+            break;
+        default:
+            break;
+    }
+}
 
 void func_800AD418(void) {
     UnkStruct_80192690* rider;
