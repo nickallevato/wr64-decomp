@@ -194,7 +194,31 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D018.s")
 
+#ifdef NON_MATCHING
+// 2820/19900: the original keeps -0x80 and 0x180 in registers ($ra, $t3) and starts the first row division before the second div check; registers differ from there. Frame and spill slots match
+f32 func_8004D30C(f32 x, f32 z) {
+    s32 cv;
+    s32 h00;
+    s32 cu;
+    s32 d0;
+    s32 d1;
+
+    cv = ((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6;
+    cu = ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6;
+    h00 = WATER_CELL(cu, cv)->unk0 >> 8;
+    if (((cv << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576)) < ((cu << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576))) {
+        d1 = h00 - (WATER_CELL(cu, cv + 1)->unk0 >> 8);
+        d0 = (WATER_CELL(cu, cv + 1)->unk0 >> 8) - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+    } else {
+        d0 = h00 - (WATER_CELL(cu + 1, cv)->unk0 >> 8);
+        d1 = (WATER_CELL(cu + 1, cv)->unk0 >> 8) - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+    }
+    return (f32) ((d0 * ((cu << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576))) + ((gWaterLevel + h00) << 12) + (d1 * ((cv << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576)))) /
+           sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D30C.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D628.s")
 
