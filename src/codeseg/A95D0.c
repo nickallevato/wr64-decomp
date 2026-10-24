@@ -554,7 +554,39 @@ void func_801DFC48(UnkA95D0_Obj* obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFCB8.s")
+void func_801DFCB8(UnkA95D0_Runner* runner) {
+    UnkA95D0_Step* step;
+
+    while (1) {
+        step = runner->step;
+        if (step == NULL) {
+            return;
+        }
+        if (step->func != NULL) {
+            step->func(runner, step->arg);
+        }
+        switch (step->duration) {
+            case 0:
+                runner->step++;
+                continue;
+            case -1:
+                step = NULL;
+                runner->frame = 0;
+                break;
+            case -2:
+                runner->frame++;
+                break;
+            default:
+                if (++runner->frame >= step->duration) {
+                    step++;
+                    runner->frame = 0;
+                }
+                break;
+        }
+        runner->step = step;
+        return;
+    }
+}
 
 void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj) {
     runner->obj = obj;
