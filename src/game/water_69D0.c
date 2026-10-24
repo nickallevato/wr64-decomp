@@ -110,7 +110,37 @@ void func_8004EFB4(f32 x, f32 z, s32 height) {
     p0->unk2 = p2->unk2 = p1->unk2 = 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F1EC.s")
+extern s32 gFrameCounter;
+extern u32 D_800D4680;
+extern s32 D_801924E0[];
+
+void func_8004F1EC(f32 x, f32 z, s32 height, s32 arg3) {
+    UnkStruct_80162420* p0;
+    UnkStruct_80162420* p1;
+    UnkStruct_80162420* p2;
+    s32 u;
+    s32 v;
+    s32 cu;
+    s32 cv;
+
+    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
+    cv = v >> 6;
+    cu = u >> 6;
+
+    if ((u - (cu * 64)) < (v - (cv * 64))) {
+        p0 = WATER_CELL(cu, cv + 1);
+    } else {
+        p0 = WATER_CELL(cu + 1, cv);
+    }
+    if ((u32) (gFrameCounter - D_801924E0[arg3]) >= D_800D4680) {
+        D_801924E0[arg3] = gFrameCounter;
+        p1 = WATER_CELL(cu + 1, cv + 1);
+        p2 = WATER_CELL(cu, cv);
+        p0->unk0 = p2->unk0 = p1->unk0 = height << 8;
+        p0->unk2 = p2->unk2 = p1->unk2 = 0;
+    }
+}
 
 void func_8004F3D4(f32 arg0, f32 arg1, s32 arg2) {
     UnkStruct_80162420* var_v0;
