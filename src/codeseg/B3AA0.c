@@ -43,8 +43,6 @@ extern u32 D_8058008[];
 extern u32 D_8071008[];
 extern RiderStruct D_801C2938[];
 
-Gfx* func_801E8800(Gfx*, u32, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, f32);
-
 Gfx* func_801E5554(Gfx* gdl) {
     s32 off;
     u32 width;

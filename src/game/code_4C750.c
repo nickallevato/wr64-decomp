@@ -1202,8 +1202,6 @@ s32 Strlen2(s8* str) {
     return len;
 }
 
-Gfx* func_801E9858(Gfx*, s32, s8*, s32, s32);
-
 Gfx* func_80094200(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 var_s0;
     s32 var_s1;
