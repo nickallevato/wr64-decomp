@@ -5,6 +5,14 @@
 #include "libc/math.h"
 
 extern RiderStruct D_801C2C70[];
+extern s32 D_800DA9C8[];
+extern s32 D_80226EF0[];
+extern s16 D_800DAB60;
+extern s32 D_800DA9F8;
+extern s32 D_800DA9FC;
+extern s32 D_800DAA08;
+extern s32 D_801CB334;
+extern s16 D_800EAC44[][4];
 
 void func_8009684C(s32 arg0, s32 arg1, s32 arg2);
 void func_801EE040(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
@@ -13,7 +21,86 @@ void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB180.s")
+void func_801EB180(void) {
+    s32 pad[2];
+    s32 rider;
+    s32 i;
+    s32 course;
+    s16 unk;
+
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_TITLE_SCREEN;
+    D_801CE638 = 0;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gGameModes = GMODE_TIME_TRIALS;
+    gPlayers = ONE_PLAYER;
+    gRiders = 2;
+    D_800D49B0 = 0x14;
+    gBuoyMisses = 5;
+    D_801CE728[0] = 3;
+    D_800D8178 = 1;
+    D_801CE600 = 0;
+    D_801CE6F8 = 0;
+    D_801CB334 = 0;
+    if (D_800D8240 == 0) {
+        gCourseID = DOLPHIN_PARK;
+    }
+    D_801CE6F0 = 0;
+    D_800DAB68 = 0;
+    D_800DAB0C = 0;
+    if (D_801CB280 & 0x10) {
+        D_800DAB60 = 1;
+    } else {
+        D_800DAB60 = 0;
+    }
+    D_800DAB64 = 0;
+    D_800DAA08 = 0;
+    D_800DA9F8++;
+    if (D_800DA9F8 >= 3) {
+        D_800DA9F8 = 0;
+    }
+    D_800DA9FC++;
+    if (D_800DA9FC >= 4) {
+        D_800DA9FC = 0;
+    }
+    rider = D_800EAC44[D_800DA9FC][0];
+    unk = D_800EAC44[D_800DA9FC][1];
+    for (i = 0; i < gRiders; i++) {
+        D_80192690[i].unkB68 = unk;
+        D_80192690[i].unkB6C = D_800D96A4[gCourseID][unk].unk0;
+        D_80192690[i].unkB70 = D_800D96A4[gCourseID][unk].unk4;
+        D_80192690[i].unkB74 = D_800D96A4[gCourseID][unk].unk8;
+    }
+    D_80192690[D_800D48DC].unkB68 = rider;
+    D_80192690[D_800D48DC].unkB6C = D_800D96A4[gCourseID][rider].unk0;
+    D_80192690[D_800D48DC].unkB70 = D_800D96A4[gCourseID][rider].unk4;
+    D_80192690[D_800D48DC].unkB74 = D_800D96A4[gCourseID][rider].unk8;
+    D_801CE6F4[1] = 0;
+    D_801CE6F4[0] = D_801CE6F4[1];
+    gRiderGameModes = UNACTIVE_MODE;
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_STARTED;
+    func_80096960(1, rider, unk, 0, 0);
+    course = gCourseID;
+    if (course < DOLPHIN_PARK) {
+        course = DOLPHIN_PARK;
+    }
+    if (course >= RIDER_SELECTION) {
+        course = SOUTHERN_ISLAND;
+    }
+    func_8009684C(0x08060000, D_800DB568[course].unk0, D_800DB568[course].unk2);
+    func_8004A208();
+    FadeTransition_SetProps(0, 0, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 5;
+    D_800DA9AC = 1;
+    func_800C21F4(0, 0);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB4F4.s")
 
