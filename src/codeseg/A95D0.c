@@ -86,7 +86,10 @@ typedef struct UnkA95D0_Payload1 {
 } UnkA95D0_Payload1; // size = 0x20
 
 typedef struct UnkA95D0_Payload2 {
-    /* 0x00 */ f32 unk0[14];
+    /* 0x00 */ f32 unk0[3];
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ UnkA95D0_Ease unk14[3];
 } UnkA95D0_Payload2; // size = 0x38
 
 typedef struct UnkA95D0_Payload5 {
@@ -535,7 +538,30 @@ void func_801DF278(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Key2* key) {
     obj->u.p2 = key->p;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF2F8.s")
+void func_801DF2F8(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4) {
+    UnkA95D0_Payload2* p = &obj->u.p2;
+    UnkA95D0_Base* b = &obj->base;
+    s32 i;
+
+    if (arg1 != NULL) {
+        for (i = 0; i < 3; i++) {
+            p->unk0[i] = arg1[i];
+        }
+    }
+    if (arg2 != NULL) {
+        p->unk14[0].target = arg2[0];
+        p->unk14[1].target = arg2[1];
+        p->unk14[2].target = arg2[2];
+    }
+    if (arg3 != NULL) {
+        for (i = 0; i < 3; i++) {
+            b->unk24[i] = arg3[i];
+        }
+    }
+    if (arg4 != NULL) {
+        b->unk38 = *arg4;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF38C.s")
 
