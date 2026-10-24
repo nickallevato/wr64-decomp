@@ -541,16 +541,16 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// 2675: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
+// 2603: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
 // stack as in the original; the frame is 0x98, not 0x88, and the registers differ.
 void func_80076378(s32 arg0) {
-    s32 best;
     s32 prev;
     s32 next;
     f32 dx0;
     f32 dz0;
     f32 dxp;
     s32 cur;
+    s32 best;
     s32 zoneA;
     s32 zoneB;
     s32 zoneC;
