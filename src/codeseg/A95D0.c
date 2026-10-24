@@ -185,6 +185,26 @@ extern UnkA95D0_Runner D_80228058[];
 extern UnkA95D0_Obj D_80227E98[];
 void func_800AB95C(s32, s32);
 extern UnkA95D0_Step D_80223F7C[];
+extern UnkA95D0_Step D_80223A30[];
+extern UnkA95D0_Step D_80223D38[];
+extern UnkA95D0_Step D_80224060[];
+extern UnkA95D0_Step D_802241E0[];
+extern UnkA95D0_Step D_802242C0[];
+extern UnkA95D0_Step D_80224430[];
+extern UnkA95D0_Step D_802245B4[];
+extern UnkA95D0_Step D_802246B4[];
+extern UnkA95D0_Step D_80224944[];
+extern UnkA95D0_Key1 D_80225A84;
+extern UnkA95D0_Key5 D_80225AFC;
+extern UnkA95D0_Key5 D_80225BD8;
+void func_801DFD94(UnkA95D0_Runner* runner, UnkA95D0_Step* step);
+void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj);
+void func_801E0FF0(camera_unk_1* cam);
+void func_801E11B4(GfxPool* pool, camera_unk_1* cam);
+extern f32 D_80223940[];
+extern f32 D_80223950[];
+extern f32 D_80223960[];
+extern f32 D_80223970[];
 extern UnkA95D0_Cursor D_802280C8[][4];
 extern f32 D_80228108;
 void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj);
@@ -566,7 +586,106 @@ void func_801DDA24(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DDAB8.s")
+void func_801DDAB8(void* arg0, void* arg1, void* arg2) {
+    UnkA95D0_Step* step;
+    camera_unk_1* cam = arg0;
+    UnkA95D0_Obj* obj = arg1;
+    UnkA95D0_Runner* runner = arg2;
+
+    cam->unk9C = 10.0f;
+    cam->unkA0 = 16138.0f;
+    D_80228108 = gWaterLevel;
+    switch (cam->viewMode) {
+        case 1:
+            func_801DF008(obj, &D_80225A84);
+            break;
+        case 2:
+            func_801DF5F0(obj, &D_80225AFC);
+            obj->u.p5.unkC = D_80228108;
+            obj->u.p5.unk18[0] = cam->unk4 - cam->unk1C * 100.0f;
+            obj->u.p5.unk18[1] = cam->unkC - cam->unk24 * 100.0f;
+            obj->u.p5.unk48[1].target = 90.0f;
+            break;
+        case 3:
+        mode3:
+            func_801DF5F0(obj, &D_80225BD8);
+            obj->u.p5.unkC = D_80228108;
+            obj->u.p5.unk18[0] = cam->unk4 - cam->unk1C * 100.0f;
+            obj->u.p5.unk18[1] = cam->unkC - cam->unk24 * 100.0f;
+            if ((gGameState == GAME_STATE_DEMO) || (gGameState == GAME_STATE_8)) {
+                cam->camViewY = 0.0f;
+            } else {
+                obj->base.unk34 = D_80223940[cam->unkEC];
+                obj->u.p5.unk48[0].value = D_80223950[cam->unkEC];
+                obj->u.p5.unk48[2].value = D_80223960[cam->unkEC];
+                cam->camViewY = D_80223970[cam->unkEC];
+            }
+            cam->viewMode = 4;
+            break;
+        case 5:
+            switch (D_801CE638) {
+                case 0:
+                    cam->viewMode = 3;
+                    goto mode3;
+                case 8:
+                default:
+                    cam->viewMode = 6;
+                    switch (gCourseID) {
+                        case DOLPHIN_PARK:
+                            step = D_80223A30;
+                            break;
+                        case SUNNY_BEACH:
+                            switch (gDifficulty) {
+                                case DIFFICULTY_NORMAL:
+                                    step = D_80223D38;
+                                    break;
+                                case DIFFICULTY_HARD:
+                                    step = D_80224944;
+                                    break;
+                                case DIFFICULTY_EXPERT:
+                                    step = D_80224B14;
+                                    break;
+                            }
+                            break;
+                        case SUNSET_BAY:
+                            step = D_80223F7C;
+                            break;
+                        case MARINE_FORTRESS:
+                            step = D_80224060;
+                            break;
+                        case DRAKE_LAKE:
+                            step = D_802241E0;
+                            break;
+                        case PORT_BLUE:
+                            step = D_802242C0;
+                            break;
+                        case TWILIGHT_CITY:
+                            step = D_80224430;
+                            break;
+                        case GLACIER_COAST:
+                            step = D_802245B4;
+                            break;
+                        case SOUTHERN_ISLAND:
+                            step = D_802246B4;
+                            break;
+                    }
+                    func_801DFD94(runner, step);
+                    break;
+            }
+            break;
+        case 8:
+            runner->frame = 0;
+            cam->unk9C = 32.0f;
+            cam->unk94 = 0.0f;
+            cam->unk98 = 0.0f;
+            cam->unkA0 = 4096.0f;
+            break;
+    }
+    func_801E0F8C(cam, obj);
+    func_801E0FF0(cam);
+    func_801E11B4(&D_8011F8E8[0], cam);
+    func_801E11B4(&D_8011F8E8[1], cam);
+}
 
 void func_801DDE48(void) {
     s32 i;
