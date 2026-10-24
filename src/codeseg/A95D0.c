@@ -12,9 +12,7 @@ typedef struct UnkStruct_801DB0E4_arg0 {
     s32 unk8;
     f32 unkC[3];
     f32 unk14[3];
-    f32 unk24;
-    f32 unk28;
-    f32 unk2C;
+    f32 unk24[3];
     f32 unk30;
 } UnkStruct_801DB0E4_arg0;
 
@@ -340,9 +338,9 @@ void func_801DB0E4(struct UnkStruct_801DB0E4_arg0* arg0, struct UnkStruct_801DB0
         arg0->unk14[i] = vec[i] / magnitud;
     }
 
-    arg0->unk24 = 0.0f;
-    arg0->unk28 = 1.0f;
-    arg0->unk2C = 0.0f;
+    arg0->unk24[0] = 0.0f;
+    arg0->unk24[1] = 1.0f;
+    arg0->unk24[2] = 0.0f;
     arg0->unk30 = 0.1f;
 
     *arg2 = arg1->unk1C;
@@ -426,9 +424,9 @@ void func_801DB430(struct UnkStruct_801DB0E4_arg0* arg0, struct UnkStruct_801DB0
 
         magnitude = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
 
-        arg0->unk24 = vec[0] / magnitude;
-        arg0->unk28 = vec[1] / magnitude;
-        arg0->unk2C = vec[2] / magnitude;
+        arg0->unk24[0] = vec[0] / magnitude;
+        arg0->unk24[1] = vec[1] / magnitude;
+        arg0->unk24[2] = vec[2] / magnitude;
 
         magnitude = (arg0->unk14[0] * vec[2]) - (arg0->unk14[2] * vec[0]);
 
@@ -572,7 +570,79 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC60C.s")
 
+#ifdef NON_MATCHING
+// IDO keeps the D_80228190 and D_802287DC addresses in registers here; the original loads each with its own lui.
+extern f32 D_802287B0[3];
+extern f32 D_802287C0[3];
+extern f32 D_802287D0[3];
+extern f32 D_802287DC;
+extern s32 D_80228198;
+extern f32 D_8022819C;
+extern f32 D_802281A0;
+extern f32 D_802281A4;
+extern f32 D_802281C0;
+
+void func_801DCD34(UnkA95D0_Runner* runner) {
+    s32 i;
+    f32 d;
+    f32 v;
+
+    if (runner->step - D_802242C0 != 2) {
+        return;
+    }
+    D_802287A8 = 1;
+    D_802287C0[0] = -2050.0f;
+    if (runner->frame < 150) {
+        v = sqrtf(150 - runner->frame) * 12.0f;
+    } else {
+        v = 0.0f;
+    }
+    D_802287C0[1] = v + 650.0f;
+    D_802287C0[2] = -5650.0f;
+    if (runner->frame == 1) {
+        func_800AB92C();
+        D_80228190[0].unk0 = 12;
+        D_80228190[0].unk4 = 0;
+        D_80228198 = 0;
+        D_802287B0[0] = D_802287C0[0] - 2600.0f;
+        D_802287B0[1] = D_802287C0[1] + 450.0f;
+        D_802287B0[2] = D_802287C0[2] - 950.0f;
+        D_80228120[0][0] = 70.0f;
+        D_802281C0 = 0.25f;
+    }
+    for (i = 0; i < 3; i++) {
+        d = D_802287C0[i] - D_802287B0[i];
+        D_802287DC = d;
+        if (d >= 0.0f) {
+            v = sqrtf(d);
+        } else {
+            v = -sqrtf(-d);
+        }
+        D_802287B0[i] += v * 0.3f;
+    }
+    D_8022819C = D_802287B0[0] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 8.0f)) * 20.0f;
+    D_802281A0 = D_802287B0[1] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 4.5f)) * 12.0f;
+    D_802281A4 = D_802287B0[2] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 7.5f)) * 25.0f;
+    D_802287D0[0] = COS(DEG_TO_BINANG(D_80228120[0][0]));
+    D_802287D0[2] = SIN(DEG_TO_BINANG(D_80228120[0][0]));
+    D_802287D0[1] = (f32) (runner->frame / runner->step->duration) * 0.9f + -0.2f;
+    D_802287DC = sqrtf(SQ(D_802287D0[0]) + SQ(D_802287D0[1]) + SQ(D_802287D0[2]));
+    for (i = 0; i < 3; i++) {
+        D_80228190[0].unk14[i] = D_802287D0[i] / D_802287DC;
+    }
+    D_80228120[0][0] += 160.0f / runner->step->duration;
+    D_802287D0[0] = D_802287B0[0] - D_8022819C;
+    D_802287D0[1] = (f32) (SysUtils_Rand() & 0x1F) + 600.0f;
+    D_802287D0[2] = D_802287B0[2] - D_802281A4;
+    D_802287DC = sqrtf(SQ(D_802287D0[0]) + SQ(D_802287D0[1]) + SQ(D_802287D0[2]));
+    for (i = 0; i < 3; i++) {
+        D_80228190[0].unk24[i] = D_802287D0[i] / D_802287DC;
+    }
+    D_80228198 = (D_80228198 + 1) % 2;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DCD34.s")
+#endif
 
 #ifdef NON_MATCHING
 // Stack layout and loop strength reduction differ (the D_80228110 load moves above the unk8 store; s7/s8 swap).
@@ -599,9 +669,9 @@ void func_801DD2D0(UnkA95D0_Runner* runner) {
             for (j = 0; j < 3; j++) {
                 e->unkC[j] = spDC.unk0[i][j];
             }
-            e->unk24 = 0.0f;
-            e->unk28 = 1.0f;
-            e->unk2C = 0.0f;
+            e->unk24[0] = 0.0f;
+            e->unk24[1] = 1.0f;
+            e->unk24[2] = 0.0f;
             e->unk30 = 0.1f;
             if (i == 0) {
                 D_80228110[i] = 6;
