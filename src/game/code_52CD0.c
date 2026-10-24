@@ -2571,11 +2571,8 @@ Gfx* func_800A28F4(Gfx* gdl, s32 arg1) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 11400 of 254100: registers and scheduling throughout; the control flow (the unk50 switch) follows the original.
 void func_800A2B24(s32 arg0) {
     camera_unk_1* cam;
-    s32 prev;
 
     cam = &gCameraPerspective[D_80223930];
     switch (D_801CF060[arg0].unk50) {
@@ -2641,8 +2638,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 2:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -2673,8 +2670,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             if (D_801CF060[arg0].unk54 == 1) {
                 D_801CF060[arg0].unk74 = 3;
                 D_801CF060[arg0].unk78 = 0;
@@ -2715,8 +2712,8 @@ void func_800A2B24(s32 arg0) {
             if ((D_801CF060[arg0].unk54 >= 11) && (D_801CF060[arg0].unk54 < 40)) {
                 D_801CF060[arg0].unk20 = Math_Normalize_Angle((f32) (D_801CF060[arg0].unk54 - 10) * -12.0f);
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 4:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -2754,8 +2751,8 @@ void func_800A2B24(s32 arg0) {
             if ((D_801CF060[arg0].unk54 >= 16) && (D_801CF060[arg0].unk54 < 45)) {
                 D_801CF060[arg0].unk1C = Math_Normalize_Angle(2.0f * ((f32) (D_801CF060[arg0].unk54 - 15) * -12.0f));
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             if (D_801CF060[arg0].unk54 == 15) {
                 D_801CF060[arg0].unk74 = 3;
                 D_801CF060[arg0].unk78 = 0;
@@ -2793,8 +2790,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 6:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -2830,8 +2827,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 7:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -2853,11 +2850,10 @@ void func_800A2B24(s32 arg0) {
             }
             D_801CF060[arg0].unk5C *= 0.8;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
-            prev = D_801CF060[arg0].unk54;
             D_801CF060[arg0].unk1C = func_8009D564(Math_Normalize_Angle(D_801CF060[arg0].unk1C) * 0.9);
             D_801CF060[arg0].unk74 = 5;
-            D_801CF060[arg0].unk54 = (s32) (prev + 1) % 80;
-            D_801CF060[arg0].unk78 = prev;
+            D_801CF060[arg0].unk78 = D_801CF060[arg0].unk54;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 80;
             break;
         case 8:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -2891,8 +2887,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 30;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 30;
             break;
         case 9:
             if (D_801CF060[arg0].unk10 >= 1000.0f) {
@@ -2901,7 +2897,7 @@ void func_800A2B24(s32 arg0) {
                 D_801D0758 = -(D_801CF060[arg0].unk10 - 1000.0f);
             }
             if (D_801D0758 > 30.0f) {
-                if (D_801CF060[arg0].unk10 > 1000.0f) {
+                if (D_801CF060[arg0].unk10 > 1000) {
                     D_801CF060[arg0].unk5C -= 5.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 5.0f;
@@ -2964,10 +2960,10 @@ void func_800A2B24(s32 arg0) {
                 D_801CF060[arg0].unk5C = 5.0f;
             }
             if (D_801CF060[arg0].unk20 < 90.0) {
-                D_801CF060[arg0].unk20 += (90.0f - D_801CF060[arg0].unk20) * 0.1;
+                D_801CF060[arg0].unk20 = D_801CF060[arg0].unk20 + ((90.0f - D_801CF060[arg0].unk20) * 0.1);
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk5C *= 0.8;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
             break;
         case 14:
@@ -3002,8 +2998,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 15:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -3047,8 +3043,8 @@ void func_800A2B24(s32 arg0) {
                 D_801CF060[arg0].unk1C = Math_Normalize_Angle((f32) (D_801CF060[arg0].unk54 - 20) * -6.0f);
                 D_801CF060[arg0].unk20 = Math_Normalize_Angle(FABS(D_801CF060[arg0].unk5C) * -1.2);
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 16:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -3091,8 +3087,8 @@ void func_800A2B24(s32 arg0) {
             if ((D_801CF060[arg0].unk54 >= 21) && (D_801CF060[arg0].unk54 < 80)) {
                 D_801CF060[arg0].unk20 = Math_Normalize_Angle(D_801CF060[arg0].unk5C * -1.2);
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             if (D_801CF060[arg0].unk54 == 20) {
                 D_801CF060[arg0].unk74 = 1;
                 D_801CF060[arg0].unk78 = 0;
@@ -3130,8 +3126,8 @@ void func_800A2B24(s32 arg0) {
             if (D_801CF060[arg0].unk20 < -90.0) {
                 D_801CF060[arg0].unk20 = -90.0f;
             }
-            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
+            D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 18:
             if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
@@ -3183,9 +3179,6 @@ void func_800A2B24(s32 arg0) {
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A2B24.s")
-#endif
 
 // The per-course node tables func_800A52D8 and func_800AAAC8 walk (0x1C bytes per node).
 typedef struct UnkStruct_800E6C78 {
