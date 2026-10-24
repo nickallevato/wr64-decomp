@@ -147,9 +147,9 @@ u32* func_800965B8(s32 arg0);
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
 #ifdef NON_MATCHING
-// Score 5394 of 63000, 2 instructions short: the original walks the list with a copy of list (spilled at sp18)
-// and keeps the next entry in v1; the load/buffer/list temps are in a1/a2/a3 there (a3/t0/a1 here); stack slots
-// are 0x18 lower.
+// Score 2038 of 63000: the list pointers of the race-results and stunt-results cases are in a3 (a2 here) and
+// their lui is scheduled earlier; the list walk keeps the next entry in v1; fromState67 is 4 bytes higher on the
+// stack; the ceremony loop's second pointer step is scheduled later.
 void unk_game_load(void) {
     s32 fromState67;
     DmaEntry** list;
@@ -159,13 +159,12 @@ void unk_game_load(void) {
     Gfx* saved3C;
     Gfx* saved40;
     s32 course;
-    DmaEntry** raceList;
     s32 load;
     s32 buffer;
     s32 i;
-    UnkStruct_80227A60* m;
     UnkStruct_800DCE98* e;
     UnkStruct_80227A60* src;
+    DmaEntry** p;
 
     load = 0;
     buffer = 0;
@@ -207,29 +206,28 @@ void unk_game_load(void) {
             if (D_801CE608.player == 1) {
                 if (D_801CE608.gameMode != 0) {
                     if (D_801CE608.gameMode != 0xB) {
-                        raceList = D_800DC868;
+                        list = D_800DC868;
                     } else {
-                        raceList = D_800DC8B0;
+                        list = D_800DC8B0;
                     }
                 } else {
-                    raceList = D_800DC88C;
+                    list = D_800DC88C;
                 }
-                raceList[2] = D_800DC4F0[course];
-                raceList[3] = D_800DC698[course];
+                list[2] = D_800DC4F0[course];
+                list[3] = D_800DC698[course];
                 if ((gCourseID == DOLPHIN_PARK) && (D_801CE608.gameMode == 4)) {
-                    raceList[7] = D_800DC748;
+                    list[7] = D_800DC748;
                 } else {
-                    raceList[7] = NULL;
+                    list[7] = NULL;
                 }
-                raceList[4] = D_800DC0E4[course];
+                list[4] = D_800DC0E4[course];
             } else {
-                raceList = D_800DC8D4;
+                list = D_800DC8D4;
                 D_800DC8D4[2] = D_800DC514[course];
                 D_800DC8D4[3] = D_800DC6BC[course];
                 D_800DC8D4[4] = D_800DC108[course];
             }
-            raceList[5] = D_800DC18C[course];
-            list = raceList;
+            list[5] = D_800DC18C[course];
             break;
         case GAME_STATE_2A:
             list = D_800DC868;
@@ -403,8 +401,9 @@ void unk_game_load(void) {
         D_801CE730 = 0;
         D_801CE734 = 0;
         D_801CE738 = 0;
-        for (; *list != NULL; list++) {
-            func_80095A28(*list);
+        p = list;
+        while (*p != NULL) {
+            func_80095A28(*p++);
         }
         if (D_801CE730 > 0) {
             if (D_801CE760[0] != -1) {
@@ -445,19 +444,19 @@ void unk_game_load(void) {
                 D_80227A60[3].unk0[3] = D_80227A60[1].unk0[3];
             }
             if (gGameState == GAME_STATE_CEREMONY) {
-                for (i = 0, m = D_80227A60; i < 4; i++, m++) {
-                    D_801CE9A0[i] = m->unk0[2];
+                for (i = 0, src = D_80227A60; i < 4; i++, src++) {
+                    D_801CE9A0[i] = src->unk0[2];
                     e = &D_800DCE98[D_800DA9B0[i]];
-                    m->unk0[2] = D_8090510;
-                    m->unk0[3] = e->unk0;
-                    m->unk0[8] = e->unk4;
+                    src->unk0[2] = D_8090510;
+                    src->unk0[3] = e->unk0;
+                    src->unk0[8] = e->unk4;
                 }
             }
         }
         if (gGameState != GAME_STATE_BOOT_UP) {
             gDisplayListHead = (Gfx*) gGfxPool;
             if (fromState67 == 0) {
-                gDisplayListHead = func_80093F78((Gfx*) gGfxPool);
+                gDisplayListHead = func_80093F78(gDisplayListHead);
             } else {
                 gDisplayListHead = func_80093DBC(gDisplayListHead, 0xFF, 0xFF, 0xFF);
             }
