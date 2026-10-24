@@ -2,7 +2,6 @@
 
 extern s32 D_801C2650;
 extern s32 D_801C2654;
-
 extern s32 D_801CB330;
 extern s32 D_801CB334;
 extern s32 D_801CB350[][4];
@@ -10,19 +9,18 @@ extern s32 D_i1_802C950C;
 extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 
+void func_80077F5C(void);
 s32 func_8007BEA4(s32);
 s32 func_8007C204(s32);
 s32 func_8007C494(void);
 Gfx* func_80093AFC(Gfx*);
+void func_801EC830(void);
+void func_i1_802C7570(s32 arg0);
 Gfx* func_i1_802C7E48(Gfx*);
 void func_i1_802C8E70(void);
 void GameState_EnterCeremony(void);
-
-void func_i1_802C7570(s32 arg0);
-void func_80077F5C(void);
-void GameState_EnterRaceResults(void);
 void GameState_EnterCourseOverview(void);
-void func_801EC830(void);
+void GameState_EnterRaceResults(void);
 
 void func_i1_802C5800(void) {
     if ((D_801CE63C != 0) && (gGameState == 0x28)) {

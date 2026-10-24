@@ -1,30 +1,26 @@
 #include "global.h"
 
+extern u16 D_80A0008[];
 extern const s16 D_800EAC14[][8];
 extern s32 D_801CB288[];
-extern s32 D_i4_802C7534;
-extern s32 D_802C76C4;
-extern s32 D_802C76C8;
-
 extern s16 D_801CE60C;
-extern s32 D_802C76D0;
-
+extern s32 D_i4_802C7534;
+extern s32 D_i4_802C7540;
+extern s32 D_i4_802C7544;
+extern s32 D_i4_802C7548;
 extern s32 D_i4_802C754C;
 extern s32 D_i4_802C7550;
 extern s32 D_i4_802C7558[];
 extern s32 D_i4_802C757C[][4];
 extern s32 D_802C76A4;
-extern s32 D_802C76CC;
-
-extern s32 D_i4_802C7540;
-extern s32 D_i4_802C7544;
-extern s32 D_i4_802C7548;
 extern s32 D_802C76B4;
 extern s32 D_802C76B8;
 extern s32 D_802C76BC;
 extern s32 D_802C76C0;
-
-extern u16 D_80A0008[];
+extern s32 D_802C76C4;
+extern s32 D_802C76C8;
+extern s32 D_802C76CC;
+extern s32 D_802C76D0;
 
 void func_i4_802C7344(void);
 

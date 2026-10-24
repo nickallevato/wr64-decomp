@@ -1,57 +1,43 @@
 #include "global.h"
 
+extern s32 D_i13_802C8D50;
+extern s32 D_i13_802C8D54;
+extern s32 D_i13_802C8D58;
+extern s32 D_i13_802C8D5C;
 extern s32 D_i13_802C8D60[];
+extern s32 D_i13_802C8D70;
+extern s32 D_i13_802C8D74;
 extern s32 D_i13_802C8D7C;
-extern s32 D_i13_802C8DE0[];
-
-extern s32 D_i13_802C8DD4;
-
+extern s32 D_i13_802C8D80;
+extern s32 D_i13_802C8D84;
+extern s32 D_i13_802C8D98;
 extern s32 D_i13_802C8DC4;
 extern s32 D_i13_802C8DC8;
 extern s32 D_i13_802C8DCC;
 extern s32 D_i13_802C8DD0;
-
-extern s32 D_i13_802C8D5C;
-extern s32 D_i13_802C8D98;
-
-extern s32 D_i13_802C8D58;
-extern s32 D_i13_802C8D70;
-extern s32 D_i13_802C8D74;
-
-extern s32 D_i13_802C8D54;
-
-extern s32 D_i13_802C8D50;
-
-extern s32 D_i13_802C8D80;
-extern s32 D_i13_802C8D84;
+extern s32 D_i13_802C8DD4;
+extern s32 D_i13_802C8DE0[];
 extern s32 D_802C8E90;
 extern s32 D_802C8E94;
 extern s32 D_802C8E9C;
 
-void func_i13_802C6068(void);
-void func_i13_802C7060(void);
-void func_i13_802C81AC(s32 arg0);
-Gfx* func_i13_802C711C(Gfx*);
-Gfx* func_i13_802C832C(Gfx*);
-void GameState_EnterOptionsMenu(void);
-
-s32 func_i13_802C6700(void);
-
 s32 func_8007BDB8(void);
-void func_800C3010(u32);
-s32 Save_PfsDeleteFile(void);
-
 s32 func_8007D2D4(s32);
 s32 func_8007D614(s32);
-
-void func_i13_802C82A4(s32 arg0);
-
-s32 Save_PfsCheckFree(void);
-s32 Save_PfsFindFile(void);
-
-void func_i13_802C8CBC(void);
-
+void func_800C3010(u32);
 void func_800C3E6C(s32);
+void func_i13_802C6068(void);
+s32 func_i13_802C6700(void);
+void func_i13_802C7060(void);
+Gfx* func_i13_802C711C(Gfx*);
+void func_i13_802C81AC(s32 arg0);
+void func_i13_802C82A4(s32 arg0);
+Gfx* func_i13_802C832C(Gfx*);
+void func_i13_802C8CBC(void);
+void GameState_EnterOptionsMenu(void);
+s32 Save_PfsCheckFree(void);
+s32 Save_PfsDeleteFile(void);
+s32 Save_PfsFindFile(void);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C5800.s")
 

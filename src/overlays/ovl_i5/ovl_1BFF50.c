@@ -1,26 +1,23 @@
 #include "common.h"
 
-extern Vp D_i5_802C7A08;
-extern s16 D_802C7B04;
-extern u16 D_802C7B06;
-
 extern s32 D_801CB288[];
 extern s32 D_801CB334;
-
 extern s16 D_i5_802C7A00;
+extern Vp D_i5_802C7A08;
 extern s32 D_802C7B00;
+extern s16 D_802C7B04;
+extern u16 D_802C7B06;
 extern s32 D_802C7B08;
 extern s32 D_802C7B0C;
 
 s32 func_8007C494(void);
-Gfx* func_i5_802C5DC0(Gfx*);
-void func_i5_802C6CC4(void);
-void GameState_EnterCeremony(void);
-void GameState_EnterCourseOverview(void);
-
 void func_800C3E4C(void);
 void func_801EC944(void);
+Gfx* func_i5_802C5DC0(Gfx*);
+void func_i5_802C6CC4(void);
 void func_i5_802C6F84(s32 arg0);
+void GameState_EnterCeremony(void);
+void GameState_EnterCourseOverview(void);
 
 void func_i5_802C5800(void) {
     if ((D_801CE63C != 0) && (gGameState == 52)) {
