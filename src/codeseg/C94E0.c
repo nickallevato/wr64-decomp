@@ -185,7 +185,83 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/C94E0/func_801FB514.s")
 
+#ifdef NON_MATCHING
+// Score 9598: the loop's register allocation and constant hoisting differ throughout; frame 0xD8, not 0xE0.
+extern Gfx D_10146B0[];
+extern f32 D_80227A58;
+extern u32 D_804C008[];
+extern u32 D_804F010[];
+extern u32 D_8052018[];
+
+void func_801FBFB4(Gfx** gdlp) {
+    Gfx* gdl;
+    s32 i;
+    s32 j;
+    s32 cx;
+    s32 cy;
+    s32 w;
+    u32* tex;
+    f32 scale;
+    f32 width;
+    f32 height;
+    f32 x;
+    f32 y;
+    f32 nextY;
+    f32 big;
+
+    gdl = *gdlp;
+    big = D_80227A58; // FAKE: a float literal in the original (its rodata is still in the F6010 data blob)
+    gSPDisplayList(gdl++, D_10146B0);
+    for (i = 0; i < 2; i++) {
+        if (D_80228E00[i] == 0) {
+            continue;
+        }
+        cx = 160;
+        if (i == 0) {
+            cy = 64;
+        } else {
+            cy = 174;
+        }
+        tex = D_804F010;
+        w = 96;
+        if (D_80228E08[i] < 6) {
+            scale = (D_80228E08[i] / 5.0f) * big;
+        } else {
+            scale = 1.0f;
+        }
+        switch (D_80228E00[i]) {
+            case 1:
+                break;
+            case 2:
+                tex = D_804C008;
+                w = 96;
+                break;
+            case 3:
+            default:
+                tex = D_8052018;
+                w = 112;
+                break;
+        }
+        height = 32.0f * scale;
+        width = w * scale;
+        y = cy - height * 0.5f;
+        x = cx - width * 0.5f;
+        for (j = 0; j < 4; j++) {
+            nextY = y + height * 0.25f;
+            gDPLoadTextureTile(gdl++, &tex[j * w * 8], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
+                               G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                               G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
+                                (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
+                                (s32) (32768.0f / height));
+            y = nextY;
+        }
+    }
+    *gdlp = gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/C94E0/func_801FBFB4.s")
+#endif
 
 void func_801FC39C(void) {
     Players player;
