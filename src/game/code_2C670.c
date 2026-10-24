@@ -904,14 +904,15 @@ extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
 #ifdef NON_MATCHING
-// 3993: same loops and calls. The original saves s8 and has a 0xB0 frame (here 0x98), and
-// numbers the saved registers differently from the first loop on.
+// 1105: same loops, calls and stores. The original has a 0xB0 frame (here 0x98), keeps 0.0f in
+// fs3 instead of fs2, compares unk98 with the operands the other way round, and schedules the
+// link walks of the third loop differently.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
+    UnkStruct_801AEE20* e;
     s32 i;
     s32 k;
     s32 n;
     s32 path;
-    s32 type;
     f32 dx;
     f32 dz;
     f32 px;
@@ -924,22 +925,21 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     f32 angle;
     f32 ox;
     f32 oz;
-    f32 x;
-    f32 z;
-    UnkStruct_801AEE20* e;
 
     for (i = 0; i < arg1; i++) {
-        arg0[i].unk4 = 0.0f;
-        arg0[i].unk0 = arg0[i].unk24;
-        arg0[i].unk8 = arg0[i].unk28;
-        arg0[arg0[i].unkB4].unkB8 = i;
+        e = &arg0[i];
+        e->unk4 = 0.0f;
+        e->unk0 = e->unk24;
+        e->unk8 = e->unk28;
+        arg0[e->unkB4].unkB8 = i;
     }
     for (i = 0; i < arg1; i++) {
-        arg0[i].unkA0 = arg0[i].unkAC = arg0[i].unkB4;
-        arg0[i].unkA8 = arg0[i].unkB0 = arg0[i].unkB8;
+        e = &arg0[i];
+        e->unkA0 = e->unkAC = e->unkB4;
+        e->unkA8 = e->unkB0 = e->unkB8;
         for (path = 0; path < 4; path++) {
-            arg0[i].unkCC[path] = arg0[i].unkB4;
-            arg0[i].unkF4[path] = arg0[i].unkB8;
+            e->unkCC[path] = e->unkB4;
+            e->unkF4[path] = e->unkB8;
         }
     }
     for (i = 0; i < arg1; i++) {
@@ -993,13 +993,12 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         } else {
             e->unkC8 = 1;
         }
-        type = e->unk98;
         e->unk3C = e->unk40 = e->unk44 = 0.0f;
         e->unk48 = e->unk4C = e->unk50 = 0.0f;
         e->unk54 = e->unk58 = e->unk5C = 0.0f;
         dx = e->unk74;
         dz = -e->unk70;
-        switch (type) {
+        switch (e->unk98) {
             case 0:
                 px = -dx;
                 pz = -dz;
@@ -1017,7 +1016,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         e->unk7C = dz;
         e->unk80 = px;
         e->unk84 = pz;
-        switch (type) {
+        switch (e->unk98) {
             case 2:
                 width = 1600.0f;
                 break;
@@ -1082,17 +1081,15 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
             ox = 1.0f;
             oz = 1.0f;
         }
-        x = e->unk0;
-        z = e->unk8;
-        e->unkC = e->unk2C = x + (dx * half);
+        e->unkC = e->unk2C = e->unk0 + (dx * half);
         e->unk10 = 0.0f;
         e->unk1C = 0.0f;
-        e->unk14 = e->unk30 = z + (dz * half);
-        e->unk60 = x + ox;
-        e->unk68 = z + oz;
-        e->unk18 = e->unk34 = x - (dx * half);
+        e->unk14 = e->unk30 = e->unk8 + (dz * half);
+        e->unk60 = e->unk0 + ox;
+        e->unk68 = e->unk8 + oz;
+        e->unk18 = e->unk34 = e->unk0 - (dx * half);
         e->unk64 = 46.0f;
-        e->unk20 = e->unk38 = z - (dz * half);
+        e->unk20 = e->unk38 = e->unk8 - (dz * half);
         if ((i == D_801BB12C) && (gCourseID == GLACIER_COAST)) {
             e->unk10 = -110.0f;
             e->unk1C = -160.0f;
