@@ -5037,7 +5037,396 @@ void func_800AC098(UnkStruct_800AC098* arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC098.s")
 #endif
 
+extern MtxF D_800E6280;
+extern s32 D_800E62D0;
+extern s32 D_800E62D4;
+extern s32 D_801CB340;
+
+#ifdef NON_MATCHING
+// Score 18015 of 116800: registers and scheduling; the per-course loops are written over D_801CF060[i] where the original steps pointers.
+void func_800AC184(void) {
+    UnkStruct_80192690* rider;
+    UnkStruct_80192690* rider2;
+    GfxPool* pool;
+    s32 i;
+    s32 j;
+    s32 sp54;
+
+    rider = &D_80192690[D_800D48DC];
+    if (gPlayers == TWO_PLAYERS) {
+        rider2 = &D_80192690[D_800D48E0];
+    } else {
+        rider2 = &D_80192690[D_800D48DC];
+    }
+    pool = gGfxPool;
+    D_800E62C4++;
+    D_801D0778 = pool->unk13D68[D_80192460[0]].v.ob[0];
+    D_801D0780 = pool->unk13D68[D_80192460[0]].v.ob[2];
+    D_801D06BC = rider->unk44.x;
+    D_801D06C0 = rider->unk44.y;
+    D_801D06C4 = rider->unk44.z;
+    D_801D06C8 = rider->unk5C;
+    D_801D06CC = rider->unk60;
+    D_801D06D0 = rider->unk64;
+    D_801D06D8 = 0.0f;
+    D_801D06DC = 0.0f;
+    D_801D06E0 = 0.0f;
+    D_801D06E4 = D_801D06BC;
+    D_801D06E8 = D_801D06C0;
+    D_801D06EC = D_801D06C4;
+    D_801D06D4 = sqrtf(SQ(D_801D06D8) + SQ(D_801D06E0));
+    if (D_801D0724 < D_801D06D4) {
+        D_801D0724 = D_801D06D4;
+    }
+    D_801D0730 = D_801C2938[D_800D48DC].unkC;
+    D_801D0738 = D_801C2938[D_800D48DC].unk0;
+    D_801D0734 = D_801C2938[D_800D48DC].unk4;
+    D_801D073C = D_801C2938[D_800D48DC].unk2F4;
+    if (gPlayers == TWO_PLAYERS) {
+        D_801D0784 = pool->unk13D68[D_80192460[1]].v.ob[0];
+        D_801D078C = pool->unk13D68[D_80192460[1]].v.ob[2];
+    } else {
+        D_801D0784 = pool->unk13D68[D_80192460[0]].v.ob[0];
+        D_801D078C = pool->unk13D68[D_80192460[0]].v.ob[2];
+    }
+    D_801D06F0 = rider2->unk44.x;
+    D_801D06F4 = rider2->unk44.y;
+    D_801D06F8 = rider2->unk44.z;
+    D_801D06FC = rider2->unk5C;
+    D_801D0700 = rider2->unk60;
+    D_801D0704 = rider2->unk64;
+    D_801D070C = 0.0f;
+    D_801D0710 = 0.0f;
+    D_801D0714 = 0.0f;
+    D_801D0718 = D_801D06F0;
+    D_801D071C = D_801D06F4;
+    D_801D0720 = D_801D06F8;
+    D_801D0708 = sqrtf(SQ(D_801D06D8) + SQ(D_801D06E0));
+    if (D_801D0728 < D_801D0708) {
+        D_801D0728 = D_801D0708;
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        D_801D0744 = D_801C2938[D_800D48E0].unkC;
+        D_801D074C = D_801C2938[D_800D48E0].unk0;
+        D_801D0748 = D_801C2938[D_800D48E0].unk4;
+        D_801D0750 = D_801C2938[D_800D48E0].unk2F4;
+    } else {
+        D_801D0744 = D_801C2938[D_800D48DC].unkC;
+        D_801D074C = D_801C2938[D_800D48DC].unk0;
+        D_801D0748 = D_801C2938[D_800D48DC].unk4;
+        D_801D0750 = D_801C2938[D_800D48DC].unk2F4;
+    }
+    func_8009D5C0();
+    SysUtils_MtxFToMtx(&D_800E6280, &D_801D0678);
+    if ((D_801CE638 == 8) || (D_801CE638 == 21)) {
+        return;
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        D_800E62CC = D_800E62C8 = 0;
+        return;
+    }
+    D_801D0724 = D_801D0728 = 30.0f;
+    switch (gCourseID) {
+        case DOLPHIN_PARK:
+            func_800C123C((u8*) &D_801D0668);
+            D_800E62D0 = 0;
+            if (gPlayers == ONE_PLAYER) {
+                D_801CF060[0].unk0 = 6;
+                D_801CF060[0].unk7C = 0xFF;
+                D_801CF060[0].unk8 = 5;
+                D_801CF060[0].unk9C = 1;
+                D_801CF060[0].unk64 = D_801CF060[0].unkC = D_801AEE20[0].unk0 - 200.0f;
+                D_801CF060[0].unk68 = D_801CF060[0].unk10 = -20.0f;
+                D_801CF060[0].unk6C = D_801CF060[0].unk14 = D_801AEE20[0].unk8 + 100.0f;
+                D_801CF060[0].unk50 = 0;
+                D_801CF060[0].unk54 = 0;
+                D_801CF060[0].unk74 = 5;
+                D_801CF060[0].unk78 = 10;
+                D_801CF060[0].unk18 = 0.0f;
+                D_801CF060[0].unk1C = D_801CF060[0].unk24 = D_801CF060[0].unk28 = D_801CF060[0].unk2C = 0.0f;
+                if (D_800E62D4 > 0) {
+                    D_801CF060[1].unk0 = 6;
+                }
+                if (D_800E62D4 >= 2) {
+                    D_801CF060[2].unk0 = 6;
+                }
+                if (D_800E62D4 >= 3) {
+                    D_801CF060[3].unk0 = 6;
+                }
+                for (i = 1; i < 4; i++) {
+                    D_801CF060[i].unk7C = 0;
+                    D_801CF060[i].unk8 = 5;
+                    D_801CF060[i].unk2C = 0.0f;
+                    D_801CF060[i].unk28 = 0.0f;
+                    D_801CF060[i].unk24 = 0.0f;
+                    D_801CF060[i].unk1C = 0.0f;
+                    D_801CF060[i].unk9C = 1;
+                    D_801CF060[i].unk68 = D_801CF060[i].unk10 = -20.0f;
+                    D_801CF060[i].unk6C = D_801CF060[i].unk14 = 5000.0f;
+                    D_801CF060[i].unk64 = D_801CF060[i].unkC = 47.0f;
+                    D_801CF060[i].unk50 = 5;
+                    D_801CF060[i].unk54 = 20;
+                    D_801CF060[i].unk18 = 180.0f;
+                }
+                if (D_801CE638 != 0) {
+                    for (i = 4; i < 12; i++) {
+                        D_801CF060[i].unk7C = 0xFF;
+                        D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
+                        D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
+                        D_801CF060[i].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
+                        D_801CF060[i].unk8 = 5;
+                        D_801CF060[i].unk80 = D_801CF060[i].unk84 = D_801CF060[i].unk88 = 100000.0f;
+                        if ((i % 3) == 0) {
+                            D_801CF060[i].unk0 = 7;
+                        }
+                        if ((i % 3) == 1) {
+                            D_801CF060[i].unk0 = 8;
+                        }
+                        if ((i % 3) == 2) {
+                            D_801CF060[i].unk0 = 9;
+                        }
+                        D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
+                    }
+                }
+            }
+            D_800E62CC = D_800E62C8 = 12;
+            break;
+        case SUNNY_BEACH:
+            if (gPlayers == ONE_PLAYER) {
+                for (i = 0; i < 6; i++) {
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
+                    D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
+                    D_801CF060[i].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
+                    D_801CF060[i].unk8 = 5;
+                    D_801CF060[i].unk80 = D_801CF060[i].unk84 = D_801CF060[i].unk88 = 100000.0f;
+                    if ((i % 3) == 0) {
+                        D_801CF060[i].unk0 = 7;
+                    }
+                    if ((i % 3) == 1) {
+                        D_801CF060[i].unk0 = 8;
+                    }
+                    if ((i % 3) == 2) {
+                        D_801CF060[i].unk0 = 9;
+                    }
+                    D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
+                }
+                for (i = 6, j = 100; j != 350; i++, j += 50) {
+                    D_801CF060[i].unk0 = 3;
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk8 = 1;
+                    sp54 = j;
+                    D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 3000.0f;
+                    D_801CF060[i].unk10 = sp54;
+                    D_801CF060[i].unk18 = 90.0f;
+                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + 1100.0f;
+                    D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
+                    D_801CF060[i].unk70 = ((s32) (SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
+                }
+            }
+            D_800E62CC = D_800E62C8 = 12;
+            break;
+        case SUNSET_BAY:
+            if (gPlayers == ONE_PLAYER) {
+                if (D_800DAB68 == 0) {
+                    for (i = 0, j = 0; j != 360; i++, j += 120) {
+                        D_801CF060[i].unkC = -4300.0f;
+                        D_801CF060[i].unk14 = -800.0f;
+                        D_801CF060[i].unk8 = 1;
+                        D_801CF060[i].unk0 = 6;
+                        D_801CF060[i].unk4C = 40.0f;
+                        D_801CF060[i].unk80 = COS((j / 360) * 4096) * 200.0f;
+                        D_801CF060[i].unk84 = 100000.0f;
+                        D_801CF060[i].unk88 = SIN((j / 360) * 4096) * 200.0f;
+                    }
+                    D_801CF060[0].unk9C = 10;
+                    D_801CF060[1].unk9C = 11;
+                    D_801CF060[2].unk9C = 12;
+                } else {
+                    D_801CF060[0].unk9C = 0;
+                    D_801CF060[0].unk8 = 11;
+                    D_801CF060[0].unk0 = 6;
+                    D_801CF060[1].unk8 = 12;
+                    D_801CF060[1].unk0 = 6;
+                    D_801CF060[1].unk7C = 0;
+                    D_801CF060[2].unk7C = 0;
+                    D_801CF060[2].unk8 = 2;
+                    D_801CF060[2].unk0 = 6;
+                    D_801CF060[0].unk14 = 4000.0f;
+                    D_801CF060[2].unk14 = 4000.0f;
+                    D_801CF060[2].unk18 = 180.0f;
+                    D_801CF060[0].unkC = 6000.0f;
+                    D_801CF060[0].unk18 = 90.0f;
+                    D_801CF060[0].unk4C = 25.0f;
+                    D_801CF060[2].unkC = 4800.0f;
+                }
+            }
+            D_800E62CC = D_800E62C8 = 3;
+            break;
+        case MARINE_FORTRESS:
+            if (gPlayers == ONE_PLAYER) {
+                for (i = 0, j = -4000; j != -3500; i++, j += 100) {
+                    D_801CF060[i].unk0 = 4;
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk8 = 2;
+                    D_801CF060[i].unk10 = D_801CF060[i].unk84 = 80.0f;
+                    D_801CF060[i].unkC = D_801CF060[i].unk80 = j;
+                    D_801CF060[i].unk18 = 270.0f;
+                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk78 = 0;
+                    D_801CF060[i].unk14 = D_801CF060[i].unk88 = -2400.0f;
+                    D_801CF060[i].unk70 = (s32) (2000 - (SysUtils_Rand() & 0x3FF));
+                }
+            }
+            D_800E62CC = D_800E62C8 = 6;
+            break;
+        case DRAKE_LAKE:
+            if (gPlayers == ONE_PLAYER) {
+                for (i = 0; i < 6; i++) {
+                    D_801CF060[i].unk0 = 2;
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk8 = 2;
+                    D_801CF060[i].unk80 = (s32) ((SysUtils_Rand() & 0x1FF) - 0x100);
+                    D_801CF060[i].unk88 = (s32) ((SysUtils_Rand() & 0xFF) - 0x80);
+                    D_801CF060[i].unk18 = 0.0f;
+                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk78 = 0;
+                    D_801CF060[i].unk70 = (s32) ((SysUtils_Rand() & 0x3FF) + 1000);
+                    D_801CF060[i].unk9C = 0;
+                }
+                for (i = 6, j = 540; j != 900; i++, j += 90) {
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
+                    D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
+                    D_801CF060[i].unk8C = j;
+                    D_801CF060[i].unk10 = -50.0f - (s32) (SysUtils_Rand() & 0x3F);
+                    D_801CF060[i].unk8 = 5;
+                    D_801CF060[i].unk80 = D_801CF060[i].unk84 = D_801CF060[i].unk88 = 100000.0f;
+                    D_801CF060[i].unk0 = 10;
+                    D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
+                }
+            }
+            D_800E62CC = D_800E62C8 = 11;
+            break;
+        case PORT_BLUE:
+            if (gPlayers == ONE_PLAYER) {
+                func_800C1B64();
+                D_801CF060[0].unk0 = 12;
+                D_801CF060[0].unk7C = 0xFF;
+                D_801CF060[0].unk8 = 1;
+                D_801CF060[0].unk10 = 50.0f;
+                D_801CF060[0].unkC = -2000.0f;
+                D_801CF060[0].unk14 = -5000.0f;
+                D_801CF060[0].unk18 = 135.0f;
+                D_801CF060[0].unk24 = D_801CF060[0].unk28 = D_801CF060[0].unk2C = 0.0f;
+                D_801CF060[0].unk9C = 0;
+                D_801CF060[0].unk74 = 0;
+                D_801CF060[0].unk78 = 0;
+                D_801CF060[0].unk50 = 10;
+                D_801CF060[0].unk54 = 0;
+                D_801CF060[0].unk4C = 10.0f;
+            }
+            D_800E62CC = D_800E62C8 = 2;
+            break;
+        case TWILIGHT_CITY:
+            D_800E62CC = D_800E62C8 = 0;
+            break;
+        case GLACIER_COAST:
+            if (gPlayers == ONE_PLAYER) {
+                if (gGameModes == GMODE_CHAMPIONSHIP) {
+                    D_801CF060[0].unk0 = 5;
+                    D_801CF060[0].unk7C = 0xFF;
+                    D_801CF060[0].unk8 = 1;
+                    D_801CF060[0].unk9C = 6;
+                    D_801CF060[0].unkC = -3200.0f;
+                    D_801CF060[0].unk10 = -500.0f;
+                    D_801CF060[0].unk14 = 4600.0f;
+                    D_801CF060[0].unk18 = 180.0f;
+                    D_801CF060[0].unk4C = 50.0f;
+                    if (D_801CB340 >= 35) {
+                        D_801CF060[1].unk0 = 5;
+                        D_801CF060[1].unk7C = 0;
+                        D_801CF060[1].unk8 = 1;
+                        D_801CF060[1].unkC = -3200.0f;
+                        D_801CF060[1].unk10 = -500.0f;
+                        D_801CF060[1].unk14 = 4600.0f;
+                        D_801CF060[1].unk18 = 180.0f;
+                        D_801CF060[1].unk4C = 50.0f;
+                    }
+                    if (D_801CB340 >= 45) {
+                        D_801CF060[2].unk0 = 5;
+                        D_801CF060[2].unk7C = 0;
+                        D_801CF060[2].unk8 = 1;
+                        D_801CF060[2].unkC = -3200.0f;
+                        D_801CF060[2].unk10 = -500.0f;
+                        D_801CF060[2].unk14 = 4600.0f;
+                        D_801CF060[2].unk18 = 180.0f;
+                        D_801CF060[2].unk4C = 50.0f;
+                    }
+                }
+                for (i = 3, j = 270; j != 320; i++, j += 10) {
+                    D_801CF060[i].unk0 = 3;
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk8 = 1;
+                    sp54 = j;
+                    D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 5000.0f;
+                    D_801CF060[i].unk10 = sp54;
+                    D_801CF060[i].unk18 = 90.0f;
+                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
+                    D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
+                    D_801CF060[i].unk70 = ((s32) (SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
+                }
+            }
+            D_800E62CC = D_800E62C8 = 9;
+            break;
+        case SOUTHERN_ISLAND:
+            if (gPlayers == ONE_PLAYER) {
+                D_801CF060[0].unk0 = D_801CF060[1].unk0 = D_801CF060[2].unk0 = D_801CF060[3].unk0 = D_801CF060[4].unk0 =
+                    13;
+                D_801CF060[0].unk7C = D_801CF060[1].unk7C = D_801CF060[2].unk7C = D_801CF060[3].unk7C =
+                    D_801CF060[4].unk7C = 0xFF;
+                D_801CF060[0].unk8 = D_801CF060[1].unk8 = D_801CF060[2].unk8 = D_801CF060[3].unk8 = D_801CF060[4].unk8 =
+                    2;
+                D_801CF060[0].unk18 = D_801CF060[1].unk18 = D_801CF060[2].unk18 = D_801CF060[3].unk18 =
+                    D_801CF060[4].unk18 = 45.0f;
+                D_801CF060[0].unkC = 2260.0f;
+                D_801CF060[0].unk10 = D_801CF060[0].unk84 = 94.0f;
+                D_801CF060[0].unk14 = -2630.0f;
+                D_801CF060[1].unkC = 2140.0f;
+                D_801CF060[1].unk10 = D_801CF060[1].unk84 = 94.0f;
+                D_801CF060[1].unk14 = -2500.0f;
+                D_801CF060[2].unkC = 1900.0f;
+                D_801CF060[2].unk10 = D_801CF060[2].unk84 = 100.0f;
+                D_801CF060[2].unk14 = -2330.0f;
+                D_801CF060[3].unkC = 1670.0f;
+                D_801CF060[3].unk10 = D_801CF060[3].unk84 = 80.0f;
+                D_801CF060[3].unk14 = -2100.0f;
+                D_801CF060[4].unkC = 1550.0f;
+                D_801CF060[4].unk10 = D_801CF060[4].unk84 = 70.0f;
+                D_801CF060[4].unk14 = -1900.0f;
+                if ((gGameModes == GMODE_CHAMPIONSHIP) && (D_800DAB68 == 0) && (D_801CB340 >= 40)) {
+                    D_801CF060[5].unk0 = 13;
+                    D_801CF060[5].unk7C = 0xFF;
+                    D_801CF060[5].unk8 = 1;
+                    D_801CF060[5].unk74 = 1;
+                    D_801CF060[5].unk18 = 180.0f;
+                    D_801CF060[5].unkC = -2571.0f;
+                    D_801CF060[5].unk10 = D_801CF060[5].unk84 = D_801D06C0 - 500.0f;
+                    D_801CF060[5].unk4C = 30.0f;
+                    D_801CF060[5].unk50 = 18;
+                    D_801CF060[5].unk14 = 5120.0f;
+                    D_801CF060[5].unk20 = 90.0f;
+                }
+            }
+            D_800E62CC = D_800E62C8 = 6;
+            break;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800AC184.s")
+#endif
 
 void func_800AD3C4(void) {
     switch (gCourseID) {
