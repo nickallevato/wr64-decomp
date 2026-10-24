@@ -170,7 +170,183 @@ void func_801EE9C0(void) {
 #endif
 
 // HUD_Init
+#ifdef NON_MATCHING
+// Score 9945: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
+typedef struct UnkStruct_80228AE0 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ char pad4[0x18];
+} UnkStruct_80228AE0; /* size = 0x1C */
+
+extern UnkStruct_80198368 D_80198368[];
+extern Vtx D_80227788[4][4];
+extern s32 D_80227998;
+extern s32 D_80228A94;
+extern s32 D_80228A98;
+extern s32 D_80228AA0;
+extern s32 D_80228AA4;
+extern s32 D_80228AA8;
+extern s8 D_80228B58[];
+extern s32 D_80228B5C;
+extern UnkStruct_80228AE0 D_80228AE0[4];
+extern s32 D_80228B60[2];
+extern s32 D_80228B68[2];
+extern s32 D_80228B70[2];
+extern s32 D_80228B78;
+extern s32 D_80228B7C;
+extern s32 D_80228B80;
+extern s32 D_80228C28;
+extern s32 D_80228C2C;
+extern s32 D_80228D08;
+extern s32 D_80228D0C;
+extern s32 D_80228D10;
+extern s32 D_80228D1C;
+extern s32 D_80228D20;
+extern s32 D_80228DD8[4];
+extern s32 D_80228DE8[4];
+extern s32 D_80228DFC;
+extern s32 D_80228E00[2];
+
+void func_801EE9C0(void);
+
+void func_801EED70(void) {
+    s32 i;
+    s32 j;
+    s8 flag;
+    UnkStruct_80198368* gfxPool;
+    Vtx* d0;
+    Vtx* d1;
+    Vtx* d2;
+    Vtx* d3;
+    Vtx* s0;
+    Vtx* s1;
+    Vtx* s2;
+    Vtx* s3;
+
+    if (D_80227998 != 0) {
+        D_80227998 = 0;
+    }
+    func_801EE9C0();
+    D_80228B54 = D_80228B50 = 0;
+    D_80228AA4 = 0;
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 3; j++) {
+            D_80228C30[i].unk0[j].unk14 = 0;
+            D_80228C30[i].unk0[j].unk18 = 0;
+            D_80228C30[i].unk0[j].unkC = 0.0f;
+            D_80228C30[i].unk0[j].unk8 = 0.0f;
+            D_80228C30[i].unk0[j].unk4 = 0.0f;
+            D_80228C30[i].unk0[j].unk0 = 0.0f;
+        }
+    }
+    for (gfxPool = D_80198368; gfxPool < &D_80198368[2]; gfxPool++) {
+        d0 = gfxPool->unkB240;
+        d1 = gfxPool->unkB1C0;
+        d2 = gfxPool->unkB200;
+        s3 = D_80227788[3];
+        s2 = D_80227788[2];
+        s1 = D_80227788[1];
+        s0 = D_80227788[0];
+        d3 = gfxPool->unkB280;
+        do {
+            *d0++ = *s0++;
+            *d1++ = *s1++;
+            *d2++ = *s2++;
+            *d3++ = *s3++;
+        } while (s3 < D_80227788[4]);
+    }
+    D_80228D08 = 0;
+    D_80228A90 = 60;
+    if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
+        flag = 1;
+    } else {
+        flag = 0;
+    }
+    for (i = 0; i < gRiders; i++) {
+        D_80228B58[i] = flag;
+    }
+    if (gPlayers == ONE_PLAYER) {
+        D_80228D10 = 100;
+    } else {
+        D_80228D10 = 50;
+    }
+    if ((gGameModes == GMODE_TIME_TRIALS) || (gGameModes == GMODE_STUNT)) {
+        D_80228D0C = 0;
+    } else {
+        D_80228D0C = D_80228D10;
+    }
+    D_80228D20 = 0;
+    D_80228C28 = 0;
+    D_80228C2C = 0;
+    D_80228D1C = 0;
+    D_80228B80 = 0;
+    D_80228B7C = 0;
+    D_80228B78 = 0;
+    D_80228A98 = 0;
+    for (i = 0; i < 2; i++) {
+        D_80228B70[i] = 0;
+        D_80228B68[i] = 0;
+        D_80228B60[i] = 0;
+    }
+    D_80228AA0 = 0;
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            gPortraitPos[i][j].unkC = D_801C2938[j].racePosition * 24;
+        }
+        for (j = 0; j < gRiders; j++) {
+            if (gPlayers == ONE_PLAYER) {
+                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                    gPortraitPos[i][j].unkC += 4;
+                }
+            } else if (i == 0) {
+                if (D_801C2938[D_800D48DC].racePosition < D_801C2938[j].racePosition) {
+                    gPortraitPos[i][j].unkC += 4;
+                }
+            } else if (D_801C2938[D_800D48E0].racePosition < D_801C2938[j].racePosition) {
+                gPortraitPos[i][j].unkC += 4;
+            }
+        }
+        for (j = 0; j < gRiders; j++) {
+            gPortraitPos[i][j].bobPhase = 0;
+            gPortraitPos[i][j].unk8 = 0;
+            gPortraitPos[i][j].x = 0;
+            gPortraitPos[i][j].y = gPortraitPos[i][j].unkC;
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        D_80228DD8[i] = 0;
+        D_80228DC8[i] = 0;
+        D_80228DE8[i] = 1;
+    }
+    D_80228AE0[0].unk0 = 0;
+    D_80228AE0[1].unk0 = 0;
+    D_80228AE0[2].unk0 = 0;
+    D_80228AE0[3].unk0 = 0;
+    D_80228A94 = 0;
+    D_80228A9C = 0;
+    D_80228DFC = 0;
+    D_80228DF8 = 0;
+    for (i = 0; i < gPlayers; i++) {
+        for (j = 0; j < gRiders; j++) {
+            D_80228B88[i][j].unkC = 0;
+            D_80228B88[i][j].unk10 = 0;
+            D_80228B88[i][j].unk8 = 0.0f;
+            D_80228B88[i][j].unk4 = 0.0f;
+            D_80228B88[i][j].unk0 = 0.0f;
+        }
+    }
+    if ((gGameModes != GMODE_STUNT) && (gCourseID == DOLPHIN_PARK)) {
+        D_80228B5C = 219;
+    } else {
+        D_80228B5C = 119;
+    }
+    D_80228AA8 = 0;
+    for (i = 0; i < 2; i++) {
+        D_80228E00[i] = 0;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EED70.s")
+#endif
 
 // Set up the HUD projection matrices in the current Gfx pool.
 

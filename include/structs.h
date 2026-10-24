@@ -1094,7 +1094,12 @@ typedef struct UnkStruct_80198368_s {
     /* 0x81C0 */ Vtx unk81C0[0xC0];
     /* 0x8DC0 */ Vtx unk8DC0[4][16];                         /* inferred */
     /* 0x91C0 */ Vtx unk91C0[4][16];                         /* inferred */
-    /* 0x95C0 */ char pad95C0[0x1D30];
+    /* 0x95C0 */ char pad95C0[0x1C00];
+    /* 0xB1C0 */ Vtx unkB1C0[4];
+    /* 0xB200 */ Vtx unkB200[4];
+    /* 0xB240 */ Vtx unkB240[4];
+    /* 0xB280 */ Vtx unkB280[4];
+    /* 0xB2C0 */ char padB2C0[0x30];
 } UnkStruct_80198368;                               /* size = 0xB2F0 */
 
 typedef struct UnkStruct_801C43F8_s {
