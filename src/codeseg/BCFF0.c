@@ -125,7 +125,7 @@ extern s32 D_801CE704;
 
 #ifdef NON_MATCHING
 // Same control flow and stack frame; register allocation and scheduling differ throughout
-// (asm-differ score 69280 of 490800), and the 1.8f below is D_80227A4C in the original.
+// (asm-differ score 58028 of 490800), and the 1.8f below is D_80227A4C in the original.
 // Draw the race HUD: lap splits and total time, the TIME, LAP, RANK and SPEED readouts, the missed-buoy
 // marks, the boost meter, the stunt score and the best times.
 void func_801F4120(Gfx** gdlp) {
@@ -687,11 +687,15 @@ void func_801F4120(Gfx** gdlp) {
 
     // Time trials: the best times.
     if ((gGameModes == GMODE_TIME_TRIALS) && (gCourseID != DOLPHIN_PARK)) {
-        gdl = func_801E92FC(gdl, 1, D_802279E0, 0xEE, 0x16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        gdl = func_801E8A84(gdl, 1, D_801C1FE4, 0xEE, 0x1F, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        y = 0x16;
+        gdl = func_801E92FC(gdl, 1, D_802279E0, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        y += 9;
+        gdl = func_801E8A84(gdl, 1, D_801C1FE4, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         if (D_800DAB68 == 0) {
-            gdl = func_801E92FC(gdl, 1, D_802279EC, 0xEE, 0x2A, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            gdl = func_801E8A84(gdl, 1, D_801C1FE8, 0xEE, 0x33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            y += 0xB;
+            gdl = func_801E92FC(gdl, 1, D_802279EC, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            y += 9;
+            gdl = func_801E8A84(gdl, 1, D_801C1FE8, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     }
     *gdlp = gdl;
