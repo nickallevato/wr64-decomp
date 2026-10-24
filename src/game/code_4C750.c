@@ -205,7 +205,7 @@ void func_80091F50(void) {
     }
 }
 
-void func_80051238(void);
+void Water_Update(void);
 void func_800665B0(void);
 void func_8006A264(void);
 void func_8006E3A8(void);
@@ -261,7 +261,7 @@ void func_800922E4(void) {
             func_80086148();
             func_800665B0();
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             if (D_801CE638 != 0x15) {
                 func_8006E3A8();
@@ -283,14 +283,14 @@ void func_800922E4(void) {
         case GAME_STATE_TIME_TRIALS_RESULTS:
         case GAME_STATE_33:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
         case GAME_STATE_50:
         case GAME_STATE_51:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
@@ -299,7 +299,7 @@ void func_800922E4(void) {
             func_80086148();
             func_800665B0();
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_8006E3A8();
             func_800B2ABC();
@@ -308,14 +308,14 @@ void func_800922E4(void) {
         case GAME_STATE_COURSE_SELECT:
         case GAME_STATE_15:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
         case 0x34:
         case 0x35:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
@@ -324,7 +324,7 @@ void func_800922E4(void) {
             func_80086148();
             func_800665B0();
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_8006E3A8();
             func_800B2ABC();
@@ -345,14 +345,14 @@ void func_800922E4(void) {
         case 0x5A:
         case 0x5B:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_802C7090();
             break;
         case 0x64:
         case 0x65:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             Initials_Update();
             break;
@@ -363,18 +363,18 @@ void func_800922E4(void) {
         case 0x36:
         case 0x37:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             break;
         case 0x38:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_i3_802C5800();
             break;
         case 0x39:
             func_801DDE48();
-            func_80051238();
+            Water_Update();
             func_8008E794();
             func_801E3250();
             break;

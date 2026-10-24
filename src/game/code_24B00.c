@@ -160,8 +160,8 @@ void func_801FB488(s32, s32, s32);
 void func_8006A300(void);
 void func_800B4750(void);
 void func_801EDFFC(s32, f32, f32, f32);
-void func_8004CC7C(UnkStruct_801BFB70*); /* extern */
-void func_8004F520(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5);
+void Water_StampPhasedSine(UnkStruct_801BFB70*); /* extern */
+void Water_StampLine(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5);
 void func_801EE6F4(s32*, f32, f32, f32, f32, f32, f32); /* extern */
 void func_801EDC60(s32*, f32, f32, f32, f32*, f32*, f32*); /* extern */
 void func_80079528(void);                               /* extern */
@@ -1224,12 +1224,12 @@ void func_8006E3A8(void) {
             } else {
                 var_fv0 = 1.0f;
             }
-            func_8004F520(D_801BFA48[i].unk10 * var_fv0, D_801BFA48[i].unk0, D_801BFA48[i].unk4, D_801BFA48[i].unk8,
+            Water_StampLine(D_801BFA48[i].unk10 * var_fv0, D_801BFA48[i].unk0, D_801BFA48[i].unk4, D_801BFA48[i].unk8,
                           D_801BFA48[i].unkC, D_801BFA48[i].unk1C);
         }
 
         for (i = 0; i < D_801BFD70; i++) {
-            func_8004CC7C(&D_801BFB70[i]);
+            Water_StampPhasedSine(&D_801BFB70[i]);
         }
 
         if (gCourseID == TWILIGHT_CITY) {

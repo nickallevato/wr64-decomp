@@ -66,8 +66,8 @@ void GameState_EnterTimeTrialsResults(void);
 f32 func_801E31A0(void);
 void func_801E1BA8(void);
 void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
-void func_8004EFB4(f32, f32, s32);
-void func_8004F1EC(f32, f32, s32, s32);
+void Water_StampPoint(f32, f32, s32);
+void Water_StampPointTimed(f32, f32, s32, s32);
 
 // Display lists for the 31 letter-wheel slots: A-Z, '-', '.', ' ', delete and end.
 Gfx* gLetterWheelDLs[] = {
@@ -284,20 +284,20 @@ void Initials_Update(void) {
             }
             if (active == 0) {
                 if (splash == 1) {
-                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], D_802261FC);
+                    Water_StampPoint(posMtx.mf[3][0], posMtx.mf[3][2], D_802261FC);
                 } else if (splash == 2) {
-                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], 0.0f - D_802261FC);
+                    Water_StampPoint(posMtx.mf[3][0], posMtx.mf[3][2], 0.0f - D_802261FC);
                 }
             } else if (i == gLetterWheelCursor) {
                 if (posMtx.mf[3][1] < 0.0f) {
-                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], -50);
+                    Water_StampPoint(posMtx.mf[3][0], posMtx.mf[3][2], -50);
                 }
             } else {
                 side = (posMtx.mf[3][0] >= 0.0f) ? 1 : 0;
                 if (splash == 1) {
-                    func_8004F1EC(D_80228828[i], D_802288A8[i], D_802261FC, side);
+                    Water_StampPointTimed(D_80228828[i], D_802288A8[i], D_802261FC, side);
                 } else if (splash == 2) {
-                    func_8004F1EC(D_80228828[i], D_802288A8[i], 0.0f - D_802261FC, side);
+                    Water_StampPointTimed(D_80228828[i], D_802288A8[i], 0.0f - D_802261FC, side);
                 }
             }
         }

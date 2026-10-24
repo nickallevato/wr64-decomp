@@ -145,7 +145,7 @@ extern s32 D_800D9898[6];
 extern s32 D_800D98B0[6];
 extern s32 D_800D9914;
 extern f32 D_800DA8B0;
-extern UnkStruct_80192420 D_80192420[];
+extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_80192460[];
 extern RiderStruct D_801C2938[];
 extern s32 D_80223934;
@@ -1192,27 +1192,27 @@ void func_8008E794(void) {
         var_fa1 *= scale;
     }
     vtx = p->unkE0;
-    vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - D_80192420[0].unk14;
+    vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[0].v.ob[1] = gWaterLevel;
-    vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - D_80192420[0].unk18;
-    vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - D_80192420[0].unk14;
+    vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[1].v.ob[1] = gWaterLevel;
-    vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - D_80192420[0].unk18;
-    vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - D_80192420[0].unk14;
+    vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[2].v.ob[1] = gWaterLevel;
-    vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - D_80192420[0].unk18;
-    vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - D_80192420[0].unk14;
+    vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[3].v.ob[1] = gWaterLevel;
-    vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - D_80192420[0].unk18;
-    vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - D_80192420[0].unk14;
+    vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[4].v.ob[1] = gWaterLevel;
-    vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - D_80192420[0].unk18;
-    vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - D_80192420[0].unk14;
+    vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[5].v.ob[1] = gWaterLevel;
-    vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - D_80192420[0].unk18;
-    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - var_fv1) - D_80192420[0].unk14;
+    vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[0].unk18;
+    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - var_fv1) - gWaterWindow[0].unk14;
     vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - var_fa1) - D_80192420[0].unk18;
+    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - var_fa1) - gWaterWindow[0].unk18;
     if (gPlayers == TWO_PLAYERS) {
         cam = &gCameraPerspective[D_80223934];
         dirX = cam->unk64;
@@ -1220,27 +1220,27 @@ void func_8008E794(void) {
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
         scale = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
-        vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - D_80192420[1].unk18; // unk18, not unk14, as in the original
+        vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
-        vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - D_80192420[1].unk18;
-        vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - D_80192420[1].unk14;
+        vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[1].v.ob[1] = gWaterLevel;
-        vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - D_80192420[1].unk18;
-        vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - D_80192420[1].unk14;
+        vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[2].v.ob[1] = gWaterLevel;
-        vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - D_80192420[1].unk18;
-        vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - D_80192420[1].unk14;
+        vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[3].v.ob[1] = gWaterLevel;
-        vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - D_80192420[1].unk18;
-        vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - D_80192420[1].unk14;
+        vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[4].v.ob[1] = gWaterLevel;
-        vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - D_80192420[1].unk18;
-        vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - D_80192420[1].unk14;
+        vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[5].v.ob[1] = gWaterLevel;
-        vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - D_80192420[1].unk18;
-        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * scale)) - D_80192420[1].unk14;
+        vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[1].unk18;
+        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * scale)) - gWaterWindow[1].unk14;
         vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * scale)) - D_80192420[1].unk18;
+        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * scale)) - gWaterWindow[1].unk18;
     }
     if (gPlayers == ONE_PLAYER) {
         switch (gCourseID) {

@@ -44,7 +44,7 @@ extern struct UnkStruct_801C3C60 D_801C3C60[];
 extern s32 D_800D9914;
 extern s32 D_800D48DC;
 extern s32 D_800D9680[2][3];
-extern struct UnkStruct_801C4000 D_80192420;
+extern struct UnkStruct_801C4000 gWaterWindow;
 extern f32 D_801C4060[];
 extern f32 D_801C4080[];
 extern f32 D_801C40A0[];
@@ -1844,9 +1844,9 @@ void func_80086DA8(void) {
 
     func_80086CE0();
 
-    temp_f0_3 = D_801C3C50->unk44 - D_80192420.unk8;
-    temp_f2_2 = D_801C3C50->unk4C - D_80192420.unkC;
-    if (D_80192420.unk10 < (SQ(temp_f0_3) + SQ(temp_f2_2))) {
+    temp_f0_3 = D_801C3C50->unk44 - gWaterWindow.unk8;
+    temp_f2_2 = D_801C3C50->unk4C - gWaterWindow.unkC;
+    if (gWaterWindow.unk10 < (SQ(temp_f0_3) + SQ(temp_f2_2))) {
         D_801C3C58->unkA4 = 0;
     } else {
         D_801C3C58->unkA4 = 1;

@@ -3301,7 +3301,7 @@ void func_800A5C74(void) {
 }
 
 extern s32 D_800D4720;
-extern f32 D_80192420[];
+extern f32 gWaterWindow[];
 
 // TODO: Migrate rodata
 
@@ -3406,12 +3406,12 @@ void func_800A5D70(s32 arg0) {
                 (1000000.0f < func_8009D4DC(D_801D06BC - D_801CF060[arg0].unkC, D_801D06C4 - D_801CF060[arg0].unk14))) {
                 D_801CF060[arg0].unk8 = 5;
             }
-            D_801D0754 = D_80192420[2] - D_801CF060[arg0].unkC;
-            D_801D0758 = D_80192420[3] - D_801CF060[arg0].unk14;
-            if (((f64) D_80192420[4] * 0.9 * 0.9) < func_8009D4DC(D_801D0754, D_801D0758)) {
+            D_801D0754 = gWaterWindow[2] - D_801CF060[arg0].unkC;
+            D_801D0758 = gWaterWindow[3] - D_801CF060[arg0].unk14;
+            if (((f64) gWaterWindow[4] * 0.9 * 0.9) < func_8009D4DC(D_801D0754, D_801D0758)) {
                 rand_num = SysUtils_Rand() % 4095U;
-                D_801CF060[arg0].unkC = (D_80192420[2] + (SIN(rand_num) * (D_800D4720 * 0.8)));
-                D_801CF060[arg0].unk14 = (D_80192420[3] + (COS(rand_num) * (D_800D4720 * 0.8)));
+                D_801CF060[arg0].unkC = (gWaterWindow[2] + (SIN(rand_num) * (D_800D4720 * 0.8)));
+                D_801CF060[arg0].unk14 = (gWaterWindow[3] + (COS(rand_num) * (D_800D4720 * 0.8)));
                 D_801CF060[arg0].unk18 = (s32) (SysUtils_Rand() & 255);
             }
         }

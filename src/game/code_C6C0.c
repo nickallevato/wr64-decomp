@@ -450,7 +450,7 @@ extern Vec3f D_80192650;
 extern Vec3f D_80192660;
 extern Vec3f D_80192670;
 extern Vec3f D_80192680;
-extern UnkStruct_80192420 D_80192420;
+extern UnkStruct_80192420 gWaterWindow;
 extern s32 D_80192498;
 extern f32 D_801C1FB4;
 extern s32 D_800D49AC;
@@ -613,7 +613,7 @@ void func_80065C18(s32);
 void func_800C118C(void*);
 void func_800C11CC(void*);
 void func_800BFB84(Vec3f*, Vec3f*, Vec3f*, Vec3f*, u8);
-void func_8004D018(f32, f32, s32, s32, s32);
+void Water_StampDiagonalSine(f32, f32, s32, s32, s32);
 void func_8004B0F8(struct UnkStruct_8004B0F8* arg0);
 void func_800624CC(UnkStruct_80192690* arg0);
 void func_800618F4(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
@@ -7157,8 +7157,8 @@ void func_800665B0(void) {
     if (gRiderGameModes != PAUSE_MODE) {
         r = D_80192498;
         cam = &gCameraPerspective[D_80223930];
-        sx = D_80192420.unk0 + (r * cam->unkF0);
-        sz = D_80192420.unk4 + (r * cam->unkF4);
+        sx = gWaterWindow.unk0 + (r * cam->unkF0);
+        sz = gWaterWindow.unk4 + (r * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
             player = &D_80192690[D_800D48DC];
             dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
@@ -7174,22 +7174,22 @@ void func_800665B0(void) {
                     level = (((dist - D_801C1FB4) * (f32) (60 - D_800D49B0)) / (lim - D_801C1FB4)) + (f32) D_800D49B0;
                 }
             }
-            func_8004D018(sx, sz, level, D_800D49AC, 1);
+            Water_StampDiagonalSine(sx, sz, level, D_800D49AC, 1);
         } else {
             flag = 1;
             dx = sx - D_80192690[D_800D48E0].unk44.x;
             dz = sz - D_80192690[D_800D48E0].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
                 flag = 0;
-                func_8004D018(sx, sz, D_800D49B0, D_800D49AC, 1);
+                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
             }
             cam = &gCameraPerspective[D_80223934];
-            sx = D_80192420.unk1C + (r * cam->unkF0);
-            sz = D_80192420.unk20 + (r * cam->unkF4);
+            sx = gWaterWindow.unk1C + (r * cam->unkF0);
+            sz = gWaterWindow.unk20 + (r * cam->unkF4);
             dx = sx - D_80192690[D_800D48DC].unk44.x;
             dz = sz - D_80192690[D_800D48DC].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                func_8004D018(sx, sz, D_800D49B0, D_800D49AC, flag);
+                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, flag);
             }
         }
     }
