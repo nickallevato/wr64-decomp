@@ -2185,7 +2185,39 @@ Gfx* func_80067BFC(Gfx* gdl, s32 arg1, s32 arg2) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067C6C.s")
+void func_80067C6C(void) {
+    Gfx* gdl = (Gfx*) &D_8011EDE0;
+    s32 i;
+    s32 j;
+
+    if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
+        gdl = func_80067BFC(gdl, 0, D_800D48DC);
+        gdl = func_80067BFC(gdl, 1, D_800D48E0);
+        return;
+    }
+    if (D_801CE64C != 2) {
+        if ((gPlayers == ONE_PLAYER) || ((D_801CE638 == 8) && (gCourseID == SUNNY_BEACH))) {
+            j = 1;
+            for (i = 0; i < gRiders; i++) {
+                if (i == D_800D48DC) {
+                    gdl = func_80067BFC(gdl, 0, i);
+                    gdl = func_80067BFC(gdl, 0, i);
+                } else {
+                    gdl = func_80067BFC(gdl, j, i);
+                    gdl = func_80067BFC(gdl, j + 1, i);
+                    j += 2;
+                }
+            }
+        } else {
+            gdl = func_80067BFC(gdl, 0, D_800D48DC);
+            gdl = func_80067BFC(gdl, 1, D_800D48E0);
+            gdl = func_80067BFC(gdl, 2, D_800D48DC);
+            gdl = func_80067BFC(gdl, 3, D_800D48E0);
+            gdl = func_80067BFC(gdl, 4, D_800D48DC);
+            gdl = func_80067BFC(gdl, 5, D_800D48E0);
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067E40.s")
 
