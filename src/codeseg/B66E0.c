@@ -14,6 +14,10 @@ typedef struct {
     /* 0x12 */ s16 unk12;
 } UnkStruct_80228A78; /* size = 0x14 */
 
+extern u8 D_80226D70[]; /* glyph widths, font 0 */
+extern u8 D_80226D98[]; /* glyph widths, the other fonts */
+extern u8 D_80226DC4[]; /* glyph widths, font 2 */
+
 extern UnkStruct_80228A78 D_80228A78;
 extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 */
 
@@ -86,4 +90,47 @@ void func_801EAFB4(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801EB00C.s")
+/* Prints value (0..999) in font, right-aligned so its last digit starts at x. */
+Gfx* func_801EB00C(Gfx* gdl, s32 font, s32 value, s32 x, s32 y) {
+    s32 i;
+    s32 j;
+    s32 digits[3];
+    s32 v;
+    s32 offset;
+    s32 found;
+    u8* widths;
+    char buf[12];
+
+    if (font == 0) {
+        widths = D_80226D70;
+    } else if (font == 2) {
+        widths = D_80226DC4;
+    } else {
+        widths = D_80226D98;
+    }
+    sprintf(buf, "%d", value);
+    v = value;
+    for (i = 0; i < 3; i++) {
+        digits[i] = v % 10;
+        v /= 10;
+    }
+    offset = 0;
+    for (i = 1; i < 3; i++) {
+        if (digits[i] != 0) {
+            offset -= widths[digits[i]];
+            continue;
+        }
+        found = 0;
+        for (j = i + 1; j < 3; j++) {
+            if (digits[j] != 0) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            break;
+        }
+        offset -= widths[digits[i]];
+    }
+    return func_801E9858(gdl, font, buf, x + offset, y);
+}
