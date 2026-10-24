@@ -407,6 +407,14 @@ extern UnkStruct_80192540 D_80192540[];
 extern s32 D_800D4948;
 extern s32 D_80154344;
 extern Gfx D_10068B0[];
+extern f32 D_800D4AC0;
+extern f32 D_800D4AC4;
+extern f32 D_800D4AD0;
+extern f32 D_800D4AD8;
+extern f32 D_800D4ADC;
+extern f32 D_800D4AE0;
+extern s32 D_800D4AE4;
+extern s8 D_800D4A3C[11][4];
 extern s32 D_800D49DC;
 extern s32 gFrameCounter;
 extern s32 D_800D4934;
@@ -486,6 +494,10 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_80062E50(s32, void*, s32);
+void func_800629A8(UnkStruct_80192690*);
+void func_8004AFE8(struct UnkStruct_8004B0F8* arg0, s32 arg1, s32 arg2);
+void func_8004AE88(struct UnkStruct_8004B0F8* arg0);
 void func_8004AC80(struct UnkStruct_8004B0F8* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_8006AC84(s32, void*);
 void func_8006390C(s32, void*);
@@ -2845,7 +2857,67 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80062E50.s")
 
+#ifdef NON_MATCHING
+// The original's unkA48 loop is unrolled by 2 (first entry peeled); IDO does not unroll this
+// pointer loop, and unrolls the indexed forms by 4. Before the loop only the stack slot of
+// `first` differs (sp20, original sp24).
+void func_8006390C(s32 arg0, void* arg1) {
+    UnkStruct_80192690* rider;
+    UnkStruct_8004B0F8_1* first;
+    UnkStruct_80192690_A48* e;
+    s8 (*t)[4];
+
+    rider = &D_80192690[arg0];
+    if ((gCourseID == DOLPHIN_PARK) && (D_800DAB60 != 0) && (gGameModes != GMODE_STUNT) &&
+        ((D_800DAB64 != 0) || ((D_801CE638 == 0) && (D_800D4928 != 0)))) {
+        rider->unk16CC = 1;
+    } else {
+        rider->unk16CC = 0;
+    }
+    if ((D_801CE638 == 0) || (D_801CE638 == 8)) {
+        rider->unkB64 = 0;
+    } else {
+        rider->unkB64 = rider->unkB68;
+    }
+    rider->unk0.f = D_800D4AC0;
+    rider->unkC = D_800D4AC4;
+    rider->unk10 = D_800D4AD0;
+    rider->unk18 = D_800D4AD8;
+    rider->unk1C = D_800D4ADC;
+    rider->unk20 = D_800D4AE0;
+    rider->unk24 = D_800D4AE4;
+    rider->unk28 = 11;
+    rider->unk2C = 65;
+    rider->unk30 = first = &rider->unk90[0];
+    rider->unk34 = (UnkStruct_8004B0F8_unk34*) &rider->unk90[12];
+    rider->unk38 = rider->unk528;
+    func_80062E50(arg0, arg1, 0);
+    func_8004AFE8((struct UnkStruct_8004B0F8*) rider, 0, 11);
+    func_8004AE88((struct UnkStruct_8004B0F8*) rider);
+    RIDER_SPHERES(rider)[0].unk18 = &rider->unk90[4];
+    RIDER_SPHERES(rider)[0].unk1C = &rider->unk90[5];
+    RIDER_SPHERES(rider)[0].unk20 = &rider->unk90[3];
+    RIDER_SPHERES(rider)[1].unk18 = &rider->unk90[8];
+    RIDER_SPHERES(rider)[1].unk1C = &rider->unk90[7];
+    RIDER_SPHERES(rider)[1].unk20 = &rider->unk90[6];
+    RIDER_SPHERES(rider)[2].unk18 = &rider->unk90[11];
+    RIDER_SPHERES(rider)[2].unk1C = &rider->unk90[10];
+    RIDER_SPHERES(rider)[2].unk20 = &rider->unk90[9];
+    RIDER_SPHERES(rider)[3].unk18 = &rider->unk90[1];
+    RIDER_SPHERES(rider)[3].unk1C = &rider->unk90[2];
+    RIDER_SPHERES(rider)[3].unk20 = first;
+    func_800629A8(rider);
+    for (e = rider->unkA48, t = D_800D4A3C; t != &D_800D4A3C[11]; e++, t++) {
+        e->unk0 = &RIDER_PARTS(rider)[(*t)[0]];
+        e->unk4 = &RIDER_PARTS(rider)[(*t)[1]];
+        e->unkC = &RIDER_PARTS(rider)[(*t)[2]];
+        e->unk10 = &RIDER_PARTS(rider)[(*t)[3]];
+    }
+    func_80062918((Vec3f*) rider);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8006390C.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80063C88.s")
 

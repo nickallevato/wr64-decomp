@@ -755,6 +755,16 @@ typedef struct UnkStruct_8007CB68_2_s {
     u8 unk1D8[8][5];
 } UnkStruct_8007CB68_2;
 
+// Pointers into the rider's parts at 0x660 (RiderPart, defined in code_C6C0.c).
+typedef struct UnkStruct_80192690_A48 {
+    /* 0x00 */ struct RiderPart* unk0;
+    /* 0x04 */ struct RiderPart* unk4;
+    /* 0x08 */ char pad8[4];
+    /* 0x0C */ struct RiderPart* unkC;
+    /* 0x10 */ struct RiderPart* unk10;
+    /* 0x14 */ char pad14[4];
+} UnkStruct_80192690_A48; /* size = 0x18 */
+
 union float_halfword {
     f32 f;
     u16 h;
@@ -765,11 +775,19 @@ typedef struct UnkStruct_80192690 {
     /* 0x0000 */ union float_halfword unk0;
     /* 0x0004 */ f32 unk4;
     /* 0x0008 */ f32 unk8;
-    /* 0x000C */ char padC[8];
+    /* 0x000C */ f32 unkC;
+    /* 0x0010 */ f32 unk10;
     /* 0x0014 */ f32 unk14;
-    /* 0x0018 */ char pad18[0x10];
+    /* 0x0018 */ f32 unk18;
+    /* 0x001C */ f32 unk1C;
+    /* 0x0020 */ f32 unk20;
+    /* 0x0024 */ s32 unk24;
     /* 0x0028 */ s32 unk28;
-    /* 0x002C */ char pad2C[0x18];                  /* maybe part of unk28[7]? */
+    /* 0x002C */ s32 unk2C;
+    /* 0x0030 */ UnkStruct_8004B0F8_1* unk30;
+    /* 0x0034 */ UnkStruct_8004B0F8_unk34* unk34;
+    /* 0x0038 */ f32* unk38;
+    /* 0x003C */ char pad3C[8];
     /* 0x0044 */ Vec3f unk44;
     /* 0x0050 */ f32 unk50;
     /* 0x0054 */ f32 unk54;
@@ -785,7 +803,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x0088 */ f32 unk88;
     /* 0x008C */ f32 unk8C;
     /* 0x0090 */ UnkStruct_8004B0F8_1 unk90[0xD];
-    /* 0x0230 */ char pad230[0x400];                /* maybe part of unk90[3]? */
+    /* 0x0230 */ char pad230[0x2F8];                /* maybe part of unk90[3]? */
+    /* 0x0528 */ f32 unk528[0x42];
     /* 0x0630 */ f32 unk630[12];
     /* 0x0660 */ char unk660[0x10];
     /* 0x0670 */ Vec3f unk670;                      /* inferred */
@@ -858,7 +877,8 @@ typedef struct UnkStruct_80192690 {
     /* 0x0940 */ f32 unk940;                        /* inferred */
     /* 0x0944 */ f32 unk944;                        /* inferred */
     /* 0x0948 */ f32 unk948;                        /* inferred */
-    /* 0x094C */ char pad94C[0x204];                /* maybe part of unk948[0x83]? */
+    /* 0x094C */ char pad94C[0xFC];                 /* maybe part of unk948[0x83]? */
+    /* 0x0A48 */ UnkStruct_80192690_A48 unkA48[11];
     /* 0x0B50 */ OSContPad unkB50;
     /* 0x0B56 */ u16 unkB56;
     /* 0x0B58 */ u16 unkB58;
