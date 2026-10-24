@@ -380,9 +380,14 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
 
 extern s32 D_800D47C0;
 
-#ifdef NON_MATCHING
-// 1210/18900: the address of D_800D47C0 is held in a register here (the original loads and stores it with separate lui), and registers differ from there
+/*
+ * Stamps sin(phase * 4096 / period) * amplitude along the diagonal from (x - r, z - r) to
+ * (x + r, z + r) in steps of 64, with r = D_80192498 / 4. The phase, D_800D47C0, advances by step
+ * on each call and wraps at period.
+ */
 void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
+    s32* pp = &D_800D47C0; // FAKE: through a pointer, the global gets its own lui at each access
+    s32 t;                 // FAKE
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -392,23 +397,25 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
     s32 cv;
     s32 phase;
     s32 h;
-    f32 r;
     f32 end;
 
-    phase = D_800D47C0 + step;
+    phase = *pp;
+    phase += step;
     if (phase >= period) {
         phase -= period;
     }
-    h = (s32) (SIN((phase << 12) / period) * amplitude) << 8;
-    r = D_80192498 >> 2;
-    D_800D47C0 = phase;
-    end = r + x;
-    x -= r;
-    z -= r;
+    amplitude = (s32) (SIN((phase << 12) / period) * amplitude) << 8; // FAKE: h computed in amplitude
+    *pp = phase;
+    h = amplitude;
+    // the radius is not a local: as one, it takes the original's register for end
+    end = (D_80192498 >> 2) + x;
+    x -= D_80192498 >> 2;
+    z -= D_80192498 >> 2;
     while (x <= end) {
         u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
         v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
-        cv = v >> 6;
+        t = v >> 6; // FAKE: the copy through t gives the original register choice, as in func_8004F520
+        cv = t;
         cu = u >> 6;
         if ((u - (cu * 64)) < (v - (cv * 64))) {
             p0 = WATER_CELL(cu, cv + 1);
@@ -423,9 +430,6 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
         z += 64.0f;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D018.s")
-#endif
 
 #ifdef NON_MATCHING
 // 24/19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
