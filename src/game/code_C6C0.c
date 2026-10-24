@@ -1228,7 +1228,193 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
     arg2->unk14.z = (arg0->unk1440 * temp_f0) + (arg0->unk1438 * temp_f12);
 }
 
+#ifdef NON_MATCHING
+// Close in structure: float register allocation differs (the original also keeps the double
+// 19.000002 in $f30 across the loop) and the frame is 8 bytes larger. Control flow matches.
+s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    UnkStruct_80192690* rider;
+    UnkStruct_802238DC* anim;
+    s32 i;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 len;
+    f32 s;
+    f32 mx;
+    f32 my;
+    f32 mz;
+    f32 ax;
+    f32 ay;
+    f32 az;
+    f32 bx;
+    f32 by;
+    f32 bz;
+
+    anim = D_802238DC[arg2];
+    if (arg3 >= anim->unk0) {
+        arg3 = anim->unk0 - 1;
+    }
+    rider = &D_80192690[arg0];
+    func_80053FBC(rider, &anim->unk4[anim->unk20[arg3]], &arg1->unkD8);
+    func_80053FBC(rider, &anim->unk4[anim->unk10[arg3]], &arg1->unk48);
+    func_80053FBC(rider, &anim->unk4[anim->unk1C[arg3]], &arg1->unkB4);
+    func_80052C6C(rider, &anim->unk4[anim->unk8[arg3]], &arg1->unk0);
+    func_80052C6C(rider, &anim->unk4[anim->unk14[arg3]], &arg1->unk6C);
+    func_80052C6C(rider, &anim->unk4[anim->unkC[arg3]], &arg1->unk24);
+    func_80052C6C(rider, &anim->unk4[anim->unk18[arg3]], &arg1->unk90);
+    func_80052C6C(rider, &anim->unk4[anim->unk4C[arg3]], &arg1->unk264);
+    func_80052C6C(rider, &anim->unk4[anim->unk48[arg3]], &arg1->unk240);
+    func_80052C6C(rider, &anim->unk4[anim->unk44[arg3]], &arg1->unk21C);
+    if (arg4 != 0) {
+        func_80052C6C(rider, &anim->unk4[anim->unk28[arg3]], &arg1->unk120);
+    } else {
+        func_80053FBC(rider, &anim->unk4[anim->unk28[arg3]], &arg1->unk120);
+    }
+    if (arg5 != 0) {
+        func_80052C6C(rider, &anim->unk4[anim->unk34[arg3]], &arg1->unk18C);
+    } else {
+        func_80053FBC(rider, &anim->unk4[anim->unk34[arg3]], &arg1->unk18C);
+    }
+    func_80053FBC(rider, &anim->unk4[anim->unk40[arg3]], &arg1->unk1F8);
+    func_80053FBC(rider, &anim->unk4[anim->unk30[arg3]], &arg1->unk168);
+    func_80053FBC(rider, &anim->unk4[anim->unk3C[arg3]], &arg1->unk1D4);
+    for (i = 3; i != 0; i--) {
+        if (arg4 != 0) {
+            dx = arg1->unk168.unk0.x - arg1->unk120.unk0.x;
+            dy = arg1->unk168.unk0.y - arg1->unk120.unk0.y;
+            dz = arg1->unk168.unk0.z - arg1->unk120.unk0.z;
+            len = SQ(dx) + SQ(dy) + SQ(dz);
+            if (len > (19.000002 * 19.000002)) {
+                s = 19.000002 / sqrtf(len);
+                arg1->unk168.unk0.x = arg1->unk120.unk0.x + (s * dx);
+                arg1->unk168.unk0.y = arg1->unk120.unk0.y + (s * dy);
+                arg1->unk168.unk0.z = arg1->unk120.unk0.z + (s * dz);
+            }
+            dx = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
+            dy = arg1->unk168.unk0.y - arg1->unk1F8.unk0.y;
+            dz = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
+            s = 14.367054f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+            arg1->unk168.unk0.x = arg1->unk1F8.unk0.x + (s * dx);
+            arg1->unk168.unk0.y = arg1->unk1F8.unk0.y + (s * dy);
+            arg1->unk168.unk0.z = arg1->unk1F8.unk0.z + (s * dz);
+        }
+        if (arg5 != 0) {
+            dx = arg1->unk1D4.unk0.x - arg1->unk18C.unk0.x;
+            dy = arg1->unk1D4.unk0.y - arg1->unk18C.unk0.y;
+            dz = arg1->unk1D4.unk0.z - arg1->unk18C.unk0.z;
+            len = SQ(dx) + SQ(dy) + SQ(dz);
+            if (len > (19.000002 * 19.000002)) {
+                s = 19.000002 / sqrtf(len);
+                arg1->unk1D4.unk0.x = arg1->unk18C.unk0.x + (s * dx);
+                arg1->unk1D4.unk0.y = arg1->unk18C.unk0.y + (s * dy);
+                arg1->unk1D4.unk0.z = arg1->unk18C.unk0.z + (s * dz);
+            }
+            dx = arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x;
+            dy = arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y;
+            dz = arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z;
+            s = 14.367054f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+            arg1->unk1D4.unk0.x = arg1->unk1F8.unk0.x + (s * dx);
+            arg1->unk1D4.unk0.y = arg1->unk1F8.unk0.y + (s * dy);
+            arg1->unk1D4.unk0.z = arg1->unk1F8.unk0.z + (s * dz);
+        }
+        dx = arg1->unk168.unk0.x - arg1->unk1D4.unk0.x;
+        dy = arg1->unk168.unk0.y - arg1->unk1D4.unk0.y;
+        dz = arg1->unk168.unk0.z - arg1->unk1D4.unk0.z;
+        mx = (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5;
+        s = 7.0 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+        dx *= s;
+        arg1->unk168.unk0.x = dx + mx;
+        dy *= s;
+        my = (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5;
+        arg1->unk168.unk0.y = dy + my;
+        arg1->unk1D4.unk0.x = mx - dx;
+        dz *= s;
+        arg1->unk1D4.unk0.y = my - dy;
+        mz = (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5;
+        arg1->unk168.unk0.z = dz + mz;
+        arg1->unk1D4.unk0.z = mz - dz;
+    }
+    dx = ((arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5) - arg1->unk1F8.unk0.x;
+    dy = ((arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5) - arg1->unk1F8.unk0.y;
+    dz = ((arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5) - arg1->unk1F8.unk0.z;
+    s = 1.0f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+    arg1->unk1F8.unkC.x = s * dx;
+    arg1->unk1F8.unkC.y = s * dy;
+    arg1->unk1F8.unkC.z = s * dz;
+    ax = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
+    ay = arg1->unk168.unk0.y - arg1->unk1F8.unk0.y;
+    az = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
+    bx = arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x;
+    by = arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y;
+    bz = arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z;
+    dx = (bz * ay) - (by * az);
+    dy = (bx * az) - (bz * ax);
+    dz = (by * ax) - (bx * ay);
+    s = 1.0f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+    arg1->unk1F8.unk14.x = s * dx;
+    arg1->unk1F8.unk14.y = s * dy;
+    arg1->unk1F8.unk14.z = s * dz;
+    if (arg4 != 0) {
+        func_80052C6C(rider, &anim->unk4[anim->unk2C[arg3]], &arg1->unk144);
+        func_800534AC(&arg1->unk144, &arg1->unk144.unk0.y, &arg1->unk144.unk0.z, arg1->unk168.unk0.x, arg1->unk168.unk0.y,
+                      arg1->unk168.unk0.z, arg1->unk120.unk0.x, arg1->unk120.unk0.y, arg1->unk120.unk0.z, 72.98288f,
+                      109.34885f, arg1->unk144.unk0.x - (0.5 * (arg1->unk120.unk0.x + arg1->unk168.unk0.x)),
+                      arg1->unk144.unk0.y - (0.5 * (arg1->unk120.unk0.y + arg1->unk168.unk0.y)),
+                      arg1->unk144.unk0.z - (0.5 * (arg1->unk120.unk0.z + arg1->unk168.unk0.z)));
+        arg1->unk168.unkC.x = arg1->unk144.unk0.x - arg1->unk168.unk0.x;
+        arg1->unk168.unkC.y = arg1->unk144.unk0.y - arg1->unk168.unk0.y;
+        arg1->unk168.unkC.z = arg1->unk144.unk0.z - arg1->unk168.unk0.z;
+        arg1->unk168.unk14.x = rider->unk6C;
+        arg1->unk168.unk14.y = rider->unk70;
+        arg1->unk168.unk14.z = rider->unk74;
+        func_80052A20(&arg1->unk168);
+        arg1->unk144.unkC.x = arg1->unk120.unk0.x - arg1->unk144.unk0.x;
+        arg1->unk144.unkC.y = arg1->unk120.unk0.y - arg1->unk144.unk0.y;
+        arg1->unk144.unkC.z = arg1->unk120.unk0.z - arg1->unk144.unk0.z;
+        arg1->unk144.unk14.x = rider->unk78;
+        arg1->unk144.unk14.y = rider->unk7C;
+        arg1->unk144.unk14.z = rider->unk80;
+        func_80052A20(&arg1->unk144);
+    } else {
+        func_80053FBC(rider, &anim->unk4[anim->unk2C[arg3]], &arg1->unk144);
+    }
+    if (arg5 != 0) {
+        func_80052C6C(rider, &anim->unk4[anim->unk38[arg3]], &arg1->unk1B0);
+        func_800534AC(&arg1->unk1B0, &arg1->unk1B0.unk0.y, &arg1->unk1B0.unk0.z, arg1->unk1D4.unk0.x, arg1->unk1D4.unk0.y,
+                      arg1->unk1D4.unk0.z, arg1->unk18C.unk0.x, arg1->unk18C.unk0.y, arg1->unk18C.unk0.z, 72.98288f,
+                      109.34885f, arg1->unk1B0.unk0.x - (0.5 * (arg1->unk18C.unk0.x + arg1->unk1D4.unk0.x)),
+                      arg1->unk1B0.unk0.y - (0.5 * (arg1->unk18C.unk0.y + arg1->unk1D4.unk0.y)),
+                      arg1->unk1B0.unk0.z - (0.5 * (arg1->unk18C.unk0.z + arg1->unk1D4.unk0.z)));
+        arg1->unk1D4.unkC.x = arg1->unk1B0.unk0.x - arg1->unk1D4.unk0.x;
+        arg1->unk1D4.unkC.y = arg1->unk1B0.unk0.y - arg1->unk1D4.unk0.y;
+        arg1->unk1D4.unkC.z = arg1->unk1B0.unk0.z - arg1->unk1D4.unk0.z;
+        arg1->unk1D4.unk14.x = rider->unk6C;
+        arg1->unk1D4.unk14.y = rider->unk70;
+        arg1->unk1D4.unk14.z = rider->unk74;
+        func_80052A20(&arg1->unk1D4);
+        arg1->unk1B0.unkC.x = arg1->unk18C.unk0.x - arg1->unk1B0.unk0.x;
+        arg1->unk1B0.unkC.y = arg1->unk18C.unk0.y - arg1->unk1B0.unk0.y;
+        arg1->unk1B0.unkC.z = arg1->unk18C.unk0.z - arg1->unk1B0.unk0.z;
+        arg1->unk1B0.unk14.x = rider->unk78;
+        arg1->unk1B0.unk14.y = rider->unk7C;
+        arg1->unk1B0.unk14.z = rider->unk80;
+        func_80052A20(&arg1->unk1B0);
+    } else {
+        func_80053FBC(rider, &anim->unk4[anim->unk38[arg3]], &arg1->unk1B0);
+    }
+    func_80053FBC(rider, &anim->unk4[anim->unk24[arg3]], &arg1->unkFC);
+    arg1->unkFC.unk0.x = arg1->unk1F8.unk0.x + (14.483002 * arg1->unk1F8.unkC.x);
+    arg1->unkFC.unk0.y = arg1->unk1F8.unk0.y + (14.483002 * arg1->unk1F8.unkC.y);
+    arg1->unkFC.unk0.z = arg1->unk1F8.unk0.z + (14.483002 * arg1->unk1F8.unkC.z);
+    arg3++;
+    if (arg3 >= anim->unk0) {
+        arg3 = -1;
+    }
+    return arg3;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80054130.s")
+#endif
 
 s32 func_80054E14(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3) {
     UnkStruct_80192690* temp_s1;
