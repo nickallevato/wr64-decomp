@@ -112,7 +112,33 @@ void func_801EC304(void) {
     func_800C21F4(9, 0);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EC3AC.s")
+void func_801EC3AC(void) {
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_OPTIONS_CHANGE_NAMES;
+    D_801CE638 = 0xA;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gPlayers = ONE_PLAYER;
+    gRiders = 1;
+    gCourseID = RIDER_SELECTION;
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 2;
+    gGameModeState = GMODE_STATE_STARTED;
+    D_80192690[D_800D48DC].unkB68 = 0;
+    D_80192690[D_800D48DC].unkB6C = D_800DA950->unk_B[0];
+    D_80192690[D_800D48DC].unkB70 = D_800DA950->unk_B[1];
+    D_80192690[D_800D48DC].unkB74 = D_800DA950->unk_B[2];
+    D_801CE6F4[1] = 0;
+    D_801CE6F4[0] = D_801CE6F4[1];
+    func_80096960(2, 0, 1, 2, 3);
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 2;
+}
 
 void func_801EC500(void) {
     gPrevGameState = gGameState;
