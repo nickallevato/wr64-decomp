@@ -132,6 +132,7 @@ extern s16 D_801CEFE8[];
 extern s16 D_801CEFEC[];
 extern u8 D_801CEFF0[];
 extern s32 D_800D48DC;
+extern s16 D_800DAA00;
 extern s32 D_800E5138;
 extern u8 D_800E514C;
 extern u8 D_801CEAA8;
@@ -157,6 +158,7 @@ extern UnkStruct_801CF0D8 D_801CF0D8[];
 extern Gfx D_800E6CA0[];
 extern Gfx D_800E6CF8[];
 extern s16 D_801CE774;
+extern s16 D_801CE768[];
 extern s16 D_801CE76A;
 extern s16 D_801CE76C;
 extern s16 D_801CE76E;
@@ -1968,7 +1970,89 @@ Gfx* func_8009F398(Gfx* gdl, s32 arg1) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_8009FCB0.s")
+Gfx* func_8009FCB0(Gfx* gdl, s32 arg1) {
+    UnkStruct_801CE780_unk4** v1;
+    s32 index;
+    UnkStruct_801CE780_unk4* temp_s2;
+    s32 spC0;
+    UNUSED s32 pad[7]; // stack pad
+    s32 k;
+    s32 var_s3;
+    s32 t;
+    s32 prev;
+
+    index = D_801CE768[0];
+    k = D_801CF060[arg1].unk74;
+
+    v1 = D_801CE780[index].unk4;
+
+    temp_s2 = v1[k % 8];
+    if ((D_801CF060[arg1].unkB8 == 0) && (gCurrentPauseMenuOption == -1)) {
+        prev = D_801CF060[arg1].unk78++;
+        if (prev >= temp_s2->unk0 - 1) {
+            D_801CF060[arg1].unk74 = 0;
+            D_801CF060[arg1].unk78 = 0;
+        }
+    }
+    spC0 = D_801CF060[arg1].unk78 % temp_s2->unk0;
+    gSPDisplayList(gdl++, D_800E6CA0);
+    if (gCourseID == DOLPHIN_PARK) {
+        if (D_801CF060[arg1].unk7C == 0xFF) {
+            t = D_800DAA00 % 100;
+            if (t < 20) {
+                gdl = func_8009D96C(gdl, arg1, 0.15f);
+            }
+            if (t >= 20) {
+                gdl = func_8009D96C(gdl, arg1, 0.25f);
+            }
+        } else {
+            gdl = func_8009D96C(gdl, arg1, 0.07f);
+        }
+    } else {
+        gdl = func_8009D96C(gdl, arg1, 0.15f);
+    }
+    var_s3 = temp_s2->unk8[spC0];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk18);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s2->unk18[spC0];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk1C);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s2->unk14[spC0];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk10);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s2->unkC[spC0];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk14);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    var_s3 = temp_s2->unk10[spC0];
+    func_801E4C60(&D_801C43F8[D_8011F8E0].unk5D0[D_801D06B8], temp_s2->unk4[var_s3].unk6, temp_s2->unk4[var_s3].unk7,
+                  temp_s2->unk4[var_s3].unk8, temp_s2->unk4[var_s3].unk9, temp_s2->unk4[var_s3].unkA,
+                  temp_s2->unk4[var_s3].unkB, temp_s2->unk4[var_s3].unk0, temp_s2->unk4[var_s3].unk2,
+                  temp_s2->unk4[var_s3].unk4, 1.0f);
+    gSPMatrix(gdl++, &D_6000000->unk5D0[D_801D06B8++], G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_801CE780[index].unk14);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A063C.s")
 
