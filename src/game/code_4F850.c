@@ -32,6 +32,26 @@ typedef struct UnkStruct_800DB4A8_s {
     s32 unkC;
 } UnkStruct_800DB4A8;
 
+typedef struct UnkStruct_800DB760_s {
+    /* 0x0 */ u32 unk0;
+    /* 0x4 */ u32 unk4;
+} UnkStruct_800DB760; /* size = 0x8 */
+
+typedef struct UnkStruct_801CE7E8_s {
+    /* 0x00 */ u32 unk0[6];
+    /* 0x18 */ u32 unk18[6];
+} UnkStruct_801CE7E8; /* size = 0x30 */
+
+typedef struct UnkStruct_800DCE98_s {
+    /* 0x0 */ Gfx* unk0;
+    /* 0x4 */ Gfx* unk4;
+} UnkStruct_800DCE98; /* size = 0x8 */
+
+typedef struct UnkStruct_801CE740_s {
+    /* 0x0 */ s16 rider;
+    /* 0x2 */ s16 unk2;
+} UnkStruct_801CE740; /* size = 0x4 */
+
 typedef struct UnkStruct_801CE7D8_s {
     s32 unk0;
     s32 unk4;
@@ -43,12 +63,68 @@ extern UnkStruct_800DB4A8 D_800DB558;
 extern s32 D_800DCE18[];
 extern s16 D_801CE768[];
 extern UnkStruct_801CE7D8 D_801CE7D8[];
+extern s32* D_800DB484[];
+extern UnkStruct_801CE780 D_801CE780[];
+extern UnkStruct_800DB760* D_800DB760[6];
+extern s16 D_800DB778[][6];
+extern UnkStruct_801CE7E8 D_801CE7E8[];
 extern s32 D_800DAB90[];
 extern s32 D_800DABA0[];
 extern s32 D_800DABC0[];
 extern UnkStruct_800DACD0 D_800DACD0[];
 extern s32 D_801CE73C;
-extern s32 D_801CE740[];
+extern DmaEntry D_800DABD0[];
+extern DmaEntry D_800DB330[];
+extern UnkStruct_801CE740 D_801CE740[];
+
+extern DmaEntry* D_800DC0E4[];
+extern DmaEntry* D_800DC108[];
+extern DmaEntry* D_800DC18C[];
+extern DmaEntry* D_800DC4F0[];
+extern DmaEntry* D_800DC514[];
+extern DmaEntry* D_800DC698[];
+extern DmaEntry* D_800DC6BC[];
+extern DmaEntry* D_800DC700[];
+extern DmaEntry* D_800DC728[];
+extern DmaEntry D_800DC748[];
+extern DmaEntry* D_800DC868[];
+extern DmaEntry* D_800DC88C[];
+extern DmaEntry* D_800DC8B0[];
+extern DmaEntry* D_800DC8D4[];
+extern DmaEntry* D_800DC93C[];
+extern DmaEntry* D_800DC9FC[];
+extern DmaEntry* D_800DCA38[];
+extern DmaEntry* D_800DCA3C;
+extern DmaEntry* D_800DCA68[];
+extern DmaEntry* D_800DCA94[];
+extern DmaEntry* D_800DCBE4[];
+extern DmaEntry* D_800DCC08[];
+extern DmaEntry* D_800DCC4C[];
+extern DmaEntry* D_800DCC74[];
+extern DmaEntry* D_800DCCA4[];
+extern DmaEntry* D_800DCCD0[];
+extern DmaEntry* D_800DCCF8[];
+extern DmaEntry* D_800DCD20[];
+extern DmaEntry* D_800DCD48[];
+extern DmaEntry* D_800DCD84[];
+extern DmaEntry* D_800DCD88;
+extern DmaEntry* D_800DCDB4[];
+extern DmaEntry* D_800DCE00[];
+extern u8* D_800DCE84[];
+extern UnkStruct_800DCE98 D_800DCE98[];
+extern s32 D_801CB330;
+extern u32 D_801CE6D0;
+extern s32 D_801CE760[2];
+extern u8* D_801CE998;
+extern Gfx* D_801CE9A0[];
+extern UnkStruct_80227A60 D_80227A60[];
+extern Gfx* D_80227AD4;
+extern Gfx* D_80227AD8;
+extern Gfx* D_80227ADC;
+extern Gfx* D_80227AE0;
+extern Gfx* D_80227AE4;
+extern u8 D_23930[];
+extern Gfx D_8090510[];
 
 extern void* D_80151954;
 extern OSMesgQueue D_801540B8;
@@ -62,13 +138,346 @@ extern s32 D_801CE730;
 extern s32 D_801CE734;
 extern s32 D_801CE738;
 extern u16 D_800DCEC8[];
+extern u8 D_8000D9C;
+extern u8 D_8002C00;
+extern u8 D_8002FA8;
+extern u8 D_8003578;
 
 void func_80095CE8(u8* arg0, s32 arg1);
 void func_800967EC(u32* arg0, s32 arg1);
+u32* func_800961B8(s32 arg0, s32 arg1);
+u32* func_800962F0(s32 arg0);
+u32* func_800963CC(s32 arg0, s32 arg1);
+u32* func_800964CC(s32 arg0);
+u32* func_800965B8(s32 arg0);
+Gfx* func_80093DBC(Gfx* gfxPtr, u16 red, u16 green, u16 blue);
 
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
+#ifdef NON_MATCHING
+// Score 913 of 63000: the frame is 0x18 smaller here (the original spills the list walk pointer at sp18 and keeps
+// the five saved entries on the stack); the list walk keeps the next entry in v1; the race-list choice and the
+// two list lui are scheduled differently.
+void unk_game_load(void) {
+    s32 fromState67;
+    DmaEntry** list;
+    Gfx* saved30;
+    Gfx* saved34;
+    Gfx* saved38;
+    Gfx* saved3C;
+    Gfx* saved40;
+    s32 course;
+    s32 load;
+    s32 buffer;
+    s32 i;
+    UnkStruct_800DCE98* e;
+    UnkStruct_80227A60* src;
+    DmaEntry** p;
+
+    load = 0;
+    buffer = 0;
+    fromState67 = 0;
+    switch (gGameState) {
+        case 1: // no GAME_STATE_* name; the jump table starts at 1
+            break;
+        case GAME_STATE_BOOT_UP:
+            load = 1;
+            buffer = 3;
+            list = D_800DC700;
+            break;
+        case GAME_STATE_TITLE_SCREEN:
+            course = gCourseID;
+            load = 1;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            D_800DC728[2] = D_800DC4F0[course];
+            D_800DC728[3] = D_800DC698[course];
+            D_800DC728[4] = D_800DC0E4[course];
+            D_800DC728[5] = D_800DC18C[course];
+            D_801CE998 = (u8*) ((u32) D_23930 + 0x80316800);
+            list = D_800DC728;
+            break;
+        case GAME_STATE_DEMO:
+        case GAME_STATE_TIME_TRIAL:
+            course = gCourseID;
+            load = 1;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            if (D_801CE608.player == 1) {
+                if (D_801CE608.gameMode != 0) {
+                    if (D_801CE608.gameMode != 0xB) {
+                        list = D_800DC868;
+                    } else {
+                        list = D_800DC8B0;
+                    }
+                } else {
+                    list = D_800DC88C;
+                }
+                list[2] = D_800DC4F0[course];
+                list[3] = D_800DC698[course];
+                if ((gCourseID == DOLPHIN_PARK) && (D_801CE608.gameMode == 4)) {
+                    list[7] = D_800DC748;
+                } else {
+                    list[7] = NULL;
+                }
+                list[4] = D_800DC0E4[course];
+            } else {
+                list = D_800DC8D4;
+                D_800DC8D4[2] = D_800DC514[course];
+                D_800DC8D4[3] = D_800DC6BC[course];
+                D_800DC8D4[4] = D_800DC108[course];
+            }
+            list[5] = D_800DC18C[course];
+            break;
+        case GAME_STATE_2A:
+            list = D_800DC868;
+            break;
+        case GAME_STATE_29:
+            list = D_800DC868;
+            break;
+        case GAME_STATE_RIDER_SELECT:
+            load = 1;
+            buffer = 2;
+            list = D_800DC93C;
+            D_800DC93C[1] = D_800DC0E4[0];
+            break;
+        case GAME_STATE_COURSE_SELECT:
+            course = gCourseID;
+            load = 1;
+            buffer = 1;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            list = D_800DC9FC;
+            D_800DC9FC[0] = D_800DC0E4[course];
+            break;
+        case GAME_STATE_RACE_RESULTS:
+            course = gCourseID;
+            load = 1;
+            buffer = 1;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            list = D_800DCA38;
+            D_800DCA3C = D_800DC0E4[course];
+            break;
+        case GAME_STATE_TIME_TRIALS_RESULTS:
+            if (gPrevGameState != GAME_STATE_64) {
+                course = gCourseID;
+                load = 1;
+                buffer = 1;
+                if (course < 0) {
+                    course = DOLPHIN_PARK;
+                }
+                if (course >= 9) {
+                    course = SOUTHERN_ISLAND;
+                }
+                list = D_800DCA94;
+                D_800DCA94[1] = D_800DC0E4[course];
+            }
+            break;
+        case GAME_SATE_COURSE_OVERVIEW:
+            course = D_801CB330;
+            load = 1;
+            if (course < 0) {
+                course = 0;
+            }
+            if (course >= 9) {
+                course = 8;
+            }
+            D_800DCC08[2] = D_800DC4F0[course];
+            D_800DCC08[3] = D_800DC698[course];
+            D_800DCC08[4] = D_800DC0E4[course];
+            D_800DCC08[6] = D_800DCBE4[course];
+            list = D_800DCC08;
+            D_800DCC08[5] = D_800DC18C[course];
+            break;
+        case GAME_STATE_OPTIONS_MENU:
+            load = 1;
+            buffer = 1;
+            list = D_800DCC4C;
+            break;
+        case GAME_STATE_OPTIONS_CHANGE_NAMES:
+            load = 1;
+            buffer = 1;
+            list = D_800DCC74;
+            D_800DCC74[1] = D_800DC0E4[0];
+            break;
+        case GAME_STATE_OPTIONS_CHANGE_CONDITIONS:
+            load = 1;
+            buffer = 1;
+            list = D_800DCCD0;
+            break;
+        case GAME_STATE_OPTIONS_AUDIO:
+            load = 1;
+            buffer = 1;
+            list = D_800DCCF8;
+            break;
+        case GAME_STATE_OPTIONS_SAVE_AND_LOAD:
+            load = 1;
+            buffer = 1;
+            list = D_800DCD48;
+            break;
+        case GAME_STATE_OPTIONS_VIEW_RECORDS:
+            load = 1;
+            buffer = 1;
+            list = D_800DCCA4;
+            break;
+        case GAME_STATE_OPTIONS_ERASE_COURSE_RECORDS:
+            load = 1;
+            buffer = 1;
+            list = D_800DCD20;
+            break;
+        case GAME_STATE_64:
+            course = gCourseID;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            if (D_801CE608.gameMode == 4) {
+                if (gPrevGameState == GAME_STATE_67) {
+                    load = 1;
+                    fromState67 = 1;
+                }
+                list = D_800DCA68;
+                D_800DCA68[0] = D_800DC0E4[course];
+            } else if (D_801CE608.gameMode == 0) {
+                load = 1;
+                list = D_800DCA94;
+                D_800DCA94[1] = D_800DC0E4[course];
+            }
+            buffer = 1;
+            break;
+        case GAME_STATE_STUNT_MODE_RESULTS:
+            course = gCourseID;
+            load = 1;
+            buffer = 1;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            list = D_800DCD84;
+            D_800DCD88 = D_800DC0E4[course];
+            break;
+        case GAME_STATE_36:
+            course = gCourseID;
+            load = 1;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            list = D_800DCDB4;
+            D_800DCDB4[0] = D_800DC0E4[course];
+            break;
+        case GAME_STATE_CEREMONY:
+            course = gCourseID;
+            load = 1;
+            buffer = 4;
+            if (course < 0) {
+                course = DOLPHIN_PARK;
+            }
+            if (course >= 9) {
+                course = SOUTHERN_ISLAND;
+            }
+            list = D_800DCE00;
+            D_800DCE00[3] = D_800DC0E4[course];
+            break;
+    }
+    if (load != 0) {
+        D_800D45F0 = D_800DCE84[buffer];
+        D_801CE6D0 = osVirtualToPhysical(D_800D45F0);
+        D_801CE730 = 0;
+        if (1) { // FAKE: a permuter find; changes the register allocation of the block
+            D_801CE734 = 0;
+            D_801CE738 = 0;
+            p = list;
+            while (*p != NULL) {
+                func_80095A28(*p++);
+            }
+            if (D_801CE730 > 0) {
+                if (D_801CE760[0] != -1) {
+                    saved30 = D_80227A60[0].unk30[0];
+                    saved34 = D_80227A60[0].unk30[1];
+                    saved38 = D_80227A60[0].unk30[2];
+                    saved3C = D_80227A60[0].unk30[3];
+                    saved40 = D_80227A60[0].unk30[4];
+                    src = &D_80227A60[D_801CE760[0]];
+                    D_80227A60[0].unk30[0] = src->unk30[0];
+                    D_80227A60[0].unk30[1] = src->unk30[1];
+                    D_80227A60[0].unk30[2] = src->unk30[2];
+                    D_80227A60[0].unk30[3] = src->unk30[3];
+                    D_80227A60[0].unk30[4] = src->unk30[4];
+                }
+                if (D_801CE760[1] != -1) {
+                    if ((D_801CE760[1] == 0) && (D_801CE760[0] != -1)) {
+                        D_80227AD4 = saved30;
+                        D_80227AD8 = saved34;
+                        D_80227ADC = saved38;
+                        D_80227AE0 = saved3C;
+                        D_80227AE4 = saved40;
+                    } else {
+                        src = &D_80227A60[D_801CE760[1]];
+                        D_80227AD4 = src->unk30[0];
+                        D_80227AD8 = src->unk30[1];
+                        D_80227ADC = src->unk30[2];
+                        D_80227AE0 = src->unk30[3];
+                        D_80227AE4 = src->unk30[4];
+                    }
+                }
+                if (D_801CE73C == 4) {
+                    D_80227A60[4].unk0[3] = D_80227A60[2].unk0[3];
+                    D_80227A60[5].unk0[3] = D_80227A60[3].unk0[3];
+                    D_80227A60[2].unk0[1] = D_80227A60[0].unk0[1];
+                    D_80227A60[2].unk0[3] = D_80227A60[0].unk0[3];
+                    D_80227A60[3].unk0[1] = D_80227A60[1].unk0[1];
+                    D_80227A60[3].unk0[3] = D_80227A60[1].unk0[3];
+                }
+                if (gGameState == GAME_STATE_CEREMONY) {
+                    for (i = 0, src = D_80227A60; i < 4; i++, src++) {
+                        D_801CE9A0[i] = src->unk0[2];
+                        e = &D_800DCE98[D_800DA9B0[i]];
+                        src->unk0[2] = D_8090510;
+                        src->unk0[3] = e->unk0;
+                        src->unk0[8] = e->unk4;
+                    }
+                }
+            }
+        }
+        if (gGameState != GAME_STATE_BOOT_UP) {
+            gDisplayListHead = (Gfx*) gGfxPool;
+            if (fromState67 == 0) {
+                gDisplayListHead = func_80093F78(gDisplayListHead);
+            } else {
+                gDisplayListHead = func_80093DBC(gDisplayListHead, 0xFF, 0xFF, 0xFF);
+            }
+            gDPFullSync(gDisplayListHead++);
+            gSPEndDisplayList(gDisplayListHead++);
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/unk_game_load.s")
+#endif
 
 void func_80095A28(DmaEntry* entry) {
     u32 size;
@@ -288,9 +697,97 @@ void func_80095CE8(u8* arg0, s32 arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096048.s")
+#ifdef NON_MATCHING
+// Score 60 of 9200: one instruction. The original clears j (s2) after computing entry; here IDO clears it two
+// instructions earlier. Every other order of the setup statements swaps j's and src's registers (s2/s3).
+void func_80096048(void* arg0, s32 arg1) {
+    s32 count;
+    s32 type;
+    s32* src;
+    UnkStruct_801CE780* entry;
+    s32 base;
+    s32 j;
+    s32 list;
+    s32* table;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_800961B8.s")
+    type = D_801CE7D8[arg1].unk0;
+    j = 0;
+    table = D_800DB484[type];
+    src = table; // FAKE: the copy through table (a permuter find) gets the D_800DB484 load
+    count = 0;
+    entry = &D_801CE780[arg1];
+    base = D_801CE7D8[arg1].unk4 & 0xFFFFFF;
+    while (1) {
+        list = *src;
+        if (list == 0) {
+            break;
+        }
+        func_800967EC((u32*) ((list & 0xFFFFFF) + (u8*) arg0), base);
+        *(u32*) ((u8*) &entry->unk8 + j) = list + base; // j is a byte offset into unk8..unk28
+        count++;
+        j += 4;
+        src++;
+    }
+    entry->unk0 = count;
+    switch (type) {
+        case 3:
+        case 6:
+            entry->unk4 = (UnkStruct_801CE780_unk4**) func_800961B8(type, base);
+            break;
+        case 1:
+            entry->unk4 = (UnkStruct_801CE780_unk4**) func_800962F0(base);
+            break;
+        case 2:
+        case 4:
+            entry->unk4 = (UnkStruct_801CE780_unk4**) func_800963CC(type, base);
+            break;
+        case 0:
+            entry->unk4 = (UnkStruct_801CE780_unk4**) func_800965B8(base);
+            break;
+        case 8:
+            entry->unk4 = (UnkStruct_801CE780_unk4**) func_800964CC(base);
+            break;
+    }
+}
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096048.s")
+#endif
+
+u32* func_800961B8(s32 arg0, s32 arg1) {
+    s32 pad; // stack pad
+    s32 count;
+    s32 pad2; // stack pad
+    u32* sp38;
+    u8* sp34;
+    s32 i;
+    u32* temp_s0;
+
+    switch (arg0) {
+        case 3:
+            sp34 = &D_8002FA8;
+            count = 1;
+            break;
+        case 6:
+            sp34 = &D_8002C00;
+            count = 1;
+            break;
+    }
+    // For any other arg0, sp34 and count are used uninitialized, as in the original.
+    sp38 = (u32*) (SegmentedToVirtual((u32) sp34) + arg1);
+    for (i = 0; i < count; i++) {
+        temp_s0 = (u32*) (SegmentedToVirtual(sp38[i]) + arg1);
+        sp38[i] = (u32) temp_s0;
+        temp_s0[1] = SegmentedToVirtual(temp_s0[1]) + arg1;
+        temp_s0[2] = SegmentedToVirtual(temp_s0[2]) + arg1;
+        temp_s0[3] = SegmentedToVirtual(temp_s0[3]) + arg1;
+        temp_s0[4] = SegmentedToVirtual(temp_s0[4]) + arg1;
+        temp_s0[5] = SegmentedToVirtual(temp_s0[5]) + arg1;
+        temp_s0[6] = SegmentedToVirtual(temp_s0[6]) + arg1;
+        temp_s0[7] = SegmentedToVirtual(temp_s0[7]) + arg1;
+        temp_s0[8] = SegmentedToVirtual(temp_s0[8]) + arg1;
+    }
+    return sp38;
+}
 
 u32* func_800962F0(s32 arg0) {
     s32 pad[2];
@@ -315,7 +812,37 @@ u32* func_800962F0(s32 arg0) {
     return sp34;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_800963CC.s")
+u32* func_800963CC(s32 arg0, s32 arg1) {
+    s32 pad; // stack pad
+    s32 count;
+    s32 pad2; // stack pad
+    u32* sp38;
+    u8* sp34;
+    s32 i;
+    u32* temp_s0;
+
+    switch (arg0) {
+        case 2:
+            sp34 = &D_8003578;
+            count = 2;
+            break;
+        case 4:
+            sp34 = &D_8000D9C;
+            count = 1;
+            break;
+    }
+    // For any other arg0, sp34 and count are used uninitialized, as in the original.
+    sp38 = (u32*) (SegmentedToVirtual((u32) sp34) + arg1);
+    for (i = 0; i < count; i++) {
+        temp_s0 = (u32*) (SegmentedToVirtual(sp38[i]) + arg1);
+        sp38[i] = (u32) temp_s0;
+        temp_s0[1] = SegmentedToVirtual(temp_s0[1]) + arg1;
+        temp_s0[2] = SegmentedToVirtual(temp_s0[2]) + arg1;
+        temp_s0[3] = SegmentedToVirtual(temp_s0[3]) + arg1;
+        temp_s0[4] = SegmentedToVirtual(temp_s0[4]) + arg1;
+    }
+    return sp38;
+}
 
 void func_800964C4(void) {
 }
@@ -370,7 +897,31 @@ u32* func_800965B8(s32 arg0) {
     return sp34;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096694.s")
+void func_80096694(void* arg0, s32 arg1, s32 arg2) {
+    s32 pad; // stack pad
+    s32 course;
+    s32 i;
+    UnkStruct_800DB760* entry;
+
+    if (gGameState == GAME_SATE_COURSE_OVERVIEW) {
+        course = gCourseID;
+    } else {
+        course = arg2;
+    }
+    for (i = 0; i < 6; i++) {
+        entry = D_800DB760[i];
+        entry += course;
+        if (D_800DB778[course][i] != 0) {
+            D_801CE7E8[course].unk0[i] = (entry->unk0 & 0xFFFFFF) + 0x08000000;
+            D_801CE7E8[course].unk18[i] = (entry->unk4 & 0xFFFFFF) + 0x08000000;
+            func_800967EC((u32*) ((entry->unk0 & 0xFFFFFF) + (u8*) arg0), arg1);
+            func_800967EC((u32*) ((entry->unk4 & 0xFFFFFF) + (u8*) arg0), arg1);
+        } else {
+            D_801CE7E8[course].unk0[i] = 0;
+            D_801CE7E8[course].unk18[i] = 0;
+        }
+    }
+}
 
 void func_800967EC(u32* arg0, s32 arg1) {
     s32 var_a0;
@@ -430,7 +981,334 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
+#ifdef NON_MATCHING
+// Score 13817 of 134600, 2 instructions short: register allocation from the start of the function; the original
+// stores to D_801CE740[i].unk2 in cases 0 and 2 through lui/%lo of each element (here through one base register),
+// and keeps count/models/rider in other stack slots.
+// D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
+#define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
+
+void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 i;
+    s32 rider;
+    s32 count;
+    s32 models;
+    s32 offset;
+    DmaEntry* src;
+    DmaEntry* dst;
+    s16 alts[8];
+    s32 mode;
+    s32* dl;
+
+    for (i = 0; i < 8; i++) {
+        D_801CE740[i].unk2 = 1;
+    }
+    D_801CE760[1] = -1;
+    D_801CE760[0] = -1;
+    D_801CE73C = arg0;
+    switch (arg0) {
+        case 0:
+            models = 7;
+            D_801CE740[0].unk2 = 0;
+            count = 4;
+            break;
+        case 1:
+            D_801CE740[1].unk2 = 0;
+            models = 2;
+            count = 2;
+            D_801CE740[0].unk2 = D_801CE740[1].unk2;
+            break;
+        case 2:
+            D_801CE740[0].unk2 = 0;
+            D_801CE740[1].unk2 = 0;
+            D_801CE740[2].unk2 = 0;
+            D_801CE740[3].unk2 = 0;
+            models = 4;
+            count = 4;
+            break;
+        case 3:
+            for (i = 0; i < 8; i++) {
+                D_801CE740[i].unk2 = 0;
+            }
+            models = 8;
+            count = 8;
+            break;
+        case 4:
+            D_801CE740[1].unk2 = 0;
+            models = 6;
+            count = 4;
+            D_801CE740[0].unk2 = D_801CE740[1].unk2;
+            break;
+    }
+    for (i = 0; i < count; i++) {
+        dst = &D_800DB330[i];
+        switch (i % 4) {
+            case 0:
+                rider = arg1;
+                break;
+            case 1:
+                rider = arg2;
+                break;
+            case 2:
+                rider = arg3;
+                break;
+            case 3:
+                rider = arg4;
+                break;
+        }
+        if (rider < 0) {
+            rider = 0;
+        }
+        src = &D_800DABD0[rider];
+        if (i >= 4) {
+            rider += 4;
+            src += 4;
+        }
+        D_801CE740[i].rider = rider;
+        if (D_801CE740[i].unk2 != 0) {
+            rider += 8;
+            src += 8;
+        }
+        *dst = *src;
+        dst->flag = 4;
+        if ((D_801CE73C == 3) || (D_801CE73C == 2)) {
+            dst->offset = D_800DABA0[i];
+        } else if (D_801CE73C == 4) {
+            dst->offset = D_800DABC0[i];
+        } else {
+            dst->offset = D_800DAB90[i];
+        }
+    }
+    dst[1].segRomStart = 0;
+    dst[1].segRomEnd = 0;
+    dst[1].flag = 0;
+    dst[1].offset = 0;
+    for (i = 0; i < 8; i++) {
+        alts[i] = 0;
+    }
+    mode = arg0;
+    switch (arg0) {
+        case 0:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3 + 1);
+            D_80227A60[2] = MODEL(D_801CE740[1].rider * 3 + 2);
+            D_80227A60[3] = MODEL(D_801CE740[2].rider * 3 + 1);
+            D_80227A60[4] = MODEL(D_801CE740[2].rider * 3 + 2);
+            D_80227A60[5] = MODEL(D_801CE740[3].rider * 3 + 1);
+            D_80227A60[6] = MODEL(D_801CE740[3].rider * 3 + 2);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+                alts[2] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+                alts[2] = 2;
+            }
+            if (D_801CE740[2].rider == 2) {
+                alts[3] = 1;
+                alts[4] = 1;
+            } else if (D_801CE740[2].rider == 6) {
+                alts[3] = 2;
+                alts[4] = 2;
+            }
+            if (D_801CE740[3].rider == 2) {
+                alts[6] = 1;
+                alts[5] = 1;
+            } else if (D_801CE740[3].rider == 6) {
+                alts[6] = 2;
+                alts[5] = 2;
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    if (i == 0) {
+                        D_801CE760[0] = i;
+                    } else {
+                        D_801CE760[0] = (i * 2) - 1;
+                    }
+                } else if (D_801CE740[i].rider == 6) {
+                    if (i == 0) {
+                        D_801CE760[1] = i;
+                    } else {
+                        D_801CE760[1] = (i * 2) - 1;
+                    }
+                }
+            }
+            break;
+        case 1:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+        case 2:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3);
+            D_80227A60[2] = MODEL(D_801CE740[2].rider * 3);
+            D_80227A60[3] = MODEL(D_801CE740[3].rider * 3);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+            }
+            if (D_801CE740[2].rider == 2) {
+                alts[2] = 1;
+            } else if (D_801CE740[2].rider == 6) {
+                alts[2] = 2;
+            }
+            if (D_801CE740[3].rider == 2) {
+                alts[3] = 1;
+            } else if (D_801CE740[3].rider == 6) {
+                alts[3] = 2;
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+        case 4:
+            D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
+            D_80227A60[1] = MODEL(D_801CE740[1].rider * 3);
+            D_80227A60[2] = MODEL(D_801CE740[2].rider * 3 + 1);
+            D_80227A60[3] = MODEL(D_801CE740[3].rider * 3 + 1);
+            D_80227A60[4] = MODEL(D_801CE740[2].rider * 3 + 2);
+            D_80227A60[5] = MODEL(D_801CE740[3].rider * 3 + 2);
+            if (D_801CE740[0].rider == 2) {
+                alts[0] = 1;
+            } else if (D_801CE740[0].rider == 6) {
+                alts[0] = 2;
+            }
+            if (D_801CE740[1].rider == 2) {
+                alts[1] = 1;
+            } else if (D_801CE740[1].rider == 6) {
+                alts[1] = 2;
+            }
+            if (D_801CE740[2].rider == 2) {
+                alts[2] = 1;
+                alts[4] = 1;
+            } else if (D_801CE740[2].rider == 6) {
+                alts[2] = 2;
+                alts[4] = 2;
+            }
+            if (D_801CE740[3].rider == 2) {
+                alts[3] = 1;
+                alts[5] = 1;
+            } else if (D_801CE740[3].rider == 6) {
+                alts[3] = 2;
+                alts[5] = 2;
+            }
+            for (i = 0; i < 2; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+        case 3:
+            for (i = 0; i < models; i++) {
+                D_80227A60[i] = MODEL(D_801CE740[i].rider * 3);
+                if (D_801CE740[i].rider == 2) {
+                    alts[i] = 1;
+                } else if (D_801CE740[i].rider == 6) {
+                    alts[i] = 2;
+                }
+            }
+            for (i = 0; i < count; i++) {
+                if (D_801CE740[i].rider == 2) {
+                    D_801CE760[0] = i;
+                } else if (D_801CE740[i].rider == 6) {
+                    D_801CE760[1] = i;
+                }
+            }
+            break;
+    }
+    for (i = 0; i < models; i++) {
+        switch (mode) {
+            case 0:
+                if (i == 0) {
+                    offset = D_800DAB90[0];
+                } else {
+                    offset = D_800DAB90[(i - 1) / 2 + 1];
+                }
+                break;
+            case 1:
+                offset = D_800DAB90[i];
+                break;
+            case 4:
+                if (i < 4) {
+                    offset = D_800DABC0[i];
+                } else if (i == 4) {
+                    offset = D_800DABC0[2];
+                } else {
+                    offset = D_800DABC0[3];
+                }
+                break;
+            case 2:
+            case 3:
+                offset = D_800DABA0[i];
+                break;
+        }
+        dl = (s32*) &D_80227A60[i]; // the 17 display lists as offsets
+        dl[0] += offset;
+        dl[1] += offset;
+        dl[2] += offset;
+        dl[3] += offset;
+        dl[4] += offset;
+        dl[5] += offset;
+        dl[6] += offset;
+        dl[7] += offset;
+        dl[8] += offset;
+        dl[9] += offset;
+        dl[10] += offset;
+        dl[11] += offset;
+        if (alts[i] != 0) {
+            dl[12] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[13] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[14] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[15] += offset;
+        }
+        if (alts[i] != 0) {
+            dl[16] += offset;
+        }
+    }
+}
+#undef MODEL
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096960.s")
+#endif
 
 void func_80097E68(void) {
     DmaTransfer* transfer = D_800DAB38;

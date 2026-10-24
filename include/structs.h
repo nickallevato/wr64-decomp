@@ -207,7 +207,8 @@ typedef struct {
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ s32 unk70;
     /* 0x74 */ s32 unk74;
-    /* 0x78 */ char pad78[0x14]; /* maybe part of unk74[6]? */
+    /* 0x78 */ s32 unk78;
+    /* 0x7C */ char pad7C[0x10];
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ s32 unk90;
     /* 0x94 */ s32 unk94;
@@ -1256,11 +1257,18 @@ typedef struct UnkStruct_80198368_s {
 } UnkStruct_80198368;                               /* size = 0xB2F0 */
 
 typedef struct UnkStruct_801C43F8_s {
-    char pad[0x5D0];
+    Vtx unk0[7];
+    Vtx unk70[7];
+    Vtx unkE0[7];
+    Vtx unk150[7];
+    Vtx unk1C0[7];
+    char pad230[0xE0];
+    Vtx unk310[4];
+    Vtx unk350[10][4];
     Mtx unk5D0[1];
     char pad610[0x2fc0];
-    Lights0 unk35D8[1];
-    char pad35E8[0x44];
+    Lights0 unk35D8[2];
+    Lights0 unk3600[2];
 } UnkStruct_801C43F8;
 
 typedef struct UnkStruct_801CE5F8_s {
@@ -1280,6 +1288,44 @@ typedef struct UnkStruct_801CE5F8_s {
     Mtx unk1380[16];
     Mtx unk1780[1];
 } UnkStruct_801CE5F8;
+
+typedef struct UnkStruct_801CE780_unk4_unk4_s {
+    /* 0x0 */ s16 unk0;         /* inferred */
+    /* 0x2 */ s16 unk2;         /* inferred */
+    /* 0x4 */ s16 unk4;         /* inferred */
+    /* 0x6 */ s8 unk6;          /* inferred */
+    /* 0x7 */ s8 unk7;          /* inferred */
+    /* 0x8 */ s8 unk8;          /* inferred */
+    /* 0x9 */ s8 unk9;          /* inferred */
+    /* 0xA */ s8 unkA;          /* inferred */
+    /* 0xB */ s8 unkB;          /* inferred */
+} UnkStruct_801CE780_unk4_unk4; /* size = 0xC */
+typedef struct UnkStruct_801CE780_unk4_s {
+    /* 0x00 */ s16 unk0; /* inferred */
+    /* 0x02 */ char pad2[2];
+    /* 0x04 */ UnkStruct_801CE780_unk4_unk4* unk4; /* inferred */
+    /* 0x08 */ s16* unk8;                          /* inferred */
+    /* 0x0C */ s16* unkC;                          /* inferred */
+    /* 0x10 */ s16* unk10;                         /* inferred */
+    /* 0x14 */ s16* unk14;                         /* inferred */
+    /* 0x18 */ s16* unk18;                         /* inferred */
+    /* 0x1C */ s16* unk1C;                         /* inferred */
+    /* 0x20 */ s16* unk20;                         /* inferred */
+} UnkStruct_801CE780_unk4;                         /* size = 0x24 */
+
+typedef struct UnkStruct_801CE780_s {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ UnkStruct_801CE780_unk4** unk4; /* inferred */
+    /* 0x08 */ u32 unk8;                       /* inferred */
+    /* 0x0C */ u32 unkC;                       /* inferred */
+    /* 0x10 */ u32 unk10;                      /* inferred */
+    /* 0x14 */ u32 unk14;                      /* inferred */
+    /* 0x18 */ u32 unk18;
+    /* 0x1C */ u32 unk1C;
+    /* 0x20 */ u32 unk20;
+    /* 0x24 */ u32 unk24;
+    /* 0x28 */ u32 unk28;
+} UnkStruct_801CE780;                          /* size = 0x2C */
 
 struct UnkStruct_801C2938 {
     /* 0x000 */ s32 unk0;
@@ -1303,5 +1349,11 @@ struct UnkStruct_801C2938 {
     /* 0x338 */ s32 unk338;
     /* 0x33C */ char pad33C[0x3C];
 }; /* size = 0x378 */
+
+// Seventeen display lists per entry of D_80227A60.
+typedef struct UnkStruct_80227A60 {
+    /* 0x00 */ Gfx* unk0[12];
+    /* 0x30 */ Gfx* unk30[5];
+} UnkStruct_80227A60; /* size = 0x44 */
 
 #endif /* STRUCTS_H */

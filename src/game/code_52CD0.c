@@ -82,44 +82,6 @@ typedef struct UnkStruct_80099D94 {
     f32 unk84;
 } UnkStruct_80099D94;
 
-typedef struct UnkStruct_801CE780_unk4_unk4_s {
-    /* 0x0 */ s16 unk0;         /* inferred */
-    /* 0x2 */ s16 unk2;         /* inferred */
-    /* 0x4 */ s16 unk4;         /* inferred */
-    /* 0x6 */ s8 unk6;          /* inferred */
-    /* 0x7 */ s8 unk7;          /* inferred */
-    /* 0x8 */ s8 unk8;          /* inferred */
-    /* 0x9 */ s8 unk9;          /* inferred */
-    /* 0xA */ s8 unkA;          /* inferred */
-    /* 0xB */ s8 unkB;          /* inferred */
-} UnkStruct_801CE780_unk4_unk4; /* size = 0xC */
-typedef struct UnkStruct_801CE780_unk4_s {
-    /* 0x00 */ s16 unk0; /* inferred */
-    /* 0x02 */ char pad2[2];
-    /* 0x04 */ UnkStruct_801CE780_unk4_unk4* unk4; /* inferred */
-    /* 0x08 */ s16* unk8;                          /* inferred */
-    /* 0x0C */ s16* unkC;                          /* inferred */
-    /* 0x10 */ s16* unk10;                         /* inferred */
-    /* 0x14 */ s16* unk14;                         /* inferred */
-    /* 0x18 */ s16* unk18;                         /* inferred */
-    /* 0x1C */ s16* unk1C;                         /* inferred */
-    /* 0x20 */ s16* unk20;                         /* inferred */
-} UnkStruct_801CE780_unk4;                         /* size = 0x24 */
-
-typedef struct UnkStruct_801CE780_s {
-    /* 0x00 */ char pad0[4];
-    /* 0x04 */ UnkStruct_801CE780_unk4** unk4; /* inferred */
-    /* 0x08 */ u32 unk8;                       /* inferred */
-    /* 0x0C */ u32 unkC;                       /* inferred */
-    /* 0x10 */ u32 unk10;                      /* inferred */
-    /* 0x14 */ u32 unk14;                      /* inferred */
-    /* 0x18 */ u32 unk18;
-    /* 0x1C */ u32 unk1C;
-    /* 0x20 */ u32 unk20;
-    /* 0x24 */ u32 unk24;
-    /* 0x28 */ u32 unk28;
-} UnkStruct_801CE780;                          /* size = 0x2C */
-
 typedef struct UnkStruct_801CF0D8_s {
     /* 0x00 */ s32 unk0;        /* inferred */
     /* 0x04 */ char pad4[0xB8]; /* maybe part of unk0[0x2F]? */

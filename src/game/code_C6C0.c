@@ -282,11 +282,6 @@ typedef struct UnkStruct_80192540 {
     /* 0x30 */ f32 unk30;
 } UnkStruct_80192540; /* size = 0x34 */
 
-typedef struct UnkStruct_80227A60 {
-    /* 0x00 */ Gfx* unk0[12];
-    /* 0x30 */ Gfx* unk30[5];
-} UnkStruct_80227A60; /* size = 0x44 */
-
 // The rider's entries of 0x28 bytes at 0x660: most loops cover the first 19 (unk660 .. 0x958);
 // func_8005DE24 also uses entries 19 to 24 (up to 0xA48).
 typedef struct RiderPart {

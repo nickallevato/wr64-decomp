@@ -91,13 +91,6 @@ typedef struct Anim {
     /* 0x08 */ s16* parts[18]; /* per part, the key index for each frame */
 } Anim; /* size = 0x50 */
 
-typedef struct UnkStruct_80227A60 {
-    /* 0x00 */ Gfx* unk0;
-    /* 0x04 */ Gfx* unk4;
-    /* 0x08 */ Gfx* unk8;
-    /* 0x0C */ char padC[0x38];
-} UnkStruct_80227A60; /* size = 0x44 */
-
 extern Gfx* D_801CE9A0[];
 extern Anim* D_802238DC[];
 extern s32 D_80226C30;
@@ -127,7 +120,7 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx) {
         gSPDisplayList(gdl++, D_801CE9A0[arg1]);
     } else {
         dl = &D_80227A60[arg1];
-        gSPDisplayList(gdl++, dl->unk8);
+        gSPDisplayList(gdl++, dl->unk0[2]);
     }
     // FAKE: gSPPopMatrix written out; each macro's block variable takes a stack slot (frame 0x88, not 0x80)
     gdl->words.w0 = 0xBD000000;
@@ -138,7 +131,7 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx) {
     m1 = mtx + 1;
     func_801E4C60(m1, key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, key->x, key->y, key->z, 1.0f);
     gSPMatrix(gdl++, (u32) m1 & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-    gSPDisplayList(gdl++, dl->unk4);
+    gSPDisplayList(gdl++, dl->unk0[1]);
     // FAKE: gSPPopMatrix written out; each macro's block variable takes a stack slot (frame 0x88, not 0x80)
     gdl->words.w0 = 0xBD000000;
     gdl->words.w1 = 0;
@@ -148,7 +141,7 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx) {
     m2 = mtx + 2;
     func_801E4C60(m2, key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, key->x, key->y, key->z, 1.0f);
     gSPMatrix(gdl++, (u32) m2 & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-    gSPDisplayList(gdl++, dl->unk0);
+    gSPDisplayList(gdl++, dl->unk0[0]);
     // FAKE: gSPPopMatrix written out; each macro's block variable takes a stack slot (frame 0x88, not 0x80)
     gdl->words.w0 = 0xBD000000;
     gdl->words.w1 = 0;
