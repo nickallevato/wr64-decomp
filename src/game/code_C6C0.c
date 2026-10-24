@@ -326,13 +326,13 @@ typedef struct UnkStruct_80069798_1 {
 } UnkStruct_80069798_1; /* size = 0x18 */
 
 typedef struct UnkStruct_80069798 {
-    /* 0x00 */ f32 unk0;
-    /* 0x04 */ f32 unk4;
-    /* 0x08 */ Vec3f unk8;
-    /* 0x14 */ f32 unk14;
-    /* 0x18 */ f32 unk18;
-    /* 0x1C */ f32 unk1C;
-    /* 0x20 */ f32 unk20;
+    /* 0x00 */ f32 scale;
+    /* 0x04 */ f32 fov;
+    /* 0x08 */ Vec3f target;
+    /* 0x14 */ f32 distance;
+    /* 0x18 */ f32 yaw;
+    /* 0x1C */ f32 yawSpeed;
+    /* 0x20 */ f32 pitch;
     /* 0x24 */ char pad24[4];
     /* 0x28 */ UnkStruct_80069798_1 unk28;
 } UnkStruct_80069798; /* size = 0x40 */
@@ -6874,12 +6874,12 @@ void func_80065C18(s32 arg0) {
     rider->unkBF4 = dz;
     if (arg0 == gPlayer1Rider) {
         cam = &gCameraPerspective[D_80223930];
-        cam->unk4C += dx;
-        cam->unk54 += dz;
+        cam->eyeX += dx;
+        cam->eyeZ += dz;
     } else if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
         cam = &gCameraPerspective[D_80223934];
-        cam->unk4C += dx;
-        cam->unk54 += dz;
+        cam->eyeX += dx;
+        cam->eyeZ += dz;
     }
     Rider_MovePoints(rider, dx, 0.0f, dz);
     if (gRiderGameModes != PAUSE_MODE) {
@@ -7242,11 +7242,11 @@ Gfx* Rider_DrawPartsReflect(Gfx* gdl, s32 arg1) {
     gSPClearGeometryMode(gdl++, G_CULL_FRONT);
     gSPSetGeometryMode(gdl++, G_CULL_BACK);
     if ((gRiderRaceState[arg1].unk338 == 0) && (gDifficulty == DIFFICULTY_EXPERT)) {
-        guLookAtReflect(&gGfxPool->unkE108[arg1], (LookAt*) &gGfxPool->unkE208[arg1], gCameraPerspective[D_80223930].unk4C,
-                        gCameraPerspective[D_80223930].unk50, gCameraPerspective[D_80223930].unk54,
-                        gCameraPerspective[D_80223930].unk7C, gCameraPerspective[D_80223930].unk80,
-                        gCameraPerspective[D_80223930].unk84, gCameraPerspective[D_80223930].unk70,
-                        gCameraPerspective[D_80223930].unk74, gCameraPerspective[D_80223930].unk78);
+        guLookAtReflect(&gGfxPool->unkE108[arg1], (LookAt*) &gGfxPool->unkE208[arg1], gCameraPerspective[D_80223930].eyeX,
+                        gCameraPerspective[D_80223930].eyeY, gCameraPerspective[D_80223930].eyeZ,
+                        gCameraPerspective[D_80223930].atX, gCameraPerspective[D_80223930].atY,
+                        gCameraPerspective[D_80223930].atZ, gCameraPerspective[D_80223930].upX,
+                        gCameraPerspective[D_80223930].upY, gCameraPerspective[D_80223930].upZ);
         gSPSetGeometryMode(gdl++, G_TEXTURE_GEN);
         gSPLookAt(gdl++, &((GfxPool*) D_3000000)->unkE208[arg1]);
         gSPTexture(gdl++, D_800D4934, D_800D4934, 0, G_TX_RENDERTILE, G_ON);
@@ -7554,8 +7554,8 @@ Gfx* func_80068538(Gfx* gdl) {
 // words in registers); control flow and the display lists follow the original.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \
-    (((c)->unk6C * ((r)->unk44.z - (c)->unk54)) +                                       \
-     ((((r)->unk44.x - (c)->unk4C) * (c)->unk64) + (((r)->unk44.y - (c)->unk50) * (c)->unk68)))
+    (((c)->unk6C * ((r)->unk44.z - (c)->eyeZ)) +                                       \
+     ((((r)->unk44.x - (c)->eyeX) * (c)->unk64) + (((r)->unk44.y - (c)->eyeY) * (c)->unk68)))
 
 // Near riders: one-cycle, no fog.
 #define RIDER_FOG_OFF(gdl)                                                              \
@@ -7752,9 +7752,9 @@ Gfx* func_80069594(Gfx* arg0) {
         if (var_s0 != gPlayer1Rider) {
             temp_v0 = &gCameraPerspective[D_80223930];
             temp_v1 = &D_80192690[var_s0];
-            temp_f0 = (temp_v0->unk6C * (temp_v1->unk44.z - temp_v0->unk54)) +
-                      (((temp_v1->unk44.x - temp_v0->unk4C) * temp_v0->unk64) +
-                       ((temp_v1->unk44.y - temp_v0->unk50) * temp_v0->unk68));
+            temp_f0 = (temp_v0->unk6C * (temp_v1->unk44.z - temp_v0->eyeZ)) +
+                      (((temp_v1->unk44.x - temp_v0->eyeX) * temp_v0->unk64) +
+                       ((temp_v1->unk44.y - temp_v0->eyeY) * temp_v0->unk68));
             if ((temp_f0 > 0.0f) && (temp_f0 < 1000.0f)) {
                 arg0 = func_800694B8(arg0, var_s0);
             }
@@ -7778,26 +7778,26 @@ void func_8006977C(void* arg0, s32 arg1) {
 #define CAM ((UnkStruct_80069798*) arg4)
 #define SCALE ((Vec3f*) arg5)
 
-void func_80069798(void* arg0, void* arg1, void* arg2, void* arg3, void* arg4, void* arg5) {
+void Camera_SetOrbitMatrices(void* arg0, void* arg1, void* arg2, void* arg3, void* arg4, void* arg5) {
     f32 eye[3];
     f32 r;
     MtxF lookAt;
     MtxF scaleMtx;
     MtxF result;
 
-    r = CAM->unk14 * SCALE->y;
-    eye[0] = ((r * COS(DEG_TO_BINANG(CAM->unk20))) * COS(DEG_TO_BINANG(CAM->unk18))) + CAM->unk8.x;
-    eye[1] = (SIN(DEG_TO_BINANG(CAM->unk20)) * r) + CAM->unk8.y;
-    eye[2] = ((r * COS(DEG_TO_BINANG(CAM->unk20))) * SIN(DEG_TO_BINANG(CAM->unk18))) + CAM->unk8.z;
-    r = CAM->unk18 + (CAM->unk1C * SCALE->z);
-    CAM->unk18 = (r + ((r > 360.0f) ? -360.0f : 0.0f)) + ((r < 0.0f) ? 360.0f : 0.0f);
-    func_800484C8(arg0, &lookAt, eye[0], eye[1], eye[2], CAM->unk8.x, CAM->unk8.y, CAM->unk8.z, 0.0f, 1.0f, 0.0f);
-    r = CAM->unk0 * SCALE->x;
+    r = CAM->distance * SCALE->y;
+    eye[0] = ((r * COS(DEG_TO_BINANG(CAM->pitch))) * COS(DEG_TO_BINANG(CAM->yaw))) + CAM->target.x;
+    eye[1] = (SIN(DEG_TO_BINANG(CAM->pitch)) * r) + CAM->target.y;
+    eye[2] = ((r * COS(DEG_TO_BINANG(CAM->pitch))) * SIN(DEG_TO_BINANG(CAM->yaw))) + CAM->target.z;
+    r = CAM->yaw + (CAM->yawSpeed * SCALE->z);
+    CAM->yaw = (r + ((r > 360.0f) ? -360.0f : 0.0f)) + ((r < 0.0f) ? 360.0f : 0.0f);
+    func_800484C8(arg0, &lookAt, eye[0], eye[1], eye[2], CAM->target.x, CAM->target.y, CAM->target.z, 0.0f, 1.0f, 0.0f);
+    r = CAM->scale * SCALE->x;
     func_801EE91C(scaleMtx.mf, r, r, r);
     SysUtils_MatrixAffineMultiply(&lookAt, &scaleMtx, &result);
     SysUtils_MtxFToMtx(&result, arg0);
     *(UnkStruct_80069798_1*) arg1 = CAM->unk28;
-    func_800481E0(arg2, arg3, CAM->unk4, 1.0f, D_800D4AF0, D_800D4AF4, 0.0f, 0.0f);
+    func_800481E0(arg2, arg3, CAM->fov, 1.0f, D_800D4AF0, D_800D4AF4, 0.0f, 0.0f);
 }
 
 #undef CAM

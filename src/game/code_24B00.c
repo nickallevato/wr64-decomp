@@ -275,8 +275,8 @@ void func_8006AA58(void) {
     D_801C05AC = 0;
     D_801C05BC = 0;
     camera = &gCameraPerspective[D_80223930];
-    D_801C0C84 = camera->unk4C;
-    D_801C0C88 = camera->unk54;
+    D_801C0C84 = camera->eyeX;
+    D_801C0C88 = camera->eyeZ;
     D_801C0C8C = 700.0f;
 }
 
@@ -558,9 +558,9 @@ void func_8006B334(Gfx** gdl) {
         temp_ft5 = D_801AEE20[var_v1].unk0;
         temp_fv1 = D_801AEE20[var_v1].unk4 + 128.0f;
         sp160 = D_801AEE20[var_v1].unk8;
-        temp_fa1 = sp144->unk4C - temp_ft5;
-        temp_fv0 = sp144->unk50 - temp_fv1;
-        temp_ft4 = sp144->unk54 - sp160;
+        temp_fa1 = sp144->eyeX - temp_ft5;
+        temp_fv0 = sp144->eyeY - temp_fv1;
+        temp_ft4 = sp144->eyeZ - sp160;
         temp_fv0_2 = sqrtf(SQ(temp_fa1) + SQ(temp_fv0) + SQ(temp_ft4));
         if (temp_fv0_2 > 3000.0f) {
             var_fa0 = temp_fv0_2 / 3000.0f;
@@ -619,9 +619,9 @@ void func_8006B334(Gfx** gdl) {
         temp_ft5 = D_801AEE20[var_t2].unk0;
         temp_fv1 = D_801AEE20[var_t2].unk4 + 128.0f;
         sp160 = D_801AEE20[var_t2].unk8;
-        temp_fa1 = sp144->unk4C - temp_ft5;
-        temp_fv0 = sp144->unk50 - temp_fv1;
-        temp_ft4 = sp144->unk54 - sp160;
+        temp_fa1 = sp144->eyeX - temp_ft5;
+        temp_fv0 = sp144->eyeY - temp_fv1;
+        temp_ft4 = sp144->eyeZ - sp160;
         if ((temp_fa1 != 0.0f) || (temp_ft4 != 0.0f)) {
             var_fv0 = 1.0f;
             var_fv1 = 0.0f;
@@ -689,8 +689,8 @@ void func_8006BE74(Gfx** gdl) {
         if ((D_800DAB2C == 0) && (var_s4 == gPlayer1Rider)) {
             continue;
         }
-        var_f20 = D_80192690[var_s4].unk44.x - var_s5->unk4C;
-        var_f22 = D_80192690[var_s4].unk44.z - var_s5->unk54;
+        var_f20 = D_80192690[var_s4].unk44.x - var_s5->eyeX;
+        var_f22 = D_80192690[var_s4].unk44.z - var_s5->eyeZ;
         temp_f0_3 = sqrtf(SQ(var_f20) + SQ(var_f22));
         if (temp_f0_3 > 0.0f) {
             var_f20 /= temp_f0_3;
@@ -727,9 +727,9 @@ void func_8006BE74(Gfx** gdl) {
         var_f20 = D_80192690[var_s4].unk44.x;
         temp_f26 = D_80192690[var_s4].unk44.y;
         var_f22 = D_80192690[var_s4].unk44.z;
-        temp_f0 = var_s5->unk4C - var_f20;
-        temp_f2 = var_s5->unk50 - temp_f26;
-        temp_f14 = var_s5->unk54 - var_f22;
+        temp_f0 = var_s5->eyeX - var_f20;
+        temp_f2 = var_s5->eyeY - temp_f26;
+        temp_f14 = var_s5->eyeZ - var_f22;
         temp_f0_3 = sqrtf(SQ(temp_f0) + SQ(temp_f2) + SQ(temp_f14));
         if (temp_f0_3 < 1024.0f) {
             D_801C0C90[D_800DAB2C][var_s4] = 0xFF;
@@ -812,22 +812,22 @@ void func_8006C5D8(Gfx** gdl) {
                 continue;
             }
 
-            temp_fs0 = D_801C0C84 - temp_s3->unk4C;
-            temp_fs1 = D_801C0C88 - temp_s3->unk54;
+            temp_fs0 = D_801C0C84 - temp_s3->eyeX;
+            temp_fs1 = D_801C0C88 - temp_s3->eyeZ;
             temp_fv0 = sqrtf(SQ(temp_fs0) + SQ(temp_fs1));
             if (!(D_801C0C8C < temp_fv0)) {
                 continue;
             }
 
-            D_801C0C84 = temp_s3->unk4C;
-            D_801C0C88 = temp_s3->unk54;
+            D_801C0C84 = temp_s3->eyeX;
+            D_801C0C88 = temp_s3->eyeZ;
             D_801C0C8C = func_801ED338(500.0f) + 500.0f;
             D_801C0580[i].unkC = 1;
             temp_fv1 = func_801ED338(1024.0f) - 512.0f;
             temp_f4 = temp_fv1 * var_f24;
-            D_801C0580[i].unk0 = (temp_s3->unk4C + (var_f26 * 2024.0f) + temp_f4);
+            D_801C0580[i].unk0 = (temp_s3->eyeX + (var_f26 * 2024.0f) + temp_f4);
             D_801C0580[i].unk4 = -64.0f;
-            D_801C0580[i].unk8 = (temp_s3->unk54 + (var_f24 * 2024.0f) + (temp_fv1 * sp130));
+            D_801C0580[i].unk8 = (temp_s3->eyeZ + (var_f24 * 2024.0f) + (temp_fv1 * sp130));
             var_s1 = false;
             for (j = 0; D_800D5330[j].unk0 != D_800D5330[j].unk4; j++) {
                 temp_fv0 = D_800D5330[j].unk0;
@@ -843,8 +843,8 @@ void func_8006C5D8(Gfx** gdl) {
                 continue;
             }
         } else {
-            temp_fs0 = D_801C0580[i].unk0 - temp_s3->unk4C;
-            temp_fs1 = D_801C0580[i].unk8 - temp_s3->unk54;
+            temp_fs0 = D_801C0580[i].unk0 - temp_s3->eyeX;
+            temp_fs1 = D_801C0580[i].unk8 - temp_s3->eyeZ;
             temp_fv0 = sqrtf(SQ(temp_fs0) + SQ(temp_fs1));
             if (temp_fv0 > 0.0f) {
                 temp_fs0 /= temp_fv0;
@@ -963,9 +963,9 @@ void func_8006D034(Gfx** gdl) {
         }
 
         if (D_801BC940[var_s2].unk54 == 2) {
-            temp_f12 = var_s5->unk4C - D_801BC940[var_s2].unk0;
-            other = var_s5->unk50 - D_801BC940[var_s2].unk4;
-            temp_f18 = var_s5->unk54 - D_801BC940[var_s2].unk8;
+            temp_f12 = var_s5->eyeX - D_801BC940[var_s2].unk0;
+            other = var_s5->eyeY - D_801BC940[var_s2].unk4;
+            temp_f18 = var_s5->eyeZ - D_801BC940[var_s2].unk8;
             if ((temp_f12 != 0.0f) || (temp_f18 != 0.0f)) {
                 var_f0 = 1.0f;
                 var_f2 = 0.0f;
@@ -1006,13 +1006,13 @@ void func_8006D494(Gfx** gdl) {
     gdlh = *gdl;
     cam = &gCameraPerspective[D_80223930];
     if (D_800D5454 == 0) {
-        guLookAtHilite(D_801AE948->unk4100, D_801AE948->unkB2C0, D_801AE948->unkB2E0, cam->unk4C, cam->unk50,
-                       cam->unk54, cam->unk7C, cam->unk80, cam->unk84, cam->unk70, cam->unk74,
-                       cam->unk78, D_801C0C80->unkAC, D_801C0C80->unkB0, D_801C0C80->unkB4, 1.0f, 0.0f, 0.0f, 0x20,
+        guLookAtHilite(D_801AE948->unk4100, D_801AE948->unkB2C0, D_801AE948->unkB2E0, cam->eyeX, cam->eyeY,
+                       cam->eyeZ, cam->atX, cam->atY, cam->atZ, cam->upX, cam->upY,
+                       cam->upZ, D_801C0C80->unkAC, D_801C0C80->unkB0, D_801C0C80->unkB4, 1.0f, 0.0f, 0.0f, 0x20,
                        0x20);
     } else {
-        guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, cam->unk4C, cam->unk50, cam->unk54,
-                        cam->unk7C, cam->unk80, cam->unk84, cam->unk70, cam->unk74, cam->unk78);
+        guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, cam->eyeX, cam->eyeY, cam->eyeZ,
+                        cam->atX, cam->atY, cam->atZ, cam->upX, cam->upY, cam->upZ);
     }
     gSPClearGeometryMode(gdlh++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
     gSPSetGeometryMode(gdlh++, G_ZBUFFER | G_SHADE | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_SHADING_SMOOTH);
@@ -1097,8 +1097,8 @@ void func_8006DE24(Gfx** gdl) {
     gdlh = *gdl;
     temp_v1 = &gCameraPerspective[D_80223930];
 
-    guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, temp_v1->unk4C, temp_v1->unk50, temp_v1->unk54,
-                    temp_v1->unk7C, temp_v1->unk80, temp_v1->unk84, -1.0f, 0.0f, 0.0f);
+    guLookAtReflect(D_801AE948->unk4100, D_801AE948->unkB2C0, temp_v1->eyeX, temp_v1->eyeY, temp_v1->eyeZ,
+                    temp_v1->atX, temp_v1->atY, temp_v1->atZ, -1.0f, 0.0f, 0.0f);
     gSPClearGeometryMode(gdlh++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
     gSPSetGeometryMode(gdlh++, G_ZBUFFER | G_SHADE | G_LIGHTING | G_TEXTURE_GEN | G_SHADING_SMOOTH);
     gDPPipeSync(gdlh++);
@@ -1417,8 +1417,8 @@ void func_8006E674(Gfx** gdl) {
             D_801C0840[i] = -1;
             continue;
         }
-        dx = e->unk0 - cam->unk4C;
-        dz = e->unk8 - cam->unk54;
+        dx = e->unk0 - cam->eyeX;
+        dz = e->unk8 - cam->eyeZ;
         d = sqrtf((dx * dx) + (dz * dz));
         if (e->unk9C == 1) {
             lim = (f32) far + (f32) far;
@@ -1448,8 +1448,8 @@ void func_8006E674(Gfx** gdl) {
     }
     for (i = 0; i < D_801BC938; i++) {
         b = &gCoursePoints[i];
-        dx = b->unk0 - cam->unk4C;
-        dz = b->unk8 - cam->unk54;
+        dx = b->unk0 - cam->eyeX;
+        dz = b->unk8 - cam->eyeZ;
         if ((b->unk10 == 4) || (b->unk10 == 5)) {
             D_801C08C0[i] = -1;
             continue;
@@ -1475,8 +1475,8 @@ void func_8006E674(Gfx** gdl) {
     }
     for (i = 0; i < D_801BFA40; i++) {
         o = &D_801BC940[i];
-        dx = o->unk0 - cam->unk4C;
-        dz = o->unk8 - cam->unk54;
+        dx = o->unk0 - cam->eyeX;
+        dz = o->unk8 - cam->eyeZ;
         d = sqrtf((dx * dx) + (dz * dz));
         if (d < (f32) far) {
             if (d > 0.0f) {
@@ -1507,9 +1507,9 @@ void func_8006E674(Gfx** gdl) {
             continue;
         }
         b = &gCoursePoints[i];
-        dx = cam->unk4C - b->unk0;
-        dy = cam->unk50 - b->unk4;
-        dz = cam->unk54 - b->unk8;
+        dx = cam->eyeX - b->unk0;
+        dy = cam->eyeY - b->unk4;
+        dz = cam->eyeZ - b->unk8;
         if ((dx != 0.0f) || (dz != 0.0f)) {
             upY = 1.0f;
             upZ = 0.0f;
@@ -1641,9 +1641,9 @@ void func_8006E674(Gfx** gdl) {
             continue;
         }
         if (D_801AEE20[i].unk9C == 0) {
-            dx = cam->unk4C - e->unk0;
-            dy = cam->unk50 - e->unk4;
-            dz = cam->unk54 - e->unk8;
+            dx = cam->eyeX - e->unk0;
+            dy = cam->eyeY - e->unk4;
+            dz = cam->eyeZ - e->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
                 upZ = 0.0f;

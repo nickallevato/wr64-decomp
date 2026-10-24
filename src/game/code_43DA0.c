@@ -281,8 +281,8 @@ f32 func_8008962C(f32 arg0, f32 arg1, f32 arg2, UnkStruct_8008962C* arg3) {
         if (gCourseID != DOLPHIN_PARK) {
             func_800895A0(&sp80, &sp70, temp_fv1_1, temp_ft4);
         }
-        sp80 += cam->unk4C;
-        sp70 += cam->unk54;
+        sp80 += cam->eyeX;
+        sp70 += cam->eyeZ;
 
         temp_fv0 = ((sp90.mf[0][0] * sp80) + var_ft4 + (sp90.mf[2][0] * sp70)) + sp90.mf[3][0];
         temp_fv1 = ((sp90.mf[0][1] * sp80) + var_ft4 + (sp90.mf[2][1] * sp70)) + sp90.mf[3][1];
@@ -447,9 +447,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     gDPSetTexturePersp(gdl++, G_TP_PERSP);
     p = &D_801C43F8[D_8011F8E0];
     cam = &gCameraPerspective[D_80223930];
-    dx = D_800D98CC - cam->unk4C;
-    dy = D_800D98D0 - cam->unk50;
-    dz = D_800D98D4 - cam->unk54;
+    dx = D_800D98CC - cam->eyeX;
+    dy = D_800D98D0 - cam->eyeY;
+    dz = D_800D98D4 - cam->eyeZ;
     inv = 1.0f / sqrtf((dx * dx) + (dy * dy) + (dz * dz));
     dot = (cam->unk64 * (dx * inv)) + ((dy * inv) * cam->unk68) + ((dz * inv) * cam->unk6C);
     glare = dot * dot;
@@ -469,9 +469,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     if (alpha < 15.0f) {
         alpha = 0.0f;
     }
-    rx = (cam->unk68 * cam->unk78) - (cam->unk6C * cam->unk74);
-    ry = (cam->unk6C * cam->unk70) - (cam->unk64 * cam->unk78);
-    rz = (cam->unk64 * cam->unk74) - (cam->unk68 * cam->unk70);
+    rx = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
+    ry = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
+    rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     func_8004A3C0(&sp240, &sp200, cam->unk64, cam->unk68, cam->unk6C, angle);
     vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
@@ -755,7 +755,7 @@ Gfx* func_8008BD2C(Gfx* gdl) {
     flareAlpha = D_800DA624; // probably a local array initialised from this file's data in the original
     switch (gCourseID) {
         case DOLPHIN_PARK:
-            scale = (gCameraPerspective[D_80223930].unk80 - 20.0f) / 100.0f;
+            scale = (gCameraPerspective[D_80223930].atY - 20.0f) / 100.0f;
             if (scale > 1.0f) {
                 scale = 1.0f;
             }
@@ -1062,27 +1062,27 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     cam = &gCameraPerspective[D_80223930];
     p = &D_801C43F8[D_8011F8E0];
     vtx = p->unk310;
-    x = (cam->unk68 * cam->unk78) - (cam->unk6C * cam->unk74);
-    y = (cam->unk6C * cam->unk70) - (cam->unk64 * cam->unk78);
-    z = (cam->unk64 * cam->unk74) - (cam->unk68 * cam->unk70);
-    vtx[0].v.ob[0] = (s32) (((cam->unk70 * -1.0f) - x) * 48.0f) + D_800D98CC;
-    vtx[0].v.ob[1] = (s32) (((cam->unk74 * -1.0f) - y) * 48.0f) + D_800D98D0;
-    vtx[0].v.ob[2] = (s32) (((cam->unk78 * -1.0f) - z) * 48.0f) + D_800D98D4;
+    x = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
+    y = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
+    z = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
+    vtx[0].v.ob[0] = (s32) (((cam->upX * -1.0f) - x) * 48.0f) + D_800D98CC;
+    vtx[0].v.ob[1] = (s32) (((cam->upY * -1.0f) - y) * 48.0f) + D_800D98D0;
+    vtx[0].v.ob[2] = (s32) (((cam->upZ * -1.0f) - z) * 48.0f) + D_800D98D4;
     vtx[0].v.tc[0] = 0;
     vtx[0].v.tc[1] = 0;
-    vtx[1].v.ob[0] = (s32) ((cam->unk70 - x) * 48.0f) + D_800D98CC;
-    vtx[1].v.ob[1] = (s32) ((cam->unk74 - y) * 48.0f) + D_800D98D0;
-    vtx[1].v.ob[2] = (s32) ((cam->unk78 - z) * 48.0f) + D_800D98D4;
+    vtx[1].v.ob[0] = (s32) ((cam->upX - x) * 48.0f) + D_800D98CC;
+    vtx[1].v.ob[1] = (s32) ((cam->upY - y) * 48.0f) + D_800D98D0;
+    vtx[1].v.ob[2] = (s32) ((cam->upZ - z) * 48.0f) + D_800D98D4;
     vtx[1].v.tc[0] = 0x800;
     vtx[1].v.tc[1] = 0;
-    vtx[2].v.ob[0] = (s32) (((cam->unk70 * -1.0f) + x) * 48.0f) + D_800D98CC;
-    vtx[2].v.ob[1] = (s32) (((cam->unk74 * -1.0f) + y) * 48.0f) + D_800D98D0;
-    vtx[2].v.ob[2] = (s32) (((cam->unk78 * -1.0f) + z) * 48.0f) + D_800D98D4;
+    vtx[2].v.ob[0] = (s32) (((cam->upX * -1.0f) + x) * 48.0f) + D_800D98CC;
+    vtx[2].v.ob[1] = (s32) (((cam->upY * -1.0f) + y) * 48.0f) + D_800D98D0;
+    vtx[2].v.ob[2] = (s32) (((cam->upZ * -1.0f) + z) * 48.0f) + D_800D98D4;
     vtx[2].v.tc[0] = 0;
     vtx[2].v.tc[1] = 0x800;
-    vtx[3].v.ob[0] = (s32) ((cam->unk70 + x) * 48.0f) + D_800D98CC;
-    vtx[3].v.ob[1] = (s32) ((cam->unk74 + y) * 48.0f) + D_800D98D0;
-    vtx[3].v.ob[2] = (s32) ((cam->unk78 + z) * 48.0f) + D_800D98D4;
+    vtx[3].v.ob[0] = (s32) ((cam->upX + x) * 48.0f) + D_800D98CC;
+    vtx[3].v.ob[1] = (s32) ((cam->upY + y) * 48.0f) + D_800D98D0;
+    vtx[3].v.ob[2] = (s32) ((cam->upZ + z) * 48.0f) + D_800D98D4;
     vtx[3].v.tc[0] = 0x800;
     vtx[3].v.tc[1] = 0x800;
 
@@ -1415,20 +1415,20 @@ Gfx* func_8008FB74(Gfx* gdl) {
     gSPSegment(gdl++, 0x06, &D_801C43F8[D_8011F8E0]);
     if ((D_801CE638 == 4) || (D_801CE638 == 0xA)) {
         if (D_801CE60C == 1) {
-            gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+            gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
             gSPViewport(gdl++, &D_800DA8F0);
             gDPPipeSync(gdl++);
             gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 161, 96, 290, 215);
         } else {
             switch (D_800DAB2C) {
                 case 0:
-                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
                     gSPViewport(gdl++, &D_800DA900);
                     gDPPipeSync(gdl++);
                     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 27, 96, 156, 215);
                     break;
                 case 1:
-                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].unkE4);
+                    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].perspNorm);
                     gSPViewport(gdl++, &D_800DA8F0);
                     gDPPipeSync(gdl++);
                     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 161, 96, 290, 215);
@@ -1436,17 +1436,17 @@ Gfx* func_8008FB74(Gfx* gdl) {
             }
         }
     } else if (gPlayers == ONE_PLAYER) {
-        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
         gSPViewport(gdl++, &D_800DA8C0);
         gDPPipeSync(gdl++);
         gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
     } else if (D_800DAB2C == 0) {
-        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
         gSPViewport(gdl++, &D_800DA8D0);
         gDPPipeSync(gdl++);
         gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 12, 311, 120);
     } else {
-        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].unkE4);
+        gSPPerspNormalize(gdl++, gCameraPerspective[D_80223934].perspNorm);
         gSPViewport(gdl++, &D_800DA8E0);
         gDPPipeSync(gdl++);
         gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 122, 311, 229);

@@ -412,7 +412,7 @@ void func_800926F4(void) {
             func_8008E4B0();
             func_801DDA24();
             func_800AC184();
-            func_800AE7C4();
+            Spray_Init();
             func_800893A8();
             func_8009C968();
 

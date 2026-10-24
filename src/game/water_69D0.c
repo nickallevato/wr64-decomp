@@ -151,9 +151,9 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
             hv = h * 0.5f;
         }
     }
-    ax = cam->unk70;
-    ay = cam->unk74;
-    az = cam->unk78;
+    ax = cam->upX;
+    ay = cam->upY;
+    az = cam->upZ;
     bx = cam->unk64;
     by = cam->unk68;
     bz = cam->unk6C;
@@ -171,7 +171,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     upy = d * by;
     upz = d * bz;
     r = D_800D4744;
-    s = D_800D4740 - cam->unk50;
+    s = D_800D4740 - cam->eyeY;
     dist = (d * r * 1.732f) / 320.0f;
 
     e = cam->unk98 - hv;
@@ -207,8 +207,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         }
     }
     dist = (r * 0.866f) + dist;
-    px = cam->unk4C + (dist * cam->unkF0);
-    pz = cam->unk54 + (dist * cam->unkF4);
+    px = cam->eyeX + (dist * cam->unkF0);
+    pz = cam->eyeZ + (dist * cam->unkF4);
     k = r * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(px - r);
@@ -234,16 +234,16 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     }
     D_801924C4 = D_801924B4 / (f32) (D_800D4754 << 12);
     D_801924C8 = D_801924C0 / (f32) (D_800D4758 << 11);
-    s = D_800D4740 - cam->unk50;
+    s = D_800D4740 - cam->eyeY;
     if (s == 0.0f) {
         k = 1.0f;
     } else {
-        k = (D_800D4750 - cam->unk50) / s;
+        k = (D_800D4750 - cam->eyeY) / s;
     }
     for (i = 6; i >= 0; i--) {
         vp = &vtx[i];
-        px = vp->v.ob[0] - cam->unk4C;
-        pz = vp->v.ob[2] - cam->unk54;
+        px = vp->v.ob[0] - cam->eyeX;
+        pz = vp->v.ob[2] - cam->eyeZ;
         a = (sqrtf((px * px) + (pz * pz)) * D_800D4738) + D_800D473C;
         if (a < 0.5f) {
             vp->v.cn[3] = 0;
@@ -252,8 +252,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = a + 0.5f;
         }
-        vp->v.tc[0] = SysUtils_Round((cam->unk4C + (k * px)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = SysUtils_Round((cam->unk54 + (k * pz)) / D_801924C8) + D_800D4760;
+        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * px)) / D_801924C4) + D_800D475C;
+        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * pz)) / D_801924C8) + D_800D4760;
     }
 }
 #else
@@ -288,11 +288,11 @@ void func_8004C998(s32 view, Vtx* skirt) {
     }
     D_801924CC = D_801924B4 / (f32) (D_800D476C << 10);
     D_801924D0 = D_801924C0 / (f32) (D_800D4770 << 13);
-    h = (f32) gWaterLevel - cam->unk50;
+    h = (f32) gWaterLevel - cam->eyeY;
     if (h == 0.0f) {
         t = 1.0f;
     } else {
-        t = (D_800D4768 - cam->unk50) / h;
+        t = (D_800D4768 - cam->eyeY) / h;
     }
     for (i = 6, idx = &D_80192460[6]; i >= 0; i--, idx--) {
         vp = &skirt[i];
@@ -306,8 +306,8 @@ void func_8004C998(s32 view, Vtx* skirt) {
         }
         // FAKE: the masks are no-ops on the 16-bit stores (maybe a real wrap); without them two
         // temp registers differ
-        vp->v.tc[1] = (SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774) & 0xFFFF;
-        vp->v.tc[0] = (SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778) & 0xFFFF;
+        vp->v.tc[1] = (SysUtils_Round(((((f32) vp->v.ob[0] - cam->eyeX) * t) + cam->eyeX) / D_801924CC) + D_800D4774) & 0xFFFF;
+        vp->v.tc[0] = (SysUtils_Round(((((f32) vp->v.ob[2] - cam->eyeZ) * t) + cam->eyeZ) / D_801924D0) + D_800D4778) & 0xFFFF;
     }
 }
 
@@ -1417,9 +1417,9 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
     h = (d * SIN(angle)) / COS(angle);
-    ax = cam->unk70;
-    ay = cam->unk74;
-    az = cam->unk78;
+    ax = cam->upX;
+    ay = cam->upY;
+    az = cam->upZ;
     bx = cam->unk64;
     by = cam->unk68;
     bz = cam->unk6C;
@@ -1437,7 +1437,7 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     upx = d * bx;
     upy = d * by;
     upz = d * bz;
-    s = (f32) (gWaterLevel + D_800D49B0) - cam->unk50;
+    s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
     dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
 
     e = cam->unk98 - h;
@@ -1473,8 +1473,8 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
         }
     }
     dist = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
-    *x = cam->unk4C + (dist * cam->unkF0);
-    *z = cam->unk54 + (dist * cam->unkF4);
+    *x = cam->eyeX + (dist * cam->unkF0);
+    *z = cam->eyeZ + (dist * cam->unkF4);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")

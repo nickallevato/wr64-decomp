@@ -2975,7 +2975,7 @@ void func_800A2B24(s32 arg0) {
                 D_801CF060[arg0].unk5C += 14.0f;
             }
             if (D_801CF060[arg0].unk54 == 32) {
-                func_800BF784(func_8009D4A8(cam->unk4C - D_801CF060[arg0].unkC, cam->unk54 - D_801CF060[arg0].unk14) /
+                func_800BF784(func_8009D4A8(cam->eyeX - D_801CF060[arg0].unkC, cam->eyeZ - D_801CF060[arg0].unk14) /
                                   100.0f,
                               64);
             }
@@ -3020,7 +3020,7 @@ void func_800A2B24(s32 arg0) {
                 D_801CF060[arg0].unk5C += 14.0f;
             }
             if (D_801CF060[arg0].unk54 == 32) {
-                func_800BF784(func_8009D4A8(cam->unk4C - D_801CF060[arg0].unkC, cam->unk54 - D_801CF060[arg0].unk14) /
+                func_800BF784(func_8009D4A8(cam->eyeX - D_801CF060[arg0].unkC, cam->eyeZ - D_801CF060[arg0].unk14) /
                                   100.0f,
                               64);
             }
@@ -3287,7 +3287,7 @@ void func_800A5C74(void) {
     temp_s1 = &gCameraPerspective[D_80223930];
     for (i = 0; i < 30; i++) {
         if (D_801CF060[i].unk0 == 1) {
-            temp_f0 = func_8009D4A8(temp_s1->unk4C - D_801CF060[i].unkC, temp_s1->unk54 - D_801CF060[i].unk14);
+            temp_f0 = func_8009D4A8(temp_s1->eyeX - D_801CF060[i].unkC, temp_s1->eyeZ - D_801CF060[i].unk14);
             if (temp_f0 < var_f20) {
                 var_f20 = temp_f0;
             }
@@ -3732,11 +3732,11 @@ void func_800A68A4(s32 arg0) {
                 }
                 D_801CF060[arg0].unk9C = best;
             }
-            D_801D0754 = cam->unk4C - D_801CF060[arg0].unkC;
-            D_801D0758 = cam->unk54 - D_801CF060[arg0].unk14;
+            D_801D0754 = cam->eyeX - D_801CF060[arg0].unkC;
+            D_801D0758 = cam->eyeZ - D_801CF060[arg0].unk14;
             D_801D075C = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
             D_801D0760 = func_8009D564(
-                func_8009D3AC(D_801CF060[arg0].unkC - cam->unk4C, -(D_801CF060[arg0].unk14 - cam->unk54)));
+                func_8009D3AC(D_801CF060[arg0].unkC - cam->eyeX, -(D_801CF060[arg0].unk14 - cam->eyeZ)));
             if ((func_8009D4DC(D_801D0754, D_801D0758) > 1.6e7f) ||
                 ((FABS(Math_Normalize_Angle(D_801D0760 - D_801D075C)) > 100.0f) &&
                  (func_8009D4DC(D_801D0754, D_801D0758) > 250000.0f))) {
@@ -3744,8 +3744,8 @@ void func_800A68A4(s32 arg0) {
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
                 angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->unk4C;
-                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->unk54;
+                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->eyeX;
+                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
@@ -3921,11 +3921,11 @@ void func_800A68A4(s32 arg0) {
                 }
                 D_801CF060[arg0].unk9C = best;
             }
-            D_801D0754 = cam->unk4C - D_801CF060[arg0].unkC;
-            D_801D0758 = cam->unk54 - D_801CF060[arg0].unk14;
+            D_801D0754 = cam->eyeX - D_801CF060[arg0].unkC;
+            D_801D0758 = cam->eyeZ - D_801CF060[arg0].unk14;
             D_801D075C = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
             D_801D0760 = func_8009D564(
-                func_8009D3AC(D_801CF060[arg0].unkC - cam->unk4C, -(D_801CF060[arg0].unk14 - cam->unk54)));
+                func_8009D3AC(D_801CF060[arg0].unkC - cam->eyeX, -(D_801CF060[arg0].unk14 - cam->eyeZ)));
             if ((func_8009D4DC(D_801D0754, D_801D0758) > 1.6e7f) ||
                 ((FABS(Math_Normalize_Angle(D_801D0760 - D_801D075C)) > 100.0f) &&
                  (func_8009D4DC(D_801D0754, D_801D0758) > 250000.0f))) {
@@ -3933,8 +3933,8 @@ void func_800A68A4(s32 arg0) {
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
                 angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->unk4C;
-                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->unk54;
+                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->eyeX;
+                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
@@ -4820,9 +4820,9 @@ void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
                 D_801CF060[D_800E62C8].unk0 = arg0[sp94].unk0; // sp94 is never set
                 if ((D_801CF060[D_800E62C8].unk0 == 7) || (D_801CF060[D_800E62C8].unk0 == 8) ||
                     (D_801CF060[D_800E62C8].unk0 == 9) || (D_801CF060[D_800E62C8].unk0 == 10)) {
-                    D_801CF060[D_800E62C8].unkC = (COS(SysUtils_Rand()) * 500.0f) + cam->unk4C;
+                    D_801CF060[D_800E62C8].unkC = (COS(SysUtils_Rand()) * 500.0f) + cam->eyeX;
                     D_801CF060[D_800E62C8].unk7C = 0xFF;
-                    D_801CF060[D_800E62C8].unk14 = (SIN(SysUtils_Rand()) * 500.0f) + cam->unk4C;
+                    D_801CF060[D_800E62C8].unk14 = (SIN(SysUtils_Rand()) * 500.0f) + cam->eyeX;
                     D_801CF060[D_800E62C8].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
                     D_801CF060[D_800E62C8].unk8 = 5;
                     D_801CF060[D_800E62C8].unk80 = 100000.0f;
@@ -5567,7 +5567,7 @@ s32 func_800ADE14(s32 arg0) {
         D_801D0754 = func_8009D564(-func_8009D3AC(temp_v0->unkF0, temp_v0->unkF4));
 
         D_801D0758 = func_8009D564(
-            func_8009D3AC(D_801CF060[arg0].unkC - temp_v0->unk4C, -(D_801CF060[arg0].unk14 - temp_v0->unk54)));
+            func_8009D3AC(D_801CF060[arg0].unkC - temp_v0->eyeX, -(D_801CF060[arg0].unk14 - temp_v0->eyeZ)));
 
         if (D_801CF060[arg0].unk0 == 6) {
             return 1;

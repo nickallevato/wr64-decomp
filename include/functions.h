@@ -196,7 +196,7 @@ void func_i4_802C5800(void);
 void func_i4_802C58F8(void);
 void func_80069740(UnkStruct_80069740* arg0, UnkStruct_80069740* arg1);
 void func_8006977C(void*, s32);
-void func_80069798(void*, void*, void*, void*, void*, void*);
+void Camera_SetOrbitMatrices(void*, void*, void*, void*, void*, void*);
 void func_80094ACC(void);
 void func_i5_802C5850(void);
 void func_i5_802C5A98(void);

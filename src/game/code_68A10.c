@@ -271,7 +271,7 @@ void func_800AE210(s32 rider) {
 }
 
 
-void func_800AE7C4(void) {
+void Spray_Init(void) {
     s32 j;
     s32 k;
     s32 i;
@@ -565,9 +565,9 @@ void func_800AF798(Gfx** gdl) {
             continue;
         }
 
-        temp_fa0 = var_s3->unk4C - D_801D7A18[i].unk8;
-        temp_fs2 = var_s3->unk50 - D_801D7A18[i].unkC;
-        temp_fa1 = var_s3->unk54 - D_801D7A18[i].unk10;
+        temp_fa0 = var_s3->eyeX - D_801D7A18[i].unk8;
+        temp_fs2 = var_s3->eyeY - D_801D7A18[i].unkC;
+        temp_fa1 = var_s3->eyeZ - D_801D7A18[i].unk10;
 
         // fake match
         if (temp_fa0 == temp_fa1) {}
@@ -678,8 +678,8 @@ void func_800AFBD0(s32 arg0) {
             vtx->v.ob[2] = D_800E6D64->unk8 + (h * dz);
             vtx->v.cn[3] = alpha;
             vtx++;
-            func_801EDAE0(D_800E6D64->unk0 - D_801D796C->unk4C, D_800E6D64->unk4 - D_801D796C->unk50,
-                          D_800E6D64->unk8 - D_801D796C->unk54, dx, dy, dz, &sideX, &sideY, &sideZ);
+            func_801EDAE0(D_800E6D64->unk0 - D_801D796C->eyeX, D_800E6D64->unk4 - D_801D796C->eyeY,
+                          D_800E6D64->unk8 - D_801D796C->eyeZ, dx, dy, dz, &sideX, &sideY, &sideZ);
             h = size * 0.5f;
             vtx->v.ob[0] = (x = h * sideX) + D_800E6D64->unk0;
             vtx->v.ob[1] = (y = h * sideY) + D_800E6D64->unk4;
@@ -720,8 +720,8 @@ void func_800AFBD0(s32 arg0) {
                 vtx->v.ob[2] = D_800E6D64->unk8 + (h * dz);
                 vtx->v.cn[3] = alpha;
                 vtx++;
-                func_801EDAE0(D_800E6D64->unk0 - D_801D7970->unk4C, D_800E6D64->unk4 - D_801D7970->unk50,
-                              D_800E6D64->unk8 - D_801D7970->unk54, dx, dy, dz, &sideX, &sideY, &sideZ);
+                func_801EDAE0(D_800E6D64->unk0 - D_801D7970->eyeX, D_800E6D64->unk4 - D_801D7970->eyeY,
+                              D_800E6D64->unk8 - D_801D7970->eyeZ, dx, dy, dz, &sideX, &sideY, &sideZ);
                 h = size * 0.5f;
                 vtx->v.ob[0] = D_800E6D64->unk0 + (h * sideX);
                 vtx->v.ob[1] = D_800E6D64->unk4 + (h * sideY);
@@ -913,9 +913,9 @@ void func_800B08F8(s32 arg0) {
     twoViews = (gPlayers == TWO_PLAYERS) && (D_801CE638 == 1);
     special = (D_801CE638 == 4) || (D_801CE638 == 10);
     // Level of detail (0-3) from the distance to the camera and whether the craft is in view.
-    dx = D_801D79BC - D_801D7968->unk4C;
-    dy = D_801D79C0 - D_801D7968->unk50;
-    dz = D_801D79C4 - D_801D7968->unk54;
+    dx = D_801D79BC - D_801D7968->eyeX;
+    dy = D_801D79C0 - D_801D7968->eyeY;
+    dz = D_801D79C4 - D_801D7968->eyeZ;
     dist = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
     lod = 0;
     D_800E6D60->unk1C4C = 0;
@@ -1759,9 +1759,9 @@ void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5) 
     gDPSetRenderMode(gdlh++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
     gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
     temp_t0 = &gCameraPerspective[D_80223930];
-    temp_f14 = temp_t0->unk4C - arg1;
-    other = temp_t0->unk50 - arg2;
-    temp_f16 = temp_t0->unk54 - arg3;
+    temp_f14 = temp_t0->eyeX - arg1;
+    other = temp_t0->eyeY - arg2;
+    temp_f16 = temp_t0->eyeZ - arg3;
     if ((temp_f14 != 0.0f) || (temp_f16 != 0.0f)) {
         var_f0 = 1.0f;
         var_f2 = 0.0f;

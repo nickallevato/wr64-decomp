@@ -421,8 +421,8 @@ void func_801EF504(void) {
                 node = &D_801AEE20[node->unkA0];
             }
         }
-        dx = node->unk0 - cam->unk4C;
-        dz = node->unk8 - cam->unk54;
+        dx = node->unk0 - cam->eyeX;
+        dz = node->unk8 - cam->eyeZ;
         dist = sqrtf(dx * dx + dz * dz);
         if (dist > 0.0f) {
             dx /= dist;
@@ -458,8 +458,8 @@ void func_801EF504(void) {
             rider->unk2D0 += func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
         }
         if ((fwd < D_80227A28) && (node->unk9C == 1)) {
-            dx = node->unkC - cam->unk4C;
-            dz = node->unk14 - cam->unk54;
+            dx = node->unkC - cam->eyeX;
+            dz = node->unk14 - cam->eyeZ;
             dist = sqrtf(dx * dx + dz * dz);
             if (dist > 0.0f) {
                 dx /= dist;
@@ -468,8 +468,8 @@ void func_801EF504(void) {
             cross = dirX * dz - dirZ * dx;
             dot = dirX * dx + dirZ * dz;
             if (dot < D_80227A2C) {
-                dx = node->unk18 - cam->unk4C;
-                dz = node->unk20 - cam->unk54;
+                dx = node->unk18 - cam->eyeX;
+                dz = node->unk20 - cam->eyeZ;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
                     dx /= dist;
@@ -486,7 +486,7 @@ void func_801EF504(void) {
         if (rider->inBox != 0) {
             show = 0;
         }
-        if (func_80074448(cam->unk4C, cam->unk54) != 0) {
+        if (func_80074448(cam->eyeX, cam->eyeZ) != 0) {
             show = 0;
         }
         if (gGameModes == GMODE_STUNT) {
@@ -494,8 +494,8 @@ void func_801EF504(void) {
             obj = D_801BC940;
             if (D_801BFA40 > 0) do {
                 if (obj->unk4C == 8) {
-                    dx = obj->unk0 - cam->unk4C;
-                    dz = obj->unk8 - cam->unk54;
+                    dx = obj->unk0 - cam->eyeX;
+                    dz = obj->unk8 - cam->eyeZ;
                     dist = sqrtf(dx * dx + dz * dz);
                     if (dist > 0.0f) {
                         dx /= dist;
@@ -641,7 +641,7 @@ void Hud_DrawGuideArrow(Gfx** gdlp) {
     gSPViewport(gdl++, &D_1014450);
     gSPMatrix(gdl++, &D_300E008, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, &D_300E088, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
     *gdlp = gdl;
 }
 
@@ -813,7 +813,7 @@ void Hud_DrawStartLights(Gfx** gdlp) {
     }
     gSPMatrix(gdl++, &D_300E008, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, &D_300E088, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].perspNorm);
     *gdlp = gdl;
 }
 
@@ -2379,12 +2379,12 @@ void func_801F9EA0(void) {
             me = gPlayer2Rider;
             cam = &gCameraPerspective[D_80223934];
         }
-        camX = cam->unk4C;
-        camZ = cam->unk54;
+        camX = cam->eyeX;
+        camZ = cam->eyeZ;
         dirX = -cam->unkF0;
         dirZ = -cam->unkF4;
-        dx = cam->unk7C - camX;
-        dz = cam->unk84 - camZ;
+        dx = cam->atX - camX;
+        dz = cam->atZ - camZ;
         sqrtf(dx * dx + dz * dz);
         for (j = 0; j < gRiders; j++) {
             b = &D_80228B88[i][j];

@@ -902,13 +902,13 @@ void func_8007687C(s32 arg0) {
         if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_801C1FC8 == 0) && (rider->lapCount >= 2) &&
             (((D_800DAB68 == 0) && (e->unk98 == 6)) || (D_800DAB68 != 0))) {
             D_801C1FC8 = 1;
-            dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].unk4C;
-            dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].unk54;
+            dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].eyeX;
+            dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
             if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                 func_800C1B30();
             } else if (gPlayers == TWO_PLAYERS) {
-                dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].unk4C;
-                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].unk54;
+                dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
+                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
                 if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                     func_800C1B30();
                 }

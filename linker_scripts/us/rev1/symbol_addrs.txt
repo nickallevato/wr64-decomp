@@ -303,3 +303,7 @@ gCourseGridStart = 0x801C1F00;
 gCourseGridCount = 0x801C1F40;
 gMapHalfSize = 0x801C1F94;
 gMapScale = 0x801C1F98;
+
+// camera
+Camera_SetOrbitMatrices = 0x80069798;
+Spray_Init = 0x800AE7C4;
