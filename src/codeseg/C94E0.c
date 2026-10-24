@@ -15,7 +15,7 @@ extern s32 D_800D48E0;
 extern s32 D_801C1FD8;
 extern struct RiderStruct D_801C2938[];
 extern s16 D_801CE6F0;
-extern s32 D_80228D08;
+extern s32 gStartLightsState;
 extern s32 D_80227740;
 extern s32 D_80228AA8;
 extern s32 D_80228B50;
@@ -27,11 +27,11 @@ extern s32 D_80228D14;
 extern s32 D_80228D18;
 extern s8 D_80228CF8[];
 
-void func_801EE9C0(void);
-void func_801EF3C4(void);
-void func_801EFFD8(Gfx**);
-void func_801F06A0(Gfx**);
-void func_801F14B4(Gfx**);
+void Hud_BlendColorSets(void);
+void Hud_SetupMatrices(void);
+void Hud_DrawGuideArrow(Gfx**);
+void Hud_DrawStartLights(Gfx**);
+void Hud_DrawMarkers(Gfx**);
 void func_801F2060(Gfx**);
 void func_801F4120(Gfx**);
 void func_801F9520(Gfx**);
@@ -470,8 +470,8 @@ void func_801FC4D4(Gfx** arg0) {
 
     sp2C = *arg0;
     if ((D_801CE638 == 1) || (D_801CE638 == 8)) {
-        func_801EE9C0();
-        func_801EF3C4();
+        Hud_BlendColorSets();
+        Hud_SetupMatrices();
         gSPViewport(sp2C++, &D_1014450);
         gDPPipeSync(sp2C++);
 
@@ -489,16 +489,16 @@ void func_801FC4D4(Gfx** arg0) {
             (gCourseID != DOLPHIN_PARK) && (D_801C1FD8 == 0)) {
             func_801FA3C0(&sp2C);
         }
-        if (((gGameModeState != 3) || (D_80228D08 == 2)) && (D_801C2938[D_800D48DC].unk2EC == 0) &&
+        if (((gGameModeState != 3) || (gStartLightsState == 2)) && (D_801C2938[D_800D48DC].unk2EC == 0) &&
             ((gPlayers != TWO_PLAYERS) || (D_801C2938[D_800D48E0].unk2EC == 0))) {
-            func_801F06A0(&sp2C);
+            Hud_DrawStartLights(&sp2C);
         }
         if ((D_801CE638 == 1) && (gCurrentPauseMenuOption == -1) && (gGameModeState == 3) &&
             ((gPlayers != TWO_PLAYERS) || (D_801CE6F0 == 0))) {
-            func_801EFFD8(&sp2C);
+            Hud_DrawGuideArrow(&sp2C);
         }
         if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
-            func_801F14B4(&sp2C);
+            Hud_DrawMarkers(&sp2C);
         }
         if (gCurrentPauseMenuOption == -1) {
             func_801F2060(&sp2C);
