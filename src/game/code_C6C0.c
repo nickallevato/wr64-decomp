@@ -4943,7 +4943,8 @@ void func_80064C0C(s32 arg0) {
     if (f < 0.0f) {
         rider->unk10 = ((D_800D4ACC - D_800D4AD0) * SQ(f)) + D_800D4AD0;
     } else {
-        rider->unk10 = ((D_800D4AD4 - D_800D4AD0) * (f * ((rider->unk18 - D_800D49D4) / (D_800D49D0 - D_800D49D4)))) + D_800D4AD0;
+        f *= (rider->unk18 - D_800D49D4) / (D_800D49D0 - D_800D49D4);
+        rider->unk10 = ((D_800D4AD4 - D_800D4AD0) * f) + D_800D4AD0;
     }
     if ((u16) D_800D496C != 0) {
         func_80051740((struct UnkStruct_801C3C50*) rider, (struct UnkStruct_8004B0F8*) rider);
