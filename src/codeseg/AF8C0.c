@@ -1,5 +1,23 @@
 #include "global.h"
 
+// A 0x14-byte record entry; unk10 receives the entered initials. func_801E2C14 also
+// clears unk10[4], which is the first byte of the next entry.
+typedef struct UnkStruct_AF8C0_14 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s8 unk10[4];
+} UnkStruct_AF8C0_14; // size = 0x14
+
+// A 0x10-byte record entry; unkC receives the entered initials (and unkC[4], as above).
+typedef struct UnkStruct_AF8C0_10 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s8 unkC[4];
+} UnkStruct_AF8C0_10; // size = 0x10
+
 extern s32 gVIsPerFrame;
 extern s32 D_800DAB1C;
 extern s32 D_801CE630;
@@ -25,6 +43,11 @@ extern s32 D_802261E4;
 extern s32 D_802261E8;
 extern Gfx* D_802261EC[];
 extern s8 D_802288E8[];
+extern s16 D_800DAB6C;
+extern UnkStruct_AF8C0_14 D_801C1FF0[][3];
+extern UnkStruct_AF8C0_14 D_801C22C0[];
+extern UnkStruct_AF8C0_14 D_801C23B0[];
+extern UnkStruct_AF8C0_10 D_801C26E8[][3];
 
 s32 func_8007BEA4(s32);
 s32 func_8007C204(s32);
@@ -231,4 +254,69 @@ void func_801E2B8C(s32 arg0) {
     FadeTransition_SetProps(1, 0xE, 0x14);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E2C14.s")
+void func_801E2C14(void) {
+    s32 i;
+    s32 j;
+    s32 course;
+
+    if (D_802288E8[0] == 0) {
+        for (i = 0; i < 3; i++) {
+            D_802288E8[i] = D_801CB298[D_800DA9B0[0]].unk_0[i];
+        }
+        D_802288E8[i] = 0;
+        D_800DAB6C = 1;
+    }
+    if (D_801CE608.gameMode == 4) {
+        for (j = 0; j < D_801CB334 + 1; j++) {
+            course = D_800EAC14[gDifficulty][j];
+            if (D_801C2660[course] != 0) {
+                for (i = 0; i < 4; i++) {
+                    if (D_800DAB68 != 0) {
+                        D_801C23B0[course].unk10[i] = D_802288E8[i];
+                    } else {
+                        D_801C1FF0[course][D_801C2660[course] - 1].unk10[i] = D_802288E8[i];
+                    }
+                }
+                if (D_800DAB68 != 0) {
+                    D_801C23B0[course].unk10[i] = 0;
+                } else {
+                    D_801C1FF0[course][D_801C2660[course] - 1].unk10[i] = 0;
+                }
+            }
+            if (D_801C2690[course] != 0) {
+                for (i = 0; i < 4; i++) {
+                    D_801C22C0[course].unk10[i] = D_802288E8[i];
+                }
+                D_801C22C0[course].unk10[i] = 0;
+            }
+        }
+    } else if (D_801CE608.gameMode == 11) {
+        if (D_801C2928 != 0) {
+            for (i = 0; i < 4; i++) {
+                D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = D_802288E8[i];
+            }
+            D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = 0;
+        }
+    } else {
+        if (D_801C2660[gCourseID] != 0) {
+            for (i = 0; i < 4; i++) {
+                if (D_800DAB68 != 0) {
+                    D_801C23B0[gCourseID].unk10[i] = D_802288E8[i];
+                } else {
+                    D_801C1FF0[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = D_802288E8[i];
+                }
+            }
+            if (D_800DAB68 != 0) {
+                D_801C23B0[gCourseID].unk10[i] = 0;
+            } else {
+                D_801C1FF0[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = 0;
+            }
+        }
+        if (D_801C2690[gCourseID] != 0) {
+            for (i = 0; i < 4; i++) {
+                D_801C22C0[gCourseID].unk10[i] = D_802288E8[i];
+            }
+            D_801C22C0[gCourseID].unk10[i] = 0;
+        }
+    }
+}
