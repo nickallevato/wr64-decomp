@@ -55,6 +55,90 @@ extern struct UnkStruct_801DB0E4_arg0 D_80228190;
 extern s32 D_802287A8;
 extern s32 D_802287AC;
 
+// A keyframed object (type 1, 2, 3 or 5) and the script runner that drives it.
+// Layouts come from the copies and stores in func_801DEF84..func_801DFE80.
+typedef struct UnkA95D0_Base {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ Vec3f unk20;
+    /* 0x2C */ u8 pad2C[0xC];
+    /* 0x38 */ f32 unk38;
+    /* 0x3C */ u8 pad3C[0x1C];
+} UnkA95D0_Base; // size = 0x58
+
+typedef struct UnkA95D0_Payload1 {
+    /* 0x00 */ Vec3f unk0;
+    /* 0x0C */ Vec3f unkC;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+} UnkA95D0_Payload1; // size = 0x20
+
+typedef struct UnkA95D0_Payload2 {
+    /* 0x00 */ f32 unk0[14];
+} UnkA95D0_Payload2; // size = 0x38
+
+typedef struct UnkA95D0_Payload5 {
+    /* 0x00 */ f32 unk0[33];
+} UnkA95D0_Payload5; // size = 0x84
+
+typedef struct UnkA95D0_Key1 {
+    /* 0x00 */ UnkA95D0_Base base;
+    /* 0x58 */ UnkA95D0_Payload1 p;
+} UnkA95D0_Key1;
+
+typedef struct UnkA95D0_Key2 {
+    /* 0x00 */ UnkA95D0_Base base;
+    /* 0x58 */ UnkA95D0_Payload2 p;
+} UnkA95D0_Key2;
+
+typedef struct UnkA95D0_Key5 {
+    /* 0x00 */ UnkA95D0_Base base;
+    /* 0x58 */ UnkA95D0_Payload5 p;
+} UnkA95D0_Key5;
+
+typedef struct UnkA95D0_Obj {
+    /* 0x00 */ s32 type;
+    /* 0x04 */ UnkA95D0_Base base;
+    /* 0x5C */ union {
+        UnkA95D0_Payload1 p1;
+        UnkA95D0_Payload2 p2;
+        UnkA95D0_Payload5 p5;
+    } u;
+} UnkA95D0_Obj; // size = 0xE0
+
+// A spline cursor: frame within the segment and segment index (-1 when done).
+typedef struct UnkA95D0_Cursor {
+    /* 0x00 */ s32 frame;
+    /* 0x04 */ s32 seg;
+} UnkA95D0_Cursor; // size = 0x8
+
+typedef struct UnkA95D0_Spline3 {
+    /* 0x00 */ s32 count;
+    /* 0x04 */ f32* points[3];
+    /* 0x10 */ s32* durations;
+} UnkA95D0_Spline3; // size = 0x14
+
+typedef struct UnkA95D0_Spline1 {
+    /* 0x00 */ s32 count;
+    /* 0x04 */ f32* points;
+    /* 0x08 */ s32* durations;
+} UnkA95D0_Spline1; // size = 0xC
+
+struct UnkA95D0_Runner;
+
+typedef struct UnkA95D0_Step {
+    /* 0x00 */ s32 duration;
+    /* 0x04 */ void (*func)(struct UnkA95D0_Runner*, s32);
+    /* 0x08 */ s32 arg;
+} UnkA95D0_Step; // size = 0xC
+
+typedef struct UnkA95D0_Runner {
+    /* 0x00 */ UnkA95D0_Obj* obj;
+    /* 0x04 */ UnkA95D0_Step* step;
+    /* 0x08 */ s32 frame;
+    /* 0x0C */ UnkA95D0_Cursor* cursors;
+    /* 0x10 */ s32 unk10[10];
+} UnkA95D0_Runner; // size = 0x38
+
 // TODO: Improve these matches
 void func_801DAFA0(void** arg0, s32 arg1) {
     *(f32*) (((u8*) (*arg0)) + 0x50) = 3.0f;
@@ -322,7 +406,9 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFCB8.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFD8C.s")
+void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj) {
+    runner->obj = obj;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DFD94.s")
 
