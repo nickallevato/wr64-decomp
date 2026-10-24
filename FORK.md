@@ -27,6 +27,7 @@ python3 -m venv .venv && . .venv/bin/activate
 pip install -r tools/splat/requirements.txt GitPython colour capstone
 pip install git+https://github.com/matt-kempster/m2c
 pip install pynacl toml Levenshtein        # the permuter's own requirements
+pip install colorama watchdog               # asm-differ (./diff)
 
 make toolchain                              # tools/n64crc + tools/ido-static-recomp/build/5.3/out/cc
 git clone https://github.com/simonlindholm/decomp-permuter tools/decomp-permuter
@@ -73,3 +74,35 @@ tools/fork/check.sh func_801E93B4
   only if it prints `waverace64.us.rev1.z64: OK`. Then prints the progress line.
   A mismatch: `python3 first_diff.py` locates the first differing address; `./diff <func>` shows the asm diff.
 - A function counts as done only when `check.sh` passes on the commit that adds it.
+
+## The loop
+
+One function per worktree; every step runs from the worktree root with `. .venv/bin/activate`.
+
+1. **Start.** `tools/fork/start.sh <func> <file.c>`, then `cd ../wr64-decomp-wt/<func>`.
+2. **Draft.** Start from `m2c/<func>.c`. Prefer an existing prototype (`include/`, the same `.c`,
+   other callers in `src/`) and the style of a matched sibling. Replace the `#pragma GLOBAL_ASM`
+   line with the C. Then `make extract`, so splat drops the function's `.s` (without it the
+   progress count does not move).
+3. **Diff.** `./diff <func>` (watch mode: rebuilds on save). One-shot:
+   `python3 tools/asm-differ/diff.py -s <func> --no-pager` (`--format json` gives `current_score`; 0 = clean).
+   Check the function's rodata (floats, strings, jump tables) moved with it.
+4. **Permute,** only if stuck and within the cap (about 2 h per function, about 1 h of it permuter):
+   `tools/decomp-permuter/import.py <c file> <asm file>`, then
+   `tools/decomp-permuter/permuter.py nonmatchings/<func> -j4`.
+5. **Prove.** `tools/fork/check.sh <func>`: must print `check: OK` and the count must rise by one.
+6. **Commit** on `match/<func>` (`<func>: <what it is> in C`). Push the branch to `origin` if wanted.
+7. **Merge.** The coordinator merges `--no-ff` into `main`, runs `make extract` and
+   `tools/fork/check.sh <func>` again there, and pushes `main`.
+
+**NON_MATCHING rule.** Past the cap the function stays `#pragma GLOBAL_ASM` and does not count.
+The best attempt is kept beside it, never built by default:
+
+```c
+#ifdef NON_MATCHING
+// <one line: the remaining difference>
+<the C>
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/.../<func>.s")
+#endif
+```
