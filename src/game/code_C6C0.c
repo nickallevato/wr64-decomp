@@ -3983,7 +3983,7 @@ void func_80063C88(s32 arg0) {
 
 #ifdef NON_MATCHING
 // Same size as the original and close: float register allocation differs in a few blocks
-// (the g +/- f sums, the 0.5f moves, the unk10 tail). Control flow matches.
+// (thrust sits in $f2 rather than $f18, the g +/- f sums, the 0.5f moves). Control flow matches.
 void func_80064C0C(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -3993,7 +3993,6 @@ void func_80064C0C(s32 arg0) {
     f32 z;
     f32 f;
     f32 g;
-    f32 len;
     s32 ang;
 
     if (rider->unk16B4 >= 40) {
@@ -4002,17 +4001,17 @@ void func_80064C0C(s32 arg0) {
         thrust = rider->unkBBC * D_800D9630;
     } else {
         if (rider->unk68 >= 11.111112f) {
-            f = rider->unkBCC * rider->unkBC4;
+            thrust = rider->unkBCC * rider->unkBC4;
         } else if (rider->unkBD0 <= rider->unk68) {
             ang = (rider->unk68 - rider->unkBD0) * rider->unkBDC;
-            f = (1.0f - ((1.0f - COS(ang)) * rider->unkBE0)) * rider->unkBC4;
+            thrust = (1.0f - ((1.0f - COS(ang)) * rider->unkBE0)) * rider->unkBC4;
         } else {
             ang = (rider->unkBD0 - rider->unk68) * rider->unkBD4;
-            f = (1.0f - ((1.0f - COS(ang)) * rider->unkBD8)) * rider->unkBC4;
+            thrust = (1.0f - ((1.0f - COS(ang)) * rider->unkBD8)) * rider->unkBC4;
         }
-        f += rider->unkB9C;
-        thrust = f * sqrtf(1.0f - SQ(rider->unk70));
-        if (!((rider->unk90[0].unk1C | rider->unk90[2].unk1C) & 1)) {
+        thrust += rider->unkB9C;
+        thrust *= sqrtf(1.0f - SQ(rider->unk70));
+        if (!((rider->unk90[2].unk1C | rider->unk90[0].unk1C) & 1)) {
             thrust *= D_800D49C4;
         }
         thrust *= rider->unk1578;
@@ -4033,9 +4032,9 @@ void func_80064C0C(s32 arg0) {
     x = rider->unkBA0 + rider->unkBAC;
     y = rider->unkBA4 + rider->unkBB0;
     z = rider->unkBA8 + rider->unkBB4;
-    len = SQ(x) + SQ(z);
-    if (len != 0.0f) {
-        f = rider->unkB98 / sqrtf(len);
+    f = SQ(x) + SQ(z);
+    if (f != 0.0f) {
+        f = rider->unkB98 / sqrtf(f);
     } else {
         f = 0.0f;
     }
@@ -4056,10 +4055,10 @@ void func_80064C0C(s32 arg0) {
         x -= f * rider->unk6C;
         y -= f * rider->unk70;
         z -= f * rider->unk74;
-        len = 1.0f / sqrtf(SQ(x) + SQ(y) + SQ(z));
-        x *= len;
-        y *= len;
-        z *= len;
+        f = 1.0f / sqrtf(SQ(x) + SQ(y) + SQ(z));
+        x *= f;
+        y *= f;
+        z *= f;
         f = (rider->unk78 * x) + (y * rider->unk7C) + (z * rider->unk80);
         f = SQ(f);
         if (f > 1.0f) {
@@ -4159,7 +4158,8 @@ void func_80064C0C(s32 arg0) {
     if ((rider->unk1598 == 2) || (rider->unk1598 == 1)) {
         x = rider->unk15AC * rider->unk84;
         z = rider->unk15AC * rider->unk8C;
-        g = rider->unk0.f * 0.5f;
+        g = rider->unk0.f;
+        g *= 0.5f;
         y = (rider->unk15AC * rider->unk88) - g;
         rider->unk90[2].unkC += x;
         rider->unk90[2].unk10 += y;
@@ -4187,24 +4187,24 @@ void func_80064C0C(s32 arg0) {
         z = rider->unk15AC * rider->unk80;
         g = rider->unk0.f * 0.5f;
         y = f - g;
-        len = f + g;
+        f = f + g;
         rider->unk90[3].unkC += x;
         rider->unk90[3].unk10 += y;
         rider->unk90[3].unk14 += z;
         rider->unk90[4].unkC += x;
-        rider->unk90[4].unk10 += len;
+        rider->unk90[4].unk10 += f;
         rider->unk90[4].unk14 += z;
         rider->unk90[5].unkC += x;
         rider->unk90[5].unk10 += y;
         rider->unk90[5].unk14 += z;
         rider->unk90[0].unkC -= x;
-        rider->unk90[0].unk10 -= len;
+        rider->unk90[0].unk10 -= f;
         rider->unk90[0].unk14 -= z;
         rider->unk90[1].unkC -= x;
         rider->unk90[1].unk10 -= y;
         rider->unk90[1].unk14 -= z;
         rider->unk90[2].unkC -= x;
-        rider->unk90[2].unk10 -= len;
+        rider->unk90[2].unk10 -= f;
         rider->unk90[2].unk14 -= z;
         rider->unk90[8].unk10 += g;
         rider->unk90[6].unk10 -= g;
