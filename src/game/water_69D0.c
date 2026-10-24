@@ -46,18 +46,42 @@ extern UnkStruct_80160430 D_80160430[];
 extern UnkStruct_80160A98 D_80160A98[];
 extern s32 D_80192498; /* the window radius, N << 6 */
 
-extern f32 D_800D4738;
-extern f32 D_800D473C;
-extern f32 D_800D4740;
-extern f32 D_800D4744;
-extern s32 D_800D4748;
-extern s32 D_800D474C;
-extern f32 D_800D4750;
-extern s32 D_800D4754;
-extern s32 D_800D4758;
-extern s32 D_800D475C;
-extern s32 D_800D4760;
-extern f32 D_800D4764;
+/* the file's .data (0x800D4680..0x800D47DF) */
+u32 D_800D4680 = 9;
+s32 D_800D4684[] = {
+    0x00000196, 0x00000331, 0x00000332, 0x00000333, 0x00000334, 0x00000335, 0x00000336, 0x00000000,
+    0x00000010, 0x000001A8, 0x00000330, 0x00000320, 0x00000188, 0x000000EA, 0x000001D5, 0x000001D6,
+    0x000001D7, 0x000001D8, 0x000001D9, 0x000001DA, 0x00000000, 0x0000000C, 0x000000F6, 0x000001D4,
+    0x000001C8, 0x000000DE, 0x000000A5, 0x0000014B, 0x0000014C, 0x0000014D, 0x0000014E, 0x0000014F,
+    0x00000150, 0x00000000, 0x0000000A, 0x000000AF, 0x0000014A, 0x00000140, 0x0000009B,
+};
+s32 D_800D4720 = 1500;
+s32 D_800D4724 = 9;
+s32 D_800D4728 = 32;
+s32 D_800D472C = 5;
+s32 D_800D4730 = 6;
+s32 D_800D4734 = 255;
+f32 D_800D4738 = -0.055f;
+f32 D_800D473C = 450.0f;
+f32 D_800D4740 = 400.0f;
+f32 D_800D4744 = 3000.0f;
+s32 D_800D4748 = 1;
+s32 D_800D474C = 1;
+f32 D_800D4750 = 5000.0f;
+s32 D_800D4754 = 1;
+s32 D_800D4758 = 2;
+s32 D_800D475C = 0;
+s32 D_800D4760 = 0;
+f32 D_800D4764 = 0.7f;
+f32 D_800D4768 = -70.0f;
+s32 D_800D476C = 32;
+s32 D_800D4770 = 5;
+s32 D_800D4774 = 0;
+s32 D_800D4778 = 0;
+f32 D_800D477C = 0.75f;
+f32 D_800D4780[] = { 0.0f, 0.0f, -51.2f, 38.4f, 38.4f, 51.2f, 50.0f };
+s32 D_800D479C[] = { 30, 30, 100, 0, 30, 0, 0, 0, 0 };
+
 extern f32 D_801924B4;
 extern f32 D_801924C0;
 extern f32 D_801924C4;
@@ -236,18 +260,15 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
 #endif
 
-extern f32 D_800D4768;
-extern s32 D_800D476C;
-extern s32 D_800D4770;
-extern s32 D_800D4774;
-extern s32 D_800D4778;
-extern f32 D_800D477C;
 extern s32 D_80192460[];
 extern f32 D_801924CC;
 extern f32 D_801924D0;
 
-#ifdef NON_MATCHING
-// 20/18500: the D_800D4774 load and the last tc add use other temp registers ($t0/$t4 for $t8/$t3); everything else matches
+/*
+ * The seven skirt vertices: copies of the arena vertices D_80192460[0..6] at the water level, with
+ * vertex 0 moved back along the camera direction by D_80192498 * D_800D477C, and texture
+ * coordinates projected towards height D_800D4768 and offset by D_800D4774/D_800D4778.
+ */
 void func_8004C998(s32 view, Vtx* skirt) {
     camera_unk_1* cam;
     Vtx* arena;
@@ -283,14 +304,12 @@ void func_8004C998(s32 view, Vtx* skirt) {
             vp->v.ob[0] -= (s32) (r * cam->unkF0);
             vp->v.ob[2] -= (s32) (r * cam->unkF4);
         }
-        // FAKE: the (u16) cast brings the score from 50 to 20
-        vp->v.tc[1] = (u16) SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774;
-        vp->v.tc[0] = SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778;
+        // FAKE: the masks are no-ops on the 16-bit stores (maybe a real wrap); without them two
+        // temp registers differ
+        vp->v.tc[1] = (SysUtils_Round(((((f32) vp->v.ob[0] - cam->unk4C) * t) + cam->unk4C) / D_801924CC) + D_800D4774) & 0xFFFF;
+        vp->v.tc[0] = (SysUtils_Round(((((f32) vp->v.ob[2] - cam->unk54) * t) + cam->unk54) / D_801924D0) + D_800D4778) & 0xFFFF;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C998.s")
-#endif
 
 /* a wave generator stamped as rows of lines (the arg of func_8004CC7C) */
 typedef struct UnkStruct_8004CC7C_s {
@@ -377,11 +396,15 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
     }
 }
 
-extern s32 D_800D47C0;
 
-#ifdef NON_MATCHING
-// 1210/18900: the address of D_800D47C0 is held in a register here (the original loads and stores it with separate lui), and registers differ from there
+/*
+ * Stamps sin(phase * 4096 / period) * amplitude along the diagonal from (x - r, z - r) to
+ * (x + r, z + r) in steps of 64, with r = D_80192498 / 4. The phase, D_800D47C0, advances by step
+ * on each call and wraps at period.
+ */
 void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
+    static s32 D_800D47C0 = 0;
+    s32 t; // FAKE
     UnkStruct_80162420* p0;
     UnkStruct_80162420* p1;
     UnkStruct_80162420* p2;
@@ -391,23 +414,24 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
     s32 cv;
     s32 phase;
     s32 h;
-    f32 r;
     f32 end;
 
-    phase = D_800D47C0 + step;
-    if (phase >= period) {
-        phase -= period;
+    D_800D47C0 += step;
+    if (D_800D47C0 >= period) {
+        D_800D47C0 -= period;
     }
-    h = (s32) (SIN((phase << 12) / period) * amplitude) << 8;
-    r = D_80192498 >> 2;
-    D_800D47C0 = phase;
-    end = r + x;
-    x -= r;
-    z -= r;
+    phase = D_800D47C0;
+    amplitude = (s32) (SIN((phase << 12) / period) * amplitude) << 8; // FAKE: h computed in amplitude
+    h = amplitude;
+    // the radius is not a local: as one, it takes the original's register for end
+    end = (D_80192498 >> 2) + x;
+    x -= D_80192498 >> 2;
+    z -= D_80192498 >> 2;
     while (x <= end) {
         u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
         v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
-        cv = v >> 6;
+        t = v >> 6; // FAKE: the copy through t gives the original register choice, as in func_8004F520
+        cv = t;
         cu = u >> 6;
         if ((u - (cu * 64)) < (v - (cv * 64))) {
             p0 = WATER_CELL(cu, cv + 1);
@@ -422,38 +446,43 @@ void func_8004D018(f32 x, f32 z, s32 amplitude, s32 period, s32 step) {
         z += 64.0f;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D018.s")
-#endif
 
 #ifdef NON_MATCHING
-// 2820/19900: the original keeps -0x80 and 0x180 in registers ($ra, $t3) and starts the first row division before the second div check; registers differ from there. Frame and spill slots match
+// 24/19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
+// CU and CV are macros so that IDO keeps them as common subexpressions: as named locals they add
+// stack slots
+#define CU (((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6)
+#define CV (((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6)
 f32 func_8004D30C(f32 x, f32 z) {
-    s32 cv;
+    s32 du;
     s32 h00;
-    s32 cu;
+    s32 dv;
     s32 d0;
     s32 d1;
 
-    cv = ((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6;
-    cu = ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576) >> 6;
-    h00 = WATER_CELL(cu, cv)->unk0 >> 8;
-    if (((cv << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576)) < ((cu << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576))) {
-        d1 = h00 - (WATER_CELL(cu, cv + 1)->unk0 >> 8);
-        d0 = (WATER_CELL(cu, cv + 1)->unk0 >> 8) - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+    du = (CU << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576);
+    h00 = WATER_CELL(CU, CV)->unk0 >> 8;
+    dv = (CV << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576);
+    if (dv < du) {
+        d0 = WATER_CELL(CU, CV + 1)->unk0 >> 8;
+        d1 = h00 - d0;
+        d0 -= WATER_CELL(CU + 1, CV + 1)->unk0 >> 8;
     } else {
-        d0 = h00 - (WATER_CELL(cu + 1, cv)->unk0 >> 8);
-        d1 = (WATER_CELL(cu + 1, cv)->unk0 >> 8) - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+        d1 = WATER_CELL(CU + 1, CV)->unk0 >> 8;
+        d0 = h00 - d1;
+        d1 -= WATER_CELL(CU + 1, CV + 1)->unk0 >> 8;
     }
-    return (f32) ((d0 * ((cu << 6) - ((s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576))) + ((gWaterLevel + h00) << 12) + (d1 * ((cv << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576)))) /
+    return (f32) ((d0 * du) + ((gWaterLevel + h00) << 12) + (d1 * dv)) /
            sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
 }
+#undef CU
+#undef CV
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D30C.s")
 #endif
 
 #ifdef NON_MATCHING
-// 9125/30600: register allocation (saved-register numbering from the first block on; the original also orders some float multiplies the other way). Same operations as func_8004E0A4
+// 2600/30600: register allocation (saved and temp register numbering). Same operations as func_8004E0A4
 void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     f32 max;
     f32 inv;
@@ -461,55 +490,55 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     f32 ny;
     f32 nz;
     f32 depth;
-    struct UnkStruct_8004B0F8_1* var_v0;
+    struct UnkStruct_8004B0F8_1* pt;
     s32 v;
     s32 cv;
     s32 u;
     s32 cu;
     s32 h00;
-    s32 h;
     s32 fu;
     s32 fv;
     s32 d0;
     s32 d1;
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
-    for (var_v0 = &arg0->unk30[arg0->unk28]; (u32) var_v0 >= (u32) arg0->unk30; var_v0--) {
-        u = (s32) ((DIRLIGHT_DIRECTION * var_v0->unk8) + var_v0->unk0) % 24576;
+    for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
+        u = (s32) ((DIRLIGHT_DIRECTION * pt->unk8) + pt->unk0) % 24576;
         cu = u >> 6;
-        v = (s32) (TWO_OVER_SQRT_3 * var_v0->unk8) % 24576;
+        v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
         cv = v >> 6;
         h00 = WATER_CELL(cu, cv)->unk0 >> 8;
         fu = (cu << 6) - u;
         fv = (cv << 6) - v;
         if (fv < fu) {
-            h = WATER_CELL(cu, cv + 1)->unk0 >> 8;
-            d1 = h00 - h;
-            d0 = h - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+            d0 = WATER_CELL(cu, cv + 1)->unk0 >> 8;
+            d1 = h00 - d0;
+            d0 -= WATER_CELL(cu + 1, cv + 1)->unk0 >> 8;
         } else {
-            h = WATER_CELL(cu + 1, cv)->unk0 >> 8;
-            d0 = h00 - h;
-            d1 = h - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+            d1 = WATER_CELL(cu + 1, cv)->unk0 >> 8;
+            d0 = h00 - d1;
+            v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576; // FAKE: a dead recomputation, in this branch only
+            d1 -= WATER_CELL(cu + 1, cv + 1)->unk0 >> 8;
         }
         inv = 1.0f / sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
         nx = d0 * inv;
         ny = 4096.0f * inv;
         nz = d1 * inv;
-        depth = (fu * nx) + (ny * ((f32) (gWaterLevel + h00) - var_v0->unk4)) + (nz * fv);
+        depth = (fu * nx) + (ny * ((f32) (gWaterLevel + h00) - pt->unk4)) + (nz * fv);
         if (depth >= 0.0f) {
-            var_v0->unk1C |= 1;
-            var_v0->unkC *= arg0->unk14;
-            var_v0->unk10 *= arg0->unk10;
-            var_v0->unk14 *= arg0->unk14;
+            pt->unk1C |= 1;
+            pt->unkC *= arg0->unk14;
+            pt->unk10 *= arg0->unk10;
+            pt->unk14 *= arg0->unk14;
             depth *= arg0->unk18;
             if (max < depth) {
                 depth = max;
             }
-            var_v0->unkC += depth * (nx - (0.5f * nz));
-            var_v0->unk10 += depth * ny;
-            var_v0->unk14 += depth * (0.8660254f * nz);
+            pt->unkC += depth * (nx - (0.5f * nz));
+            pt->unk10 += depth * ny;
+            pt->unk14 += depth * (0.8660254f * nz);
         } else {
-            var_v0->unk1C &= 0xFFFE;
+            pt->unk1C &= 0xFFFE;
         }
     }
 }
@@ -530,28 +559,40 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     (pt)->unk10 *= body->unk10;                                               \
     (pt)->unk14 = (d * dz * k) + (body->unk14 * vz);
 
+#define WATER_DAMP_POINT2(pt)                                                 \
+    vx2 = (pt)->unkC;                                                         \
+    vz2 = (pt)->unk14;                                                        \
+    d = (vx2 * dx) + (vz2 * dz);                                              \
+    (pt)->unkC = (d * dx * k) + (body->unk14 * vx2);                          \
+    (pt)->unk10 *= body->unk10;                                               \
+    (pt)->unk14 = (d * dz * k) + (body->unk14 * vz2);
+
 #ifdef NON_MATCHING
-// 3191/36500: the original keeps 1.0f in $fs0 across sqrtf (frame 0x40 with $fs0/$fs1 saved; 0x20 here), so the float registers differ throughout; the per-point blocks match in shape
+// 487/36500: in the pair blocks the original keeps the second point's vz in $fs1 (so it saves $fs0
+// and $fs1, and ra and the k spill sit 8 bytes higher); here it gets $f0 and d moves to $f2. The
+// `.0f` (not `0.0f`) in the test keeps the two zeros apart, as in the original
 void func_8004DAF0(void* arg0) {
     UnkStruct_80192690* body = arg0;
+    f32 vx;
     UnkStruct_8004B0F8_1* pt2;
-    f32 dz;
     UnkStruct_8004B0F8_1* pt;
     f32 vz;
-    f32 len;
-    f32 inv;
-    f32 d;
+    f32 vz2;
     f32 k;
     f32 dx;
-    f32 vx;
+    f32 inv;
+    f32 d;
+    f32 dz;
+    f32 vx2;
+    f32 len;
 
-    dx = body->unk6C;
-    dz = body->unk74;
+    vx = body->unk6C;
+    vz = body->unk74;
     k = 1.0f - body->unk14;
-    len = (dx * dx) + (dz * dz);
-    if (len == 0.0f) {
-        dx = 0.0f;
+    len = (vx * vx) + (vz * vz);
+    if (.0f == len) {
         dz = 0.0f;
+        dx = 0.0f;
     } else {
         inv = 1.0f / sqrtf(len);
         dx = body->unk6C * inv;
@@ -577,19 +618,19 @@ void func_8004DAF0(void* arg0) {
     pt2 = &body->unk30[5];
     if ((pt->unk1C | pt2->unk1C) & 1) {
         WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT(pt2);
+        WATER_DAMP_POINT2(pt2);
     }
     pt = &body->unk30[6];
     pt2 = &body->unk30[7];
     if ((pt->unk1C | pt2->unk1C) & 1) {
         WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT(pt2);
+        WATER_DAMP_POINT2(pt2);
     }
     pt = &body->unk30[9];
     pt2 = &body->unk30[10];
     if ((pt->unk1C | pt2->unk1C) & 1) {
         WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT(pt2);
+        WATER_DAMP_POINT2(pt2);
     }
     pt2 = &body->unk30[2];
     if ((body->unk30[0].unk1C | pt2->unk1C) & 1) {
@@ -602,7 +643,7 @@ void func_8004DAF0(void* arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// 9025/29700: register allocation; the original keeps arg0 in $t3 and reloads it from the stack after sqrtf, keeps the four integer corner values in saved registers and 1.0f/4096.0f in $fs4/$fs5
+// 2500/29700: register allocation; the original keeps arg0 in $t3 (reloaded from the stack after sqrtf) and copies fu/fv into $s6/$s7 from temps
 void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     f32 max;
     f32 inv;
@@ -610,52 +651,52 @@ void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     f32 ny;
     f32 nz;
     f32 depth;
-    struct UnkStruct_8004B0F8_1* var_v0;
+    struct UnkStruct_8004B0F8_1* pt;
     s32 v;
     s32 cv;
     s32 u;
     s32 cu;
     s32 h00;
-    s32 h;
     s32 fu;
     s32 fv;
     s32 d0;
     s32 d1;
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
-    for (var_v0 = &arg0->unk30[arg0->unk28]; (u32) var_v0 >= (u32) arg0->unk30; var_v0--) {
-        u = (s32) ((DIRLIGHT_DIRECTION * var_v0->unk8) + var_v0->unk0) % 24576;
+    for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
+        u = (s32) ((DIRLIGHT_DIRECTION * pt->unk8) + pt->unk0) % 24576;
         cu = u >> 6;
-        v = (s32) (TWO_OVER_SQRT_3 * var_v0->unk8) % 24576;
+        v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
         cv = v >> 6;
         h00 = WATER_CELL(cu, cv)->unk0 >> 8;
         fu = (cu << 6) - u;
         fv = (cv << 6) - v;
         if (fv < fu) {
-            h = WATER_CELL(cu, cv + 1)->unk0 >> 8;
-            d1 = h00 - h;
-            d0 = h - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+            d0 = WATER_CELL(cu, cv + 1)->unk0 >> 8;
+            d1 = h00 - d0;
+            d0 -= WATER_CELL(cu + 1, cv + 1)->unk0 >> 8;
         } else {
-            h = WATER_CELL(cu + 1, cv)->unk0 >> 8;
-            d0 = h00 - h;
-            d1 = h - (WATER_CELL(cu + 1, cv + 1)->unk0 >> 8);
+            d1 = WATER_CELL(cu + 1, cv)->unk0 >> 8;
+            d0 = h00 - d1;
+            v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576; // FAKE: a dead recomputation, in this branch only
+            d1 -= WATER_CELL(cu + 1, cv + 1)->unk0 >> 8;
         }
         inv = 1.0f / sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
         nx = d0 * inv;
         ny = 4096.0f * inv;
         nz = d1 * inv;
-        depth = (fu * nx) + (ny * ((arg1 + h00) - var_v0->unk4)) + (nz * fv);
+        depth = (fu * nx) + (ny * ((arg1 + h00) - pt->unk4)) + (nz * fv);
         if (depth >= 0.0f) {
-            var_v0->unk1C |= 1;
+            pt->unk1C |= 1;
             depth *= arg0->unk18;
             if (max < depth) {
                 depth = max;
             }
-            var_v0->unkC += depth * (nx - (0.5f * nz));
-            var_v0->unk10 += depth * ny;
-            var_v0->unk14 += depth * (0.8660254f * nz);
+            pt->unkC += depth * (nx - (0.5f * nz));
+            pt->unk10 += depth * ny;
+            pt->unk14 += depth * (0.8660254f * nz);
         } else {
-            var_v0->unk1C &= 0xFFFE;
+            pt->unk1C &= 0xFFFE;
         }
     }
     func_8004DAF0(arg0);
@@ -741,9 +782,6 @@ void func_8004E614(void) {
     }
 }
 
-extern s32 D_800D4724;
-extern s32 D_800D472C;
-extern s32 D_800D4730;
 
 /* the field entry at a byte offset (UnkStruct_80160A98.unk0) */
 #define WATER_CELL_AT(off) ((UnkStruct_80162420*) ((s32) D_80162420 + (off)))
@@ -887,7 +925,6 @@ void func_8004EFB4(f32 x, f32 z, s32 height) {
 }
 
 extern s32 gFrameCounter;
-extern u32 D_800D4680;
 extern s32 D_801924E0[];
 
 void func_8004F1EC(f32 x, f32 z, s32 height, s32 arg3) {
@@ -978,8 +1015,11 @@ void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
     }
 }
 
-#ifdef NON_MATCHING
-// 285/14800: one move (the row index copied before its shift in the first loop) is missing, so the temps after it are numbered one lower; frame and stack match
+/*
+ * Fills the field with noise: each cell's height is the sum of six random values (the first redrawn
+ * for each cell), scaled to +-amplitude: first column by column (velocity 0), then added again row
+ * by row.
+ */
 void func_8004F790(s32 amplitude) {
     s32 i;
     s32 j;
@@ -988,8 +1028,8 @@ void func_8004F790(s32 amplitude) {
     s32 k;
     u8* row;
     UnkStruct_80162420* q;
-    s32 h;
     s32 rnd[6];
+    s32 h;
 
     for (k = 5; k >= 0; k--) {
         rnd[k] = SysUtils_Rand() & 0x7FFF;
@@ -1006,8 +1046,9 @@ void func_8004F790(s32 amplitude) {
                 sum += rnd[k];
             }
             h = SysUtils_Round(amplitude * (((sum / 6.0f) / 16383.5f) - 1.0f)) << 8;
-            // i and the row are byte offsets into the field (i steps by 4)
-            q = (UnkStruct_80162420*) ((u8*) D_80162420 + (j << 9) + i);
+            // i and the row are byte offsets into the field (i steps by 4); the row is written as
+            // (j << 7) << 2 (128 cells of 4 bytes): j << 9 compiles differently
+            q = (UnkStruct_80162420*) ((u8*) D_80162420 + ((j << 7) << 2) + i);
             q->unk0 = h;
             q->unk2 = 0;
         }
@@ -1016,7 +1057,7 @@ void func_8004F790(s32 amplitude) {
         rnd[k] = SysUtils_Rand() & 0x7FFF;
     }
     for (j = 0; j != 384; j++) {
-        row = (u8*) D_80162420 + (j << 9);
+        row = (u8*) D_80162420 + ((j << 7) << 2);
         for (i = 0; i != 0x200; i += 4) {
             bit = 1;
             sum = 0;
@@ -1031,11 +1072,7 @@ void func_8004F790(s32 amplitude) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F790.s")
-#endif
 
-extern s32 D_800D4684[];
 extern UnkStruct_80192420 D_80192420[];
 extern s32 D_8019249C;
 extern s32 D_801924A0;
@@ -1185,7 +1222,6 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F9E0.s")
 #endif
 
-extern s32 D_800D4720;
 
 /*
  * Fills a view's vertex arena from the window's cells, row by row: x and z from the window centre
@@ -1488,18 +1524,23 @@ void func_80050F8C(s32 view, f32 x, f32 z) {
     }
 }
 
-extern s32 D_800D47C4;
-extern s32 D_800D47C8;
-extern f32 D_800D47CC;
-extern f32 D_800D47D0;
 extern s32 D_801C1FCC;
 
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z);
 
-#ifdef NON_MATCHING
-// 5472/18800: the frame is 0x30 here, 0x28 in the original, and the addresses of D_800D47C4 and D_800D47CC/D0 are held in registers here; the original loads each with its own lui
+/*
+ * The per-frame water update. On Glacier Coast (not paused, D_801CE638 == 1) it lowers the water
+ * level while D_801C1FCC is 1 or 2. In the N = 16 scene (D_801CE64C == 1) it moves a wandering
+ * stamp (angle D_800D47C4 turning by D_800D47C8, position D_800D47CC/D0, respawned on the rim when
+ * it leaves the window) and keeps the window at (0, 0); otherwise it centres each view's window
+ * from func_80050B78.
+ */
 void func_80051238(void) {
-    s32 angle;
+    static s32 D_800D47C4 = 0;
+    static s32 D_800D47C8 = 1;
+    static f32 D_800D47CC = 1024.0f;
+    static f32 D_800D47D0 = 1024.0f;
+    s32 turn;
     f32 x;
     f32 z;
 
@@ -1514,17 +1555,16 @@ void func_80051238(void) {
     }
     if (D_801CE64C == 1) {
         if (D_801CE638 != 6) {
-            angle = (D_800D47C4 + D_800D47C8 + 0x1000) & 0xFFF;
-            D_800D47CC += 51.2 * COS(angle);
-            D_800D47C4 = angle;
-            D_800D47D0 += 51.2 * SIN(angle);
+            D_800D47C4 = (D_800D47C4 + D_800D47C8 + 0x1000) & 0xFFF;
+            D_800D47CC += 51.2 * COS(D_800D47C4);
+            D_800D47D0 += 51.2 * SIN(D_800D47C4);
             if ((f32) (D_80192498 * D_80192498) < ((D_800D47CC * D_800D47CC) + (D_800D47D0 * D_800D47D0))) {
-                angle = SysUtils_Rand() & 0xFFF;
-                D_800D47C4 = angle;
-                D_800D47CC = COS(angle) * D_80192498;
-                D_800D47D0 = SIN(angle) * D_80192498;
                 D_800D47C4 = SysUtils_Rand() & 0xFFF;
-                D_800D47C8 = (s32) (((f32) (SysUtils_Rand() & 0x3FFF) * 14.0f) / 16383.0) - 7;
+                D_800D47CC = COS(D_800D47C4) * D_80192498;
+                D_800D47D0 = SIN(D_800D47C4) * D_80192498;
+                D_800D47C4 = SysUtils_Rand() & 0xFFF;
+                turn = (s32) (((f32) (SysUtils_Rand() & 0x3FFF) * 14.0f) / 16383.0) - 7;
+                D_800D47C8 = turn;
             }
             func_8004EFB4(D_800D47CC, D_800D47D0, -50);
         }
@@ -1538,6 +1578,3 @@ void func_80051238(void) {
     func_80050B78(gCameraPerspective, &x, &z);
     func_80050F8C(0, x, z);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80051238.s")
-#endif
