@@ -207,7 +207,8 @@ typedef struct {
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ s32 unk70;
     /* 0x74 */ s32 unk74;
-    /* 0x78 */ char pad78[0x14]; /* maybe part of unk74[6]? */
+    /* 0x78 */ char pad78[0x8];
+    /* 0x80 */ s32 unk80[3];
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ s32 unk90;
     /* 0x94 */ s32 unk94;
@@ -269,7 +270,10 @@ struct UnkStruct_801C3C50 {
     /* 0x0B50 */ u16 unkB50;
     /* 0x0B52 */ s8 unkB52;
     /* 0x0B53 */ u8 unkB53;
-    /* 0x0B54 */ char padB54[0x3C]; /* maybe part of unkB53[0x3D]? */
+    /* 0x0B54 */ char padB54[0x10];
+    /* 0x0B64 */ s32 unkB64;
+    /* 0x0B68 */ s32 unkB68;
+    /* 0x0B6C */ char padB6C[0x24];
     /* 0x0B90 */ f32 unkB90;
     /* 0x0B94 */ char padB94[0xB0]; /* maybe part of unkB90[0x2D]? */
     /* 0x0C44 */ f32 unkC44;
