@@ -173,7 +173,46 @@ Gfx* func_801E5554(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E5554.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E6074.s")
+extern s32 D_801C2650;
+
+void func_801E6074(UnkStruct_menu_buffer_1* slot) {
+    MtxF mf;
+    f32 t;
+
+    switch (slot->state) {
+        case 0:
+            t = (slot->frame / 5.0f) * 1.5f;
+            // An int 1, not 1.0f: IDO then loads its own 1.0f instead of reusing the argument's.
+            slot->x = ((1 - t) * 74.0f) + 80.0f;
+            slot->y = ((1 - t) * 20.0f) + 93.0f;
+            func_80048A88((Mtx*) ((u8*) D_801CE5F8 + ((u16) slot->index << 6) + 0x900), 0.0f, 0.0f, 1.0f, 0.0f,
+                          1.0f, 0.0f, slot->x, slot->y, 0.0f, t);
+            slot->frame++;
+            if (slot->frame >= 6) {
+                slot->state = 1;
+                slot->x = 80;
+                slot->y = 93;
+                slot->frame = 0;
+            }
+            break;
+        case 1:
+            SysUtils_MatrixLookAt((Mtx*) ((u8*) D_801CE5F8 + ((u16) slot->index << 6) + 0x900), &mf, 0.0f, 0.0f,
+                                  1.0f, 0.0f, 1.0f, 0.0f, slot->x, slot->y, 0.0f);
+            slot->frame++;
+            if (D_801CE608.gameMode == 4) {
+                if (slot->frame >= 11) {
+                    slot->type = 0;
+                    func_801E6A4C(2, 0);
+                }
+            } else if ((D_801CE608.gameMode == 0) && (slot->frame >= 11)) {
+                slot->type = 0;
+                if (D_801C2650 == 1) {
+                    func_801E6A4C(2, 1);
+                }
+            }
+            break;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E62A8.s")
 
