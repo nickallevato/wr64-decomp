@@ -1,10 +1,14 @@
 #include "global.h"
 
+extern s32 D_i13_802C8D50;
+
 extern s32 D_i13_802C8D80;
 extern s32 D_i13_802C8D84;
 extern s32 D_802C8E90;
 extern s32 D_802C8E94;
 extern s32 D_802C8E9C;
+
+void func_800C3E6C(s32);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C5800.s")
 
@@ -62,7 +66,46 @@ void func_i13_802C7060(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C711C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C81AC.s")
+void func_i13_802C81AC(s32 arg0) {
+    s32 var_v0;
+
+    D_i13_802C8D84 = 0;
+    D_i13_802C8D78 = 1;
+    D_802C8E90 = 0x1C;
+    D_802C8E94 = 0x44;
+    D_802C8E98 = 0;
+    var_v0 = 0;
+    switch (arg0) {
+        case 1:
+            var_v0 = 1;
+            D_802C8E9C = 4;
+            break;
+        case 6:
+            var_v0 = 1;
+            D_802C8E9C = 6;
+            break;
+        case 3:
+            var_v0 = 1;
+            D_802C8E9C = 0;
+            break;
+        case 4:
+            var_v0 = 1;
+            D_802C8E9C = 2;
+            break;
+        case 2:
+        case 5:
+            var_v0 = 1;
+            if (D_i13_802C8D50 == 0) {
+                D_802C8E9C = 1;
+            } else {
+                D_802C8E9C = 3;
+            }
+            break;
+    }
+    if (var_v0 != 0) {
+        func_800C3E6C(0);
+    }
+}
 
 void func_i13_802C82A4(s32 arg0) {
     D_i13_802C8D80 = 0;
