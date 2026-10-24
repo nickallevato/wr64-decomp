@@ -1,50 +1,51 @@
 #include "common.h"
 
-extern f32 gPrinterScale;  /* glyph scale, set by func_801E93B4 */
-extern s16 gPrinterScaled; /* 1 while the scaled printer is in use; func_801E93B4 leaves it set */
+extern f32 gPrinterScale;  /* glyph scale, set by Printer_PrintScaled */
+extern s16 gPrinterScaled; /* 1 while the scaled printer is in use; Printer_PrintScaled leaves it set */
 
 typedef struct {
-    /* 0x00 */ s16 unk0; /* nonzero: func_801EAFB4 steps unk2 */
-    /* 0x02 */ s16 unk2; /* 0..3, advanced every unk8 frames */
-    /* 0x04 */ s32 unk4; /* frame counter */
-    /* 0x08 */ s32 unk8; /* frames per step */
-    /* 0x0C */ s16 r;    /* prim colour for modes 3-9: set by the colour cycles, read by func_801E946C */
+    /* 0x00 */ s16 enable; /* nonzero: func_801EAFB4 steps phase */
+    /* 0x02 */ s16 phase;  /* 0..3, advanced every period frames */
+    /* 0x04 */ s32 timer;  /* frame counter */
+    /* 0x08 */ s32 period; /* frames per step */
+    /* 0x0C */ s16 r;      /* prim colour for modes 3-9: set by the colour cycles, read by Printer_SetMode */
     /* 0x0E */ s16 g;
     /* 0x10 */ s16 b;
     /* 0x12 */ s16 unk12;
-} UnkStruct_80228A78; /* size = 0x14 */
+} PrinterColorCycle; /* size = 0x14 */
 
-extern u8 D_80226D70[]; /* glyph widths, font 0 */
-extern u8 D_80226D98[]; /* glyph widths, the other fonts */
-extern u8 D_80226DC4[]; /* glyph widths, font 2 */
-extern u8 D_80226DF4[]; /* glyph widths, font 3 */
-extern u8 D_80226E00[]; /* glyph widths, font 4 */
-extern u8 D_80226E0C[]; /* glyph widths, font 5 */
-extern u8 D_80226E18[]; /* glyph widths, font 6 */
+extern u8 gPrinterWidthsFont0[]; /* glyph widths, font 0 */
+extern u8
+    gPrinterWidthsFont1[]; /* glyph widths, font 1 (Printer_DrawNumber also uses it for fonts other than 0 and 2) */
+extern u8 gPrinterWidthsFont2[]; /* glyph widths, font 2 */
+extern u8 gPrinterWidthsFont3[]; /* glyph widths, font 3 */
+extern u8 gPrinterWidthsFont4[]; /* glyph widths, font 4 */
+extern u8 gPrinterWidthsFont5[]; /* glyph widths, font 5 */
+extern u8 gPrinterWidthsFont6[]; /* glyph widths, font 6 */
 
-extern s32 D_80228A40;    /* next free vertex in D_801CE5F8->unk40 */
-extern s32 D_80228A44;    /* printer mode, set by func_801E946C */
-extern s32 D_80228A48[4]; /* corner colours, set by func_801E946C: red */
-extern s32 D_80228A58[4]; /* green */
-extern s32 D_80228A68[4]; /* blue */
+extern s32 D_80228A40;         /* next free vertex in D_801CE5F8->unk40 */
+extern s32 gPrinterMode;       /* printer mode, set by Printer_SetMode */
+extern s32 gPrinterCornerR[4]; /* corner colours, set by Printer_SetMode: red */
+extern s32 gPrinterCornerG[4]; /* green */
+extern s32 gPrinterCornerB[4]; /* blue */
 extern u8 D_7000000[];
 extern u8 D_2000A40[];
 extern Gfx D_106F030[];
 extern Gfx D_106F0A8[];
-extern s32 D_80226E2C;  /* font of the last glyph drawn */
-extern u8 D_1033CB8[];  /* glyph textures, font 0 (IA8, 24x20) */
-extern u8 D_10387C0[];  /* font 1 (IA8, 8x8) */
-extern u8 D_1039248[];  /* font 2 (IA8, 16x12) */
-extern u32 D_103B4D0[]; /* fonts 3 and 4 (RGBA32, 12x16) */
-extern u32 D_103D8D8[]; /* font 5 (RGBA32, 16x20) */
+extern s32 gPrinterLastFont; /* font of the last glyph drawn */
+extern u8 D_1033CB8[];       /* glyph textures, font 0 (IA8, 24x20) */
+extern u8 D_10387C0[];       /* font 1 (IA8, 8x8) */
+extern u8 D_1039248[];       /* font 2 (IA8, 16x12) */
+extern u32 D_103B4D0[];      /* fonts 3 and 4 (RGBA32, 12x16) */
+extern u32 D_103D8D8[];      /* font 5 (RGBA32, 16x20) */
 
-extern UnkStruct_80228A78 D_80228A78;
-extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 */
+extern PrinterColorCycle gPrinterColorCycle;
+extern PrinterColorCycle gPrinterColorCycleInit; /* initial value, copied by Printer_ResetColorCycle */
 
 /* Draws glyph of font at (x, y): culls it off screen, loads its texture (IA8 fonts 0-2, RGBA32 fonts 3-5), then a
- * texture rectangle, or in mode 2 a scaled Gouraud quad (func_801E8800). */
-Gfx* func_801E80B0(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
-                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
+ * texture rectangle, or in mode 2 a scaled Gouraud quad (Printer_DrawQuad). */
+Gfx* Printer_DrawGlyph(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+                       u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
     u8* tex;
     s32 visible;
     u32 w;
@@ -127,8 +128,8 @@ Gfx* func_801E80B0(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0,
     if (visible == 0) {
         return gdl;
     }
-    if (font != D_80226E2C) {
-        D_80226E2C = font;
+    if (font != gPrinterLastFont) {
+        gPrinterLastFont = font;
     }
     if (rgba32 == 0) {
         gDPLoadTextureBlock(gdl++, tex, G_IM_FMT_IA, G_IM_SIZ_8b, w, h, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK,
@@ -141,16 +142,16 @@ Gfx* func_801E80B0(Gfx* gdl, s32 font, u32 glyph, s32 x, s32 y, s32 mode, u8 r0,
         gSPScisTextureRectangle(gdl++, x << 2, y << 2, (x + (s32) w) << 2, (y + (s32) h) << 2, G_TX_RENDERTILE, 0, 0,
                                 1 << 10, 1 << 10);
     } else {
-        gdl = func_801E8800(gdl, w, h, x, y, (u8) r0, (u8) g0, (u8) b0, (u8) r1, (u8) g1, (u8) b1, (u8) r2, (u8) g2,
-                            (u8) b2, (u8) r3, (u8) g3, (u8) b3, scale);
+        gdl = Printer_DrawQuad(gdl, w, h, x, y, (u8) r0, (u8) g0, (u8) b0, (u8) r1, (u8) g1, (u8) b1, (u8) r2, (u8) g2,
+                               (u8) b2, (u8) r3, (u8) g3, (u8) b3, scale);
     }
     return gdl;
 }
 
 /* Draws a w x h quad at (x, y), scaled, with corner colours r0..b3 (Gouraud), from the D_801CE5F8->unk40
  * vertex pool. */
-Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2,
-                   u8 r3, u8 g3, u8 b3, f32 scale) {
+Gfx* Printer_DrawQuad(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2,
+                      u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
     Vtx* vtx;
     s32 i;
 
@@ -203,14 +204,14 @@ Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8
 
 /* Sets the printer's mode and corner colours, then prints time (ms, as M'SS"mmm) at (x, y); the time-trial best
  * times use it. */
-Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 time, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
-                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
-    gdl = func_801E946C(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    return func_801E8B24(gdl, font, time, x, y);
+Gfx* Printer_PrintTime(Gfx* gdl, s32 font, s32 time, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+                       u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
+    gdl = Printer_SetMode(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    return Printer_DrawTime(gdl, font, time, x, y);
 }
 
 /* Prints time (in ms) as M'SS"mmm in font from (x, y); the separators are the fonts' ' and @ glyphs. */
-Gfx* func_801E8B24(Gfx* gdl, s32 font, s32 time, s32 x, s32 y) {
+Gfx* Printer_DrawTime(Gfx* gdl, s32 font, s32 time, s32 x, s32 y) {
     s32 cx;
     s32 digitW;
     s32 sep1;
@@ -229,117 +230,125 @@ Gfx* func_801E8B24(Gfx* gdl, s32 font, s32 time, s32 x, s32 y) {
             digitW = 24;
             sep1 = 0x25;
             sep2 = 0x26;
-            sep1W = D_80226D70[0x25];
-            sep2W = D_80226D70[0x26];
+            sep1W = gPrinterWidthsFont0[0x25];
+            sep2W = gPrinterWidthsFont0[0x26];
             break;
         case 1:
             digitW = 8;
             sep1 = 0x25;
             sep2 = 0x26;
-            sep1W = D_80226D98[0x25];
-            sep2W = D_80226D98[0x26];
+            sep1W = gPrinterWidthsFont1[0x25];
+            sep2W = gPrinterWidthsFont1[0x26];
             break;
         case 2:
             digitW = 10;
             sep1 = 0x26;
             sep2 = 0x27;
-            sep1W = D_80226DC4[0x26];
-            sep2W = D_80226DC4[0x27];
+            sep1W = gPrinterWidthsFont2[0x26];
+            sep2W = gPrinterWidthsFont2[0x27];
             break;
         case 3:
             digitW = 12;
             sep1 = 0xA;
             sep2 = 0xB;
-            sep1W = D_80226DF4[0xA];
-            sep2W = D_80226DF4[0xB];
+            sep1W = gPrinterWidthsFont3[0xA];
+            sep2W = gPrinterWidthsFont3[0xB];
             break;
         case 4:
             digitW = 12;
             sep1 = 0;
             sep2 = 0;
-            sep1W = D_80226E00[0];
-            sep2W = D_80226E00[0];
+            sep1W = gPrinterWidthsFont4[0];
+            sep2W = gPrinterWidthsFont4[0];
             break;
         case 5:
             digitW = 16;
             sep1 = 0;
             sep2 = 0;
-            sep1W = D_80226E0C[0];
-            sep2W = D_80226E0C[0];
+            sep1W = gPrinterWidthsFont5[0];
+            sep2W = gPrinterWidthsFont5[0];
             break;
     }
     cx = x; // FAKE: this copy gives IDO's prologue order
     min = (time / 1000 / 60) % 10;
-    gdl = func_801E80B0(gdl, font, min, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, min, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += digitW;
-    gdl = func_801E80B0(gdl, font, sep1, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, sep1, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += sep1W;
     sec10 = ((time / 1000 % 60) / 10) % 10;
-    gdl = func_801E80B0(gdl, font, sec10, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, sec10, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += digitW;
     sec1 = (time / 1000 % 60) % 10;
-    gdl = func_801E80B0(gdl, font, sec1, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, sec1, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += digitW;
-    gdl = func_801E80B0(gdl, font, sep2, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, sep2, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += sep2W;
     ms100 = ((time % 1000) / 100) % 10;
-    gdl = func_801E80B0(gdl, font, ms100, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, ms100, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += digitW;
     ms10 = ((time % 1000) / 10) % 10;
-    gdl = func_801E80B0(gdl, font, ms10, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, ms10, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     cx += digitW;
     ms1 = (time % 1000) % 10;
-    gdl = func_801E80B0(gdl, font, ms1, cx, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0], D_80228A48[1],
-                        D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2], D_80228A48[3],
-                        D_80228A58[3], D_80228A68[3], 1.0f);
+    gdl = Printer_DrawGlyph(gdl, font, ms1, cx, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                            gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                            gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                            gPrinterCornerG[3], gPrinterCornerB[3], 1.0f);
     return gdl;
 }
 
 /* r0..b3: RGB of the four glyph-quad corners (the recomp passes top, top, bottom, bottom). */
-Gfx* func_801E92FC(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+Gfx* Printer_Print(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
                    u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
     gPrinterScale = 1.0f;
-    gdl = func_801E946C(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    gdl = Printer_SetMode(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     gPrinterScaled = 0;
     return func_801E9858(gdl, font, str, x, y);
 }
 
 /* Prints str in font at (x, y) at the given scale: sets the printer's mode and corner colours, then prints. */
-Gfx* func_801E93B4(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
-                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
+Gfx* Printer_PrintScaled(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1,
+                         u8 b1, u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
     gPrinterScale = scale;
-    gdl = func_801E946C(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    gdl = Printer_SetMode(gdl, mode, r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     gPrinterScaled = 1;
     return func_801E9858(gdl, font, str, x, y);
 }
 
 /* Sets the printer mode and the four corner colours, and emits the mode's render setup (display list, combiner,
  * prim colour). */
-Gfx* func_801E946C(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2, u8 r3, u8 g3,
-                   u8 b3) {
-    D_80226E2C = 100;
-    D_80228A44 = mode;
+Gfx* Printer_SetMode(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2, u8 b2, u8 r3, u8 g3,
+                     u8 b3) {
+    gPrinterLastFont = 100;
+    gPrinterMode = mode;
     gPrinterScaled = 0;
     // FAKE: one line per corner (as a macro would expand); IDO orders the stores by source line
     // clang-format off
-    D_80228A48[0] = r0; D_80228A58[0] = g0; D_80228A68[0] = b0;
-    D_80228A48[1] = r1; D_80228A58[1] = g1; D_80228A68[1] = b1;
-    D_80228A48[2] = r2; D_80228A58[2] = g2; D_80228A68[2] = b2;
-    D_80228A48[3] = r3; D_80228A58[3] = g3; D_80228A68[3] = b3;
+    gPrinterCornerR[0] = r0; gPrinterCornerG[0] = g0; gPrinterCornerB[0] = b0;
+    gPrinterCornerR[1] = r1; gPrinterCornerG[1] = g1; gPrinterCornerB[1] = b1;
+    gPrinterCornerR[2] = r2; gPrinterCornerG[2] = g2; gPrinterCornerB[2] = b2;
+    gPrinterCornerR[3] = r3; gPrinterCornerG[3] = g3; gPrinterCornerB[3] = b3;
     // clang-format on
     switch (mode) {
         case 1:
@@ -360,28 +369,28 @@ Gfx* func_801E946C(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
         case 9:
             gSPDisplayList(gdl++, D_106F030);
             gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-            D_80228A78.unk0 = 1;
+            gPrinterColorCycle.enable = 1;
             switch (mode) {
                 case 3:
-                    func_801E9D6C();
+                    Printer_CycleColorMode3();
                     break;
                 case 4:
-                    func_801EA0B0();
+                    Printer_CycleColorMode4();
                     break;
                 case 5:
-                    func_801EA3EC();
+                    Printer_CycleColorMode5();
                     break;
                 case 6:
-                    func_801EA730();
+                    Printer_CycleColorMode6();
                     break;
                 case 8:
-                    func_801EAA6C();
+                    Printer_CycleColorMode8();
                     break;
                 case 9:
-                    func_801EADB0();
+                    Printer_CycleColorMode9();
                     break;
             }
-            gDPSetPrimColor(gdl++, 0, 0, D_80228A78.r, D_80228A78.g, D_80228A78.b, 255);
+            gDPSetPrimColor(gdl++, 0, 0, gPrinterColorCycle.r, gPrinterColorCycle.g, gPrinterColorCycle.b, 255);
             break;
         case 7:
             gSPDisplayList(gdl++, D_106F030);
@@ -400,7 +409,8 @@ Gfx* func_801E946C(Gfx* gdl, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
     return gdl;
 }
 
-/* Prints str in font from (x, y) with the mode and colours func_801E946C set; a space (glyph 0xFF) only advances x. */
+/* Prints str in font from (x, y) with the mode and colours Printer_SetMode set; a space (glyph 0xFF) only advances x.
+ */
 Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
     s32 glyph;
     s8* s;
@@ -415,34 +425,34 @@ Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
         if (*s == 0) {
             break;
         }
-        glyph = func_801E9B04(font, *s);
+        glyph = Printer_GetGlyph(font, *s);
         switch (font) {
             case 0:
-                width = D_80226D70[glyph];
+                width = gPrinterWidthsFont0[glyph];
                 space = 0x18;
                 break;
             case 1:
-                width = D_80226D98[glyph];
+                width = gPrinterWidthsFont1[glyph];
                 space = 8;
                 break;
             case 2:
-                width = D_80226DC4[glyph];
+                width = gPrinterWidthsFont2[glyph];
                 space = 0xC;
                 break;
             case 3:
-                width = D_80226DF4[glyph];
+                width = gPrinterWidthsFont3[glyph];
                 space = 0xC;
                 break;
             case 4:
-                width = D_80226E00[glyph];
+                width = gPrinterWidthsFont4[glyph];
                 space = 0xC;
                 break;
             case 5:
-                width = D_80226E0C[glyph];
+                width = gPrinterWidthsFont5[glyph];
                 space = 0x10;
                 break;
             case 6:
-                width = D_80226E18[glyph];
+                width = gPrinterWidthsFont6[glyph];
                 space = 0x28;
                 break;
         }
@@ -453,10 +463,10 @@ Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
                 penX += space;
             }
         } else {
-            gdl =
-                func_801E80B0(gdl, font, glyph, penX, y, D_80228A44, D_80228A48[0], D_80228A58[0], D_80228A68[0],
-                              D_80228A48[1], D_80228A58[1], D_80228A68[1], D_80228A48[2], D_80228A58[2], D_80228A68[2],
-                              D_80228A48[3], D_80228A58[3], D_80228A68[3], gPrinterScaled ? gPrinterScale : 1.0f);
+            gdl = Printer_DrawGlyph(gdl, font, glyph, penX, y, gPrinterMode, gPrinterCornerR[0], gPrinterCornerG[0],
+                                    gPrinterCornerB[0], gPrinterCornerR[1], gPrinterCornerG[1], gPrinterCornerB[1],
+                                    gPrinterCornerR[2], gPrinterCornerG[2], gPrinterCornerB[2], gPrinterCornerR[3],
+                                    gPrinterCornerG[3], gPrinterCornerB[3], gPrinterScaled ? gPrinterScale : 1.0f);
             if (gPrinterScaled) {
                 penX += (s32) (width * gPrinterScale);
             } else {
@@ -469,7 +479,7 @@ Gfx* func_801E9858(Gfx* gdl, s32 font, char* str, s32 x, s32 y) {
 }
 
 /* Glyph index of character c in font, or 0xFF for a space; 0 for a character the font lacks. */
-s32 func_801E9B04(s32 font, s8 c) {
+s32 Printer_GetGlyph(s32 font, s8 c) {
     s32 glyph = 0;
 
     if (c >= '0' && c <= '9') {
@@ -569,179 +579,190 @@ s32 func_801E9B04(s32 font, s8 c) {
     return glyph;
 }
 
-/* Colour cycle for D_80228A78 by phase: red -> yellow -> white -> yellow -> red. */
-void func_801E9D6C(void) {
-    switch (D_80228A78.unk2) {
+/* Colour cycle for gPrinterColorCycle by phase: red -> yellow -> white -> yellow -> red. */
+void Printer_CycleColorMode3(void) {
+    switch (gPrinterColorCycle.phase) {
         case 0:
-            D_80228A78.r = 255;
-            D_80228A78.g = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 0;
             break;
         case 1:
-            D_80228A78.r = 255;
-            D_80228A78.g = 255;
-            D_80228A78.b = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
             break;
         case 2:
-            D_80228A78.r = 255;
-            D_80228A78.g = 255;
-            D_80228A78.b = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
             break;
         case 3:
-            D_80228A78.r = 255;
-            D_80228A78.g = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 0;
             break;
     }
 }
 
-/* Colour cycle for D_80228A78 by phase: black -> red -> yellow -> red -> black. */
-void func_801EA0B0(void) {
-    switch (D_80228A78.unk2) {
+/* Colour cycle for gPrinterColorCycle by phase: black -> red -> yellow -> red -> black. */
+void Printer_CycleColorMode4(void) {
+    switch (gPrinterColorCycle.phase) {
         case 0:
-            D_80228A78.r = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
-            D_80228A78.g = 0;
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.g = 0;
+            gPrinterColorCycle.b = 0;
             break;
         case 1:
-            D_80228A78.r = 255;
-            D_80228A78.g = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 0;
             break;
         case 2:
-            D_80228A78.r = 255;
-            D_80228A78.g = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 0;
             break;
         case 3:
-            D_80228A78.r = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
-            D_80228A78.g = 0;
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.g = 0;
+            gPrinterColorCycle.b = 0;
             break;
     }
 }
 
-/* Colour cycle for D_80228A78 by phase: green -> yellow -> white -> yellow -> green. */
-void func_801EA3EC(void) {
-    switch (D_80228A78.unk2) {
+/* Colour cycle for gPrinterColorCycle by phase: green -> yellow -> white -> yellow -> green. */
+void Printer_CycleColorMode5(void) {
+    switch (gPrinterColorCycle.phase) {
         case 0:
-            D_80228A78.r = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
-            D_80228A78.g = 255;
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = 0;
             break;
         case 1:
-            D_80228A78.r = 255;
-            D_80228A78.g = 255;
-            D_80228A78.b = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
             break;
         case 2:
-            D_80228A78.r = 255;
-            D_80228A78.g = 255;
-            D_80228A78.b = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
             break;
         case 3:
-            D_80228A78.r = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
-            D_80228A78.g = 255;
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = 0;
             break;
     }
 }
 
-/* Colour cycle for D_80228A78 by phase: black -> green -> yellow -> green -> black. */
-void func_801EA730(void) {
-    switch (D_80228A78.unk2) {
+/* Colour cycle for gPrinterColorCycle by phase: black -> green -> yellow -> green -> black. */
+void Printer_CycleColorMode6(void) {
+    switch (gPrinterColorCycle.phase) {
         case 0:
-            D_80228A78.r = 0;
-            D_80228A78.g = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = 0;
+            gPrinterColorCycle.g = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 0;
             break;
         case 1:
-            D_80228A78.r = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
-            D_80228A78.g = 255;
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = 0;
             break;
         case 2:
-            D_80228A78.r = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
-            D_80228A78.g = 255;
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = 0;
             break;
         case 3:
-            D_80228A78.r = 0;
-            D_80228A78.g = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
-            D_80228A78.b = 0;
+            gPrinterColorCycle.r = 0;
+            gPrinterColorCycle.g =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 0;
             break;
     }
 }
 
-/* Colour cycle for D_80228A78 by phase: pink (255, 128, 255) -> magenta -> red -> magenta -> pink. */
-void func_801EAA6C(void) {
-    switch (D_80228A78.unk2) {
+/* Colour cycle for gPrinterColorCycle by phase: pink (255, 128, 255) -> magenta -> red -> magenta -> pink. */
+void Printer_CycleColorMode8(void) {
+    switch (gPrinterColorCycle.phase) {
         case 0:
-            D_80228A78.r = 255;
-            D_80228A78.g = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 128.0f) / D_80228A78.unk8);
-            D_80228A78.b = 255;
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 128.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 255;
             break;
         case 1:
-            D_80228A78.r = 255;
-            D_80228A78.g = 0;
-            D_80228A78.b = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = 0;
+            gPrinterColorCycle.b =
+                (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 255.0f) / gPrinterColorCycle.period);
             break;
         case 2:
-            D_80228A78.r = 255;
-            D_80228A78.g = 0;
-            D_80228A78.b = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = 0;
+            gPrinterColorCycle.b = (u32) ((gPrinterColorCycle.timer * 255.0f) / gPrinterColorCycle.period);
             break;
         case 3:
-            D_80228A78.r = 255;
-            D_80228A78.g = (u32) ((D_80228A78.unk4 * 128.0f) / D_80228A78.unk8);
-            D_80228A78.b = 255;
+            gPrinterColorCycle.r = 255;
+            gPrinterColorCycle.g = (u32) ((gPrinterColorCycle.timer * 128.0f) / gPrinterColorCycle.period);
+            gPrinterColorCycle.b = 255;
             break;
     }
 }
 
-/* Colour cycle for D_80228A78 by phase: red and blue ramp 128 -> 255 in phases 0 and 2, back in 1 and 3 (green
+/* Colour cycle for gPrinterColorCycle by phase: red and blue ramp 128 -> 255 in phases 0 and 2, back in 1 and 3 (green
  * stays 255). */
-void func_801EADB0(void) {
+void Printer_CycleColorMode9(void) {
     s32 c;
     s32 c2;
 
-    switch (D_80228A78.unk2) {
+    switch (gPrinterColorCycle.phase) {
         case 0:
         case 2:
-            c = (u32) ((D_80228A78.unk4 * 127.0f) / D_80228A78.unk8) + 128;
-            D_80228A78.r = c;
-            D_80228A78.g = 255;
-            D_80228A78.b = c;
+            c = (u32) ((gPrinterColorCycle.timer * 127.0f) / gPrinterColorCycle.period) + 128;
+            gPrinterColorCycle.r = c;
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = c;
             break;
         case 1:
         case 3:
-            c2 = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 127.0f) / D_80228A78.unk8) + 128;
-            D_80228A78.r = c2;
-            D_80228A78.g = 255;
-            D_80228A78.b = c2;
+            c2 = (u32) (((gPrinterColorCycle.period - gPrinterColorCycle.timer) * 127.0f) / gPrinterColorCycle.period) +
+                 128;
+            gPrinterColorCycle.r = c2;
+            gPrinterColorCycle.g = 255;
+            gPrinterColorCycle.b = c2;
             break;
     }
 }
 
-void func_801EAF78(void) {
-    D_80228A78 = D_80226E30;
+void Printer_ResetColorCycle(void) {
+    gPrinterColorCycle = gPrinterColorCycleInit;
 }
 
 void func_801EAFB4(void) {
-    if (D_80228A78.unk0 != 0) {
-        D_80228A78.unk4++;
-        if (D_80228A78.unk4 >= D_80228A78.unk8) {
-            D_80228A78.unk4 = 0;
-            D_80228A78.unk2++;
-            if (D_80228A78.unk2 == 4) {
-                D_80228A78.unk2 = 0;
+    if (gPrinterColorCycle.enable != 0) {
+        gPrinterColorCycle.timer++;
+        if (gPrinterColorCycle.timer >= gPrinterColorCycle.period) {
+            gPrinterColorCycle.timer = 0;
+            gPrinterColorCycle.phase++;
+            if (gPrinterColorCycle.phase == 4) {
+                gPrinterColorCycle.phase = 0;
             }
         }
     }
 }
 
 /* Prints value (0..999) in font, right-aligned so its last digit starts at x. */
-Gfx* func_801EB00C(Gfx* gdl, s32 font, s32 value, s32 x, s32 y) {
+Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y) {
     s32 i;
     s32 j;
     s32 digits[3];
@@ -752,11 +773,11 @@ Gfx* func_801EB00C(Gfx* gdl, s32 font, s32 value, s32 x, s32 y) {
     char buf[12];
 
     if (font == 0) {
-        widths = D_80226D70;
+        widths = gPrinterWidthsFont0;
     } else if (font == 2) {
-        widths = D_80226DC4;
+        widths = gPrinterWidthsFont2;
     } else {
-        widths = D_80226D98;
+        widths = gPrinterWidthsFont1;
     }
     sprintf(buf, "%d", value);
     v = value;

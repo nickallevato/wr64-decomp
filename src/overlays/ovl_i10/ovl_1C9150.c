@@ -65,7 +65,7 @@ Gfx* func_i10_802C5968(Gfx* gfxP) {
         func_i10_802C5A10();
     } else if (D_80228A16 == 1) {
         func_8007C50C();
-        func_801EC304();
+        GameState_EnterOptionsMenu();
     }
 
     return gfxP;

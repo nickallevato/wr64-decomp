@@ -41,7 +41,7 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
         func_i8_802C5EB8();
     } else if (D_80228A16 == 1) {
         func_8007C31C();
-        func_801EC304();
+        GameState_EnterOptionsMenu();
     }
     return gdl;
 }

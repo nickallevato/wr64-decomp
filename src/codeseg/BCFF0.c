@@ -81,11 +81,11 @@ extern s32 D_80228AC0;
 extern s32 D_80228B50;
 extern s32 D_80228B54;
 extern UnkStruct_80228B88 D_80228B88[2][4];
-extern s32 D_80228C28;
-extern s32 D_80228C2C;
-extern UnkStruct_80228C30 D_80228C30[];
+extern s32 gHudMarkerColorFrame;
+extern s32 gHudMarkerColorStep;
+extern UnkStruct_80228C30 gHudMarkers[];
 extern s8 D_80228CF8[5];
-extern u16 D_80228D24;
+extern u16 gHudPerspNorm;
 extern PortraitPos gPortraitPos[2][4];
 extern s32 D_80228DC8[];
 extern s32 D_80228DF8;
@@ -122,29 +122,29 @@ extern s32 D_80228ACC;
 extern s32 D_80228AD0;
 extern s32 D_80228AD4;
 extern s32 D_80228AD8;
-extern s32 D_80228D1C;
-extern s32 D_80228D20;
+extern s32 gHudColorStep;
+extern s32 gHudColorFrame;
 
 // Blend the HUD colour sets between the current palette step and the next (two frames a step while unpaused).
-void func_801EE9C0(void) {
+void Hud_BlendColorSets(void) {
     f32 f;
     f32 g;
     s32 idx;
 
-    f = (2 - D_80228D20) / (f32) 2;
+    f = (2 - gHudColorFrame) / (f32) 2;
     g = 1.0f - f;
-    D_80228AAC = D_80227888[D_80228D1C][0] * f + D_80227888[D_80228D1C + 1][0] * g;
-    D_80228AB0 = D_80227888[D_80228D1C][1] * f + D_80227888[D_80228D1C + 1][1] * g;
-    D_80228AB4 = D_80227888[D_80228D1C][2] * f + D_80227888[D_80228D1C + 1][2] * g;
-    D_80228AB8 = D_802278C4[D_80228D1C][0] * f + D_802278C4[D_80228D1C + 1][0] * g;
-    D_80228ABC = D_802278C4[D_80228D1C][1] * f + D_802278C4[D_80228D1C + 1][1] * g;
-    D_80228AC0 = D_802278C4[D_80228D1C][2] * f + D_802278C4[D_80228D1C + 1][2] * g;
+    D_80228AAC = D_80227888[gHudColorStep][0] * f + D_80227888[gHudColorStep + 1][0] * g;
+    D_80228AB0 = D_80227888[gHudColorStep][1] * f + D_80227888[gHudColorStep + 1][1] * g;
+    D_80228AB4 = D_80227888[gHudColorStep][2] * f + D_80227888[gHudColorStep + 1][2] * g;
+    D_80228AB8 = D_802278C4[gHudColorStep][0] * f + D_802278C4[gHudColorStep + 1][0] * g;
+    D_80228ABC = D_802278C4[gHudColorStep][1] * f + D_802278C4[gHudColorStep + 1][1] * g;
+    D_80228AC0 = D_802278C4[gHudColorStep][2] * f + D_802278C4[gHudColorStep + 1][2] * g;
     if (D_801C1FD8 != 0) {
         g = 0.0f;
         idx = 0;
         f = 1.0f;
     } else {
-        idx = D_80228D1C;
+        idx = gHudColorStep;
     }
     D_80228AC4 = D_80227900[idx][0] * f + D_80227900[idx + 1][0] * g;
     D_80228AC8 = D_80227900[idx][1] * f + D_80227900[idx + 1][1] * g;
@@ -153,11 +153,11 @@ void func_801EE9C0(void) {
     D_80228AD4 = D_8022793C[idx][1] * f + D_8022793C[idx + 1][1] * g;
     D_80228AD8 = D_8022793C[idx][2] * f + D_8022793C[idx + 1][2] * g;
     if (gCurrentPauseMenuOption == -1) {
-        D_80228D20++;
-        if (D_80228D20 >= 2) {
-            D_80228D1C++;
-            D_80228D20 = 0;
-            D_80228D1C &= 3;
+        gHudColorFrame++;
+        if (gHudColorFrame >= 2) {
+            gHudColorStep++;
+            gHudColorFrame = 0;
+            gHudColorStep &= 3;
         }
     }
 }
@@ -187,19 +187,19 @@ extern s32 D_80228B70[2];
 extern s32 D_80228B78;
 extern s32 D_80228B7C;
 extern s32 D_80228B80;
-extern s32 D_80228C28;
-extern s32 D_80228C2C;
-extern s32 D_80228D08;
-extern s32 D_80228D0C;
-extern s32 D_80228D10;
-extern s32 D_80228D1C;
-extern s32 D_80228D20;
+extern s32 gHudMarkerColorFrame;
+extern s32 gHudMarkerColorStep;
+extern s32 gStartLightsState;
+extern s32 gStartLightsOffset;
+extern s32 gStartLightsOffsetMax;
+extern s32 gHudColorStep;
+extern s32 gHudColorFrame;
 extern s32 D_80228DD8[4];
 extern s32 D_80228DE8[4];
 extern s32 D_80228DFC;
 extern s32 D_80228E00[2];
 
-void func_801EE9C0(void);
+void Hud_BlendColorSets(void);
 
 void func_801EED70(void) {
     s32 i;
@@ -218,17 +218,17 @@ void func_801EED70(void) {
     if (D_80227998 != 0) {
         D_80227998 = 0;
     }
-    func_801EE9C0();
+    Hud_BlendColorSets();
     D_80228B54 = D_80228B50 = 0;
     D_80228AA4 = 0;
     for (i = 0; i < 2; i++) {
         for (j = 0; j < 3; j++) {
-            D_80228C30[i].unk0[j].unk14 = 0;
-            D_80228C30[i].unk0[j].unk18 = 0;
-            D_80228C30[i].unk0[j].unkC = 0.0f;
-            D_80228C30[i].unk0[j].unk8 = 0.0f;
-            D_80228C30[i].unk0[j].unk4 = 0.0f;
-            D_80228C30[i].unk0[j].unk0 = 0.0f;
+            gHudMarkers[i].unk0[j].unk14 = 0;
+            gHudMarkers[i].unk0[j].unk18 = 0;
+            gHudMarkers[i].unk0[j].unkC = 0.0f;
+            gHudMarkers[i].unk0[j].unk8 = 0.0f;
+            gHudMarkers[i].unk0[j].unk4 = 0.0f;
+            gHudMarkers[i].unk0[j].unk0 = 0.0f;
         }
     }
     for (gfxPool = D_80198368; gfxPool < &D_80198368[2]; gfxPool++) {
@@ -247,7 +247,7 @@ void func_801EED70(void) {
             *d3++ = *s3++;
         } while (s3 < D_80227788[4]);
     }
-    D_80228D08 = 0;
+    gStartLightsState = 0;
     D_80228A90 = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
         flag = 1;
@@ -258,19 +258,19 @@ void func_801EED70(void) {
         D_80228B58[i] = flag;
     }
     if (gPlayers == ONE_PLAYER) {
-        D_80228D10 = 100;
+        gStartLightsOffsetMax = 100;
     } else {
-        D_80228D10 = 50;
+        gStartLightsOffsetMax = 50;
     }
     if ((gGameModes == GMODE_TIME_TRIALS) || (gGameModes == GMODE_STUNT)) {
-        D_80228D0C = 0;
+        gStartLightsOffset = 0;
     } else {
-        D_80228D0C = D_80228D10;
+        gStartLightsOffset = gStartLightsOffsetMax;
     }
-    D_80228D20 = 0;
-    D_80228C28 = 0;
-    D_80228C2C = 0;
-    D_80228D1C = 0;
+    gHudColorFrame = 0;
+    gHudMarkerColorFrame = 0;
+    gHudMarkerColorStep = 0;
+    gHudColorStep = 0;
     D_80228B80 = 0;
     D_80228B7C = 0;
     D_80228B78 = 0;
@@ -343,10 +343,10 @@ void func_801EED70(void) {
 
 // Set up the HUD projection matrices in the current Gfx pool.
 
-void func_801EF3C4(void) {
+void Hud_SetupMatrices(void) {
     MtxF sp40;
 
-    func_800481E0(&D_801AE948->unk4080, &D_80228D24, 24.0f, 1.3333334f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_800481E0(&D_801AE948->unk4080, &gHudPerspNorm, 24.0f, 1.3333334f, 16.0f, 4096.0f, 0.0f, 0.0f);
     func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, D_80227A24, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     guOrtho(&D_801AE948->unk4000, -160.0f, 160.0f, -120.0f, 120.0f, -1024.0f, 1024.0f, 1.0f);
     guOrtho(&D_801AE948->unk4040, 0.0f, 320.0f, 240.0f, 0.0f, -1024.0f, 1024.0f, 1.0f);
@@ -595,7 +595,7 @@ extern s32 D_801AE950;
 
 void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
 
-void func_801EFFD8(Gfx** gdlp) {
+void Hud_DrawGuideArrow(Gfx** gdlp) {
     Gfx* gdl;
     RiderStruct* rider;
     s32 i;
@@ -603,7 +603,7 @@ void func_801EFFD8(Gfx** gdlp) {
 
     gdl = *gdlp;
     gSPDisplayList(gdl++, D_1014618);
-    gSPPerspNormalize(gdl++, D_80228D24);
+    gSPPerspNormalize(gdl++, gHudPerspNorm);
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
             rider = &D_801C2938[D_800D48DC];
@@ -647,20 +647,20 @@ void func_801EFFD8(Gfx** gdlp) {
 
 extern s32 D_800D817C;
 extern s8 D_80228B58[];
-extern s32 D_80228D08;
-extern s32 D_80228D0C;
-extern s32 D_80228D10;
+extern s32 gStartLightsState;
+extern s32 gStartLightsOffset;
+extern s32 gStartLightsOffsetMax;
 
-void func_801F03E0(void) {
+void Hud_UpdateStartCountdown(void) {
     s32 d;
     s32 i;
 
     if ((gGameModeState == GMODE_STATE_1) || (gGameModeState == GMODE_STATE_2)) {
-        if (D_80228D08 == 0) {
-            D_80228D0C -= 3;
-            if (D_80228D0C <= 0) {
-                D_80228D0C = 0;
-                D_80228D08 = 1;
+        if (gStartLightsState == 0) {
+            gStartLightsOffset -= 3;
+            if (gStartLightsOffset <= 0) {
+                gStartLightsOffset = 0;
+                gStartLightsState = 1;
             }
         } else {
             if ((D_80228A90 % 15) == 0) {
@@ -702,13 +702,13 @@ void func_801F03E0(void) {
                 D_800D817C = 0;
             } else if (D_80228A90 <= 0) {
                 gGameModeState = GMODE_STATE_STARTED;
-                D_80228D08 = 2;
+                gStartLightsState = 2;
             }
         }
-    } else if ((D_80228D08 == 2) && (gCurrentPauseMenuOption == -1)) {
-        D_80228D0C += 6;
-        if (D_80228D0C >= D_80228D10) {
-            D_80228D08 = 0;
+    } else if ((gStartLightsState == 2) && (gCurrentPauseMenuOption == -1)) {
+        gStartLightsOffset += 6;
+        if (gStartLightsOffset >= gStartLightsOffsetMax) {
+            gStartLightsState = 0;
         }
     }
 }
@@ -733,7 +733,7 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3);
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD)
 
 // Draw the start lights: three red lamps lit one by one as the countdown runs, then the green one.
-void func_801F06A0(Gfx** gdlp) {
+void Hud_DrawStartLights(Gfx** gdlp) {
     s32 i;
     f32 angle;
     s32 n;
@@ -749,7 +749,7 @@ void func_801F06A0(Gfx** gdlp) {
     if (n < 0) {
         n = 0;
     }
-    if (D_80228D08 == 0) {
+    if (gStartLightsState == 0) {
         n = 4;
     }
     if ((n > 0) && (n < 4)) {
@@ -773,16 +773,16 @@ void func_801F06A0(Gfx** gdlp) {
         go = D_10123A8;
     }
     gSPDisplayList(gdl++, D_1014658);
-    func_800481E0(&D_801AE948->unk4140[D_801AE950], &D_80228D24, 120.0f, 1.3333334f, 16.0f, 1024.0f, 0.0f, 0.0f);
+    func_800481E0(&D_801AE948->unk4140[D_801AE950], &gHudPerspNorm, 120.0f, 1.3333334f, 16.0f, 1024.0f, 0.0f, 0.0f);
     gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     func_800484C8(&D_801AE948->unk4140[D_801AE950], &mf, 0.0f, 0.0f, (gPlayers == TWO_PLAYERS) * 20.0f + 60.0f,
                   0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPPerspNormalize(gdl++, D_80228D24);
-    func_801EDFFC(&D_801AE948->unk4140[D_801AE950], 0.0f, D_80228D0C, 0.0f);
+    gSPPerspNormalize(gdl++, gHudPerspNorm);
+    func_801EDFFC(&D_801AE948->unk4140[D_801AE950], 0.0f, gStartLightsOffset, 0.0f);
     gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-    angle = (D_80228D0C / 100.0f) * 120.0f;
-    if (D_80228D08 == 2) {
+    angle = (gStartLightsOffset / 100.0f) * 120.0f;
+    if (gStartLightsState == 2) {
         angle = -angle;
     }
     func_801EE228(&D_801AE948->unk4140[D_801AE950], angle, 0.0f, 1.0f, 0.0f);
@@ -821,8 +821,8 @@ void func_801F06A0(Gfx** gdlp) {
 // Score 10592: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
 extern f32 D_80227A44;
 extern f32 D_80227A48;
-extern s32 D_80228C28;
-extern s32 D_80228C2C;
+extern s32 gHudMarkerColorFrame;
+extern s32 gHudMarkerColorStep;
 
 void func_801F0E7C(void) {
     s32 i;
@@ -839,9 +839,9 @@ void func_801F0E7C(void) {
         } else {
             rider = &D_801C2938[D_800D48E0];
         }
-        if ((rider->unk28 != 0) && (((m = &D_80228C30[i])->unk0[0].unk18 == 0) || (rider->unk13C == 0))) {
-            D_80228C28 = 0;
-            D_80228C2C = 0;
+        if ((rider->unk28 != 0) && (((m = &gHudMarkers[i])->unk0[0].unk18 == 0) || (rider->unk13C == 0))) {
+            gHudMarkerColorFrame = 0;
+            gHudMarkerColorStep = 0;
             if ((rider->unk28 == 1) && ((rider->unk314 != 0) || (m->unk0[1].unk18 == 3))) {
                 e = &m->unk0[2];
                 if (m->unk0[1].unk18 == 3) {
@@ -920,7 +920,7 @@ void func_801F0E7C(void) {
             }
         }
         for (j = 0; j < 3; j++) {
-            e = &D_80228C30[i].unk0[j];
+            e = &gHudMarkers[i].unk0[j];
             switch (e->unk18) {
                 case 1:
                     if (e->unk14 < 9) {
@@ -989,8 +989,8 @@ extern u8 D_80227754[][3];
 extern u8 D_80227764[][3];
 extern u8 D_80227774[][3];
 
-// Draw the HUD markers of D_80228C30 (missed buoys, boosts), after cycling their vertex colours.
-void func_801F14B4(Gfx** gdlp) {
+// Draw the HUD markers of gHudMarkers (missed buoys, boosts), after cycling their vertex colours.
+void Hud_DrawMarkers(Gfx** gdlp) {
     Gfx* gdl;
     s32 j;
     f32 f;
@@ -1010,7 +1010,7 @@ void func_801F14B4(Gfx** gdlp) {
     s32 i;
 
     gdl = *gdlp;
-    f = (2 - D_80228C28) / (f32) 2; // (f32) 2: with 2.0f IDO multiplies by 0.5f
+    f = (2 - gHudMarkerColorFrame) / (f32) 2; // (f32) 2: with 2.0f IDO multiplies by 0.5f
     g = 1.0f - f;
     for (j = 0; j < 4; j++) {
         if (j == 0) {
@@ -1027,18 +1027,18 @@ void func_801F14B4(Gfx** gdlp) {
             vtx = D_801AE948->unkB240;
         }
         if ((j == 0) || (j == 2)) {
-            r0 = top[D_80228C2C][0] * f;
-            g0 = top[D_80228C2C][1] * f;
-            b0 = top[D_80228C2C][2] * f;
-            r0 += top[D_80228C2C + 1][0] * g;
-            g0 += top[D_80228C2C + 1][1] * g;
-            b0 += top[D_80228C2C + 1][2] * g;
-            r1 = bottom[D_80228C2C][0] * f;
-            g1 = bottom[D_80228C2C][1] * f;
-            b1 = bottom[D_80228C2C][2] * f;
-            r1 += bottom[D_80228C2C + 1][0] * g;
-            g1 += bottom[D_80228C2C + 1][1] * g;
-            b1 += bottom[D_80228C2C + 1][2] * g;
+            r0 = top[gHudMarkerColorStep][0] * f;
+            g0 = top[gHudMarkerColorStep][1] * f;
+            b0 = top[gHudMarkerColorStep][2] * f;
+            r0 += top[gHudMarkerColorStep + 1][0] * g;
+            g0 += top[gHudMarkerColorStep + 1][1] * g;
+            b0 += top[gHudMarkerColorStep + 1][2] * g;
+            r1 = bottom[gHudMarkerColorStep][0] * f;
+            g1 = bottom[gHudMarkerColorStep][1] * f;
+            b1 = bottom[gHudMarkerColorStep][2] * f;
+            r1 += bottom[gHudMarkerColorStep + 1][0] * g;
+            g1 += bottom[gHudMarkerColorStep + 1][1] * g;
+            b1 += bottom[gHudMarkerColorStep + 1][2] * g;
         }
         vtx[0].v.cn[0] = r0;
         vtx[0].v.cn[1] = g0;
@@ -1055,11 +1055,11 @@ void func_801F14B4(Gfx** gdlp) {
         vtx->v.cn[2] = b1;
     }
     if (gCurrentPauseMenuOption == -1) {
-        D_80228C28++;
-        if (D_80228C28 >= 2) {
-            D_80228C28 = 0;
-            D_80228C2C++;
-            D_80228C2C &= 3;
+        gHudMarkerColorFrame++;
+        if (gHudMarkerColorFrame >= 2) {
+            gHudMarkerColorFrame = 0;
+            gHudMarkerColorStep++;
+            gHudMarkerColorStep &= 3;
         }
     }
     gSPClearGeometryMode(gdl++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
@@ -1080,14 +1080,14 @@ void func_801F14B4(Gfx** gdlp) {
             rider = &D_801C2938[D_800D48E0];
         }
         for (j = 0; j < 3; j++) {
-            if (D_80228C30[i].unk0[j].unk18 != 0) {
-                func_801EDFFC(&D_801AE948->unk4140[D_801AE950], D_80228C30[i].unk0[j].unk0 + D_80228B54,
-                              D_80228C30[i].unk0[j].unk4, 0.0f);
+            if (gHudMarkers[i].unk0[j].unk18 != 0) {
+                func_801EDFFC(&D_801AE948->unk4140[D_801AE950], gHudMarkers[i].unk0[j].unk0 + D_80228B54,
+                              gHudMarkers[i].unk0[j].unk4, 0.0f);
                 gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                func_801EE97C(&D_801AE948->unk4140[D_801AE950], D_80228C30[i].unk0[j].unk10,
-                              D_80228C30[i].unk0[j].unk10, 1.0f);
+                func_801EE97C(&D_801AE948->unk4140[D_801AE950], gHudMarkers[i].unk0[j].unk10,
+                              gHudMarkers[i].unk0[j].unk10, 1.0f);
                 gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                switch (D_80228C30[i].unk0[j].unk18) {
+                switch (gHudMarkers[i].unk0[j].unk18) {
                     case 1:
                         gSPDisplayList(gdl++, D_1014820);
                         break;
@@ -1111,7 +1111,7 @@ void func_801F14B4(Gfx** gdlp) {
 extern u16 D_801CE72E;
 extern s32 D_80228B5C;
 
-void func_801F1CFC(void) {
+void Hud_UpdateOffCourseCountdown(void) {
     f32 x;
     f32 z;
     s32 blocked;
@@ -1220,12 +1220,12 @@ void func_801F2060(Gfx** gdlp) {
                 r1 = 255;
                 g1 = 255;
             }
-            gdl = func_801E92FC(gdl, 0, D_802279D0, 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
-            gdl = func_801E92FC(gdl, 0, D_802279D8, 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = Printer_Print(gdl, 0, D_802279D0, 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = Printer_Print(gdl, 0, D_802279D8, 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
             n = rider->unk2E8 / 20;
             sprintf((char*) D_80228CF8, D_802279DC, n);
             x = 223 - (n >= 10) * 5;
-            gdl = func_801E92FC(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
+            gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
                                 255, r1, g1, 255, r1, g1);
         }
     }
@@ -1882,7 +1882,7 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // Buoy marks: the label, k = gBuoyMisses (at most 28) marks D_102E3D8, then the rider's unk134 (n)
-    // marks D_102E620 over the right end of the row (one fewer while D_80228C30[player].unk0[0].unk18 == 1).
+    // marks D_102E620 over the right end of the row (one fewer while gHudMarkers[player].unk0[0].unk18 == 1).
     if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
         if (gPlayers == ONE_PLAYER) {
             HUD_LOAD32(gdl, D_102DF50, 24, 12);
@@ -1911,7 +1911,7 @@ void func_801F4120(Gfx** gdlp) {
                 x += 0xE;
             }
         }
-        boost = D_80228C30;
+        boost = gHudMarkers;
         HUD_LOAD32(gdl, D_102E620, 12, 12);
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
@@ -2049,14 +2049,14 @@ void func_801F4120(Gfx** gdlp) {
     // Time trials: the best times.
     if ((gGameModes == GMODE_TIME_TRIALS) && (gCourseID != DOLPHIN_PARK)) {
         y = 0x16;
-        gdl = func_801E92FC(gdl, 1, D_802279E0, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        gdl = Printer_Print(gdl, 1, D_802279E0, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         y += 9;
-        gdl = func_801E8A84(gdl, 1, D_801C1FE4, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        gdl = Printer_PrintTime(gdl, 1, D_801C1FE4, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         if (D_800DAB68 == 0) {
             y += 0xB;
-            gdl = func_801E92FC(gdl, 1, D_802279EC, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            gdl = Printer_Print(gdl, 1, D_802279EC, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             y += 9;
-            gdl = func_801E8A84(gdl, 1, D_801C1FE8, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            gdl = Printer_PrintTime(gdl, 1, D_801C1FE8, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     }
     *gdlp = gdl;

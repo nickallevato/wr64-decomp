@@ -205,7 +205,7 @@ Gfx* func_801E3698(Gfx* gdl) {
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gdl = func_801E4FE8(gdl, D_800DA9B0[D_800D48DC], 0, 0, &D_801CE5F8->unkC80[i * 3]);
     }
-    gdl = func_801E946C(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     gdl = func_801E3EE0(gdl, 2, D_800DAA34[gCourseID], D_80226350[gCourseID] + D_802288F8 + 56, 33, 0);
     gdl = func_801E3EE0(gdl, 1, 31, D_802288FC + 23, 91, 0);
     gdl = func_801E3EE0(gdl, 1, 32, D_802288FC + 119, 91, 0);
@@ -229,7 +229,7 @@ Gfx* func_801E3698(Gfx* gdl) {
         } else {
             mode = 0;
         }
-        gdl = func_801E946C(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+        gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
         rec = &D_801C26E8[gCourseID][i];
         if (i & 1) {
             x = D_802288FC;
@@ -248,7 +248,7 @@ Gfx* func_801E3698(Gfx* gdl) {
         gdl = func_80094200(gdl, 2, rec->time, x + 208, y);
     }
     if (D_801C2928 == 0) {
-        gdl = func_801E946C(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+        gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
         if (D_801CB32C == 0) {
             sprintf(buf, "%s", "N");
         } else {

@@ -99,10 +99,10 @@ void func_1C3D00_802C5E10(void) {
                 func_8009345C();
                 return;
             case 10:
-                func_801EBD28();
+                GameState_EnterRiderSelect();
                 return;
             case 20:
-                func_801EBFE4();
+                GameState_EnterCourseSelect();
                 break;
         }
     }

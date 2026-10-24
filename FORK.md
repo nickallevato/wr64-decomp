@@ -190,3 +190,136 @@ other files use them.
 - **Setup costs:** `check.sh` does not run `make extract`, so the progress count lags until it is run
   after removing a pragma. Do it in `main` after every merge. Workers sharing one scratchpad directory
   overwrote each other's files once; give each worker its own.
+
+## Milestone 2
+
+Goal: the HUD and menu code in `src/codeseg`, file by file in six batches, smallest functions
+first, each within a size-based cap. The batches ran on 2026-10-24, roughly 03:30 to 08:30, up to
+three at a time (merges `509ed40`, `650b0ca`, `5898c63`, `bfab8dd`, `2d92e88`, `8c602c9`).
+
+**Count (`tools/progress.py`): 1080 -> 1197 of 1472 (73.37% -> 81.32%); 384132 of 838772
+bytes (45.80%).** 117 functions matched, 25 set aside. `src/codeseg` is now 192 of 219.
+
+### Matched, by file
+
+| File | Matched | What it is | Batch time |
+|---|---|---|---|
+| `A95D0.c` | 65 of 70 (all but the five below; the file is now 73 of 78) | the per-player camera scripts: script runners and steps (`UnkA95D0_Runner`, `UnkA95D0_Step`), keyed camera objects of types 1, 2/3 and 5, spline samplers and a clamped cubic B-spline basis (`func_801DE690`), the C-button view switching (`func_801DE3CC`), and the camera matrices (`func_801E11B4`) | 17 min (35) and 1 h 50 (30) |
+| `AF8C0.c` | 6 of 7: `func_801E1290`, `Initials_DrawLetterWheel`, `Initials_DrawPanel`, `Initials_UpdateInput`, `Initials_SaveToRecords`, `func_801E1E8C`; and the file's `.data` (29 one-letter strings) | the initials entry after a record: letter wheel, panel, input, the record writes, the EEPROM save | 55 min |
+| `B66E0.c` | all 16 | the text printer (`Printer_*`): glyphs, quads, strings, numbers, times, the mode setup and the colour cycles | 42 min |
+| `B97B0.c` | 19 of 23: ten `GameState_Enter*` switches (demo, course overview, rider select, course select, race, time-trials and stunt results, options, change names, ceremony), `func_801EB180` (title screen), `func_801ECE50`, `func_801ED004`, and six matrix helpers (`func_801EE228`, `EE46C`, `EE698`, `EE8C0`, `EE91C`, `EE97C`) | the switches to a new screen (each saves `gGameState` in `gPrevGameState` and sets one `GAME_STATE_*`), and the scale/rotate/translate matrix helpers | 55 min |
+| `BCFF0.c` | 8: `Hud_BlendColorSets`, `Hud_SetupMatrices`, `Hud_DrawGuideArrow`, `Hud_UpdateStartCountdown`, `Hud_DrawStartLights`, `Hud_DrawMarkers`, `Hud_UpdateOffCourseCountdown`, `func_801F23A0` | the race HUD's colour blend, matrices, guide arrow, start countdown and lights, markers, off-course countdown, and a 0-180 eased per-rider value | 2 h 40 for the whole "rest of codeseg" batch |
+| `B3AA0.c` | 2: `Popup_UpdateCard1`, `Popup_UpdateCard2` | popup card types 1 and 2 | (same batch) |
+| `wr64_fade.c` | 1: `func_801E7908` | the fade overlay draw (a screen rectangle, or the wipe display lists) | (same batch) |
+
+### Set aside (C under `#ifdef NON_MATCHING`; best asm-differ score / the function's maximum)
+
+| Function | File | Best | What differs |
+|---|---|---|---|
+| `func_801DB8F0` | A95D0 | 220 / 41400 | register allocation drifts by one temp in the second loop; the first sqrt result is in `fa1`, not `fa0` |
+| `func_801DC274` | A95D0 | 539 / 10000 | each `D_80228190` store gets its own `lui` where the original shares one; the step index is in `v0`, not `a1` |
+| `func_801DCD34` | A95D0 | 4582 / 35900 | IDO keeps `&D_802287DC` in a saved register; the original reloads it with `lui` |
+| `func_801DF744` | A95D0 | 6006 / 32100 | `obj` stays on the stack, not in `s0`; the frame is 8 bytes short |
+| `func_801DC60C` | A95D0 | 12429 / 45800 | register allocation; the original keeps `center` on the stack and `gSinTable`/`D_80228190` in `s7`/`fp` |
+| `func_801E1BA8` | AF8C0 | 610 | the four `D_802288E8[0..3] = 0` stores use the hoisted base in `v1`; the original uses one `lui at` and four `sb` |
+| `func_801EE4D0` | B97B0 | 239 | two products sit 4 bytes lower on the stack, and `arg4` loads one store later |
+| `func_801EE6F4` | B97B0 | 275 | only the `arg4` load, one store later (swaps two float registers) |
+| `func_801EE274` | B97B0 | 4439 | `ys`/`zxt` stay in registers (frame 0x60, not 0x68) |
+| `func_801EE040` | B97B0 | 5846 | `c` and the 1.0f get no callee-saved register (frame 0x68, not 0x70) |
+| `func_801F2060` | BCFF0 | 300 | every temp register is one higher in the original from the first index product on |
+| `func_801F8DD0` | BCFF0 | 1255 | one extra early temp, loop constants in other registers, end-block store order |
+| `func_801FA3C0` | BCFF0 | 5600 | the original counts `j` in 0x14-byte steps against `gRiders * 20` (linear-function test replacement) |
+| `func_801F25E0` | BCFF0 | 9103 | same instructions; the frame is 0x18 smaller and `y` is not in `s0` |
+| `func_801EF504` | BCFF0 | 9735 | the literal at `0x80227A34` is an extern (see the lessons), so its address is hoisted into `s7` |
+| `func_801EED70` | BCFF0 | 9945 | global addresses kept in registers; frame 0x40 vs 0x28 |
+| `func_801F9EA0` | BCFF0 | 10188 | float registers; the original keeps the camera position and direction on the stack |
+| `func_801F0E7C` | BCFF0 | 10592 | the hoisted constants (300.0f, 8.0f) take the saved registers and `i` is spilled |
+| `func_801E3EE0` | B2510 | 588 | `isBlock`/`segs` swap `v0`/`v1` and are spilled after the loop guard |
+| `func_801E3698` | B17D0 | 2848 | `gdl` in `s2`, not `s3`; frame 0xC0 vs 0xB8 |
+| `func_801E4FE8` | B3290 | 2885 | `&D_80228920` kept in a register for the load and the store |
+| `func_801E4C60` | B3290 | 11089 | float registers: `ux`/`uy`/`uz` stay in saved registers across `sqrtf` in the original |
+| `func_801FAEB8` | C94E0 | 1287 | the float constants take other saved FP registers; the literal is a stand-in local (see the lessons) |
+| `func_801FBFB4` | C94E0 | 9598 | loop register allocation and constant hoisting; frame 0xD8 vs 0xE0 |
+| `func_801FB514` | C94E0 | 10384 | the original keeps two dead computations that IDO deletes here |
+
+Milestone 1's two set-asides were revisited and stay as they were: `func_801E5554` (40, one
+`t0`/`t1` swap in case 4) and `func_801F4120` (its note still has no score).
+
+### Names
+
+Renamed at the end of the milestone (branch `batch/m2-names`), one commit per area, only where the
+code shows it: calls into known functions, `GAME_STATE_*` and `GMODE_*` values, the file's own data
+(strings, display-list tables), and fields already named.
+
+- **Printer** (`B66E0.c`): `Printer_DrawGlyph`, `_DrawQuad`, `_PrintTime`, `_DrawTime`, `_Print`,
+  `_PrintScaled`, `_SetMode`, `_GetGlyph`, `_CycleColorMode3`..`9`, `_ResetColorCycle`, `_DrawNumber`;
+  `gPrinterWidthsFont0`..`6`, `gPrinterLastFont`, `gPrinterMode`, `gPrinterCornerR/G/B`,
+  `gPrinterColorCycle` (`PrinterColorCycle`: `enable`, `phase`, `timer`, `period`) and its initial value.
+- **Popups** (`B3AA0.c`): `Popup_UpdateCard1`, `_UpdateCard2`, `_UpdatePauseCursor`, `_UpdateCard4`,
+  `_FindFreeSlot`, `gPopupSlotInit`.
+- **HUD** (`BCFF0.c`): the seven `Hud_*` above, `gHudColorStep/Frame`, `gHudMarkers`,
+  `gHudMarkerColorStep/Frame`, `gStartLightsState`, `gStartLightsOffset(Max)`, `gHudPerspNorm`.
+- **Game states** (`B97B0.c`): `GameState_Enter*` for the fifteen switches to a named state.
+- **Initials entry** (`AF8C0.c`): `Initials_*`, `gLetterWheel*`, `gInitials*`.
+
+Kept on purpose, because the parallel `batch/C6C0` names them in `src/game` (rename after it
+merges): `func_801E9858` (the string printer), `func_801EAFB4`, `D_80228A40`, `func_801E5470`,
+`func_801E6A4C`, `func_801E7908`, `func_801E71A8`, `func_801EB180`, `func_801ECAF4`,
+`func_801E1290`, `func_801E1E8C`, `D_80228A90`. Set-asides keep their names (the `GLOBAL_ASM` path
+uses them). A95D0's camera code keeps `func_`/`UnkA95D0_*` names: what it does is clear, but no
+known call or constant names it yet.
+
+### What we learned
+
+- **Data can move to C with one token.** AF8C0's 36 `GLOBAL_ASM` entries were 7 functions and 29
+  one-letter strings. Writing the file's data in C and changing its yaml line from `data` to `.data`
+  removed all 29 and let `func_801E1290` match. The per-file `GLOBAL_ASM` count overstates the work;
+  `progress.py` counts functions.
+- **Pointer loop variables change the program.** `for (i = 0, e = D_80228190; i < n; i++, e++)` is
+  not `e = &D_80228190[i]` to IDO: aliasing, induction variables and the stack all move. That took
+  `func_801DD2D0` from 1140 to 0 and `func_801DB8F0` from 4383 to 220. The other way round also
+  happens: indexing a global array directly (`D_80227888[step][k]`) instead of through a row pointer
+  matched `func_801EE9C0` and halved `func_801FAEB8` and `func_801F8DD0`; a pointer initialised to a
+  global is copy-propagated into plain `lui`/`%lo` accesses.
+- **Float literals stranded in another file's data.** `D_80227A24`..`D_80227A58` are BCFF0/C94E0
+  rodata, but splat put them in F6010's data blob. As externs, IDO hoists their addresses or values
+  into saved registers, where the original loads them with `lui at` each time. That blocks
+  `func_801EF504` and `func_801FAEB8`, and probably part of `func_801F9EA0`, `func_801F0E7C` and
+  `func_801FB514`. The fix is a rodata migration of that range, not more source changes. The same
+  kind of split error puts AF8C0's last 2*pi 4 bytes into B17D0 (`D_80226330`).
+- **Source shape that mattered:** locals declared in the original's order (stack slots follow it);
+  one variable per value (reuse forces a saved FP register); `/ 4` (int) stays a `div.s`, `/ 4.0f`
+  becomes `* 0.25f`; a float constant as a function-scope `static` (`func_801E1290`); chained
+  assignments (`a = b = 0`) for store order; reading a just-stored global back; a separate symbol
+  where the original has one (`D_800DB58C`, not `D_800DB568 + 0x24`); IDO orders stores by source
+  line, so three statements on one line can match where three lines do not (`func_801E946C`).
+- **Matrix builders are their own problem.** All four B97B0 set-asides fail on which named float
+  locals IDO keeps on the stack. A fresh look at the four together may pay off, starting with the
+  239 and 275.
+- **The permuter rarely helped.** It found the four `if (1) {}` in `func_801E2058`, a temp in
+  `func_801E229C`, a chained `= 0` in `func_801EBD28`, and hinted at the line joining in
+  `func_801E946C`. Most runs (several hours in total, on na-workhorse) found nothing. A small local
+  variant tester (apply N source variants, score each with asm-differ in seconds) found more.
+- **A 0 from `./diff` can be stale** (see "The loop"): when the gcc check pass failed, the object was
+  never rebuilt and asm-differ scored the old one. Only `check.sh` counts.
+- **Batches of near-identical functions are fast.** A95D0 part 1 (35 script steps and samplers)
+  took 17 minutes; the printer's 16 took 42. Above about 0x400 bytes most functions hit the cap.
+- **Checking an older commit needs its own `make extract`:** extract writes only the remaining
+  `GLOBAL_ASM` files, so a tree extracted at a later commit lacks the `.s` of functions matched since.
+
+### Open follow-ups
+
+- Move `D_80227A24`..`D_80227A58` into BCFF0/C94E0's rodata (unblocks `func_801EF504` and
+  `func_801FAEB8`); re-split AF8C0/B17D0 at the right boundary (`D_80226330`).
+- Near misses worth a short retry: `func_801E5554` (40), `func_801DB8F0` (220), `func_801EE4D0` (239),
+  `func_801EE6F4` (275), `func_801F2060` (300), `func_801DC274` (539), `func_801E3EE0` (588),
+  `func_801E1BA8` (610). Re-score `func_801F4120`, whose note has no score.
+- Types that disagree between files, to settle in a shared header: `D_800DAB60` (`s16` in B97B0,
+  `s32[]` in code_4C750), `D_800EAC44`/`D_800EAC14` (2-D vs 1-D), `D_103B4D0` (`u32[]` vs `u8[]`),
+  `D_7000000` (`u8[]` vs `Mtx*`), `func_801E9858`'s argument (`s8*` vs `u32`); `D_80228120` is used
+  both as `f32[][2]` and `f32[24]`; `camera_unk_1.unk8` is declared `s32` but holds a float.
+- Local types and externs to hoist when a second file needs them: the `UnkA95D0_*` types,
+  `PrinterColorCycle` (B17D0's `func_801E3698` and `func_i6_802C5C2C` also use
+  `gPrinterColorCycle`), the record-entry structs in AF8C0, the `D_10xxxxx` segment externs; the
+  letter-wheel display lists are still numeric segment addresses.
+- The names kept for `batch/C6C0` (list above), once it merges.
