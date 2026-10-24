@@ -18,12 +18,66 @@ extern u8 D_80226D70[]; /* glyph widths, font 0 */
 extern u8 D_80226D98[]; /* glyph widths, the other fonts */
 extern u8 D_80226DC4[]; /* glyph widths, font 2 */
 
+extern s32 D_80228A40; /* next free vertex in D_801CE5F8->unk40 */
+extern u8 D_7000000[];
+
 extern UnkStruct_80228A78 D_80228A78;
 extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 */
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E80B0.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8800.s")
+/* Draws a w x h quad at (x, y), scaled, with corner colours r0..b3 (Gouraud), from the D_801CE5F8->unk40 vertex pool. */
+Gfx* func_801E8800(Gfx* gdl, u32 w, u32 h, s32 x, s32 y, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1, u8 r2, u8 g2,
+                   u8 b2, u8 r3, u8 g3, u8 b3, f32 scale) {
+    Vtx* vtx;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        vtx = &D_801CE5F8->unk40[D_80228A40 + i];
+        if (i == 1 || i == 3) {
+            vtx->v.ob[0] = (s32) (w * scale) + x - 1;
+            vtx->v.tc[0] = (w * 2 + 1) << 5;
+        } else {
+            vtx->v.ob[0] = x;
+            vtx->v.tc[0] = -0x20;
+        }
+        if (i == 2 || i == 3) {
+            vtx->v.ob[1] = (s32) (h * scale) + y - 1;
+            vtx->v.tc[1] = (h * 2) << 5;
+        } else {
+            vtx->v.ob[1] = y;
+            vtx->v.tc[1] = -0x20;
+        }
+        vtx->v.ob[2] = 0;
+        vtx->v.flag = 0;
+        if (i == 0) {
+            vtx->v.cn[0] = r0;
+            vtx->v.cn[1] = g0;
+            vtx->v.cn[2] = b0;
+        } else if (i == 1) {
+            vtx->v.cn[0] = r1;
+            vtx->v.cn[1] = g1;
+            vtx->v.cn[2] = b1;
+        } else if (i == 2) {
+            vtx->v.cn[0] = r2;
+            vtx->v.cn[1] = g2;
+            vtx->v.cn[2] = b2;
+        } else {
+            vtx->v.cn[0] = r3;
+            vtx->v.cn[1] = g3;
+            vtx->v.cn[2] = b3;
+        }
+        vtx->v.cn[3] = 0xFF;
+    }
+    gSPVertex(gdl++, D_7000000 + (D_80228A40 * 0x10) + 0x40, 4, 0);
+    gSP1Triangle(gdl++, 0, 3, 1, 0);
+    gSP1Triangle(gdl++, 0, 2, 3, 0);
+    D_80228A40 += 4;
+    if (D_80228A40 >= 0x78) {
+        D_80228A40 = 0x74;
+    }
+    return gdl;
+}
 
 /* Sets the printer's mode and corner colours, then has func_801E8B24 print arg2 (the time-trial best times) at (x, y). */
 Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 arg2, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
