@@ -1264,7 +1264,7 @@ typedef struct UnkStruct_801C43F8_s {
     Vtx unk1C0[7];
     char pad230[0xE0];
     Vtx unk310[4];
-    char pad350[0x280];
+    Vtx unk350[10][4];
     Mtx unk5D0[1];
     char pad610[0x2fc0];
     Lights0 unk35D8[2];
