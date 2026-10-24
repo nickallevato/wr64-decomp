@@ -39,7 +39,8 @@ typedef struct UnkStruct_801CB058_s {
     /* 0x094 */ s32 unk94;        /* inferred */
     /* 0x098 */ s32 unk98;        /* inferred */
     /* 0x09C */ s32 unk9C;        /* inferred */
-    /* 0x0A0 */ char padA0[0xC];
+    /* 0x0A0 */ char padA0[8];
+    /* 0x0A8 */ s32 unkA8;
     /* 0x0AC */ f32 unkAC;
     /* 0x0B0 */ f32 unkB0;
     /* 0x0B4 */ f32 unkB4;
@@ -50,16 +51,32 @@ typedef struct UnkStruct_801CB058_s {
     /* 0x0D8 */ s32 unkD8;
     /* 0x0DC */ s32 unkDC;
     /* 0x0E0 */ s32 unkE0;
-    /* 0x0E4 */ char padE4[0x18];
+    /* 0x0E4 */ s32 unkE4;
+    /* 0x0E8 */ s32 unkE8;
+    /* 0x0EC */ s32 unkEC;
+    /* 0x0F0 */ s32 unkF0;
+    /* 0x0F4 */ s32 unkF4;
+    /* 0x0F8 */ s32 unkF8;
     /* 0x0FC */ f32 unkFC;
     /* 0x100 */ f32 unk100;
     /* 0x104 */ f32 unk104;
-    /* 0x108 */ char pad108[8];
+    /* 0x108 */ char pad108[4];
+    /* 0x10C */ s32 unk10C;
 } UnkStruct_801CB058; /* size = 0x110 */
 
 typedef struct UnkStruct_800DA624_s {
     u8 alpha[3];
 } UnkStruct_800DA624;
+
+typedef struct UnkStruct_80192420_s {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+} UnkStruct_80192420; /* size = 0x1C, as in water_69D0.c */
 
 typedef struct UnkStruct_801C41A0_s {
     f32 fwork[0xD0];
@@ -97,6 +114,15 @@ extern s16 gColorGreen;
 extern s16 gColorBlue;
 extern s16 gColorAlpha;
 extern u8 D_100FAB0[];
+extern s8 D_800D988C;
+extern s32 D_800D9898[6];
+extern s32 D_800D98B0[6];
+extern s32 D_800D9914;
+extern f32 D_800DA8B0;
+extern UnkStruct_80192420 D_80192420[];
+extern s32 D_80192460[];
+extern RiderStruct D_801C2938[];
+extern s32 D_80223934;
 Gfx* func_8008A0E0(Gfx* gdl);
 extern s32 D_800D98CC;
 extern s32 D_800D98D0;
@@ -721,7 +747,251 @@ void func_8008E4B0(void) {
     }
 }
 
+#ifdef NON_MATCHING
+// Score 18577 of 127200, 17 instructions short: register allocation (the original keeps the camera direction on
+// the stack across sqrtf and five saved FP registers, frame 0xC8), and in the D_800D988C == 1 loop the original
+// reloads D_801C4160/4/8 after storing them where IDO here reuses the stored values.
+void func_8008E794(void) {
+    f32 dirX;
+    f32 dirZ;
+    camera_unk_1* cam;
+    UnkStruct_801C43F8* p;
+    Vtx* arena;
+    Vtx* vtx;
+    f32 var_fv1;
+    f32 var_fa1;
+    f32 len;
+    f32 scale;
+    s32 i;
+    s32 angle;
+    UnkStruct_801CB058* e;
+    f32 dx;
+    f32 dz;
+    f32 dist;
+    f32 k;
+    f32 c;
+    f32 s;
+
+    D_800D9914 = (D_800D9914 + 1) & 3;
+    cam = &gCameraPerspective[D_80223930];
+    dirX = cam->unk64;
+    dirZ = cam->unk6C;
+    p = &D_801C43F8[D_8011F8E0];
+    arena = gGfxPool->unk13D68;
+    len = sqrtf((dirX * dirX) + (dirZ * dirZ));
+    var_fv1 = dirX;
+    var_fa1 = dirZ;
+    if (len != 0.0f) {
+        scale = 4000.0f / len;
+        var_fv1 *= scale;
+        var_fa1 *= scale;
+    }
+    vtx = p->unkE0;
+    vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - D_80192420[0].unk14;
+    vtx[0].v.ob[1] = gWaterLevel;
+    vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - D_80192420[0].unk18;
+    vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - D_80192420[0].unk14;
+    vtx[1].v.ob[1] = gWaterLevel;
+    vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - D_80192420[0].unk18;
+    vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - D_80192420[0].unk14;
+    vtx[2].v.ob[1] = gWaterLevel;
+    vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - D_80192420[0].unk18;
+    vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - D_80192420[0].unk14;
+    vtx[3].v.ob[1] = gWaterLevel;
+    vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - D_80192420[0].unk18;
+    vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - D_80192420[0].unk14;
+    vtx[4].v.ob[1] = gWaterLevel;
+    vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - D_80192420[0].unk18;
+    vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - D_80192420[0].unk14;
+    vtx[5].v.ob[1] = gWaterLevel;
+    vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - D_80192420[0].unk18;
+    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - var_fv1) - D_80192420[0].unk14;
+    vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
+    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - var_fa1) - D_80192420[0].unk18;
+    if (gPlayers == TWO_PLAYERS) {
+        cam = &gCameraPerspective[D_80223934];
+        dirX = cam->unk64;
+        dirZ = cam->unk6C;
+        arena = gGfxPool->unk170D8;
+        vtx = p->unk150;
+        scale = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - D_80192420[1].unk18; // unk18, not unk14, as in the original
+        vtx[0].v.ob[1] = gWaterLevel;
+        vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - D_80192420[1].unk18;
+        vtx[1].v.ob[0] = arena[D_80192460[2]].v.ob[0] - D_80192420[1].unk14;
+        vtx[1].v.ob[1] = gWaterLevel;
+        vtx[1].v.ob[2] = arena[D_80192460[2]].v.ob[2] - D_80192420[1].unk18;
+        vtx[2].v.ob[0] = arena[D_80192460[3]].v.ob[0] - D_80192420[1].unk14;
+        vtx[2].v.ob[1] = gWaterLevel;
+        vtx[2].v.ob[2] = arena[D_80192460[3]].v.ob[2] - D_80192420[1].unk18;
+        vtx[3].v.ob[0] = arena[D_80192460[4]].v.ob[0] - D_80192420[1].unk14;
+        vtx[3].v.ob[1] = gWaterLevel;
+        vtx[3].v.ob[2] = arena[D_80192460[4]].v.ob[2] - D_80192420[1].unk18;
+        vtx[4].v.ob[0] = arena[D_80192460[5]].v.ob[0] - D_80192420[1].unk14;
+        vtx[4].v.ob[1] = gWaterLevel;
+        vtx[4].v.ob[2] = arena[D_80192460[5]].v.ob[2] - D_80192420[1].unk18;
+        vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - D_80192420[1].unk14;
+        vtx[5].v.ob[1] = gWaterLevel;
+        vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - D_80192420[1].unk18;
+        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * scale)) - D_80192420[1].unk14;
+        vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
+        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * scale)) - D_80192420[1].unk18;
+    }
+    if (gPlayers == ONE_PLAYER) {
+        switch (gCourseID) {
+            case DOLPHIN_PARK:
+            case SUNSET_BAY:
+            case GLACIER_COAST:
+                func_80089E24();
+                func_80089F28();
+                break;
+            case TWILIGHT_CITY:
+                func_80089C08();
+                func_80089DEC();
+                break;
+        }
+    }
+    if (D_800D988C == 1) {
+        D_800DA8B0 += 5.0f;
+        for (i = 0, e = D_801CB058; i < gPlayers; i++, e++) {
+            e->unkAC = 0.0f;
+            angle = ANGLE_TO_CUSTOM_UNITS(D_800DA8B0);
+            e->unkB0 = SIN(angle) * 64.0f;
+            e->unkB4 = COS(angle) * 64.0f;
+            D_801C4160 = e->unkAC;
+            D_801C4164 = e->unkB0;
+            D_801C4168 = e->unkB4;
+            len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
+            if (len == 0.0f) {
+                D_801C4168 = 120;
+            }
+            e->unkAC = (D_801C4160 / len) * 120.0f;
+            e->unkB0 = (D_801C4164 / len) * 120.0f;
+            e->unkB4 = (D_801C4168 / len) * 120.0f;
+        }
+    } else if (D_800D988C == 2) {
+        for (i = 0, e = D_801CB058; i < gPlayers; i++, e++) {
+            if (i == 0) {
+                cam = &gCameraPerspective[D_80223930];
+            } else {
+                cam = &gCameraPerspective[D_80223934];
+            }
+            switch (gCourseID) {
+                case SUNSET_BAY:
+                    e->unkAC = SIN(0x200) * 64.0f;
+                    e->unkB4 = SIN(0xE00) * 64.0f;
+                    e->unkFC = SIN(0x200) * 64.0f;
+                    e->unkCC = e->unkE4;
+                    e->unkD0 = e->unkE8;
+                    e->unkD4 = e->unkEC;
+                    e->unkD8 = e->unkF0;
+                    e->unkDC = e->unkF4;
+                    e->unkE0 = e->unkF8;
+                    e->unk104 = SIN(0xE00) * 64.0f;
+                    break;
+                case TWILIGHT_CITY:
+                    e->unkAC = cam->unk64 * -1.0f;
+                    e->unkB4 = cam->unk6C * -1.0f;
+                    D_801C3C50 = (struct UnkStruct_801C3C50*) &D_80192690[i];
+                    D_801C3C58 = &D_801C3C60[i].unk0;
+                    D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[D_801C2938[i].unk310];
+                    dx = D_801C3C54->unk0 - D_801C3C50->unk44;
+                    dz = D_801C3C54->unk8 - D_801C3C50->unk4C;
+                    dist = sqrtf((dx * dx) + (dz * dz));
+                    if ((dist < 1500.0f) && ((D_801C3C54->unk98 == 1) || (D_801C3C54->unk98 == 0))) {
+                        D_801C3C58->unk78 = 1;
+                        if (dist != 0.0f) {
+                            if (dist < 500.0f) {
+                                k = 1.0f;
+                            } else {
+                                k = sqrtf(100.0f / ((dist - 475.0f) * 4.0f));
+                            }
+                            e->unkFC = D_801C3C54->unk0 - D_801C3C50->unk44;
+                            e->unk104 = D_801C3C54->unk8 - D_801C3C50->unk4C;
+                            if (D_801C3C54->unk98 == 0) {
+                                e->unkCC = D_800D98B0[0] * k;
+                                e->unkD0 = D_800D98B0[1] * k;
+                                e->unkD4 = D_800D98B0[2] * k;
+                                e->unkD8 = (s32) ((D_800D98B0[3] - e->unkF0) * k) + e->unkF0;
+                                e->unkDC = (s32) ((D_800D98B0[4] - e->unkF4) * k) + e->unkF4;
+                                e->unkE0 = (s32) ((D_800D98B0[5] - e->unkF8) * k) + e->unkF8;
+                            } else if (D_801C3C54->unk98 == 1) {
+                                e->unkCC = D_800D9898[0] * k;
+                                e->unkD0 = D_800D9898[1] * k;
+                                e->unkD4 = D_800D9898[2] * k;
+                                e->unkD8 = (s32) ((D_800D9898[3] - e->unkF0) * k) + e->unkF0;
+                                e->unkDC = (s32) ((D_800D9898[4] - e->unkF4) * k) + e->unkF4;
+                                e->unkE0 = (s32) ((D_800D9898[5] - e->unkF8) * k) + e->unkF8;
+                            }
+                        }
+                    } else {
+                        D_801C3C58->unk78 = 0;
+                        e->unkFC = cam->unk64 * -1.0f;
+                        e->unkCC = e->unkE4;
+                        e->unkD0 = e->unkE8;
+                        e->unkD4 = e->unkEC;
+                        e->unkD8 = e->unkF0;
+                        e->unkDC = e->unkF4;
+                        e->unkE0 = e->unkF8;
+                        e->unk104 = cam->unk6C * -1.0f;
+                    }
+                    break;
+                case SOUTHERN_ISLAND:
+                    angle = (e->unk10C << 12) / 360;
+                    e->unkB4 = 0.0f;
+                    e->unkAC = -64.0f;
+                    e->unkFC = (COS(angle) * cam->unk64) - (SIN(angle) * cam->unk6C);
+                    e->unkCC = e->unkE4;
+                    e->unkD0 = e->unkE8;
+                    e->unkD4 = e->unkEC;
+                    e->unkD8 = e->unkF0;
+                    e->unkDC = e->unkF4;
+                    e->unkE0 = e->unkF8;
+                    e->unk104 = (COS(angle) * cam->unk6C) + (SIN(angle) * cam->unk64);
+                    break;
+                default:
+                    if (D_800DAB68 != 0) {
+                        angle = ((360 - e->unkA8) << 12) / 360;
+                        c = COS(angle);
+                        s = SIN(angle);
+                        e->unkAC = (cam->unk64 * c) - (s * cam->unk6C);
+                        e->unkB4 = (cam->unk64 * s) + (c * cam->unk6C);
+                        e->unkFC = (cam->unk64 * c) - (s * cam->unk6C);
+                        e->unk104 = (cam->unk64 * s) + (c * cam->unk6C);
+                    } else {
+                        angle = (e->unkA8 << 12) / 360;
+                        c = COS(angle);
+                        s = SIN(angle);
+                        e->unkAC = (cam->unk64 * c) - (s * cam->unk6C);
+                        e->unkB4 = (cam->unk64 * s) + (c * cam->unk6C);
+                        e->unkFC = (cam->unk64 * c) - (s * cam->unk6C);
+                        e->unk104 = (cam->unk64 * s) + (c * cam->unk6C);
+                    }
+                    e->unkCC = e->unkE4;
+                    e->unkD0 = e->unkE8;
+                    e->unkD4 = e->unkEC;
+                    e->unkD8 = e->unkF0;
+                    e->unkDC = e->unkF4;
+                    e->unkE0 = e->unkF8;
+                    break;
+            }
+            Math_Normalize_VectorComponents(&D_801CB058[i].unkAC, &D_801CB058[i].unkB4);
+            e->unkB0 = 64.0f;
+            e->unkAC *= 64.0f;
+            e->unkB4 *= 64.0f;
+            Math_Normalize_VectorComponents(&D_801CB058[i].unkFC, &D_801CB058[i].unk104);
+            e->unk100 = 64.0f;
+            e->unkFC *= 64.0f;
+            e->unk104 *= 64.0f;
+            D_801C4160 = e->unkAC;
+            D_801C4164 = e->unkB0;
+            D_801C4168 = e->unkB4;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008E794.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008FB74.s")
 
