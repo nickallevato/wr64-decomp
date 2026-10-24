@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1137%20%2F%201372-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-82.9%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-51.8%25-4fc9b8?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1191%20%2F%201372-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-86.8%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-55.2%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -37,13 +37,13 @@ Counted by `tools/progress.py` on `main`. A function counts only when it is C an
 | Area | What's in it | Matched | |
 |---|---|--:|---|
 | `src/libultra` | Nintendo's N64 OS library | 184 / 184 | `████████████████████` 100% |
-| `src/audio` | sequence and sound playback | 223 / 228 | `███████████████████▌` 97.8% |
+| `src/audio` | sequence and sound playback | 225 / 228 | `███████████████████▊` 98.7% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 192 / 219 | `█████████████████▌░░` 87.7% |
+| `src/game` | race logic, riders, camera, water | 429 / 501 | `█████████████████░░░` 85.6% |
 | `src/sys` | boot, threads, memory | 31 / 37 | `████████████████▊░░░` 83.8% |
-| `src/game` | race logic, riders, camera, water | 415 / 501 | `████████████████▌░░░` 82.8% |
 | other | loose segments | 42 / 53 | `███████████████▊░░░░` 79.2% |
-| `src/overlays` | courses and menu screens | 50 / 150 | `██████▋░░░░░░░░░░░░░` 33.3% |
-| **Total** | | **1137 / 1372** | **82.9%** |
+| `src/overlays` | courses and menu screens | 88 / 150 | `███████████▋░░░░░░░░` 58.7% |
+| **Total** | | **1191 / 1372** | **86.8%** |
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
 assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
@@ -150,8 +150,8 @@ requests upstream with code from here.
 - **[LLONSIT/Wave-Race-64](https://github.com/LLONSIT/Wave-Race-64)** and its contributors:
   the original decompilation, the build system and the first ~900 matched functions.
 - **davkdavk**: [LLONSIT/Wave-Race-64#92](https://github.com/LLONSIT/Wave-Race-64/pull/92)
-  matched 132 functions. The ones this fork didn't already have are being ported in, credited
-  in each commit.
+  matched 132 functions. The 48 this fork didn't already have were ported in
+  ([#1](https://github.com/nickallevato/wr64-decomp/pull/1)), credited in each commit.
 - The decomp tooling community: splat, m2c, asm-differ, decomp-permuter, asm-processor and
   ido-static-recomp make all of this possible.
 
