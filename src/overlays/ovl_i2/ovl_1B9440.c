@@ -152,7 +152,7 @@ void func_i2_802C6864(s32 arg0) {
                 }
                 used[D_800DA9C0[0]] = 1;
                 for (i = 0; i < 4; i++) {
-                    if (i != D_800D48DC) {
+                    if (i != gPlayer1Rider) {
                         for (j = 0; j < 4; j++) {
                             if (used[j] == 0) {
                                 used[j] = 1;
@@ -222,7 +222,7 @@ void func_i2_802C84EC(s32 arg0) {
             entry = &tbl[i][D_i2_802C8BD8[D_800DA9C0[i]]];
         }
 
-        player = (i == 0) ? D_800D48DC : D_800D48E0;
+        player = (i == 0) ? gPlayer1Rider : gPlayer2Rider;
         D_80192690[player].unkB6C = entry->unk_B[0];
         D_80192690[player].unkB70 = entry->unk_B[1];
         D_80192690[player].unkB74 = entry->unk_B[2];

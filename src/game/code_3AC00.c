@@ -34,7 +34,7 @@ extern f32 D_800EA418;
 extern f32 D_800EA41C;
 extern s32 gWaterLevel;
 extern struct RiderStruct D_801C2C24[];
-extern struct RiderStruct D_801C2938[];
+extern struct RiderStruct gRiderRaceState[];
 extern s32 D_800D98C8;
 extern s16 D_800DAB68;
 extern struct UnkStruct_801C3C54 D_801B2F20;
@@ -42,7 +42,7 @@ extern struct RiderStruct D_801C2C2C[];
 extern struct UnkStruct_801C4000 D_801C4000;
 extern struct UnkStruct_801C3C60 D_801C3C60[];
 extern s32 D_800D9914;
-extern s32 D_800D48DC;
+extern s32 gPlayer1Rider;
 extern s32 D_800D9680[2][3];
 extern struct UnkStruct_801C4000 gWaterWindow;
 extern f32 D_801C4060[];
@@ -299,7 +299,7 @@ void func_80081048(void) {
     switch (gDifficulty) { /* irregular */
         case DIFFICULTY_NORMAL:
             if ((D_801C3C58->unkA4 != 0) ||
-                ((((D_801C2938->racePosition < D_801C2938[D_801C3C58->unk0].racePosition))) &&
+                ((((gRiderRaceState->racePosition < gRiderRaceState[D_801C3C58->unk0].racePosition))) &&
                  (D_801C3C58->unkB0 == 0))) {
 
                 switch (D_801C3C58->unk5C) { /* switch 4; irregular */
@@ -316,7 +316,7 @@ void func_80081048(void) {
                         D_801C3C50->riderSpeedMultiplier = 0.7f;
                         break;
                 }
-            } else if (D_801C2938[D_801C3C58->unk0].racePosition < D_801C2938->racePosition) {
+            } else if (gRiderRaceState[D_801C3C58->unk0].racePosition < gRiderRaceState->racePosition) {
                 switch (D_801C3C58->unk5C) { /* switch 2; irregular */
                     case -1:                 /* switch 2 */
                     case 0:                  /* switch 2 */
@@ -359,7 +359,7 @@ void func_80081048(void) {
             break;
         case DIFFICULTY_HARD:
             if ((D_801C3C58->unkA4 != 0) ||
-                ((((D_801C2938->racePosition < D_801C2938[D_801C3C58->unk0].racePosition))) &&
+                ((((gRiderRaceState->racePosition < gRiderRaceState[D_801C3C58->unk0].racePosition))) &&
                  (D_801C3C58->unkB0 == 0))) {
                 switch (D_801C3C58->currentRider) { /* switch 7; irregular */
                     default:                        /* switch 7 */
@@ -373,7 +373,7 @@ void func_80081048(void) {
                         D_801C3C50->riderSpeedMultiplier = 0.86f;
                         break;
                 }
-            } else if (D_801C2938[D_801C3C58->unk0].racePosition < D_801C2938->racePosition) {
+            } else if (gRiderRaceState[D_801C3C58->unk0].racePosition < gRiderRaceState->racePosition) {
                 switch (D_801C3C58->unk5C) { /* switch 6; irregular */
                     case -1:                 /* switch 6 */
                     case 0:                  /* switch 6 */
@@ -403,11 +403,11 @@ void func_80081048(void) {
             break;
         case DIFFICULTY_EXPERT:
             if ((D_801C3C58->unkA4 != 0) ||
-                ((((D_801C2938->racePosition < D_801C2938[D_801C3C58->unk0].racePosition))) &&
+                ((((gRiderRaceState->racePosition < gRiderRaceState[D_801C3C58->unk0].racePosition))) &&
                  (D_801C3C58->unkB0 == 0))) {
 
                 D_801C3C50->riderSpeedMultiplier = 0.95f;
-            } else if (D_801C2938[D_801C3C58->unk0].racePosition < D_801C2938->racePosition) {
+            } else if (gRiderRaceState[D_801C3C58->unk0].racePosition < gRiderRaceState->racePosition) {
                 switch (D_801C3C58->unk5C) { /* switch 9; irregular */
                     case -1:                 /* switch 9 */
                     case 0:                  /* switch 9 */
@@ -443,7 +443,7 @@ void func_80081048(void) {
             break;
     }
 
-    if (D_801C2938[D_801C3C58->unk0].unk2F4 != 0) {
+    if (gRiderRaceState[D_801C3C58->unk0].unk2F4 != 0) {
         switch (D_801C3C58->currentRider) { /* switch 10; irregular */
             case RIDER_RHAYAMI:             /* switch 10 */
                 D_801C3C50->riderSpeedMultiplier = 0.4f;
@@ -645,7 +645,7 @@ void func_80081CC8(void) {
                 high = -1.0f;
             }
         }
-        if ((D_801C2938[D_801C3C58->unk0].lapCount < 2) && (D_801C3C50->unk44 > 800.0f) && (D_801C3C50->unk44 < 875.0f)) {
+        if ((gRiderRaceState[D_801C3C58->unk0].lapCount < 2) && (D_801C3C50->unk44 > 800.0f) && (D_801C3C50->unk44 < 875.0f)) {
             if ((D_801C3C50->unk4C > 385.0f) && (D_801C3C50->unk4C < 936.0f)) {
                 D_801C3C58->unkDC[0] = 1;
                 low = 1.0f; \
@@ -935,7 +935,7 @@ void func_80081CC8(void) {
                 high = 0.0f;
             }
         }
-        if ((D_801C2938[D_801C3C58->unk0].lapCount < 2) && (D_801C3C50->unk44 > -500.0f) && (D_801C3C50->unk44 < 1500.0f)) {
+        if ((gRiderRaceState[D_801C3C58->unk0].lapCount < 2) && (D_801C3C50->unk44 > -500.0f) && (D_801C3C50->unk44 < 1500.0f)) {
             if ((D_801C3C50->unk4C > 4850.0f) && (D_801C3C50->unk4C < 5100.0f)) {
                 D_801C3C58->unkDC[0] = 1;
                 low = -1.0f; \
@@ -1134,7 +1134,7 @@ void func_80083FBC(void) {
                 high = 0.0f;
             }
         }
-        if ((D_801C2938[D_801C3C58->unk0].lapCount < 2) && (D_801C3C50->unk44 > -500.0f) && (D_801C3C50->unk44 < 1500.0f)) {
+        if ((gRiderRaceState[D_801C3C58->unk0].lapCount < 2) && (D_801C3C50->unk44 > -500.0f) && (D_801C3C50->unk44 < 1500.0f)) {
             if ((D_801C3C50->unk4C > 4900.0f) && (D_801C3C50->unk4C < 5100.0f)) {
                 D_801C3C58->unkDC[0] = 1;
                 high = 0.0f; low = -1.0f;
@@ -1488,7 +1488,7 @@ void func_80085EEC(s32 arg0) {
     D_801C3C50 = (struct UnkStruct_801C3C50*) &D_80192690[arg0];
 
     D_801C3C58 = &D_801C3C60[arg0].unk0;
-    D_801C3C54 = D_801C2938[arg0].unk350;
+    D_801C3C54 = gRiderRaceState[arg0].unk350;
 
     if ((D_801CE638 == 0x15) || (gGameModes == GMODE_2P_VS)) {
         D_801C3C54 = &D_801AEE20;
@@ -1510,9 +1510,9 @@ void func_80085EEC(s32 arg0) {
                 break;
         }
     }
-    D_801C3C58->unk8 = D_801C2938[arg0].unk10;
+    D_801C3C58->unk8 = gRiderRaceState[arg0].unk10;
     D_801C3C58->unkC = D_801C3C54[D_801C3C58->unk8].unk98;
-    D_801C3C58->unk10 = D_801C2938[arg0].unk10;
+    D_801C3C58->unk10 = gRiderRaceState[arg0].unk10;
     D_801C3C58->unk1C = D_801C3C54[D_801C3C58->unk10].unk98;
     D_801C3C58->unk14 = D_801C3C54[D_801C3C58->unk10].unkC0[D_801C3C58->currentRider + 3];
     D_801C3C58->unk20 = D_801C3C54[D_801C3C58->unk14].unk98;
@@ -1713,7 +1713,7 @@ void func_800861AC(void) {
     var_a0 = D_801C3C58->unk10;
 
     if (gCourseID == GLACIER_COAST) {
-        switch (D_801C2938[D_801C3C58->unk0].lapCount) {
+        switch (gRiderRaceState[D_801C3C58->unk0].lapCount) {
             case 0:
             case 1:
                 while ((D_801C3C54[var_a0].unk98 == 8) || (D_801C3C54[var_a0].unk98 == 9)) {
@@ -1851,7 +1851,7 @@ void func_80086DA8(void) {
     } else {
         D_801C3C58->unkA4 = 1;
     }
-    if ((D_801C2938[D_800D48DC].racePosition < D_801C2938[D_801C3C58->unk0].racePosition) && (D_801C3C58->unkA4 == 0)) {
+    if ((gRiderRaceState[gPlayer1Rider].racePosition < gRiderRaceState[D_801C3C58->unk0].racePosition) && (D_801C3C58->unkA4 == 0)) {
         if (D_801C3C58->unkAC < 0x3E8) {
             D_801C3C58->unkAC++;
         }
@@ -1935,11 +1935,11 @@ s32 func_800873D4(s32 arg0, s32 arg1) {
 }
 
 void func_80088B00(struct UnkStruct_801C4000*);
-extern s32 D_800D48DC;
+extern s32 gPlayer1Rider;
 
 void func_80087444(void) {
     if (gDifficulty != DIFFICULTY_EXPERT) {
-        struct UnkStruct_80192690* temp_v1 = &D_80192690[D_800D48DC];
+        struct UnkStruct_80192690* temp_v1 = &D_80192690[gPlayer1Rider];
         f32 sp28;
         f32 sp24;
 

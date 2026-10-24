@@ -147,7 +147,7 @@ extern s32 D_800D9914;
 extern f32 D_800DA8B0;
 extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_80192460[];
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 extern s32 D_80223934;
 extern UnkStruct_800DA8B4 D_800DA8B4;
 extern Vp D_800DA8C0;
@@ -1299,7 +1299,7 @@ void func_8008E794(void) {
                     e->unkB4 = cam->unk6C * -1.0f;
                     D_801C3C50 = (struct UnkStruct_801C3C50*) &D_80192690[i];
                     D_801C3C58 = &D_801C3C60[i].unk0;
-                    D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[D_801C2938[i].unk310];
+                    D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[gRiderRaceState[i].nearestRecord];
                     dx = D_801C3C54->unk0 - D_801C3C50->unk44;
                     dz = D_801C3C54->unk8 - D_801C3C50->unk4C;
                     dist = sqrtf((dx * dx) + (dz * dz));

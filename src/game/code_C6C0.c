@@ -375,7 +375,7 @@ typedef struct UnkStruct_8005A280_s {
 } UnkStruct_8005A280;
 
 extern UnkStruct_80192690 D_80192690[];
-extern struct UnkStruct_801C2938 D_801C2938[];
+extern struct UnkStruct_801C2938 gRiderRaceState[];
 extern struct UnkStruct_801D0798 D_801D0798[];
 extern UnkStruct_802238DC* D_802238DC[];
 extern s32 D_800DA930[];
@@ -593,7 +593,7 @@ f32 func_8007F448(f32, f32, f32, f32*, f32*, f32*);
 void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
-Gfx* func_80067810(Gfx*, s32, s32);
+Gfx* Rider_DrawParts(Gfx*, s32, s32);
 void func_8004E0A4(UnkStruct_80192690*, f32);
 void func_8004E548(struct UnkStruct_8004B0F8*, f32);
 void func_80051740(struct UnkStruct_801C3C50*, struct UnkStruct_8004B0F8*);
@@ -605,7 +605,7 @@ void func_8007ECBC(UnkStruct_80192690*);
 void func_8004B1B4(struct UnkStruct_8004B0F8*);
 void func_8004F3D4(f32, f32, s32);
 Gfx* func_80091CD8(Gfx*);
-Gfx* func_8006719C(Gfx*, s32);
+Gfx* Rider_DrawPartsReflect(Gfx*, s32);
 void func_800683A0(s32);
 void func_80063C88(s32);
 void func_80064C0C(s32);
@@ -616,7 +616,7 @@ void func_800BFB84(Vec3f*, Vec3f*, Vec3f*, Vec3f*, u8);
 void Water_StampDiagonalSine(f32, f32, s32, s32, s32);
 void func_8004B0F8(struct UnkStruct_8004B0F8* arg0);
 void func_800624CC(UnkStruct_80192690* arg0);
-void func_800618F4(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
+void Rider_MovePoints(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_8005DE24(s32);
 void func_800609EC(s32);
 void func_800C35B4(void);
@@ -628,7 +628,7 @@ void func_8004AE88(struct UnkStruct_8004B0F8* arg0);
 void func_8004AC80(struct UnkStruct_8004B0F8* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_8006AC84(s32, void*);
 void func_8006390C(s32, void*);
-void func_80067C6C(void);
+void Riders_BuildPartsLists(void);
 void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
@@ -701,7 +701,7 @@ void func_80052480(s32 arg0, struct UnkStruct_80052480* arg1) {
     s32 var_v0;
 
     arg1->unk0 = (s8) (s32) (D_80192690[arg0].unkB90 * 1.4399999f);
-    arg1->unk1 = (s8) (s32) ((f32) D_801C2938[arg0].unk2C8 * 0.44444445f);
+    arg1->unk1 = (s8) (s32) ((f32) gRiderRaceState[arg0].unk2C8 * 0.44444445f);
     var_v0 = (s32) (D_80192690[arg0].unkBFC * 5.0f);
     if (var_v0 < -0xF) {
         var_v0 = -0xF;
@@ -746,7 +746,7 @@ void func_80052480(s32 arg0, struct UnkStruct_80052480* arg1) {
     } else {
         arg1->unk18 = 0;
     }
-    arg1->unkE = (s8) D_801C2938[arg0].unk12C;
+    arg1->unkE = (s8) gRiderRaceState[arg0].power;
     if (D_80192690[arg0].unkC40 != 0.0f) {
         arg1->unk12 = 0x14;
         var_v0 = (s32) (D_80192690[arg0].unkC40 * 19050.0f);
@@ -780,7 +780,7 @@ void func_80052480(s32 arg0, struct UnkStruct_80052480* arg1) {
         arg1->unk12 = 0x10;
         var_v0 = (s32) (D_80192690[arg0].unkC3C * 6350.0f);
     } else {
-        if (D_801C2938[arg0].unk318 != 0) {
+        if (gRiderRaceState[arg0].unk318 != 0) {
             arg1->unk12 = 0x28;
             var_v0 = (s32) ((D_80192690[arg0].unkB90 * 127.0f) / 55.555557f);
         } else {
@@ -799,7 +799,7 @@ void func_80052480(s32 arg0, struct UnkStruct_80052480* arg1) {
         arg1->unk11 = (s8) D_801D0798[arg0].unk1C60;
     }
     arg1->unk10 = 1;
-    arg1->unk19 = (s8) D_801C2938[arg0].unk4;
+    arg1->unk19 = (s8) gRiderRaceState[arg0].unk4;
     arg1->unk1B = (s8) D_80192690[arg0].unkB68;
     if ((D_80192690[arg0].unk1608 != 0) || ((D_80192690[arg0].unkC54 == 0x17)) ||
         ((D_80192690[arg0].unkC54 == 7) && (D_80192690[arg0].unkC58 < 0x38))) {
@@ -1113,9 +1113,9 @@ void func_80053A5C(UnkStruct_80052E90_arg1_s* arg0, f32 arg1, UnkStruct_80052E90
     func_8005374C(&arg0->unk6C, arg1, &arg2->unk6C, &arg3->unk6C);
 }
 
-void func_80053C08(s32, s32);
+void Rider_SetPartsState(s32, s32);
 
-void func_80053C08(s32 arg0, s32 arg1) {
+void Rider_SetPartsState(s32 arg0, s32 arg1) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     RiderPart* p;
 
@@ -1259,7 +1259,7 @@ s32 func_80053EAC(s32 arg0, s32 arg1, s32 arg2, f32 arg3, u16 arg4) {
         temp_v0->unkC58 = arg2;
         temp_v0->unkC6C = 0;
         temp_v0->unk142C = 0.0f;
-        func_80053C08(arg0, arg1);
+        Rider_SetPartsState(arg0, arg1);
         return 0;
     }
 
@@ -1272,7 +1272,7 @@ s32 func_80053EAC(s32 arg0, s32 arg1, s32 arg2, f32 arg3, u16 arg4) {
     temp_v0->unk1430 = arg3;
     temp_v0->unk142C = arg3;
     temp_v0->unkC64 = arg4;
-    func_80053C08(arg0, -1);
+    Rider_SetPartsState(arg0, -1);
     return 0;
 }
 
@@ -2673,7 +2673,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         if (((D_800D499C + (f32) gWaterLevel) < rider->unk44.y) && (rider->unkB7C > 0.0f) && (rider->unk15B0 < 0) && (rider->unkC4C == 0.0f) && (rider->unkC48 == 0.0f)) {
             rider->unkC70 = 0;
             var_s3 = D_802238DC[D_800D4820[rider->unkB68]];
-            if (arg0 == D_800D48DC) {
+            if (arg0 == gPlayer1Rider) {
                 func_800C1EB8(temp_fa0_13, 0);
             }
         }
@@ -4457,7 +4457,7 @@ void func_8005DE24(s32 arg0) {
     rider->unkC10 = temp_fv0_2 + ((((f32) ((f64) (((rider->unk6C * rider->unkC2C) + (rider->unk70 * rider->unkC30) + (rider->unk74 * rider->unkC34)) * D_800D4A28) + -27.300001) - temp_fv0_2) * D_800D4A38) + ((f32) rider->unkB5F / D_800D49E0));
     rider->unk16C0 = (f32) ((f64) rider->unkC10 / -27.300001);
     if (rider->unk16C8 < 0) {
-        temp_v1 = &D_801C2938[arg0];
+        temp_v1 = &gRiderRaceState[arg0];
         if (temp_v1->unk2F4 != 0) {
             if (gGameModes == GMODE_TIME_TRIALS) {
                 if (D_801C2650 == 1) {
@@ -4484,31 +4484,31 @@ void func_8005DE24(s32 arg0) {
                     }
                 }
             } else {
-                temp_a0 = &D_801C2938[D_800D48DC];
-                if ((temp_a0->unk2F4 != 0) && (temp_a1 = &D_801C2938[D_800D48E0], (temp_a1->unk2F4 != 0)) && (temp_a0->unk19C == temp_a1->unk19C)) {
-                    D_80192690[D_800D48E0].unk16C8 = 3;
-                    D_80192690[D_800D48DC].unk16C8 = 3;
+                temp_a0 = &gRiderRaceState[gPlayer1Rider];
+                if ((temp_a0->unk2F4 != 0) && (temp_a1 = &gRiderRaceState[gPlayer2Rider], (temp_a1->unk2F4 != 0)) && (temp_a0->raceTime == temp_a1->raceTime)) {
+                    D_80192690[gPlayer2Rider].unk16C8 = 3;
+                    D_80192690[gPlayer1Rider].unk16C8 = 3;
                 } else {
-                    D_80192690[D_800D48DC].unk16C8 = D_800D4818[temp_a0->unk4];
-                    D_80192690[D_800D48E0].unk16C8 = D_800D4818[D_801C2938[D_800D48E0].unk4];
+                    D_80192690[gPlayer1Rider].unk16C8 = D_800D4818[temp_a0->unk4];
+                    D_80192690[gPlayer2Rider].unk16C8 = D_800D4818[gRiderRaceState[gPlayer2Rider].unk4];
                 }
             }
-        } else if ((temp_v1->unk2EC != 0) && (gRiderGameModes != UNACTIVE_MODE)) {
+        } else if ((temp_v1->finishState != 0) && (gRiderGameModes != UNACTIVE_MODE)) {
             if (gPlayers == ONE_PLAYER) {
                 if (func_8005DD04(rider->unk90[0].unk0, rider->unk90[0].unk4, rider->unk90[0].unk8) != 0) {
                     rider->unk16C8 = 4;
                 } else {
                     rider->unk16C8 = 5;
                 }
-            } else if ((D_801C2938[D_800D48DC].unk2EC != 0) && (D_801C2938[D_800D48E0].unk2EC != 0)) {
-                D_80192690[D_800D48E0].unk16C8 = 3;
-                D_80192690[D_800D48DC].unk16C8 = 3;
-            } else if (arg0 == D_800D48DC) {
-                D_80192690[D_800D48DC].unk16C8 = 4;
-                D_80192690[D_800D48E0].unk16C8 = 1;
+            } else if ((gRiderRaceState[gPlayer1Rider].finishState != 0) && (gRiderRaceState[gPlayer2Rider].finishState != 0)) {
+                D_80192690[gPlayer2Rider].unk16C8 = 3;
+                D_80192690[gPlayer1Rider].unk16C8 = 3;
+            } else if (arg0 == gPlayer1Rider) {
+                D_80192690[gPlayer1Rider].unk16C8 = 4;
+                D_80192690[gPlayer2Rider].unk16C8 = 1;
             } else {
-                D_80192690[D_800D48DC].unk16C8 = 1;
-                D_80192690[D_800D48E0].unk16C8 = 4;
+                D_80192690[gPlayer1Rider].unk16C8 = 1;
+                D_80192690[gPlayer2Rider].unk16C8 = 4;
             }
         } else if (D_8022393C != 0) {
             rider->unk16C8 = D_800D4800[D_8022393C - 1];
@@ -4562,7 +4562,7 @@ void func_8005DE24(s32 arg0) {
             }
         } else {
             temp_fv1_2 = rider->unkB90;
-            if ((((temp_fv1_2 > 22.222223f) && (D_801C2938[arg0].unk2F4 == 0) &&
+            if ((((temp_fv1_2 > 22.222223f) && (gRiderRaceState[arg0].unk2F4 == 0) &&
                   ((temp_fv0_4 = rider->unk169C, (temp_fv0_4 < rider->unkC38)) || (temp_fv0_4 < rider->unkC50) ||
                    (rider->unk16A0 < rider->unkC3C) || (rider->unk16A4 < rider->unkC44) ||
                    (rider->unk16A8 < rider->unkC4C) || (rider->unk16AC < rider->unkC48))) ||
@@ -4598,14 +4598,14 @@ void func_8005DE24(s32 arg0) {
                         } else {
                             rider->unk1446 = temp_v0_4 - 1;
                         }
-                    } else if ((((temp_fv1_2 > 22.222223f) && (D_801C2938[arg0].unk2F4 == 0) &&
+                    } else if ((((temp_fv1_2 > 22.222223f) && (gRiderRaceState[arg0].unk2F4 == 0) &&
                                  ((D_800D9360[temp_v1_2] < rider->unkC50) || (D_800D9370[temp_v1_2] < rider->unkC3C) ||
                                   (D_800D9390[temp_v1_2] < rider->unkC44) || (D_800D93B0[temp_v1_2] < rider->unkC4C) ||
                                   (D_800D93A0[temp_v1_2] < rider->unkC48))) ||
                                 (D_800D9380[temp_v1_2] < rider->unkC40)) &&
                                (temp_a2_2 != 7) && (temp_a2_2 != 0x18)) {
                         rider->unk16E0 = 1;
-                    } else if ((((temp_fv1_2 > 22.222223f) && (D_801C2938[arg0].unk2F4 == 0) && (D_800D9360[temp_v1_2] < rider->unkC38)) ||
+                    } else if ((((temp_fv1_2 > 22.222223f) && (gRiderRaceState[arg0].unk2F4 == 0) && (D_800D9360[temp_v1_2] < rider->unkC38)) ||
                                 ((rider->unkC7C != 0) && (rider->unk7C < D_800D93C0[temp_v1_2]))) &&
                                (temp_a2_2 != 7) && (temp_a2_2 != 0x18)) {
                         rider->unk16E0 = (u16) D_800D4980;
@@ -4719,7 +4719,7 @@ void func_8005DE24(s32 arg0) {
             rider->unkC5C = -1;
             rider->unkC54 = temp_a1_3;
             rider->unkC58 = rider->unkC60;
-            func_80053C08(arg0, temp_a1_3);
+            Rider_SetPartsState(arg0, temp_a1_3);
         }
     } else if (frame < 0) {
         temp_a2_3 = rider->unkC54;
@@ -4770,7 +4770,7 @@ void func_8005DE24(s32 arg0) {
         } else if (temp_a2_4 == 0x11) {
             if (frame == 0x17) {
                 rider->unkC58 = frame;
-                if ((arg0 == D_800D48DC) && (gRiderGameModes != UNACTIVE_MODE)) {
+                if ((arg0 == gPlayer1Rider) && (gRiderGameModes != UNACTIVE_MODE)) {
                     func_800C3548();
                 }
                 for (; part >= first; part--) {
@@ -4785,8 +4785,8 @@ void func_8005DE24(s32 arg0) {
                 RIDER_PARTS(rider)[10].unk0 = 0;
                 RIDER_PARTS(rider)[9].unk0 = 0;
             } else if (frame == 0x18) {
-                temp_v1_4 = &D_801C2938[arg0];
-                if ((temp_v1_4->unk2F4 != 0) || (temp_v1_4->unk2EC != 0)) {
+                temp_v1_4 = &gRiderRaceState[arg0];
+                if ((temp_v1_4->unk2F4 != 0) || (temp_v1_4->finishState != 0)) {
                     goto block_299;
                 }
                 if (rider->unkB50.stick_y < 0x23) {
@@ -4821,11 +4821,11 @@ void func_8005DE24(s32 arg0) {
                 } else {
                     rider->unkC58 = 0x3E;
                 }
-                if ((arg0 == D_800D48DC) && (gRiderGameModes != UNACTIVE_MODE)) {
+                if ((arg0 == gPlayer1Rider) && (gRiderGameModes != UNACTIVE_MODE)) {
                     func_800C3548();
                 }
             } else if (frame == 0x2E) {
-                if ((rider->unkB50.stick_y >= -0x22) || (temp_v1_5 = &D_801C2938[arg0], (temp_v1_5->unk2F4 != 0)) || (temp_v1_5->unk2EC != 0)) {
+                if ((rider->unkB50.stick_y >= -0x22) || (temp_v1_5 = &gRiderRaceState[arg0], (temp_v1_5->unk2F4 != 0)) || (temp_v1_5->finishState != 0)) {
                     goto block_299;
                 }
             } else {
@@ -4834,11 +4834,11 @@ void func_8005DE24(s32 arg0) {
         } else if (temp_a2_4 == 8) {
             if (frame == 0x1E) {
                 rider->unkC58 = frame;
-                if ((arg0 == D_800D48DC) && (gRiderGameModes != UNACTIVE_MODE)) {
+                if ((arg0 == gPlayer1Rider) && (gRiderGameModes != UNACTIVE_MODE)) {
                     func_800C3548();
                 }
             } else if (frame == 0x1F) {
-                if ((rider->unkB50.stick_y < 0x23) || (temp_v1_6 = &D_801C2938[arg0], (temp_v1_6->unk2F4 != 0)) || (temp_v1_6->unk2EC != 0)) {
+                if ((rider->unkB50.stick_y < 0x23) || (temp_v1_6 = &gRiderRaceState[arg0], (temp_v1_6->unk2F4 != 0)) || (temp_v1_6->finishState != 0)) {
                     goto block_299;
                 }
             } else {
@@ -5088,7 +5088,7 @@ void func_8005DE24(s32 arg0) {
         }
     }
     temp_fs4_6 = 0.5f / ((D_800D4A04 * 17.0f) + 1.0f);
-    if ((arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0))) {
+    if ((arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider))) {
         spEC = D_800D4A08;
     } else {
         spEC = D_800D4A0C;
@@ -5326,13 +5326,13 @@ void func_800609EC(s32 arg0) {
     prev->unkC.x = len * dx;
     prev->unkC.y = len * dy;
     prev->unkC.z = len * dz;
-    if (arg0 == D_800D48DC) {
+    if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
         } else {
             lengths = D_800D48E4;
         }
-    } else if (arg0 == D_800D48E0) {
+    } else if (arg0 == gPlayer2Rider) {
         if (D_801CE6F4[1] != 0) {
             lengths = D_800D48F8;
         } else {
@@ -5588,7 +5588,7 @@ void func_800616B0(s32 arg0) {
     func_80061184(&D_80192690[arg0]);
 }
 
-void func_80061708(s32 arg0, s32 arg1) {
+void Rider_ReadController(s32 arg0, s32 arg1) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     f32 scale;
     f32 x;
@@ -5623,7 +5623,7 @@ void func_80061708(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800618F4(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
+void Rider_MovePoints(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
     RiderPart* part;
     UnkStruct_8004B0F8_1* point;
     UnkStruct_80192690_C88(*row)[18];
@@ -5709,7 +5709,7 @@ void func_800618F4(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
     }
 }
 
-void func_80061FEC(void) {
+void Riders_PushApart(void) {
     UnkStruct_80192690* a;
     UnkStruct_80192690* b;
     RiderSphere* sa;
@@ -6101,7 +6101,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     if ((D_801CE638 == 1) && (rider->unk16CC == 0)) {
         func_80053EAC(arg0, 15, 56, 1.0f, 0);
     } else if (D_801CE638 == 21) {
-        func_80053EAC(arg0, D_801C2938[arg0].unk338 + 18, 0, 1.0f, 0);
+        func_80053EAC(arg0, gRiderRaceState[arg0].unk338 + 18, 0, 1.0f, 0);
     } else {
         func_80053EAC(arg0, 22, 0, 1.0f, 0);
     }
@@ -6127,7 +6127,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk1448[0].unk0.y = (base->unkC.y * -2.1f) + (RIDER_PARTS(rider)[1].unk4.y + (2.0f * base->unk18.y));
     rider->unk1448[0].unkC.z = base->unkC.z;
     rider->unk1448[0].unk0.z = (base->unkC.z * -2.1f) + (RIDER_PARTS(rider)[1].unk4.z + (2.0f * base->unk18.z));
-    if (arg0 == D_800D48DC) {
+    if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
         } else {
@@ -6135,7 +6135,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         }
     } else {
         lengths = D_800D48E4;
-        if (arg0 == D_800D48E0) {
+        if (arg0 == gPlayer2Rider) {
             if (D_801CE6F4[1] != 0) {
                 lengths = D_800D48F8;
             } else {
@@ -6249,7 +6249,7 @@ void func_80063C88(s32 arg0) {
         D_80192690[arg0].unkB64 = D_80192690[arg0].unkB68;
         func_800629A8(&D_80192690[arg0]);
     }
-    stats = &D_801C2938[arg0];
+    stats = &gRiderRaceState[arg0];
     rider = &D_80192690[arg0];
     if (stats->unk318 != 0) {
         rider->unkC = D_800D4AC8;
@@ -6320,7 +6320,7 @@ void func_80063C88(s32 arg0) {
     } else {
         rider->unk1588 = (((1.0f - (rider->unkB90 / rider->unk1580)) * rider->unk1584) + 1.0f) * rider->unkBB8;
     }
-    if (stats->unk2C4 == 0) {
+    if (stats->timeLeft == 0) {
         rider->unk1578 = 0.0f;
     } else {
         if (rider->unk16CE != 0) {
@@ -6328,11 +6328,11 @@ void func_80063C88(s32 arg0) {
         } else {
             f = D_800D95B0[rider->unkB64];
         }
-        rider->unkB9C = (stats->unk12C / 5.0f) * f;
+        rider->unkB9C = (stats->power / 5.0f) * f;
         if ((gPlayers == TWO_PLAYERS) && ((u16) D_800D4970 != 0)) {
             if (stats->unk4 != 0) {
-                dx = D_80192690[D_800D48DC].unk44.x - D_80192690[D_800D48E0].unk44.x;
-                dz = D_80192690[D_800D48DC].unk44.z - D_80192690[D_800D48E0].unk44.z;
+                dx = D_80192690[gPlayer1Rider].unk44.x - D_80192690[gPlayer2Rider].unk44.x;
+                dz = D_80192690[gPlayer1Rider].unk44.z - D_80192690[gPlayer2Rider].unk44.z;
                 if (rider->unkB64 == 1) {
                     max = 1.05f;
                 } else if (rider->unkB64 == 2) {
@@ -6872,16 +6872,16 @@ void func_80065C18(s32 arg0) {
     }
     rider->unkBF0 = dx;
     rider->unkBF4 = dz;
-    if (arg0 == D_800D48DC) {
+    if (arg0 == gPlayer1Rider) {
         cam = &gCameraPerspective[D_80223930];
         cam->unk4C += dx;
         cam->unk54 += dz;
-    } else if ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0)) {
+    } else if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
         cam = &gCameraPerspective[D_80223934];
         cam->unk4C += dx;
         cam->unk54 += dz;
     }
-    func_800618F4(rider, dx, 0.0f, dz);
+    Rider_MovePoints(rider, dx, 0.0f, dz);
     if (gRiderGameModes != PAUSE_MODE) {
         x = rider->unk44.x - rider->unkBE4;
         rider->unkB84 = x - rider->unkB78;
@@ -7000,7 +7000,7 @@ void func_80065C18(s32 arg0) {
         } else {
             rider->unk1604 = 6;
             rider->unk15EC *= rider->unk7C;
-            if (arg0 == D_800D48DC) {
+            if (arg0 == gPlayer1Rider) {
                 func_800C35B4();
             }
         }
@@ -7076,17 +7076,17 @@ void func_800665B0(void) {
 
     if (D_801CE638 != 21) {
         for (i = gRiders - 1; i >= 0; i--) {
-            if (i == D_800D48DC) {
+            if (i == gPlayer1Rider) {
                 if ((D_800D4964 != 0) || (gRiderGameModes == AI_MODE)) {
                     func_800616B0(i);
                 } else {
-                    func_80061708(i, 0);
+                    Rider_ReadController(i, 0);
                 }
-            } else if (i == D_800D48E0) {
+            } else if (i == gPlayer2Rider) {
                 if ((D_800D4964 != 0) || (gRiderGameModes == AI_MODE) || (gPlayers == ONE_PLAYER)) {
                     func_800616B0(i);
                 } else {
-                    func_80061708(i, 1);
+                    Rider_ReadController(i, 1);
                 }
             } else {
                 func_800616B0(i);
@@ -7099,7 +7099,7 @@ void func_800665B0(void) {
     if ((D_801CE638 != 21) && (gRiderGameModes != PAUSE_MODE)) {
         for (n = D_800D4924; n != 0; n--) {
             if (D_800D4968 != 0) {
-                func_80061FEC();
+                Riders_PushApart();
             }
             for (i = gRiders - 1; i >= 0; i--) {
                 func_80064C0C(i);
@@ -7109,16 +7109,16 @@ void func_800665B0(void) {
     for (i = gRiders - 1; i >= 0; i--) {
         func_80065C18(i);
     }
-    func_80052480(D_800D48DC, (struct UnkStruct_80052480*) &D_80192610);
+    func_80052480(gPlayer1Rider, (struct UnkStruct_80052480*) &D_80192610);
     func_800C118C(&D_80192610);
     if (gPlayers == TWO_PLAYERS) {
-        func_80052480(D_800D48E0, (struct UnkStruct_80052480*) D_80192630);
+        func_80052480(gPlayer2Rider, (struct UnkStruct_80052480*) D_80192630);
         func_800C11CC(D_80192630);
     } else if (gRiders >= 2) {
         best = 1e10f;
-        player = &D_80192690[D_800D48DC];
+        player = &D_80192690[gPlayer1Rider];
         for (i = gRiders - 1; i >= 0; i--) {
-            if (i != D_800D48DC) {
+            if (i != gPlayer1Rider) {
                 dx = player->unk44.x - D_80192690[i].unk44.x;
                 dz = player->unk44.z - D_80192690[i].unk44.z;
                 if (SQ(dx) + SQ(dz) < best) {
@@ -7160,7 +7160,7 @@ void func_800665B0(void) {
         sx = gWaterWindow.unk0 + (r * cam->unkF0);
         sz = gWaterWindow.unk4 + (r * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
-            player = &D_80192690[D_800D48DC];
+            player = &D_80192690[gPlayer1Rider];
             dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
             if (dist <= D_801C1FB4) {
                 level = D_800D49B0;
@@ -7177,8 +7177,8 @@ void func_800665B0(void) {
             Water_StampDiagonalSine(sx, sz, level, D_800D49AC, 1);
         } else {
             flag = 1;
-            dx = sx - D_80192690[D_800D48E0].unk44.x;
-            dz = sz - D_80192690[D_800D48E0].unk44.z;
+            dx = sx - D_80192690[gPlayer2Rider].unk44.x;
+            dz = sz - D_80192690[gPlayer2Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
                 flag = 0;
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
@@ -7186,62 +7186,62 @@ void func_800665B0(void) {
             cam = &gCameraPerspective[D_80223934];
             sx = gWaterWindow.unk1C + (r * cam->unkF0);
             sz = gWaterWindow.unk20 + (r * cam->unkF4);
-            dx = sx - D_80192690[D_800D48DC].unk44.x;
-            dz = sz - D_80192690[D_800D48DC].unk44.z;
+            dx = sx - D_80192690[gPlayer1Rider].unk44.x;
+            dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, flag);
             }
         }
     }
     cam = &gCameraPerspective[D_80223930];
-    cam->unk40 = RIDER_C88(&D_80192690[D_800D48DC])[D_80192690[D_800D48DC].unk1424][7].unk0.x;
-    cam->unk44 = RIDER_C88(&D_80192690[D_800D48DC])[D_80192690[D_800D48DC].unk1424][7].unk0.y;
-    cam->unk48 = RIDER_C88(&D_80192690[D_800D48DC])[D_80192690[D_800D48DC].unk1424][7].unk0.z;
-    cam->unk4 = D_80192690[D_800D48DC].unk44.x;
-    *(f32*) &cam->unk8 = D_80192690[D_800D48DC].unk44.y;
-    cam->unkC = D_80192690[D_800D48DC].unk44.z;
-    cam->unk10 = D_80192690[D_800D48DC].unkB78;
-    cam->unk14 = D_80192690[D_800D48DC].unkB7C;
-    cam->unk18 = D_80192690[D_800D48DC].unkB80;
-    cam->unk1C = D_80192690[D_800D48DC].unk6C;
-    cam->unk20 = D_80192690[D_800D48DC].unk70;
-    cam->unk24 = D_80192690[D_800D48DC].unk74;
-    cam->unk28 = D_80192690[D_800D48DC].unk78;
-    cam->unk2C = D_80192690[D_800D48DC].unk7C;
-    cam->unk30 = D_80192690[D_800D48DC].unk80;
-    cam->unk34 = D_80192690[D_800D48DC].unk84;
-    cam->unk38 = D_80192690[D_800D48DC].unk88;
-    cam->unk3C = D_80192690[D_800D48DC].unk8C;
+    cam->unk40 = RIDER_C88(&D_80192690[gPlayer1Rider])[D_80192690[gPlayer1Rider].unk1424][7].unk0.x;
+    cam->unk44 = RIDER_C88(&D_80192690[gPlayer1Rider])[D_80192690[gPlayer1Rider].unk1424][7].unk0.y;
+    cam->unk48 = RIDER_C88(&D_80192690[gPlayer1Rider])[D_80192690[gPlayer1Rider].unk1424][7].unk0.z;
+    cam->unk4 = D_80192690[gPlayer1Rider].unk44.x;
+    *(f32*) &cam->unk8 = D_80192690[gPlayer1Rider].unk44.y;
+    cam->unkC = D_80192690[gPlayer1Rider].unk44.z;
+    cam->unk10 = D_80192690[gPlayer1Rider].unkB78;
+    cam->unk14 = D_80192690[gPlayer1Rider].unkB7C;
+    cam->unk18 = D_80192690[gPlayer1Rider].unkB80;
+    cam->unk1C = D_80192690[gPlayer1Rider].unk6C;
+    cam->unk20 = D_80192690[gPlayer1Rider].unk70;
+    cam->unk24 = D_80192690[gPlayer1Rider].unk74;
+    cam->unk28 = D_80192690[gPlayer1Rider].unk78;
+    cam->unk2C = D_80192690[gPlayer1Rider].unk7C;
+    cam->unk30 = D_80192690[gPlayer1Rider].unk80;
+    cam->unk34 = D_80192690[gPlayer1Rider].unk84;
+    cam->unk38 = D_80192690[gPlayer1Rider].unk88;
+    cam->unk3C = D_80192690[gPlayer1Rider].unk8C;
     if (gPlayers == TWO_PLAYERS) {
         cam = &gCameraPerspective[D_80223934];
-        cam->unk40 = RIDER_C88(&D_80192690[D_800D48E0])[D_80192690[D_800D48E0].unk1424][7].unk0.x;
-        cam->unk44 = RIDER_C88(&D_80192690[D_800D48E0])[D_80192690[D_800D48E0].unk1424][7].unk0.y;
-        cam->unk48 = RIDER_C88(&D_80192690[D_800D48E0])[D_80192690[D_800D48E0].unk1424][7].unk0.z;
-        cam->unk4 = D_80192690[D_800D48E0].unk44.x;
-        *(f32*) &cam->unk8 = D_80192690[D_800D48E0].unk44.y;
-        cam->unkC = D_80192690[D_800D48E0].unk44.z;
-        cam->unk10 = D_80192690[D_800D48E0].unkB78;
-        cam->unk14 = D_80192690[D_800D48E0].unkB7C;
-        cam->unk18 = D_80192690[D_800D48E0].unkB80;
-        cam->unk1C = D_80192690[D_800D48E0].unk6C;
-        cam->unk20 = D_80192690[D_800D48E0].unk70;
-        cam->unk24 = D_80192690[D_800D48E0].unk74;
-        cam->unk28 = D_80192690[D_800D48E0].unk78;
-        cam->unk2C = D_80192690[D_800D48E0].unk7C;
-        cam->unk30 = D_80192690[D_800D48E0].unk80;
-        cam->unk34 = D_80192690[D_800D48E0].unk84;
-        cam->unk38 = D_80192690[D_800D48E0].unk88;
-        cam->unk3C = D_80192690[D_800D48E0].unk8C;
+        cam->unk40 = RIDER_C88(&D_80192690[gPlayer2Rider])[D_80192690[gPlayer2Rider].unk1424][7].unk0.x;
+        cam->unk44 = RIDER_C88(&D_80192690[gPlayer2Rider])[D_80192690[gPlayer2Rider].unk1424][7].unk0.y;
+        cam->unk48 = RIDER_C88(&D_80192690[gPlayer2Rider])[D_80192690[gPlayer2Rider].unk1424][7].unk0.z;
+        cam->unk4 = D_80192690[gPlayer2Rider].unk44.x;
+        *(f32*) &cam->unk8 = D_80192690[gPlayer2Rider].unk44.y;
+        cam->unkC = D_80192690[gPlayer2Rider].unk44.z;
+        cam->unk10 = D_80192690[gPlayer2Rider].unkB78;
+        cam->unk14 = D_80192690[gPlayer2Rider].unkB7C;
+        cam->unk18 = D_80192690[gPlayer2Rider].unkB80;
+        cam->unk1C = D_80192690[gPlayer2Rider].unk6C;
+        cam->unk20 = D_80192690[gPlayer2Rider].unk70;
+        cam->unk24 = D_80192690[gPlayer2Rider].unk74;
+        cam->unk28 = D_80192690[gPlayer2Rider].unk78;
+        cam->unk2C = D_80192690[gPlayer2Rider].unk7C;
+        cam->unk30 = D_80192690[gPlayer2Rider].unk80;
+        cam->unk34 = D_80192690[gPlayer2Rider].unk84;
+        cam->unk38 = D_80192690[gPlayer2Rider].unk88;
+        cam->unk3C = D_80192690[gPlayer2Rider].unk8C;
     }
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800665B0.s")
 #endif
 
-Gfx* func_8006719C(Gfx* gdl, s32 arg1) {
+Gfx* Rider_DrawPartsReflect(Gfx* gdl, s32 arg1) {
     gSPClearGeometryMode(gdl++, G_CULL_FRONT);
     gSPSetGeometryMode(gdl++, G_CULL_BACK);
-    if ((D_801C2938[arg1].unk338 == 0) && (gDifficulty == DIFFICULTY_EXPERT)) {
+    if ((gRiderRaceState[arg1].unk338 == 0) && (gDifficulty == DIFFICULTY_EXPERT)) {
         guLookAtReflect(&gGfxPool->unkE108[arg1], (LookAt*) &gGfxPool->unkE208[arg1], gCameraPerspective[D_80223930].unk4C,
                         gCameraPerspective[D_80223930].unk50, gCameraPerspective[D_80223930].unk54,
                         gCameraPerspective[D_80223930].unk7C, gCameraPerspective[D_80223930].unk80,
@@ -7298,7 +7298,7 @@ Gfx* func_8006719C(Gfx* gdl, s32 arg1) {
     return gdl;
 }
 
-Gfx* func_80067810(Gfx* gdl, s32 arg1, s32 arg2) {
+Gfx* Rider_DrawParts(Gfx* gdl, s32 arg1, s32 arg2) {
     gSPClearGeometryMode(gdl++, G_CULL_FRONT);
     gSPSetGeometryMode(gdl++, G_CULL_BACK);
     if (D_80193D5C[arg2].unk0.h == 0) {
@@ -7344,8 +7344,8 @@ Gfx* func_80067810(Gfx* gdl, s32 arg1, s32 arg2) {
     return gdl;
 }
 
-Gfx* func_80067BFC(Gfx* gdl, s32 arg1, s32 arg2) {
-    gdl = func_80067810(gdl, arg1, arg2);
+Gfx* Rider_BuildPartsList(Gfx* gdl, s32 arg1, s32 arg2) {
+    gdl = Rider_DrawParts(gdl, arg1, arg2);
     gSPEndDisplayList(gdl++);
     if (D_80193D5C[arg2].unk0.h != 0) {
         gdl += 6;
@@ -7353,36 +7353,36 @@ Gfx* func_80067BFC(Gfx* gdl, s32 arg1, s32 arg2) {
     return gdl;
 }
 
-void func_80067C6C(void) {
+void Riders_BuildPartsLists(void) {
     Gfx* gdl = (Gfx*) &D_8011EDE0;
     s32 i;
     s32 j;
 
     if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
-        gdl = func_80067BFC(gdl, 0, D_800D48DC);
-        gdl = func_80067BFC(gdl, 1, D_800D48E0);
+        gdl = Rider_BuildPartsList(gdl, 0, gPlayer1Rider);
+        gdl = Rider_BuildPartsList(gdl, 1, gPlayer2Rider);
         return;
     }
     if (D_801CE64C != 2) {
         if ((gPlayers == ONE_PLAYER) || ((D_801CE638 == 8) && (gCourseID == SUNNY_BEACH))) {
             j = 1;
             for (i = 0; i < gRiders; i++) {
-                if (i == D_800D48DC) {
-                    gdl = func_80067BFC(gdl, 0, i);
-                    gdl = func_80067BFC(gdl, 0, i);
+                if (i == gPlayer1Rider) {
+                    gdl = Rider_BuildPartsList(gdl, 0, i);
+                    gdl = Rider_BuildPartsList(gdl, 0, i);
                 } else {
-                    gdl = func_80067BFC(gdl, j, i);
-                    gdl = func_80067BFC(gdl, j + 1, i);
+                    gdl = Rider_BuildPartsList(gdl, j, i);
+                    gdl = Rider_BuildPartsList(gdl, j + 1, i);
                     j += 2;
                 }
             }
         } else {
-            gdl = func_80067BFC(gdl, 0, D_800D48DC);
-            gdl = func_80067BFC(gdl, 1, D_800D48E0);
-            gdl = func_80067BFC(gdl, 2, D_800D48DC);
-            gdl = func_80067BFC(gdl, 3, D_800D48E0);
-            gdl = func_80067BFC(gdl, 4, D_800D48DC);
-            gdl = func_80067BFC(gdl, 5, D_800D48E0);
+            gdl = Rider_BuildPartsList(gdl, 0, gPlayer1Rider);
+            gdl = Rider_BuildPartsList(gdl, 1, gPlayer2Rider);
+            gdl = Rider_BuildPartsList(gdl, 2, gPlayer1Rider);
+            gdl = Rider_BuildPartsList(gdl, 3, gPlayer2Rider);
+            gdl = Rider_BuildPartsList(gdl, 4, gPlayer1Rider);
+            gdl = Rider_BuildPartsList(gdl, 5, gPlayer2Rider);
         }
     }
 }
@@ -7401,13 +7401,13 @@ void func_80067E40(void) {
     for (i = gRiders - 1; i >= 0; i--) {
         if ((D_801CE638 == 0) || (D_801CE638 == 8)) {
             D_80192690[i].unk16CE = 1;
-        } else if (i == D_800D48DC) {
+        } else if (i == gPlayer1Rider) {
             if (((D_800D4964 != 0) || (gRiderGameModes == AI_MODE)) && (D_801CE638 != 4)) {
                 D_80192690[i].unk16CE = 1;
             } else {
                 D_80192690[i].unk16CE = 0;
             }
-        } else if (i == D_800D48E0) {
+        } else if (i == gPlayer2Rider) {
             if ((gRiderGameModes == AI_MODE) || (gPlayers == ONE_PLAYER)) {
                 D_80192690[i].unk16CE = 1;
             } else {
@@ -7431,39 +7431,39 @@ void func_80067E40(void) {
     } else {
         D_800D4978 = 1;
     }
-    func_80067C6C();
+    Riders_BuildPartsLists();
     cam = &gCameraPerspective[D_80223930];
-    cam->unk4 = D_80192690[D_800D48DC].unk44.x;
-    *(f32*) &cam->unk8 = D_80192690[D_800D48DC].unk44.y;
-    cam->unkC = D_80192690[D_800D48DC].unk44.z;
-    cam->unk10 = D_80192690[D_800D48DC].unk50;
-    cam->unk14 = D_80192690[D_800D48DC].unk54;
-    cam->unk18 = D_80192690[D_800D48DC].unk58;
-    cam->unk1C = D_80192690[D_800D48DC].unk6C;
-    cam->unk20 = D_80192690[D_800D48DC].unk70;
-    cam->unk24 = D_80192690[D_800D48DC].unk74;
-    cam->unk28 = D_80192690[D_800D48DC].unk78;
-    cam->unk2C = D_80192690[D_800D48DC].unk7C;
-    cam->unk30 = D_80192690[D_800D48DC].unk80;
-    cam->unk34 = D_80192690[D_800D48DC].unk84;
-    cam->unk38 = D_80192690[D_800D48DC].unk88;
-    cam->unk3C = D_80192690[D_800D48DC].unk8C;
+    cam->unk4 = D_80192690[gPlayer1Rider].unk44.x;
+    *(f32*) &cam->unk8 = D_80192690[gPlayer1Rider].unk44.y;
+    cam->unkC = D_80192690[gPlayer1Rider].unk44.z;
+    cam->unk10 = D_80192690[gPlayer1Rider].unk50;
+    cam->unk14 = D_80192690[gPlayer1Rider].unk54;
+    cam->unk18 = D_80192690[gPlayer1Rider].unk58;
+    cam->unk1C = D_80192690[gPlayer1Rider].unk6C;
+    cam->unk20 = D_80192690[gPlayer1Rider].unk70;
+    cam->unk24 = D_80192690[gPlayer1Rider].unk74;
+    cam->unk28 = D_80192690[gPlayer1Rider].unk78;
+    cam->unk2C = D_80192690[gPlayer1Rider].unk7C;
+    cam->unk30 = D_80192690[gPlayer1Rider].unk80;
+    cam->unk34 = D_80192690[gPlayer1Rider].unk84;
+    cam->unk38 = D_80192690[gPlayer1Rider].unk88;
+    cam->unk3C = D_80192690[gPlayer1Rider].unk8C;
     cam = &gCameraPerspective[D_80223934];
-    cam->unk4 = D_80192690[D_800D48E0].unk44.x;
-    *(f32*) &cam->unk8 = D_80192690[D_800D48E0].unk44.y;
-    cam->unkC = D_80192690[D_800D48E0].unk44.z;
-    cam->unk10 = D_80192690[D_800D48E0].unk50;
-    cam->unk14 = D_80192690[D_800D48E0].unk54;
-    cam->unk18 = D_80192690[D_800D48E0].unk58;
-    cam->unk1C = D_80192690[D_800D48E0].unk6C;
-    cam->unk20 = D_80192690[D_800D48E0].unk70;
-    cam->unk24 = D_80192690[D_800D48E0].unk74;
-    cam->unk28 = D_80192690[D_800D48E0].unk78;
-    cam->unk2C = D_80192690[D_800D48E0].unk7C;
-    cam->unk30 = D_80192690[D_800D48E0].unk80;
-    cam->unk34 = D_80192690[D_800D48E0].unk84;
-    cam->unk38 = D_80192690[D_800D48E0].unk88;
-    cam->unk3C = D_80192690[D_800D48E0].unk8C;
+    cam->unk4 = D_80192690[gPlayer2Rider].unk44.x;
+    *(f32*) &cam->unk8 = D_80192690[gPlayer2Rider].unk44.y;
+    cam->unkC = D_80192690[gPlayer2Rider].unk44.z;
+    cam->unk10 = D_80192690[gPlayer2Rider].unk50;
+    cam->unk14 = D_80192690[gPlayer2Rider].unk54;
+    cam->unk18 = D_80192690[gPlayer2Rider].unk58;
+    cam->unk1C = D_80192690[gPlayer2Rider].unk6C;
+    cam->unk20 = D_80192690[gPlayer2Rider].unk70;
+    cam->unk24 = D_80192690[gPlayer2Rider].unk74;
+    cam->unk28 = D_80192690[gPlayer2Rider].unk78;
+    cam->unk2C = D_80192690[gPlayer2Rider].unk7C;
+    cam->unk30 = D_80192690[gPlayer2Rider].unk80;
+    cam->unk34 = D_80192690[gPlayer2Rider].unk84;
+    cam->unk38 = D_80192690[gPlayer2Rider].unk88;
+    cam->unk3C = D_80192690[gPlayer2Rider].unk8C;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067E40.s")
@@ -7514,13 +7514,13 @@ Gfx* func_80068538(Gfx* gdl) {
     gSPDisplayList(gdl++, D_1007968);
     for (i = 0; i < gRiders; i++) {
         if (D_80192690[i].unkB68 == 2) {
-            if (i == D_800D48DC) {
+            if (i == gPlayer1Rider) {
                 if (D_801CE6F4[0] != 0) {
                     flag = 1;
                 } else {
                     flag = 0;
                 }
-            } else if ((i == D_800D48E0) && (gPlayers == TWO_PLAYERS)) {
+            } else if ((i == gPlayer2Rider) && (gPlayers == TWO_PLAYERS)) {
                 if (D_801CE6F4[1] != 0) {
                     flag = 1;
                 } else {
@@ -7586,17 +7586,17 @@ Gfx* func_800687A4(Gfx* gdl) {
     if (D_801CE64C == 2) {
         RIDER_FOG_OFF(gdl);
         if (D_800DAB2C != 0) {
-            idx = D_80192690[D_800D48E0].unkB68;
+            idx = D_80192690[gPlayer2Rider].unkB68;
             if (D_801CE6F4[1] != 0) {
                 idx += 4;
             }
-            gdl = func_80067810(gdl, idx, D_800D48E0);
+            gdl = Rider_DrawParts(gdl, idx, gPlayer2Rider);
         } else {
-            idx = D_80192690[D_800D48DC].unkB68;
+            idx = D_80192690[gPlayer1Rider].unkB68;
             if (D_801CE6F4[0] != 0) {
                 idx += 4;
             }
-            gdl = func_80067810(gdl, idx, D_800D48DC);
+            gdl = Rider_DrawParts(gdl, idx, gPlayer1Rider);
         }
     } else if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
         RIDER_FOG_ON(gdl);
@@ -7610,7 +7610,7 @@ Gfx* func_800687A4(Gfx* gdl) {
             gSPDisplayList(gdl++, RIDER_DL(1, 1));
             gDPPipeSync(gdl++);
             cam = &gCameraPerspective[D_80223934];
-            rider = &D_80192690[D_800D48DC];
+            rider = &D_80192690[gPlayer1Rider];
             d = CAM_DEPTH(cam, rider);
             if (d > 1000.0f) {
                 RIDER_FOG_ON(gdl);
@@ -7628,7 +7628,7 @@ Gfx* func_800687A4(Gfx* gdl) {
             gSPDisplayList(gdl++, RIDER_DL(1, 0));
             gDPPipeSync(gdl++);
             cam = &gCameraPerspective[D_80223930];
-            rider = &D_80192690[D_800D48E0];
+            rider = &D_80192690[gPlayer2Rider];
             d = CAM_DEPTH(cam, rider);
             if (d > 1000.0f) {
                 RIDER_FOG_ON(gdl);
@@ -7647,10 +7647,10 @@ Gfx* func_800687A4(Gfx* gdl) {
         gDPSetCycleType(gdl++, G_CYC_1CYCLE);
         gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
-        gSPDisplayList(gdl++, RIDER_DL(D_800D48DC, 0));
+        gSPDisplayList(gdl++, RIDER_DL(gPlayer1Rider, 0));
         gSPClearGeometryMode(gdl++, G_FOG);
         for (i = 0; i < gRiders; i++) {
-            if (i != D_800D48DC) {
+            if (i != gPlayer1Rider) {
                 gDPPipeSync(gdl++);
                 rider = &D_80192690[i];
                 if (i == 1) {
@@ -7674,10 +7674,10 @@ Gfx* func_800687A4(Gfx* gdl) {
         }
     } else {
         RIDER_FOG_ON(gdl);
-        gdl = func_8006719C(gdl, 0);
-        gdl = func_8006719C(gdl, 1);
-        gdl = func_8006719C(gdl, 2);
-        gdl = func_8006719C(gdl, 3);
+        gdl = Rider_DrawPartsReflect(gdl, 0);
+        gdl = Rider_DrawPartsReflect(gdl, 1);
+        gdl = Rider_DrawPartsReflect(gdl, 2);
+        gdl = Rider_DrawPartsReflect(gdl, 3);
     }
     for (i = 0; i < gRiders; i++) {
         if (D_80192690[i].unk16CC != 0) {
@@ -7747,9 +7747,9 @@ Gfx* func_80069594(Gfx* arg0) {
     if (!(gPlayers != TWO_PLAYERS) || (gCourseID == DRAKE_LAKE) || (D_801CE638 == 0x15)) {
         return arg0;
     }
-    arg0 = func_800694B8(arg0, D_800D48DC);
+    arg0 = func_800694B8(arg0, gPlayer1Rider);
     for (var_s0 = 0; var_s0 < gRiders; var_s0++) {
-        if (var_s0 != D_800D48DC) {
+        if (var_s0 != gPlayer1Rider) {
             temp_v0 = &gCameraPerspective[D_80223930];
             temp_v1 = &D_80192690[var_s0];
             temp_f0 = (temp_v0->unk6C * (temp_v1->unk44.z - temp_v0->unk54)) +

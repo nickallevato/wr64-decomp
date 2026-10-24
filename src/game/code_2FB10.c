@@ -23,7 +23,7 @@ typedef struct UnkStruct_80228AE0 {
     /* 0x04 */ char pad4[0x18];
 } UnkStruct_80228AE0; /* size = 0x1C */
 
-extern s32 D_800D48E0;
+extern s32 gPlayer2Rider;
 extern UnkStruct_801C1FF0 gBestTimes[][3];
 extern UnkStruct_801C1FF0 gBestLaps[];
 extern UnkStruct_801C1FF0 D_801C23B0[];
@@ -32,7 +32,7 @@ extern UnkStruct_801C26E8 gStuntRecords[][3];
 
 extern UnkStruct_801AEE20 D_801AEE20[];
 extern s32 D_801BB120;
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 
 static const char devstr1[] = "dolphin condition full at goal\n";
 static const char devstr2[] = "dolphin condition full\n";
@@ -46,7 +46,7 @@ typedef struct UnkStruct_801BB138 {
     /* 0x0C */ char padC[0xC];
 } UnkStruct_801BB138; /* size = 0x18 */
 
-extern UnkStruct_801BB138 D_801BB138[];
+extern UnkStruct_801BB138 gCoursePoints[];
 extern UnkStruct_801C1FF0 D_800D81B0;
 extern UnkStruct_801C26E8 D_800D81C4;
 extern s32 D_800D8224;
@@ -59,8 +59,8 @@ extern s32 D_801BB12C;
 extern s32 D_801BC938;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
-extern f32 D_801C1F94;
-extern f32 D_801C1F98;
+extern f32 gMapHalfSize;
+extern f32 gMapScale;
 extern f32 D_801C1F9C;
 extern f32 D_801C1FA0;
 extern f32 D_801C1FA4;
@@ -117,7 +117,7 @@ extern s32 D_801C3A04;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// 12903: same blocks, loops and calls. The original stores D_801C1F94 with lui at in the
+// 12903: same blocks, loops and calls. The original stores gMapHalfSize with lui at in the
 // extent loops and materialises 0.0f twice there; elsewhere register allocation and
 // scheduling differ, and this C is 10 instructions shorter.
 void func_80075310(void) {
@@ -160,7 +160,7 @@ void func_80075310(void) {
     D_801C1FC4 = 0;
     D_801C1F9C = D_801C1FA4 = 32767.0f;
     D_801C1FA0 = D_801C1FA8 = -32768.0f;
-    D_801C1F94 = 0.0f;
+    gMapHalfSize = 0.0f;
     for (i = 0; i < D_801BB120; i++) {
         x = D_801AEE20[i].unk24;
         if (x < D_801C1F9C) {
@@ -177,23 +177,23 @@ void func_80075310(void) {
             D_801C1FA8 = z;
         }
         a = (x >= 0.0f) ? x : -x;
-        if (D_801C1F94 < a) {
-            D_801C1F94 = a;
+        if (gMapHalfSize < a) {
+            gMapHalfSize = a;
         }
         a = (z >= 0.0f) ? z : -z;
-        if (D_801C1F94 < a) {
-            D_801C1F94 = a;
+        if (gMapHalfSize < a) {
+            gMapHalfSize = a;
         }
     }
     for (i = 0; i < D_801BC938; i++) {
-        x = D_801BB138[i].unk0;
+        x = gCoursePoints[i].unk0;
         if (x < D_801C1F9C) {
             D_801C1F9C = x;
         }
         if (D_801C1FA0 < x) {
             D_801C1FA0 = x;
         }
-        z = D_801BB138[i].unk8;
+        z = gCoursePoints[i].unk8;
         if (z < D_801C1FA4) {
             D_801C1FA4 = z;
         }
@@ -201,16 +201,16 @@ void func_80075310(void) {
             D_801C1FA8 = z;
         }
         a = (x >= 0.0f) ? x : -x;
-        if (D_801C1F94 < a) {
-            D_801C1F94 = a;
+        if (gMapHalfSize < a) {
+            gMapHalfSize = a;
         }
         a = (z >= 0.0f) ? z : -z;
-        if (D_801C1F94 < a) {
-            D_801C1F94 = a;
+        if (gMapHalfSize < a) {
+            gMapHalfSize = a;
         }
     }
-    if (D_801C1F94 < 4096.0f) {
-        D_801C1F94 = 4096.0f;
+    if (gMapHalfSize < 4096.0f) {
+        gMapHalfSize = 4096.0f;
         D_801C1F9C = -4096.0f;
         D_801C1FA4 = -4096.0f;
         D_801C1FA0 = -D_801C1F9C;
@@ -218,8 +218,8 @@ void func_80075310(void) {
     }
     D_801C1FAC = D_801C1FA0 - D_801C1F9C;
     D_801C1FB0 = D_801C1FA8 - D_801C1FA4;
-    D_801C1F98 = 160.0f / (2.0f * D_801C1F94);
-    D_801C1FB4 = (D_801C1F94 * 1.4142f) + 2048.0f;
+    gMapScale = 160.0f / (2.0f * gMapHalfSize);
+    D_801C1FB4 = (gMapHalfSize * 1.4142f) + 2048.0f;
 
     // D_801C3890: 1 for table B records that are not reached from exactly one record
     // (unkA0 or unkA4).
@@ -271,23 +271,23 @@ void func_80075310(void) {
     // Reset the standings of every rider.
     D_801C3718 = gRiders;
     for (i = 0; i < gRiders; i++) {
-        rider = &D_801C2938[i];
+        rider = &gRiderRaceState[i];
         rider->unk174 = 0;
         rider->lapCount = 0;
         rider->racePosition = 0;
         rider->unk324 = 0;
         rider->unk8 = 0;
         rider->unk320 = 0;
-        rider->unk32C = 0.0f;
+        rider->progress = 0.0f;
         rider->unk1C = -1;
         rider->unk20 = 0;
         rider->unk24 = 0;
         rider->unk28 = 0;
-        rider->unkC = rider->unk10 = rider->unk310 = D_801BB12C;
+        rider->unkC = rider->unk10 = rider->nearestRecord = D_801BB12C;
         if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
-            rider->unk12C = 5;
+            rider->power = 5;
         } else {
-            rider->unk12C = 0;
+            rider->power = 0;
         }
         rider->unk138 = 0;
         rider->unk130 = 0;
@@ -299,9 +299,9 @@ void func_80075310(void) {
             rider->unk164 = 0;
         }
         rider->unk33C = 0;
-        rider->unk2F8 = 0;
-        rider->unk300 = 0;
-        rider->unk2FC = 0;
+        rider->checkpointGap = 0;
+        rider->gapTimer = 0;
+        rider->gapRequest = 0;
         rider->unk2C8 = 0;
         rider->unk2E0 = 0;
         rider->unk2DC = 0;
@@ -311,29 +311,29 @@ void func_80075310(void) {
         rider->unk2E8 = 0;
         rider->unk2E4 = 0;
         rider->unk334 = 0;
-        rider->unk2EC = 0;
+        rider->finishState = 0;
         rider->unk2F0 = 0;
         rider->unk2F4 = 0;
         rider->unk304 = 0;
         for (j = 0; j < D_801BB120; j++) {
             rider->unk2C[j] = 0;
         }
-        rider->unk168 = 0;
+        rider->lapTime = 0;
         rider->unk16C = 0;
-        rider->unk19C = 0;
-        rider->unk170 = 599999;
-        rider->unk2C4 = D_800D9280[gCourseID] * 1000;
+        rider->raceTime = 0;
+        rider->bestLapTime = 599999;
+        rider->timeLeft = D_800D9280[gCourseID] * 1000;
         for (j = 0; j < 9; j++) {
-            rider->unk140[j] = 0;
-            rider->unk178[j] = 0;
+            rider->lapBuoyMisses[j] = 0;
+            rider->lapTimes[j] = 0;
             for (k = 0; k < 8; k++) {
-                rider->unk1A4[j][k] = 0;
+                rider->checkpointTimes[j][k] = 0;
             }
         }
         rider->unk330 = 0.0f;
         rider->unk308 = 0;
         rider->unk30C = 0;
-        rider->unk31C = 0;
+        rider->inBox = 0;
         rider->unk314 = 0;
         rider->unk318 = 0;
         rider->unk350 = (struct UnkStruct_801C3C54*) D_801AEE20;
@@ -366,7 +366,7 @@ void func_80075310(void) {
             for (k = j, n = D_801BB120 - 1; (D_801AEE20[k].unk98 >= 2) && (n > 0); n--) {
                 k = D_801AEE20[k].unkB4;
             }
-            rider->unkC = rider->unk310 = k;
+            rider->unkC = rider->nearestRecord = k;
             k = j;
             if (D_801AEE20[j].unk98 == 1) {
                 for (n = D_801BB120 - 1; n > 0; n--) {
@@ -461,14 +461,14 @@ void func_80075310(void) {
                 break;
             }
         }
-        if ((i < gRiders) && (i != D_800D48DC)) {
-            D_801C26C0[i] = D_801C26C0[D_800D48DC];
-            D_801C26C0[D_800D48DC] = D_800D8228 - 1;
+        if ((i < gRiders) && (i != gPlayer1Rider)) {
+            D_801C26C0[i] = D_801C26C0[gPlayer1Rider];
+            D_801C26C0[gPlayer1Rider] = D_800D8228 - 1;
         }
     }
     if (gCourseID != DOLPHIN_PARK) {
         for (i = 0; i < gRiders; i++) {
-            D_801C2938[i].racePosition = D_801C26C0[i];
+            gRiderRaceState[i].racePosition = D_801C26C0[i];
         }
     }
     func_801EED70();
@@ -494,17 +494,17 @@ s32 func_80076240(f32 arg0, f32 arg1, f32 arg2, f32 arg3) {
     return 0;
 }
 
-void func_800762D0(struct_800762D0* arg0) {
+void Rider_SetFinishState(struct_800762D0* arg0) {
     if (D_801CE638 == 1) {
-        if ((gGameModes == GMODE_STUNT) && (arg0->unk2C4 <= 0)) {
-            arg0->unk2EC = 2;
-        } else if (arg0->unk19C >= 599999) {
-            arg0->unk2EC = 2;
+        if ((gGameModes == GMODE_STUNT) && (arg0->timeLeft <= 0)) {
+            arg0->finishState = 2;
+        } else if (arg0->raceTime >= 599999) {
+            arg0->finishState = 2;
         } else {
-            arg0->unk2EC = 1;
+            arg0->finishState = 1;
         }
-        if ((gGameModes != GMODE_2P_VS) || (arg0->unk2EC != 2)) {
-            arg0->unk32C = D_801C39B4;
+        if ((gGameModes != GMODE_2P_VS) || (arg0->finishState != 2)) {
+            arg0->progress = D_801C39B4;
             D_801C39B4 += 10000.0f;
         }
     }
@@ -572,7 +572,7 @@ void func_80076378(s32 arg0) {
     f32 d;
     f32 dz;
 
-    rider = &D_801C2938[arg0];
+    rider = &gRiderRaceState[arg0];
     if (D_801CE638 == 2) {
         D_801C3780 = D_801C3720[arg0].unk0;
         D_801C3784 = 0.0f;
@@ -582,9 +582,9 @@ void func_80076378(s32 arg0) {
         D_801C3784 = D_80192690[arg0].unk44.y;
         D_801C3788 = D_80192690[arg0].unk44.z;
     }
-    isHuman = (arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0));
+    isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
     if (D_801CE638 == 1) {
-        cur = rider->unk310;
+        cur = rider->nearestRecord;
         best = cur;
         x = D_801C3780;
         z = D_801C3788;
@@ -611,7 +611,7 @@ void func_80076378(s32 arg0) {
             func_80074368(D_801AEE20[best].unk0, D_801AEE20[best].unk8, &zoneC, &zoneD);
             if (((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) ||
                 ((zoneB != -1) && ((zoneB == zoneC) || (zoneB == zoneD)))) {
-                rider->unk310 = best;
+                rider->nearestRecord = best;
             }
         }
     }
@@ -633,7 +633,7 @@ void func_80076378(s32 arg0) {
         }
     }
     if ((gCourseID == PORT_BLUE) || (gCourseID == TWILIGHT_CITY)) {
-        wasIn = rider->unk31C;
+        wasIn = rider->inBox;
         if (gCourseID == PORT_BLUE) {
             rect = &D_800D8204;
         } else {
@@ -641,16 +641,16 @@ void func_80076378(s32 arg0) {
         }
         if ((rect->minX <= D_801C3780) && (D_801C3780 <= rect->maxX) && (rect->minZ <= D_801C3788) &&
             (D_801C3788 <= rect->maxZ)) {
-            rider->unk31C = 1;
+            rider->inBox = 1;
         } else {
-            rider->unk31C = 0;
+            rider->inBox = 0;
         }
-        if (isHuman && (wasIn != rider->unk31C)) {
+        if (isHuman && (wasIn != rider->inBox)) {
             player = 1;
-            if (arg0 == D_800D48DC) {
+            if (arg0 == gPlayer1Rider) {
                 player = 0;
             }
-            if (rider->unk31C != 0) {
+            if (rider->inBox != 0) {
                 func_800C1904(player);
             } else {
                 func_800C1A20(player);
@@ -717,16 +717,16 @@ void func_8007687C(s32 arg0) {
     UnkStruct_801AEE20* next;
     UnkStruct_801AEE20* from;
 
-    if (arg0 == D_800D48DC) {
+    if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
-    isHuman = (arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0));
-    rider = &D_801C2938[arg0];
+    isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
+    rider = &gRiderRaceState[arg0];
     rider->unk314 = 0;
-    if (rider->unk300 != 0) {
-        rider->unk300--;
+    if (rider->gapTimer != 0) {
+        rider->gapTimer--;
     }
-    if ((gCourseID == DRAKE_LAKE) && (D_801C1FD0 == 0) && isHuman && (rider->unk19C >= 50001)) {
+    if ((gCourseID == DRAKE_LAKE) && (D_801C1FD0 == 0) && isHuman && (rider->raceTime >= 50001)) {
         D_801C1FD0 = 1;
     }
     if (gCourseID == GLACIER_COAST) {
@@ -736,27 +736,27 @@ void func_8007687C(s32 arg0) {
             rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
         }
     }
-    if ((gCourseID == RIDER_SELECTION) && (arg0 == D_800D48E0)) {
+    if ((gCourseID == RIDER_SELECTION) && (arg0 == gPlayer2Rider)) {
         rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
     }
-    if (((D_801CE628 == 1) && (arg0 == D_800D48DC)) ||
-        ((gPlayers == TWO_PLAYERS) && (D_801CE628 == 2) && (arg0 == D_800D48E0))) {
-        if (rider->unk2EC == 0) {
-            func_800762D0((struct_800762D0*) rider);
+    if (((D_801CE628 == 1) && (arg0 == gPlayer1Rider)) ||
+        ((gPlayers == TWO_PLAYERS) && (D_801CE628 == 2) && (arg0 == gPlayer2Rider))) {
+        if (rider->finishState == 0) {
+            Rider_SetFinishState((struct_800762D0*) rider);
         }
         return;
     }
     // The race clock; 9'59"99 retires (except in Dolphin Park).
-    if ((D_801CE638 == 1) && (rider->unk2F4 == 0) && (rider->unk2EC == 0) && (D_800D817C == 0) && (D_801C1FD4 == 0)) {
-        rider->unk168 += 50;
-        if (rider->unk168 >= 599999) {
-            rider->unk168 = 599999;
+    if ((D_801CE638 == 1) && (rider->unk2F4 == 0) && (rider->finishState == 0) && (D_800D817C == 0) && (D_801C1FD4 == 0)) {
+        rider->lapTime += 50;
+        if (rider->lapTime >= 599999) {
+            rider->lapTime = 599999;
         }
-        rider->unk19C += 50;
-        if (rider->unk19C >= 599999) {
-            rider->unk19C = 599999;
+        rider->raceTime += 50;
+        if (rider->raceTime >= 599999) {
+            rider->raceTime = 599999;
             if (gCourseID != DOLPHIN_PARK) {
-                func_800762D0((struct_800762D0*) rider);
+                Rider_SetFinishState((struct_800762D0*) rider);
             }
         }
         rider->unk16C = D_800D4B00 & 0xFFFF;
@@ -843,16 +843,16 @@ void func_8007687C(s32 arg0) {
         passed = true;
         rider->unk2F0 = 0;
         // A buoy: power up on the correct side (type 0 on the left, 1 on the right), else a miss.
-        if ((e->unk9C == 0) && (rider->unk2F4 == 0) && (rider->unk2EC == 0) && (type != 8) && (type != 9)) {
+        if ((e->unk9C == 0) && (rider->unk2F4 == 0) && (rider->finishState == 0) && (type != 8) && (type != 9)) {
             if (((type == 0) && (rider->unk1C == 0)) || ((type == 1) && (rider->unk1C == 1))) {
                 if (e->unkC8 != 0) {
-                    if (rider->unk12C < 5) {
-                        rider->unk12C++;
+                    if (rider->power < 5) {
+                        rider->power++;
                         rider->unk314 = 1;
                     }
                     rider->unk28 = 1;
                     if (isHuman) {
-                        if ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0)) {
+                        if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
                             sfx = 0x80;
                         } else {
                             sfx = 0;
@@ -872,7 +872,7 @@ void func_8007687C(s32 arg0) {
                 if (rider->unk134 >= gBuoyMisses) {
                     rider->unk13C = 1;
                     if (isHuman && (gBuoyMisses == 0)) {
-                        func_800762D0((struct_800762D0*) rider);
+                        Rider_SetFinishState((struct_800762D0*) rider);
                     }
                 }
                 rider->unk28 = 2;
@@ -881,7 +881,7 @@ void func_8007687C(s32 arg0) {
                     if (sfx < 0) {
                         sfx = 0;
                     }
-                    if ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0)) {
+                    if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
                         sfx += 0x80;
                     }
                     if (type == 0) {
@@ -894,7 +894,7 @@ void func_8007687C(s32 arg0) {
         }
         rider->unkC = e->unkA0;
         if (sameZone) {
-            rider->unk310 = cur;
+            rider->nearestRecord = cur;
         }
         rider->unk1C = -1;
         rider->unk20 = 1;
@@ -915,9 +915,9 @@ void func_8007687C(s32 arg0) {
             }
         }
     }
-    if (passed && (rider->unk13C == 0) && (rider->unk2F4 == 0) && (rider->unk2EC == 0) && (gCourseID != DOLPHIN_PARK)) {
+    if (passed && (rider->unk13C == 0) && (rider->unk2F4 == 0) && (rider->finishState == 0) && (gCourseID != DOLPHIN_PARK)) {
         // A checkpoint gate: its time, and the gap shown against the time trial record
-        // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (unk2FC 10).
+        // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
             dPos = ((D_801C3780 - e->unk0) * dirX) + ((D_801C3788 - e->unk8) * dirZ);
             if (!(dPos >= 0.0f)) {
@@ -931,8 +931,8 @@ void func_8007687C(s32 arg0) {
             if (e->unk98 == 3) {
                 rider->unk164 = 0;
             }
-            time = rider->unk19C - frac;
-            rider->unk1A4[rider->lapCount - 1][rider->unk164] = time;
+            time = rider->raceTime - frac;
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = time;
             if ((D_801CE638 == 1) && (D_801C1FC4 == 0) && (D_801C1FD8 == 0) &&
                 ((cur != D_801BB12C) || (rider->lapCount < D_801CE728[0]))) {
                 if ((gGameModes == GMODE_TIME_TRIALS) && (D_800DAB68 == 0) && (cur == D_801BB12C) &&
@@ -940,44 +940,44 @@ void func_8007687C(s32 arg0) {
                     ref = gBestCheckpointTimes[gCourseID][rider->lapCount - 1];
                     if (ref > 0) {
                         if (ref < time) {
-                            rider->unk2FC = 1;
-                            rider->unk2F8 = time - ref;
+                            rider->gapRequest = 1;
+                            rider->checkpointGap = time - ref;
                         } else {
-                            rider->unk2FC = 2;
-                            rider->unk2F8 = ref - time;
+                            rider->gapRequest = 2;
+                            rider->checkpointGap = ref - time;
                         }
-                        rider->unk300 = 40;
+                        rider->gapTimer = 40;
                     }
                 } else if ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_2P_VS)) {
-                    rider->unk2FC = 10;
+                    rider->gapRequest = 10;
                 } else {
-                    rider->unk2FC = 0;
+                    rider->gapRequest = 0;
                 }
             }
         }
         // The line: the lap time and best lap, lap sounds, the last lap.
         if (cur == D_801BB12C) {
             if (rider->lapCount > 0) {
-                rider->unk168 -= frac;
+                rider->lapTime -= frac;
                 if (D_801CE638 == 1) {
                     if (rider->lapCount < 10) {
-                        rider->unk178[rider->lapCount - 1] = rider->unk168;
-                        rider->unk140[rider->lapCount - 1] = rider->unk130;
+                        rider->lapTimes[rider->lapCount - 1] = rider->lapTime;
+                        rider->lapBuoyMisses[rider->lapCount - 1] = rider->unk130;
                     } else {
                         for (i = 0; i < 8; i++) {
-                            rider->unk178[i] = rider->unk178[i + 1];
-                            rider->unk140[i] = rider->unk140[i + 1];
+                            rider->lapTimes[i] = rider->lapTimes[i + 1];
+                            rider->lapBuoyMisses[i] = rider->lapBuoyMisses[i + 1];
                         }
-                        rider->unk178[8] = rider->unk168;
-                        rider->unk140[8] = rider->unk130;
+                        rider->lapTimes[8] = rider->lapTime;
+                        rider->lapBuoyMisses[8] = rider->unk130;
                     }
-                    if (rider->unk168 < rider->unk170) {
-                        rider->unk170 = rider->unk168;
+                    if (rider->lapTime < rider->bestLapTime) {
+                        rider->bestLapTime = rider->lapTime;
                         rider->unk174 = rider->lapCount;
                     }
-                    if ((gPlayers == ONE_PLAYER) && (arg0 == D_800D48DC)) {
-                        if (rider->unk170 < D_801C1FE0) {
-                            D_801C1FE0 = rider->unk170;
+                    if ((gPlayers == ONE_PLAYER) && (arg0 == gPlayer1Rider)) {
+                        if (rider->bestLapTime < D_801C1FE0) {
+                            D_801C1FE0 = rider->bestLapTime;
                             D_801C2658 = 1;
                             if ((gGameModes == GMODE_TIME_TRIALS) && (rider->lapCount < D_801CE728[0])) {
                                 D_80228A98 = 1;
@@ -994,7 +994,7 @@ void func_8007687C(s32 arg0) {
                             if (D_801CE728[0] == rider->lapCount + 1) {
                                 sfx = 0x80;
                             }
-                            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->unk2FC == 2)) {
+                            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->gapRequest == 2)) {
                                 sfx += 2;
                             }
                             AudioGeneral_PlaySound(0x21, sfx);
@@ -1009,7 +1009,7 @@ void func_8007687C(s32 arg0) {
                         }
                     }
                 }
-                rider->unk168 = frac;
+                rider->lapTime = frac;
                 if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_800D8240 == 0) && (rider->lapCount > 0)) {
                     rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
                 }
@@ -1031,18 +1031,18 @@ void func_8007687C(s32 arg0) {
                 }
                 if ((rider->lapCount >= D_801CE728[0]) && (D_800D8178 == 0) && (D_801C1FD4 == 0)) {
                     rider->unk2F4 = 1;
-                    rider->unk32C = D_801C39B0;
+                    rider->progress = D_801C39B0;
                     D_801C39B0 -= 10000.0f;
                     laps = D_801CE728[0];
                     if (laps >= 10) {
                         laps = 9;
                     }
-                    rider->unk19C = 0;
+                    rider->raceTime = 0;
                     for (i = 0; i < laps; i++) {
-                        rider->unk19C += rider->unk178[i];
+                        rider->raceTime += rider->lapTimes[i];
                     }
                     if (!isHuman) {
-                        rider->unk12C = 0;
+                        rider->power = 0;
                     }
                 }
             }
@@ -1062,10 +1062,10 @@ void func_8007687C(s32 arg0) {
         }
         rider->unk2C[cur] = 1;
     }
-    if (rider->unk12C != rider->unk138) {
-        if (rider->unk12C - rider->unk138 == 0) {
+    if (rider->power != rider->unk138) {
+        if (rider->power - rider->unk138 == 0) {
             i = 0;
-        } else if (rider->unk12C - rider->unk138 > 0) {
+        } else if (rider->power - rider->unk138 > 0) {
             i = 1;
         } else {
             i = -1;
@@ -1074,13 +1074,13 @@ void func_8007687C(s32 arg0) {
     }
     if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
         rider->unk8 = 0;
-        rider->unk32C = 0.0f;
+        rider->progress = 0.0f;
         D_801C39A0[arg0] = 0.0f;
     }
 
     // Crossing the line backwards or forwards near it (within one record of it, four on
     // Sunset Bay) moves the lap counter unk320.
-    r1 = D_801AEE20[rider->unk310].unkA0;
+    r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
     r3 = D_801AEE20[r2].unkA0;
     beyond = false;
@@ -1088,7 +1088,7 @@ void func_8007687C(s32 arg0) {
          ((D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70)) > 0.0f) {
         beyond = true;
     }
-    nearLine = (D_801BB12C == rider->unk310) || (r1 == D_801BB12C);
+    nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (D_801AEE20[r3].unkA0 == D_801BB12C);
     }
@@ -1104,9 +1104,9 @@ void func_8007687C(s32 arg0) {
     }
     rider->unk324 = beyond;
 
-    // Progress: the last record the rider is past (walking back from unk310), and how far along
-    // the segment to the next one; unk32C orders the riders.
-    r = rider->unk310;
+    // Progress: the last record the rider is past (walking back from nearestRecord), and how far along
+    // the segment to the next one; progress orders the riders.
+    r = rider->nearestRecord;
     segLen = 0.0f;
     progress = 0.0f;
     for (i = 0; i < D_801BB120; i++) {
@@ -1142,8 +1142,8 @@ void func_8007687C(s32 arg0) {
     if (len >= 1.0f) {
         len = 1.0f;
     }
-    if ((rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
-        rider->unk32C = ((rider->unk320 * 1000) + (r * 10)) + len;
+    if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
+        rider->progress = ((rider->unk320 * 1000) + (r * 10)) + len;
         D_801C39A0[arg0] = progress;
     }
 }
@@ -1153,7 +1153,7 @@ void func_8007687C(s32 arg0) {
 
 extern s32 D_801C1FD4;
 
-void func_80077F5C(void) {
+void Race_RankUnfinishedRiders(void) {
     s32 i;
     s32 j;
     s32 lap;
@@ -1165,8 +1165,8 @@ void func_80077F5C(void) {
 
     if (D_801C1FD4 == 0) {
         D_801C1FD4 = 1;
-        for (i = 0, rider = D_801C2938; i < gRiders; i++, rider++) {
-            if ((rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+        for (i = 0, rider = gRiderRaceState; i < gRiders; i++, rider++) {
+            if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
                 j = rider->unkC;
                 lap = D_801AEE20[j].unkA8; // lap holds the previous record's index here
                 prev = &D_801AEE20[lap];
@@ -1189,21 +1189,21 @@ void func_80077F5C(void) {
                     dist += D_801AEE20[j].unk88;
                     j = D_801AEE20[j].unkA0;
                 }
-                rider->unk19C += (dist / (speed / 1.8f)) * 50.0f;
+                rider->raceTime += (dist / (speed / 1.8f)) * 50.0f;
             }
         }
         for (i = 0; i < gRiders; i++) {
-            if (D_801C2938[i].unk19C >= 600000) {
-                D_801C2938[i].unk19C = 599999;
+            if (gRiderRaceState[i].raceTime >= 600000) {
+                gRiderRaceState[i].raceTime = 599999;
             }
-            if ((D_801C2938[i].unk2F4 == 0) && (D_801C2938[i].unk2EC == 0)) {
+            if ((gRiderRaceState[i].unk2F4 == 0) && (gRiderRaceState[i].finishState == 0)) {
                 for (j = 0; j < gRiders; j++) {
-                    if ((D_801C2938[j].unk2F4 == 0) && (D_801C2938[j].unk2EC == 0) && (j != i)) {
-                        if ((D_801C2938[i].racePosition < D_801C2938[j].racePosition) &&
-                            (D_801C2938[j].unk19C < D_801C2938[i].unk19C)) {
-                            lap = D_801C2938[i].racePosition;
-                            D_801C2938[i].racePosition = D_801C2938[j].racePosition;
-                            D_801C2938[j].racePosition = lap;
+                    if ((gRiderRaceState[j].unk2F4 == 0) && (gRiderRaceState[j].finishState == 0) && (j != i)) {
+                        if ((gRiderRaceState[i].racePosition < gRiderRaceState[j].racePosition) &&
+                            (gRiderRaceState[j].raceTime < gRiderRaceState[i].raceTime)) {
+                            lap = gRiderRaceState[i].racePosition;
+                            gRiderRaceState[i].racePosition = gRiderRaceState[j].racePosition;
+                            gRiderRaceState[j].racePosition = lap;
                         }
                     }
                 }
@@ -1211,7 +1211,7 @@ void func_80077F5C(void) {
         }
         if (gCourseID != DOLPHIN_PARK) {
             for (i = 0; i < gRiders; i++) {
-                D_801C26C0[i] = D_801C2938[i].racePosition;
+                D_801C26C0[i] = gRiderRaceState[i].racePosition;
             }
         }
     }
@@ -1229,8 +1229,8 @@ void func_80078264(void) {
 
     var_v0 = D_801BB120;
     var_fv0 = 0.0f;
-    temp_v1 = &D_801C2938[D_800D48DC];
-    temp_a0 = &D_801C2938[D_800D48E0];
+    temp_v1 = &gRiderRaceState[gPlayer1Rider];
+    temp_a0 = &gRiderRaceState[gPlayer2Rider];
     lapCount = temp_v1->lapCount;
     lapCount2 = temp_a0->lapCount;
     var_a3 = temp_v1->unkC;
@@ -1321,16 +1321,16 @@ void func_800783AC(s32 arg0) {
     RiderStruct* rider;
     UnkStruct_801AEE20* e;
 
-    if (arg0 != D_800D48DC) {} // an empty test, as in the original
-    rider = &D_801C2938[arg0];
+    if (arg0 != gPlayer1Rider) {} // an empty test, as in the original
+    rider = &gRiderRaceState[arg0];
     rider->unk314 = 0;
-    if ((gCourseID == RIDER_SELECTION) && (arg0 == D_800D48E0)) {
+    if ((gCourseID == RIDER_SELECTION) && (arg0 == gPlayer2Rider)) {
         rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
     }
-    if (((D_801CE628 == 1) && (arg0 == D_800D48DC)) ||
-        ((gPlayers == TWO_PLAYERS) && (D_801CE628 == 2) && (arg0 == D_800D48E0))) {
-        if (rider->unk2EC == 0) {
-            func_800762D0((struct_800762D0*) rider);
+    if (((D_801CE628 == 1) && (arg0 == gPlayer1Rider)) ||
+        ((gPlayers == TWO_PLAYERS) && (D_801CE628 == 2) && (arg0 == gPlayer2Rider))) {
+        if (rider->finishState == 0) {
+            Rider_SetFinishState((struct_800762D0*) rider);
         }
         return;
     }
@@ -1339,36 +1339,36 @@ void func_800783AC(s32 arg0) {
         func_801FB488(2, D_801C39CC, 1);
         D_801C39CC = 0;
     }
-    // The clock: race time up, time left (unk2C4) down; out of time and slow, or out of
+    // The clock: race time up, time left (timeLeft) down; out of time and slow, or out of
     // time for 200 frames, retires.
-    if ((rider->unk2F4 == 0) && (rider->unk2EC == 0) && (D_800D817C == 0) && (D_801C1FD4 == 0)) {
-        rider->unk168 += 50;
-        if (rider->unk168 >= 299999) {
-            rider->unk168 = 299999;
+    if ((rider->unk2F4 == 0) && (rider->finishState == 0) && (D_800D817C == 0) && (D_801C1FD4 == 0)) {
+        rider->lapTime += 50;
+        if (rider->lapTime >= 299999) {
+            rider->lapTime = 299999;
         }
-        rider->unk19C += 50;
-        if (rider->unk19C >= 299999) {
-            rider->unk19C = 299999;
+        rider->raceTime += 50;
+        if (rider->raceTime >= 299999) {
+            rider->raceTime = 299999;
         }
         rider->unk16C = D_800D4B00 & 0xFFFF;
-        rider->unk2C4 -= 50;
-        if (rider->unk2C4 <= 0) {
-            rider->unk2C4 = 0;
+        rider->timeLeft -= 50;
+        if (rider->timeLeft <= 0) {
+            rider->timeLeft = 0;
         }
-        if (rider->unk2C4 > 0) {
+        if (rider->timeLeft > 0) {
             rider->unk334 = 0;
         } else {
             rider->unk334++;
             if (((D_80192690[arg0].unkB90 * 1.8f) < 10.0f) || (rider->unk334 >= 201)) {
-                func_800762D0((struct_800762D0*) rider);
+                Rider_SetFinishState((struct_800762D0*) rider);
             }
         }
     }
-    // unk138 follows unk12C one step a frame.
-    if (rider->unk12C != rider->unk138) {
-        if (rider->unk12C - rider->unk138 == 0) {
+    // unk138 follows power one step a frame.
+    if (rider->power != rider->unk138) {
+        if (rider->power - rider->unk138 == 0) {
             i = 0;
-        } else if (rider->unk12C - rider->unk138 > 0) {
+        } else if (rider->power - rider->unk138 > 0) {
             i = 1;
         } else {
             i = -1;
@@ -1376,7 +1376,7 @@ void func_800783AC(s32 arg0) {
         rider->unk138 += i;
     }
     // Trick points (D_801C26E4) from the craft's trick state unk1604.
-    if ((rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+    if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
         points = 0;
         trick = D_80192690[arg0].unk1604;
         if (trick == 3) {
@@ -1386,7 +1386,7 @@ void func_800783AC(s32 arg0) {
         } else if (trick == 5) {
             D_801C26E0 = 3;
         } else if (trick == 6) {
-            points = D_80192690[D_800D48DC].unk15EC * 14.3f;
+            points = D_80192690[gPlayer1Rider].unk15EC * 14.3f;
             if (points > 0) {
                 switch (D_801C26E0) {
                     case 1:
@@ -1403,7 +1403,7 @@ void func_800783AC(s32 arg0) {
             D_801C26E0 = 0;
         } else if (trick == 7) {
             D_801C26E0 = 0;
-            points = D_80192690[D_800D48DC].unk15EC * 7.15f;
+            points = D_80192690[gPlayer1Rider].unk15EC * 7.15f;
         } else if (trick == 8) {
             D_801C26E0 = 0;
         } else if ((D_801C26E0 == 0) && (D_801C39C8 != 0) && (trick == 0)) {
@@ -1556,7 +1556,7 @@ void func_800783AC(s32 arg0) {
         rider->unk20 = 1;
         rider->unkC = e->unkA0;
     }
-    if (passed && (rider->unk2F4 == 0) && (rider->unk2EC == 0)) {
+    if (passed && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
         // A checkpoint gate: its time (interpolated between this frame and the last), and the
         // time left as bonus points.
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
@@ -1573,9 +1573,9 @@ void func_800783AC(s32 arg0) {
                 dPrev = -dPrev;
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
-            rider->unk1A4[rider->lapCount - 1][rider->unk164] = rider->unk19C - frac;
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = rider->raceTime - frac;
             rider->unk334 = 0;
-            bonus = ((rider->unk2C4 + (frac / 2)) / 100) * D_800D92B8;
+            bonus = ((rider->timeLeft + (frac / 2)) / 100) * D_800D92B8;
             if (bonus > 0) {
                 func_801FB488(1, bonus, cur == D_801BB12C);
             }
@@ -1583,7 +1583,7 @@ void func_800783AC(s32 arg0) {
                 D_801C39D4 = bonus;
             }
             if (cur != D_801BB12C) {
-                rider->unk2C4 = D_800D9280[(gCourseID * 4) + rider->unk164] * 1000;
+                rider->timeLeft = D_800D9280[(gCourseID * 4) + rider->unk164] * 1000;
                 D_80228A94 = 20;
                 AudioGeneral_PlaySound(0x33, 0);
             }
@@ -1595,7 +1595,7 @@ void func_800783AC(s32 arg0) {
         // The start/finish line.
         if (cur == D_801BB12C) {
             if (rider->lapCount > 0) {
-                rider->unk168 = frac;
+                rider->lapTime = frac;
                 if ((rider->lapCount >= D_801CE728[0]) && (D_800D8178 == 0)) {
                     rider->unk2F4 = 1;
                     if (D_801C26E4 > 0) {
@@ -1638,9 +1638,9 @@ void func_800783AC(s32 arg0) {
                     if (laps >= 10) {
                         laps = 9;
                     }
-                    rider->unk19C = 0;
+                    rider->raceTime = 0;
                     for (i = 0; i < laps; i++) {
-                        rider->unk19C += rider->unk178[i];
+                        rider->raceTime += rider->lapTimes[i];
                     }
                     D_801C2928 = 0;
                     if (D_801CE600 == 0) {
@@ -1709,12 +1709,12 @@ void func_801FC39C(void);
 void Hud_UpdateStartCountdown(void);
 void Hud_UpdateOffCourseCountdown(void);
 
-// The checkpoint time of a rider for a lap and checkpoint. The original indexes unk1A4 with
+// The checkpoint time of a rider for a lap and checkpoint. The original indexes checkpointTimes with
 // the lap minus 2 (row 0 is the time at the start of lap 2).
-#define RIDER_CP_TIME(rider, lap, cp) ((rider)->unk1A4[(lap) - 2][cp])
+#define RIDER_CP_TIME(rider, lap, cp) ((rider)->checkpointTimes[(lap) - 2][cp])
 
 #ifdef NON_MATCHING
-// 3995: same blocks and calls. In the 2P gap loop the original reads D_800D48E0 / D_800D48DC
+// 3995: same blocks and calls. In the 2P gap loop the original reads gPlayer2Rider / gPlayer1Rider
 // again after the rider's stores and indexes with multu; elsewhere only register numbers and
 // the scheduling of the D_801C3A08 stores differ.
 void func_80079528(void) {
@@ -1744,7 +1744,7 @@ void func_80079528(void) {
             }
         }
         // A new stunt record.
-        if ((D_801C1FD8 == 0) && (D_801C2938[D_800D48DC].unk2F4 != 0) && (D_801CE638 == 1) && (D_801CE600 == 0) &&
+        if ((D_801C1FD8 == 0) && (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) && (D_801CE638 == 1) && (D_801CE600 == 0) &&
             (D_801C39CC == 0) && allClear) {
             D_801C1FD8 = 1;
             D_801C2928 = 0;
@@ -1766,22 +1766,22 @@ void func_80079528(void) {
             func_80076378(i);
             func_8007687C(i);
         }
-        // Riders who finished at once: the earlier unk19C gets the better unk32C, and a tie
+        // Riders who finished at once: the earlier raceTime gets the better progress, and a tie
         // goes to the rider ahead ("simultaneously goal").
         if ((D_801CE638 == 1) && (gGameModes == GMODE_CHAMPIONSHIP)) {
             for (i = 0; i < gRiders; i++) {
-                if ((D_801C2938[i].unk2F4 != 0) && (D_801C2938[i].unk2EC == 0) && (D_801C2938[i].unk304 == 0)) {
-                    D_801C2938[i].unk304 = 1;
+                if ((gRiderRaceState[i].unk2F4 != 0) && (gRiderRaceState[i].finishState == 0) && (gRiderRaceState[i].unk304 == 0)) {
+                    gRiderRaceState[i].unk304 = 1;
                     for (j = 0; j < gRiders; j++) {
-                        if ((D_801C2938[j].unk2F4 != 0) && (D_801C2938[j].unk2EC == 0) && (j != i)) {
-                            if ((D_801C2938[i].unk32C < D_801C2938[j].unk32C) &&
-                                (D_801C2938[i].unk19C < D_801C2938[j].unk19C)) {
-                                tmp = D_801C2938[i].unk32C;
-                                D_801C2938[i].unk32C = D_801C2938[j].unk32C;
-                                D_801C2938[j].unk32C = tmp;
-                            } else if ((D_801C2938[i].unk19C == D_801C2938[j].unk19C) &&
-                                       (D_801C2938[i].racePosition < D_801C2938[j].racePosition) && (j != D_800D48DC)) {
-                                D_801C2938[j].unk19C++;
+                        if ((gRiderRaceState[j].unk2F4 != 0) && (gRiderRaceState[j].finishState == 0) && (j != i)) {
+                            if ((gRiderRaceState[i].progress < gRiderRaceState[j].progress) &&
+                                (gRiderRaceState[i].raceTime < gRiderRaceState[j].raceTime)) {
+                                tmp = gRiderRaceState[i].progress;
+                                gRiderRaceState[i].progress = gRiderRaceState[j].progress;
+                                gRiderRaceState[j].progress = tmp;
+                            } else if ((gRiderRaceState[i].raceTime == gRiderRaceState[j].raceTime) &&
+                                       (gRiderRaceState[i].racePosition < gRiderRaceState[j].racePosition) && (j != gPlayer1Rider)) {
+                                gRiderRaceState[j].raceTime++;
                             }
                         }
                     }
@@ -1792,37 +1792,37 @@ void func_80079528(void) {
         // (gBestTimes, with the checkpoint times of a new best in gBestCheckpointTimes), or
         // D_801C23B0 when D_800DAB68 is set.
         if (D_801C1FD8 == 0) {
-            rider = &D_801C2938[D_800D48DC];
+            rider = &gRiderRaceState[gPlayer1Rider];
             if ((rider->unk2F4 != 0) && (D_801CE638 == 1) && (gPlayers == ONE_PLAYER) && (D_801CE600 == 0)) {
                 D_801C1FD8 = 1;
                 if (D_800DAB68 == 0) {
-                    if (rider->unk170 < gBestLaps[gCourseID].time) {
-                        gBestLaps[gCourseID].time = rider->unk170;
+                    if (rider->bestLapTime < gBestLaps[gCourseID].time) {
+                        gBestLaps[gCourseID].time = rider->bestLapTime;
                         gBestLaps[gCourseID].rider = D_800DA9B0[0];
                         gBestLaps[gCourseID].flag = D_801CB32C;
                         gBestLaps[gCourseID].difficulty = gDifficulty;
                         D_801C2654 = 1;
                     }
                     for (i = 0; i < 3; i++) {
-                        if (rider->unk19C < gBestTimes[gCourseID][i].time) {
+                        if (rider->raceTime < gBestTimes[gCourseID][i].time) {
                             D_801C2650 = i + 1;
                             for (j = 2; j > i; j--) {
                                 gBestTimes[gCourseID][j] = gBestTimes[gCourseID][j - 1];
                             }
-                            gBestTimes[gCourseID][i].time = rider->unk19C;
+                            gBestTimes[gCourseID][i].time = rider->raceTime;
                             gBestTimes[gCourseID][i].rider = D_800DA9B0[0];
                             gBestTimes[gCourseID][i].flag = D_801CB32C;
                             gBestTimes[gCourseID][i].difficulty = gDifficulty;
                             if (i + 1 == 1) {
                                 for (j = 0; j < 9; j++) {
-                                    gBestCheckpointTimes[gCourseID][j] = rider->unk1A4[j][0];
+                                    gBestCheckpointTimes[gCourseID][j] = rider->checkpointTimes[j][0];
                                 }
                             }
                             break;
                         }
                     }
-                } else if (rider->unk19C < D_801C23B0[gCourseID].time) {
-                    D_801C23B0[gCourseID].time = rider->unk19C;
+                } else if (rider->raceTime < D_801C23B0[gCourseID].time) {
+                    D_801C23B0[gCourseID].time = rider->raceTime;
                     D_801C23B0[gCourseID].rider = D_800DA9B0[0];
                     D_801C23B0[gCourseID].flag = D_801CB32C;
                     D_801C23B0[gCourseID].difficulty = gDifficulty;
@@ -1833,8 +1833,8 @@ void func_80079528(void) {
             }
         }
     }
-    place = D_801C2938[D_800D48DC].racePosition;
-    // While racing, the places follow unk32C ("rank value adjust").
+    place = gRiderRaceState[gPlayer1Rider].racePosition;
+    // While racing, the places follow progress ("rank value adjust").
     if ((D_801CE638 == 1) && (D_801C1FD4 == 0) && (gGameModeState == GMODE_STATE_STARTED) &&
         ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_2P_VS))) {
         for (i = 0; i < gRiders; i++) {
@@ -1842,7 +1842,7 @@ void func_80079528(void) {
         }
         for (i = 0; i < gRiders - 1; i++) {
             for (j = i + 1; j < gRiders; j++) {
-                if (D_801C2938[D_801C3990[i]].unk32C < D_801C2938[D_801C3990[j]].unk32C) {
+                if (gRiderRaceState[D_801C3990[i]].progress < gRiderRaceState[D_801C3990[j]].progress) {
                     tmp = D_801C3990[i];
                     D_801C3990[i] = D_801C3990[j];
                     D_801C3990[j] = tmp;
@@ -1850,123 +1850,123 @@ void func_80079528(void) {
             }
         }
         for (i = 0; i < gRiders; i++) {
-            D_801C2938[D_801C3990[i]].racePosition = i;
+            gRiderRaceState[D_801C3990[i]].racePosition = i;
         }
     }
-    // A checkpoint gap (unk2FC 10 asks for one): to the rider one place ahead for the
-    // human, or to the human for a rider behind; unk2F8 is the gap, unk300 its timer.
+    // A checkpoint gap (gapRequest 10 asks for one): to the rider one place ahead for the
+    // human, or to the human for a rider behind; checkpointGap is the gap, gapTimer its timer.
     if (gGameModes == GMODE_CHAMPIONSHIP) {
         for (i = 0; i < gRiders; i++) {
-            rider = &D_801C2938[i];
-            if (rider->unk2FC == 10) {
+            rider = &gRiderRaceState[i];
+            if (rider->gapRequest == 10) {
                 time = RIDER_CP_TIME(rider, rider->lapCount, rider->unk164);
-                if ((i == D_800D48DC) && (rider->racePosition > 0)) {
+                if ((i == gPlayer1Rider) && (rider->racePosition > 0)) {
                     for (j = 0; j < gRiders; j++) {
-                        if (rider->racePosition - 1 == D_801C2938[j].racePosition) {
+                        if (rider->racePosition - 1 == gRiderRaceState[j].racePosition) {
                             break;
                         }
                     }
-                    other = RIDER_CP_TIME(&D_801C2938[j], rider->lapCount, rider->unk164);
+                    other = RIDER_CP_TIME(&gRiderRaceState[j], rider->lapCount, rider->unk164);
                     if (other > 0) {
-                        rider->unk2FC = 1;
-                        rider->unk2F8 = time - other;
-                        rider->unk300 = 40;
+                        rider->gapRequest = 1;
+                        rider->checkpointGap = time - other;
+                        rider->gapTimer = 40;
                         rider->unk33C = j;
                         if (rider->racePosition == 1) {
-                            func_800C3EF4(-((rider->unk2F8 + 500) / 1000));
+                            func_800C3EF4(-((rider->checkpointGap + 500) / 1000));
                         }
                     } else {
-                        rider->unk2FC = 0;
+                        rider->gapRequest = 0;
                     }
-                } else if ((i != D_800D48DC) && (D_801C2938[D_800D48DC].racePosition < rider->racePosition)) {
-                    other = RIDER_CP_TIME(&D_801C2938[D_800D48DC], rider->lapCount, rider->unk164);
+                } else if ((i != gPlayer1Rider) && (gRiderRaceState[gPlayer1Rider].racePosition < rider->racePosition)) {
+                    other = RIDER_CP_TIME(&gRiderRaceState[gPlayer1Rider], rider->lapCount, rider->unk164);
                     if (other > 0) {
-                        rider->unk2FC = 1;
-                        rider->unk2F8 = time - other;
-                        rider->unk300 = 40;
-                        if ((D_801C2938[D_800D48DC].racePosition == 0) && (rider->racePosition == 1)) {
-                            func_800C3EF4((rider->unk2F8 + 500) / 1000);
+                        rider->gapRequest = 1;
+                        rider->checkpointGap = time - other;
+                        rider->gapTimer = 40;
+                        if ((gRiderRaceState[gPlayer1Rider].racePosition == 0) && (rider->racePosition == 1)) {
+                            func_800C3EF4((rider->checkpointGap + 500) / 1000);
                         }
                     } else {
-                        rider->unk2FC = 0;
+                        rider->gapRequest = 0;
                     }
                 } else {
-                    rider->unk2FC = 0;
+                    rider->gapRequest = 0;
                 }
             }
         }
     } else if (gGameModes == GMODE_2P_VS) {
         for (i = 0; i < gRiders; i++) {
-            if (D_801C2938[i].unk2FC == 10) {
-                if (D_801C2938[i].racePosition == 1) {
-                    time = RIDER_CP_TIME(&D_801C2938[i], D_801C2938[i].lapCount, D_801C2938[i].unk164);
-                    if (i == D_800D48DC) {
-                        other = RIDER_CP_TIME(&D_801C2938[D_800D48E0], D_801C2938[i].lapCount, D_801C2938[i].unk164);
+            if (gRiderRaceState[i].gapRequest == 10) {
+                if (gRiderRaceState[i].racePosition == 1) {
+                    time = RIDER_CP_TIME(&gRiderRaceState[i], gRiderRaceState[i].lapCount, gRiderRaceState[i].unk164);
+                    if (i == gPlayer1Rider) {
+                        other = RIDER_CP_TIME(&gRiderRaceState[gPlayer2Rider], gRiderRaceState[i].lapCount, gRiderRaceState[i].unk164);
                         if (other == 0) {
                             other = time;
                         }
-                        D_801C2938[i].unk2FC = 1;
-                        D_801C2938[i].unk2F8 = time - other;
-                        D_801C2938[i].unk300 = 40;
-                        D_801C2938[D_800D48E0].unk2FC = 2;
-                        D_801C2938[D_800D48E0].unk2F8 = time - other;
-                        D_801C2938[D_800D48E0].unk300 = 40;
-                        func_800C3EF4(-((D_801C2938[i].unk2F8 + 500) / 1000));
+                        gRiderRaceState[i].gapRequest = 1;
+                        gRiderRaceState[i].checkpointGap = time - other;
+                        gRiderRaceState[i].gapTimer = 40;
+                        gRiderRaceState[gPlayer2Rider].gapRequest = 2;
+                        gRiderRaceState[gPlayer2Rider].checkpointGap = time - other;
+                        gRiderRaceState[gPlayer2Rider].gapTimer = 40;
+                        func_800C3EF4(-((gRiderRaceState[i].checkpointGap + 500) / 1000));
                     } else {
-                        other = RIDER_CP_TIME(&D_801C2938[D_800D48DC], D_801C2938[i].lapCount, D_801C2938[i].unk164);
+                        other = RIDER_CP_TIME(&gRiderRaceState[gPlayer1Rider], gRiderRaceState[i].lapCount, gRiderRaceState[i].unk164);
                         if (other == 0) {
                             other = time;
                         }
-                        D_801C2938[i].unk2FC = 1;
-                        D_801C2938[i].unk2F8 = time - other;
-                        D_801C2938[i].unk300 = 40;
-                        D_801C2938[D_800D48DC].unk2FC = 2;
-                        D_801C2938[D_800D48DC].unk2F8 = time - other;
-                        D_801C2938[D_800D48DC].unk300 = 40;
-                        func_800C3EF4(-((D_801C2938[i].unk2F8 + 500) / 1000));
+                        gRiderRaceState[i].gapRequest = 1;
+                        gRiderRaceState[i].checkpointGap = time - other;
+                        gRiderRaceState[i].gapTimer = 40;
+                        gRiderRaceState[gPlayer1Rider].gapRequest = 2;
+                        gRiderRaceState[gPlayer1Rider].checkpointGap = time - other;
+                        gRiderRaceState[gPlayer1Rider].gapTimer = 40;
+                        func_800C3EF4(-((gRiderRaceState[i].checkpointGap + 500) / 1000));
                     }
                 } else {
-                    D_801C2938[i].unk2FC = 0;
+                    gRiderRaceState[i].gapRequest = 0;
                 }
             }
         }
     }
     if ((gGameModes == GMODE_2P_VS) && (D_801CE638 == 1)) {
         if (D_801C1FD4 == 0) {
-            if (D_801C2938[D_800D48DC].unk2F4 != 0) {
-                if (D_801C2938[D_800D48E0].unk2F4 != 0) {
+            if (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) {
+                if (gRiderRaceState[gPlayer2Rider].unk2F4 != 0) {
                     D_801C1FD4 = 1;
-                    if (D_801C2938[D_800D48E0].unk19C >= D_801C2938[D_800D48DC].unk19C) {
-                        D_801C2938[D_800D48DC].racePosition = 0;
-                        D_801C2938[D_800D48E0].racePosition = 1;
+                    if (gRiderRaceState[gPlayer2Rider].raceTime >= gRiderRaceState[gPlayer1Rider].raceTime) {
+                        gRiderRaceState[gPlayer1Rider].racePosition = 0;
+                        gRiderRaceState[gPlayer2Rider].racePosition = 1;
                     } else {
-                        D_801C2938[D_800D48DC].racePosition = 1;
-                        D_801C2938[D_800D48E0].racePosition = 0;
+                        gRiderRaceState[gPlayer1Rider].racePosition = 1;
+                        gRiderRaceState[gPlayer2Rider].racePosition = 0;
                     }
                 }
             }
         }
         if ((D_801C1FD8 == 0) &&
-            ((D_801C2938[D_800D48DC].unk2F4 != 0) || (D_801C2938[D_800D48DC].unk2EC != 0) ||
-             (D_801C2938[D_800D48E0].unk2F4 != 0) || (D_801C2938[D_800D48E0].unk2EC != 0))) {
+            ((gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0) ||
+             (gRiderRaceState[gPlayer2Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer2Rider].finishState != 0))) {
             D_801C1FD8 = 1;
         }
     }
-    if ((gGameModes == GMODE_CHAMPIONSHIP) && (place != D_801C2938[D_800D48DC].racePosition)) {
+    if ((gGameModes == GMODE_CHAMPIONSHIP) && (place != gRiderRaceState[gPlayer1Rider].racePosition)) {
         D_80228A9C = 1;
     }
     if ((D_801CE638 == 1) && (gGameModes == GMODE_2P_VS)) {
         func_80078264();
     }
     D_801C3A08 = osGetTime() - D_801C3A08;
-    if ((gGameModes == GMODE_CHAMPIONSHIP) && (D_801C2938[D_800D48DC].unk2F4 != 0) && (D_801C1FDC < 0x7FFFFFFF)) {
+    if ((gGameModes == GMODE_CHAMPIONSHIP) && (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) && (D_801C1FDC < 0x7FFFFFFF)) {
         D_801C1FDC++;
     }
     func_801FC39C();
     func_801EF504();
     func_801F23A0();
-    if ((D_801C2938[D_800D48DC].unk2EC == 0) &&
-        ((gPlayers != TWO_PLAYERS) || (D_801C2938[D_800D48E0].unk2EC == 0)) && (D_801CE628 == 0)) {
+    if ((gRiderRaceState[gPlayer1Rider].finishState == 0) &&
+        ((gPlayers != TWO_PLAYERS) || (gRiderRaceState[gPlayer2Rider].finishState == 0)) && (D_801CE628 == 0)) {
         Hud_UpdateStartCountdown();
     }
     func_801F8DD0();

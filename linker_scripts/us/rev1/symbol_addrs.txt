@@ -279,3 +279,27 @@ gWaterCellOffsets = 0x80160A98;
 gWaterCellLattice = 0x80160430;
 gWaterWindow = 0x80192420;
 gWaterWindowN = 0x80192494;
+
+// riders, race and course tables (code_C6C0, code_2FB10, code_2C670)
+Rider_ReadController = 0x80061708;
+Rider_MovePoints = 0x800618F4;
+Riders_PushApart = 0x80061FEC;
+Rider_SetPartsState = 0x80053C08;
+Rider_DrawParts = 0x80067810;
+Rider_DrawPartsReflect = 0x8006719C;
+Rider_BuildPartsList = 0x80067BFC;
+Riders_BuildPartsLists = 0x80067C6C;
+Rider_SetFinishState = 0x800762D0;
+Race_RankUnfinishedRiders = 0x80077F5C;
+Course_BuildGrid = 0x80073E6C;
+Course_GridLookup = 0x800741A4;
+Course_SetupObjects = 0x800744EC;
+gPlayer1Rider = 0x800D48DC;
+gPlayer2Rider = 0x800D48E0;
+gRiderRaceState = 0x801C2938;
+gCoursePoints = 0x801BB138;
+gCourseGridIndex = 0x801C1D00;
+gCourseGridStart = 0x801C1F00;
+gCourseGridCount = 0x801C1F40;
+gMapHalfSize = 0x801C1F94;
+gMapScale = 0x801C1F98;

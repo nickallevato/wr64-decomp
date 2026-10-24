@@ -738,7 +738,7 @@ void func_800AFBD0(s32 arg0) {
     }
     // Records of unk1000, only for the human's slot: a triangle facing the camera (D_801D7980/8C).
     D_800E6D60->unk1C24 = 0;
-    if (arg0 == D_800D48DC) {
+    if (arg0 == gPlayer1Rider) {
         vtx = D_801AE948->unk81C0;
         for (i = 63, D_800E6D6C = &D_800E6D70[63]; i >= 0; i--, D_800E6D6C--) {
             if (D_800E6D6C->unk20 != 0) {
@@ -851,7 +851,7 @@ void func_800AFBD0(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800AFBD0.s")
 #endif
 
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
@@ -909,7 +909,7 @@ void func_800B08F8(s32 arg0) {
     f32 len;
     s32 a;
 
-    isHuman = (arg0 == D_800D48DC) || ((gPlayers == TWO_PLAYERS) && (arg0 == D_800D48E0));
+    isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
     twoViews = (gPlayers == TWO_PLAYERS) && (D_801CE638 == 1);
     special = (D_801CE638 == 4) || (D_801CE638 == 10);
     // Level of detail (0-3) from the distance to the camera and whether the craft is in view.
@@ -929,7 +929,7 @@ void func_800B08F8(s32 arg0) {
         if ((gPlayers == TWO_PLAYERS) ||
             (((dx * D_801D7974) + (dy * D_801D7978) + (dz * D_801D797C)) > 0.707107f)) {
             D_800E6D60->unk1C4C = 1;
-            if (special || ((gPlayers == ONE_PLAYER) && (arg0 == D_800D48DC) && (D_801C2938[arg0].unk2F4 != 0))) {
+            if (special || ((gPlayers == ONE_PLAYER) && (arg0 == gPlayer1Rider) && (gRiderRaceState[arg0].unk2F4 != 0))) {
                 if (dist < 200.0f) {
                     lod = 3;
                 } else if (dist < 400.0f) {
@@ -1029,7 +1029,7 @@ void func_800B08F8(s32 arg0) {
             }
         }
     }
-    if (arg0 == D_800D48DC) {
+    if (arg0 == gPlayer1Rider) {
         for (i = 63, D_800E6D6C = &D_800E6D70[63]; i >= 0; i--, D_800E6D6C--) {
             if (D_800E6D6C->unk20 != 0) {
                 D_800E6D6C->unk24++;
@@ -1254,7 +1254,7 @@ void func_800B08F8(s32 arg0) {
             }
         }
         // New unk1000 records for the human with one player: eight drops a side.
-        if ((arg0 == D_800D48DC) && (gPlayers == ONE_PLAYER)) {
+        if ((arg0 == gPlayer1Rider) && (gPlayers == ONE_PLAYER)) {
             g = func_801ED154(D_801D79E8, D_801D79E0);
             h = 7;
             for (side = 0; side != 2; side++) {
@@ -1489,7 +1489,7 @@ void func_800B2ABC(void) {
         D_800E6D78 = e->unk1A00;
         D_800E6D80 = e->unk1AA0;
         func_800AE210(i);
-        if ((gPlayers == ONE_PLAYER) || ((gPlayers == TWO_PLAYERS) && (i != D_800D48E0))) {
+        if ((gPlayers == ONE_PLAYER) || ((gPlayers == TWO_PLAYERS) && (i != gPlayer2Rider))) {
             D_801D7968 = cam = &gCameraPerspective[D_80223930];
             other = &gCameraPerspective[D_80223934];
         } else {
@@ -1684,7 +1684,7 @@ void func_800B305C(Gfx** gdl) {
     gDPLoadTextureBlock(gdlh++, D_1047458, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801D0790; i++) {
-        if (i != D_800D48DC) {
+        if (i != gPlayer1Rider) {
             continue;
         }
         D_800E6D60 = &D_801D0798[i];
@@ -1728,8 +1728,8 @@ void func_800B305C(Gfx** gdl) {
     if ((D_801D7B18 + D_801D7B38) > D_801D7B58) {
         D_801D7B58 = D_801D7B18 + D_801D7B38;
     }
-    if (D_801D7B60 < D_801D0798[D_800D48DC].unk1C20) {
-        D_801D7B60 = D_801D0798[D_800D48DC].unk1C20;
+    if (D_801D7B60 < D_801D0798[gPlayer1Rider].unk1C20) {
+        D_801D7B60 = D_801D0798[gPlayer1Rider].unk1C20;
     }
     D_801D7B64 = gdlh - (Gfx*) D_801AE948;
     if (D_801D7B68 < D_801D7B64) {

@@ -11,9 +11,9 @@ typedef struct UnkStruct_80228AE0_s {
 } UnkStruct_80228AE0;     /* size = 0x1C */
 
 extern Vp D_1014450;
-extern s32 D_800D48E0;
+extern s32 gPlayer2Rider;
 extern s32 D_801C1FD8;
-extern struct RiderStruct D_801C2938[];
+extern struct RiderStruct gRiderRaceState[];
 extern s16 D_801CE6F0;
 extern s32 gStartLightsState;
 extern s32 D_80227740;
@@ -79,9 +79,9 @@ void func_801FAEB8(Gfx** gdlp) {
     big = D_80227A54; // FAKE: a float literal in the original (its rodata is still in the F6010 data blob)
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
-            rider = &D_801C2938[D_800D48DC];
+            rider = &gRiderRaceState[gPlayer1Rider];
         } else {
-            rider = &D_801C2938[D_800D48E0];
+            rider = &gRiderRaceState[gPlayer2Rider];
         }
         if (rider->unk308 != 0) {
             rider->unk308 = 0;
@@ -481,7 +481,7 @@ void func_801FC4D4(Gfx** arg0) {
             gDPSetScissor(sp2C++, G_SC_NON_INTERLACE, 8, 12, 311, 229);
         }
         if (D_801CE638 == 8) {
-            D_801C2938[D_800D48DC].unk19C += 0x32;
+            gRiderRaceState[gPlayer1Rider].raceTime += 0x32;
             *arg0 = sp2C;
             return;
         }
@@ -489,8 +489,8 @@ void func_801FC4D4(Gfx** arg0) {
             (gCourseID != DOLPHIN_PARK) && (D_801C1FD8 == 0)) {
             func_801FA3C0(&sp2C);
         }
-        if (((gGameModeState != 3) || (gStartLightsState == 2)) && (D_801C2938[D_800D48DC].unk2EC == 0) &&
-            ((gPlayers != TWO_PLAYERS) || (D_801C2938[D_800D48E0].unk2EC == 0))) {
+        if (((gGameModeState != 3) || (gStartLightsState == 2)) && (gRiderRaceState[gPlayer1Rider].finishState == 0) &&
+            ((gPlayers != TWO_PLAYERS) || (gRiderRaceState[gPlayer2Rider].finishState == 0))) {
             Hud_DrawStartLights(&sp2C);
         }
         if ((D_801CE638 == 1) && (gCurrentPauseMenuOption == -1) && (gGameModeState == 3) &&

@@ -19,7 +19,7 @@ extern s32 D_801BB124;
 extern s32 D_801BB128;
 extern s32 D_801CE638;
 
-extern UnkStruct_801BB138 D_801BB138[];
+extern UnkStruct_801BB138 gCoursePoints[];
 extern s32 D_801BC938;
 extern f32 D_801C1CE8;
 extern f32 D_801C1CEC;
@@ -27,9 +27,9 @@ extern f32 D_801C1CF0;
 extern f32 D_801C1CF4;
 extern f32 D_801C1CF8;
 extern f32 D_801C1CFC;
-extern u8 D_801C1D00[];
-extern s32 D_801C1F00[4][4];
-extern s32 D_801C1F40[4][4];
+extern u8 gCourseGridIndex[];
+extern s32 gCourseGridStart[4][4];
+extern s32 gCourseGridCount[4][4];
 
 static const char devstr1[] = "Error: number of buoy2\n";
 static const char devstr2[] = "Error: number of buoy3\n";
@@ -826,7 +826,7 @@ void func_80071E70(void) {
         }
     }
 
-    // Table A (D_801BB138, at most 256): the small buoys by type and difficulty, the course-edge
+    // Table A (gCoursePoints, at most 256): the small buoys by type and difficulty, the course-edge
     // points (type 1), and the points with a height (type 5).
     for (b = buoys; b->type != -1; b++) {
         switch (b->type) {
@@ -855,7 +855,7 @@ void func_80071E70(void) {
                 kind = 0;
                 break;
         }
-        a = &D_801BB138[D_801BC938];
+        a = &gCoursePoints[D_801BC938];
         a->unk10 = kind;
         a->unk0 = b->x;
         a->unk8 = b->z;
@@ -866,7 +866,7 @@ void func_80071E70(void) {
     if ((edge[0] != -1) || (edge[1] != -1)) {
         i = 0;
         do {
-            a = &D_801BB138[D_801BC938];
+            a = &gCoursePoints[D_801BC938];
             a->unk10 = 1;
             a->unk0 = edge[i * 2];
             a->unk8 = edge[i * 2 + 1];
@@ -882,7 +882,7 @@ void func_80071E70(void) {
             if (D_801BC938 >= 256) {
                 break;
             }
-            a = &D_801BB138[D_801BC938];
+            a = &gCoursePoints[D_801BC938];
             a->unk10 = 5;
             a->unk0 = pts[i * 3];
             a->unk4 = pts[i * 3 + 1];
@@ -1100,7 +1100,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_800735EC.s")
 #endif
 
-void func_80073E6C(void) {
+void Course_BuildGrid(void) {
     s32 i;
     s32 j;
     s32 k;
@@ -1117,7 +1117,7 @@ void func_80073E6C(void) {
     D_801C1CE8 = D_801C1CEC = 524287.0f;
     D_801C1CF0 = D_801C1CF4 = -524288.0f;
     for (k = 0; k < D_801BC938; k++) {
-        p = &D_801BB138[k];
+        p = &gCoursePoints[k];
         if (p->unk10 != 5) {
             p->unk4 = 0.0f;
         }
@@ -1160,7 +1160,7 @@ void func_80073E6C(void) {
         x0 -= 25.0f;
         x1 += 25.0f;
         for (j = 0; j < 4; j++) {
-            D_801C1F00[i][j] = n;
+            gCourseGridStart[i][j] = n;
             count = 0;
             z0 = (j * cellH) + D_801C1CEC;
             z1 = z0 + cellH;
@@ -1168,29 +1168,29 @@ void func_80073E6C(void) {
             z1 += 25.0f;
             for (k = 0; k < D_801BC938; k++) {
                 if (n < 0x1FF) {
-                    if ((x0 <= D_801BB138[k].unk0) && (D_801BB138[k].unk0 <= x1)) {
-                        if ((z0 <= D_801BB138[k].unk8) && (D_801BB138[k].unk8 <= z1)) {
-                            D_801C1D00[n] = k;
+                    if ((x0 <= gCoursePoints[k].unk0) && (gCoursePoints[k].unk0 <= x1)) {
+                        if ((z0 <= gCoursePoints[k].unk8) && (gCoursePoints[k].unk8 <= z1)) {
+                            gCourseGridIndex[n] = k;
                             n++;
                             count++;
                         }
                     }
                 }
             }
-            D_801C1F40[i][j] = count;
+            gCourseGridCount[i][j] = count;
         }
     }
 }
 
-s32 func_800741A4(f32 arg0, f32 arg1, u8** arg2) {
+s32 Course_GridLookup(f32 arg0, f32 arg1, u8** arg2) {
     s32 row = (arg0 - D_801C1CE8) / D_801C1CF8 * 4.0f;
     s32 col = (arg1 - D_801C1CEC) / D_801C1CFC * 4.0f;
 
     if (row < 0 || row >= 4 || col < 0 || col >= 4) {
         return 0;
     }
-    *arg2 = D_801C1D00 + D_801C1F00[row][col];
-    return D_801C1F40[row][col];
+    *arg2 = gCourseGridIndex + gCourseGridStart[row][col];
+    return gCourseGridCount[row][col];
 }
 
 s32 func_80074264(f32 arg0, f32 arg1) {
@@ -1303,7 +1303,7 @@ void func_801EE6F4(MtxF* mf, f32 rx, f32 ry, f32 rz, f32 x, f32 y, f32 z);
 void func_801EDC60(MtxF* mf, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
 void func_801EDD04(MtxF* mf, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
 
-void func_800744EC(void) {
+void Course_SetupObjects(void) {
     s32 i;
     s32 k;
     s32 angle;
@@ -1546,8 +1546,8 @@ void func_80075274(void) {
         if (D_801BB128 != 0) {
             func_800735EC(&D_801B7020, D_801BB128);
         }
-        func_80073E6C();
-        func_800744EC();
+        Course_BuildGrid();
+        Course_SetupObjects();
         func_80075310();
         func_801FAEA8();
     }

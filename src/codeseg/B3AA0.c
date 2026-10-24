@@ -41,7 +41,7 @@ extern u32 D_8042008[];
 extern u32 D_8049008[];
 extern u32 D_8058008[];
 extern u32 D_8071008[];
-extern RiderStruct D_801C2938[];
+extern RiderStruct gRiderRaceState[];
 
 Gfx* func_801E5554(Gfx* gdl) {
     s32 off;
@@ -119,7 +119,7 @@ Gfx* func_801E5554(Gfx* gdl) {
                         off = 0;
                         row = 0;
                         do {
-                            gDPLoadTextureTile(gdl++, D_8049008 + D_801C2938[D_800D48DC].racePosition * 3200 + off,
+                            gDPLoadTextureTile(gdl++, D_8049008 + gRiderRaceState[gPlayer1Rider].racePosition * 3200 + off,
                                                G_IM_FMT_RGBA, G_IM_SIZ_32b, 80, 0, 0, 0, 79, 2, 0,
                                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                                                G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);

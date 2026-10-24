@@ -24,7 +24,7 @@ struct UnkStruct_801CB058 {
 
 void func_800890B4(void);
 
-extern s32 D_800D48DC;
+extern s32 gPlayer1Rider;
 extern s32 D_801C26C0[];
 extern struct unk_D_801C3C60 D_801C3C60[];
 extern s32 D_801C4100[];
@@ -68,7 +68,7 @@ void func_80088EA8(void) {
         rand_seed = (SysUtils_Rand(), SysUtils_Rand() / 256) % 4; // What?
 
         while (D_801C3C58 = (struct_801C3C58*) &D_801C3C60[rand_seed],
-               D_801C3C58->unk5C != -1 || rand_seed == D_800D48DC) {
+               D_801C3C58->unk5C != -1 || rand_seed == gPlayer1Rider) {
             rand_seed = (rand_seed % gRiders) + 1;
         }
         D_801C3C58->unk5C = var_s6;
@@ -168,7 +168,7 @@ void func_800893A8(void) {
     } else {
         D_800D9888 = 0;
     }
-    switch (D_800E5150[gDifficulty][D_801C2C70[D_800D48DC].unk0]) {
+    switch (D_800E5150[gDifficulty][D_801C2C70[gPlayer1Rider].unk0]) {
         case 0x8F:
             D_800D98CC = 0x952;
             D_800D98D0 = 0x2EE;

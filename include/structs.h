@@ -122,13 +122,13 @@ typedef struct UnkStruct_801AEE20_s {
 
 typedef struct {
     u8 pad00[0x19B];
-    s32 unk19C;
+    s32 raceTime;
     u8 pad1AC[0x124];
-    s32 unk2C4;
+    s32 timeLeft;
     u8 pad2C8[0x24];
-    s32 unk2EC;
+    s32 finishState;
     u8 pad2F0[0x3C];
-    f32 unk32C;
+    f32 progress;
 } struct_800762D0;
 
 struct unk_80097E68 {
@@ -347,22 +347,22 @@ typedef struct RiderStruct {
     /* 0x024 */ s32 unk24;
     /* 0x028 */ s32 unk28;
     /* 0x02C */ s32 unk2C[64]; /* one per table B record */
-    /* 0x12C */ s32 unk12C;
+    /* 0x12C */ s32 power;
     /* 0x130 */ s32 unk130;
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
     /* 0x13C */ s32 unk13C;
-    /* 0x140 */ s32 unk140[9];
+    /* 0x140 */ s32 lapBuoyMisses[9];
     /* 0x164 */ s32 unk164;
-    /* 0x168 */ s32 unk168;
+    /* 0x168 */ s32 lapTime;
     /* 0x16C */ s32 unk16C;
-    /* 0x170 */ s32 unk170;
+    /* 0x170 */ s32 bestLapTime;
     /* 0x174 */ s32 unk174;
-    /* 0x178 */ s32 unk178[9]; /* lap split times */
-    /* 0x19C */ s32 unk19C;
+    /* 0x178 */ s32 lapTimes[9]; /* lap split times */
+    /* 0x19C */ s32 raceTime;
     /* 0x1A0 */ char pad1A0[0x4];
-    /* 0x1A4 */ s32 unk1A4[9][8]; /* checkpoint times, per lap */
-    /* 0x2C4 */ s32 unk2C4;
+    /* 0x1A4 */ s32 checkpointTimes[9][8]; /* checkpoint times, per lap */
+    /* 0x2C4 */ s32 timeLeft;
     /* 0x2C8 */ s32 unk2C8;
     /* 0x2CC */ s32 unk2CC;
     /* 0x2D0 */ s32 unk2D0;
@@ -372,23 +372,23 @@ typedef struct RiderStruct {
     /* 0x2E0 */ s32 unk2E0;
     /* 0x2E4 */ s32 unk2E4;
     /* 0x2E8 */ s32 unk2E8;
-    /* 0x2EC */ s32 unk2EC;
+    /* 0x2EC */ s32 finishState;
     /* 0x2F0 */ s32 unk2F0;
     /* 0x2F4 */ s32 unk2F4;
-    /* 0x2F8 */ s32 unk2F8;
-    /* 0x2FC */ s32 unk2FC;
-    /* 0x300 */ s32 unk300;
+    /* 0x2F8 */ s32 checkpointGap;
+    /* 0x2FC */ s32 gapRequest;
+    /* 0x300 */ s32 gapTimer;
     /* 0x304 */ s32 unk304;
     /* 0x308 */ s32 unk308;
     /* 0x30C */ s32 unk30C;
-    /* 0x310 */ s32 unk310;
+    /* 0x310 */ s32 nearestRecord;
     /* 0x314 */ s32 unk314;
     /* 0x318 */ s32 unk318;
-    /* 0x31C */ s32 unk31C;
+    /* 0x31C */ s32 inBox;
     /* 0x320 */ s32 unk320;                         /* inferred */
     /* 0x324 */ s32 unk324;
     /* 0x328 */ s32 unk328;
-    /* 0x32C */ f32 unk32C;
+    /* 0x32C */ f32 progress;
     /* 0x330 */ f32 unk330;        /* inferred */
     /* 0x334 */ s32 unk334;
     s32 unk338;
@@ -1393,14 +1393,14 @@ struct UnkStruct_801C2938 {
     /* 0x008 */ char pad8[4];
     /* 0x00C */ s32 unkC;
     /* 0x010 */ char pad10[0x11C];
-    /* 0x12C */ s32 unk12C;
+    /* 0x12C */ s32 power;
     /* 0x130 */ char pad130[0x6C];
-    /* 0x19C */ s32 unk19C;
+    /* 0x19C */ s32 raceTime;
     /* 0x1A0 */ char pad1A0[0x124];
-    /* 0x2C4 */ s32 unk2C4;
+    /* 0x2C4 */ s32 timeLeft;
     /* 0x2C8 */ s32 unk2C8;
     /* 0x2CC */ char pad2CC[0x20];
-    /* 0x2EC */ s32 unk2EC;
+    /* 0x2EC */ s32 finishState;
     /* 0x2F0 */ char pad2F0[4];
     /* 0x2F4 */ s32 unk2F4;
     /* 0x2F8 */ char pad2F8[0x20];

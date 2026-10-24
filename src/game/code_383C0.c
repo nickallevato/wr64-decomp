@@ -61,7 +61,7 @@ typedef struct UnkStruct_801C3B84_s {
     f32 unk3C;
 } UnkStruct_801C3B84;
 
-extern UnkStruct_801BB138 D_801BB138[];
+extern UnkStruct_801BB138 gCoursePoints[];
 
 extern struct UnkStruct_801BC940 D_801BC940[];
 
@@ -74,7 +74,7 @@ void func_8007E938(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, UnkSt
                    UnkStruct_8007E938* arg5, UnkStruct_8007E938* arg6);
 void func_8007EF80(UnkStruct_80192690* arg0);
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6);
-s32 func_800741A4(f32, f32, u8**);
+s32 Course_GridLookup(f32, f32, u8**);
 extern f32 D_800D49B8;
 extern s32 D_801C3B44;
 extern s32 D_801C3B4C;
@@ -481,14 +481,14 @@ void func_8007ED2C(s32 arg0, u8* arg1, UnkStruct_80192690* arg2, f32 arg3, f32 a
     f32 sp48;
 
     for (; arg0 >= 0; arg0--) {
-        temp_fv1 = arg3 - D_801BB138[arg1[arg0]].unk0;
-        temp_fa1 = arg5 - D_801BB138[arg1[arg0]].unk8;
+        temp_fv1 = arg3 - gCoursePoints[arg1[arg0]].unk0;
+        temp_fa1 = arg5 - gCoursePoints[arg1[arg0]].unk8;
         temp_fv0 = SQ(temp_fv1) + SQ(temp_fa1);
         if ((temp_fv0 > 1369.0f)) {
             continue;
         }
 
-        temp_ft4 = arg4 - D_801BB138[arg1[arg0]].unk4;
+        temp_ft4 = arg4 - gCoursePoints[arg1[arg0]].unk4;
         temp_fv0 += SQ(temp_ft4);
         if (temp_fv0 < 1369.0f) {
             temp_fv0 = sqrtf(temp_fv0);
@@ -526,7 +526,7 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
     s32 sp3C;
     u8* sp38;
 
-    sp3C = func_800741A4(arg0->unk44.x, arg0->unk44.z, &sp38) - 1;
+    sp3C = Course_GridLookup(arg0->unk44.x, arg0->unk44.z, &sp38) - 1;
     func_8007ED2C(sp3C, sp38, arg0, arg0->unk160C, arg0->unk1610, arg0->unk1614, (UnkStruct_8007E938*) &arg0->unk90[4],
                   (UnkStruct_8007E938*) &arg0->unk90[5], (UnkStruct_8007E938*) &arg0->unk90[3]);
     func_8007ED2C(sp3C, sp38, arg0, arg0->unk1654, arg0->unk1658, arg0->unk165C,

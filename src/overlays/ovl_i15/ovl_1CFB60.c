@@ -28,20 +28,20 @@ void func_i15_802C5CE8(void) {
         D_802C6E80[i] = D_i15_802C6D8C;
     }
     D_802C6E7C = D_i15_802C6D54[gDifficulty];
-    if (D_801C2C70[D_800D48DC].lapCount == 3) {
+    if (D_801C2C70[gPlayer1Rider].lapCount == 3) {
         D_802C6F44 = 6;
     } else if (gDifficulty == DIFFICULTY_EXPERT) {
-        if (D_801C2C70[D_800D48DC].lapCount == 0) {
+        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
             D_802C6F44 = 3;
-        } else if (D_801C2C70[D_800D48DC].lapCount == 1) {
+        } else if (D_801C2C70[gPlayer1Rider].lapCount == 1) {
             D_802C6F44 = 4;
         } else {
             D_802C6F44 = 5;
         }
     } else {
-        if (D_801C2C70[D_800D48DC].lapCount == 0) {
+        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
             D_802C6F44 = 0;
-        } else if (D_801C2C70[D_800D48DC].lapCount == 1) {
+        } else if (D_801C2C70[gPlayer1Rider].lapCount == 1) {
             D_802C6F44 = 1;
         } else {
             D_802C6F44 = 2;

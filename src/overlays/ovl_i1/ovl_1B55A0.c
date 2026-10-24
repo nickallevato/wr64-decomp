@@ -9,7 +9,7 @@ extern s32 D_i1_802C950C;
 extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 
-void func_80077F5C(void);
+void Race_RankUnfinishedRiders(void);
 s32 Save_EepromWriteCourse(s32);
 s32 Save_EepromWriteRecord5(s32);
 s32 Save_EepromWriteHeader(void);
@@ -106,7 +106,7 @@ void func_i1_802C63B4(void) {
                         D_801CB334++;
                         GameState_EnterCourseOverview();
                     } else {
-                        func_80077F5C();
+                        Race_RankUnfinishedRiders();
                         GameState_EnterRaceResults();
                     }
                     break;

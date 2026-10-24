@@ -203,7 +203,7 @@ Gfx* func_801E3698(Gfx* gdl) {
     if (D_801C2928 == 0) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, D_800DA9B0[D_800D48DC], 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, &D_801CE5F8->unkC80[i * 3]);
     }
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     gdl = func_801E3EE0(gdl, 2, D_800DAA34[gCourseID], D_80226350[gCourseID] + D_802288F8 + 56, 33, 0);

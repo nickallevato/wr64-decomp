@@ -250,7 +250,7 @@ extern s32 D_801C1F90;
 extern f32 D_800EB828;
 extern f32 D_800EB82C;
 extern f32 D_800EB830;
-extern s32 D_800D48DC;
+extern s32 gPlayer1Rider;
 extern s32 D_801CE638;
 extern Struct801926D8 D_801932E4[];
 extern s32 D_800E5138;
@@ -338,7 +338,7 @@ extern UnkStruct_801AE948* D_801AE948;
 extern UnkStruct_801AE948 D_5000000[];
 extern UnkStruct_801AEE20 D_801AEE20[];
 
-extern s32 D_800D48E0;
+extern s32 gPlayer2Rider;
 extern s16 D_800D4970;
 extern s32 D_800D49B0;
 extern s32 gBuoyMisses;
