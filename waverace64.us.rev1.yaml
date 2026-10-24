@@ -242,6 +242,7 @@ segments:
       - [0x8EDF0, data]
       - [0x8EE30, .data, sys/sys_audio]
       - [0x8EE40, data]
+      - [0x8EE80, .data, game/water_69D0]
       - [0x8EFE0, .data, game/code_BD30]
       - [0x8F000, data]
       - [0x95140, .data, game/code_4C750]

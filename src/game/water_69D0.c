@@ -46,18 +46,47 @@ extern UnkStruct_80160430 D_80160430[];
 extern UnkStruct_80160A98 D_80160A98[];
 extern s32 D_80192498; /* the window radius, N << 6 */
 
-extern f32 D_800D4738;
-extern f32 D_800D473C;
-extern f32 D_800D4740;
-extern f32 D_800D4744;
-extern s32 D_800D4748;
-extern s32 D_800D474C;
-extern f32 D_800D4750;
-extern s32 D_800D4754;
-extern s32 D_800D4758;
-extern s32 D_800D475C;
-extern s32 D_800D4760;
-extern f32 D_800D4764;
+/* the file's .data (0x800D4680..0x800D47DF) */
+u32 D_800D4680 = 9;
+s32 D_800D4684[] = {
+    0x00000196, 0x00000331, 0x00000332, 0x00000333, 0x00000334, 0x00000335, 0x00000336, 0x00000000,
+    0x00000010, 0x000001A8, 0x00000330, 0x00000320, 0x00000188, 0x000000EA, 0x000001D5, 0x000001D6,
+    0x000001D7, 0x000001D8, 0x000001D9, 0x000001DA, 0x00000000, 0x0000000C, 0x000000F6, 0x000001D4,
+    0x000001C8, 0x000000DE, 0x000000A5, 0x0000014B, 0x0000014C, 0x0000014D, 0x0000014E, 0x0000014F,
+    0x00000150, 0x00000000, 0x0000000A, 0x000000AF, 0x0000014A, 0x00000140, 0x0000009B,
+};
+s32 D_800D4720 = 1500;
+s32 D_800D4724 = 9;
+s32 D_800D4728 = 32;
+s32 D_800D472C = 5;
+s32 D_800D4730 = 6;
+s32 D_800D4734 = 255;
+f32 D_800D4738 = -0.055f;
+f32 D_800D473C = 450.0f;
+f32 D_800D4740 = 400.0f;
+f32 D_800D4744 = 3000.0f;
+s32 D_800D4748 = 1;
+s32 D_800D474C = 1;
+f32 D_800D4750 = 5000.0f;
+s32 D_800D4754 = 1;
+s32 D_800D4758 = 2;
+s32 D_800D475C = 0;
+s32 D_800D4760 = 0;
+f32 D_800D4764 = 0.7f;
+f32 D_800D4768 = -70.0f;
+s32 D_800D476C = 32;
+s32 D_800D4770 = 5;
+s32 D_800D4774 = 0;
+s32 D_800D4778 = 0;
+f32 D_800D477C = 0.75f;
+f32 D_800D4780[] = { 0.0f, 0.0f, -51.2f, 38.4f, 38.4f, 51.2f, 50.0f };
+s32 D_800D479C[] = { 30, 30, 100, 0, 30, 0, 0, 0, 0 };
+s32 D_800D47C0 = 0;
+s32 D_800D47C4 = 0;
+s32 D_800D47C8 = 1;
+f32 D_800D47CC = 1024.0f;
+f32 D_800D47D0 = 1024.0f;
+
 extern f32 D_801924B4;
 extern f32 D_801924C0;
 extern f32 D_801924C4;
@@ -236,12 +265,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
 #endif
 
-extern f32 D_800D4768;
-extern s32 D_800D476C;
-extern s32 D_800D4770;
-extern s32 D_800D4774;
-extern s32 D_800D4778;
-extern f32 D_800D477C;
 extern s32 D_80192460[];
 extern f32 D_801924CC;
 extern f32 D_801924D0;
@@ -378,7 +401,6 @@ void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
     }
 }
 
-extern s32 D_800D47C0;
 
 /*
  * Stamps sin(phase * 4096 / period) * amplitude along the diagonal from (x - r, z - r) to
@@ -766,9 +788,6 @@ void func_8004E614(void) {
     }
 }
 
-extern s32 D_800D4724;
-extern s32 D_800D472C;
-extern s32 D_800D4730;
 
 /* the field entry at a byte offset (UnkStruct_80160A98.unk0) */
 #define WATER_CELL_AT(off) ((UnkStruct_80162420*) ((s32) D_80162420 + (off)))
@@ -912,7 +931,6 @@ void func_8004EFB4(f32 x, f32 z, s32 height) {
 }
 
 extern s32 gFrameCounter;
-extern u32 D_800D4680;
 extern s32 D_801924E0[];
 
 void func_8004F1EC(f32 x, f32 z, s32 height, s32 arg3) {
@@ -1061,7 +1079,6 @@ void func_8004F790(s32 amplitude) {
     }
 }
 
-extern s32 D_800D4684[];
 extern UnkStruct_80192420 D_80192420[];
 extern s32 D_8019249C;
 extern s32 D_801924A0;
@@ -1211,7 +1228,6 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F9E0.s")
 #endif
 
-extern s32 D_800D4720;
 
 /*
  * Fills a view's vertex arena from the window's cells, row by row: x and z from the window centre
@@ -1514,10 +1530,6 @@ void func_80050F8C(s32 view, f32 x, f32 z) {
     }
 }
 
-extern s32 D_800D47C4;
-extern s32 D_800D47C8;
-extern f32 D_800D47CC;
-extern f32 D_800D47D0;
 extern s32 D_801C1FCC;
 
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z);
