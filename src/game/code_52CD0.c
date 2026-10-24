@@ -584,38 +584,23 @@ void func_80099858(struct UnkStruct_80099858* arg0, s8 arg1, u8 arg2, s16 arg3, 
     arg0->unk8 = arg4[2];
 }
 
-#ifdef NON_MATCHING
-// Score 904 of 8400: arg0 stays on the stack instead of in s6, and &src->unk4 is kept in a saved register; the original recomputes it for the loop.
 void func_800998B0(UnkStruct_801CED60* arg0, UnkStruct_800998B0* arg1, s32 arg2) {
-    UnkStruct_801CED60* src = (UnkStruct_801CED60*) arg1;
-    UnkStruct_801CED60* dst = arg0;
-    UnkStruct_801CED60* s;
     s32 i;
-    s8 c;
-    s16* v;
+    s32 j;
 
-    func_80099858((UnkStruct_80099858*) dst, src->unk0, (u8) src->unk1, src->unk2, &src->unk4, arg2);
-    dst++;
+    func_80099858((UnkStruct_80099858*) &arg0[0], arg1[0].unk0, arg1[0].unk1, arg1[0].unk2, arg1[0].unk4, arg2);
     i = 1;
-    s = src;
-    c = src->unk0;
-    v = &src->unk4;
+    j = 0;
     do {
-        func_80099858((UnkStruct_80099858*) dst, c, (u8) s->unk1, s->unk2, v, arg2);
-        c = s[1].unk0;
+        func_80099858((UnkStruct_80099858*) &arg0[i], arg1[j].unk0, arg1[j].unk1, arg1[j].unk2, arg1[j].unk4, arg2);
         i++;
-        dst++;
-        s++;
-        v += 5;
-    } while ((c != -1) || ((i + 3) >= 31));
-    func_80099858((UnkStruct_80099858*) dst, src->unk0, (u8) s->unk1, s->unk2, v, arg2);
-    func_80099858((UnkStruct_80099858*) (dst + 1), src->unk0, 0, s->unk2, v, arg2);
-    func_80099858((UnkStruct_80099858*) (dst + 2), src->unk0, 0, s->unk2, v, arg2);
-    func_80099858((UnkStruct_80099858*) (dst + 3), -1, 0, s->unk2, v, arg2);
+        j++;
+    } while ((arg1[j].unk0 != -1) || ((i + 3) >= 31));
+    func_80099858((UnkStruct_80099858*) &arg0[i], arg1[0].unk0, arg1[j].unk1, arg1[j].unk2, arg1[j].unk4, arg2);
+    func_80099858((UnkStruct_80099858*) &arg0[i + 1], arg1[0].unk0, 0, arg1[j].unk2, arg1[j].unk4, arg2);
+    func_80099858((UnkStruct_80099858*) &arg0[i + 2], arg1[0].unk0, 0, arg1[j].unk2, arg1[j].unk4, arg2);
+    func_80099858((UnkStruct_80099858*) &arg0[i + 3], -1, 0, arg1[j].unk2, arg1[j].unk4, arg2);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800998B0.s")
-#endif
 
 s32 func_80099A00(UnkStruct_801CF060* arg0, void* arg1, void* arg2, s32 arg3) {
     s32 sp28;
