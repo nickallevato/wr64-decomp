@@ -1150,7 +1150,55 @@ void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
+#ifdef NON_MATCHING
+// Score 4439: ys and zxt stay in registers (the original keeps them on the stack), frame 0x60, not 0x68.
+void func_801EE274(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z, f32 arg5, f32 arg6, f32 arg7) {
+    f32 len;
+    f32 xx;
+    f32 yy;
+    f32 zz;
+    s32 angle;
+    f32 s;
+    f32 c;
+    f32 t;
+    f32 ys;
+    f32 zxt;
+
+    len = sqrtf(SQ(x) + SQ(y) + SQ(z));
+    if (len > 0.0f) {
+        x /= len;
+        y /= len;
+        z /= len;
+    }
+    xx = SQ(x);
+    yy = SQ(y);
+    zz = SQ(z);
+    angle = ANGLE_TO_CUSTOM_UNITS(arg1);
+    s = SIN(angle);
+    c = COS(angle);
+    arg0[3][0] = arg5;
+    arg0[3][1] = arg6;
+    arg0[3][3] = 1.0f;
+    arg0[3][2] = arg7;
+    t = 1.0f - c;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[0][0] = ((1.0f - xx) * c) + xx;
+    arg0[2][1] = (y * z * t) - (x * s);
+    arg0[1][2] = (x * s) + (y * z * t);
+    arg0[1][1] = ((1.0f - yy) * c) + yy;
+    ys = y * s;
+    zxt = z * x * t;
+    arg0[2][0] = ys + zxt;
+    arg0[0][2] = zxt - ys;
+    arg0[2][2] = ((1.0f - zz) * c) + zz;
+    arg0[1][0] = (x * y * t) - (z * s);
+    arg0[0][1] = (z * s) + (x * y * t);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE274.s")
+#endif
 
 void func_801EE46C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     MtxF mtx;
