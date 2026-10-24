@@ -44,7 +44,7 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 3409: f and g swap float registers, and the colour bytes convert and mask in a different order.
+// Score 1287: the float constants (1.0f, 3.0f, the literal) take different saved FP registers, and the int 3 is not hoisted into s0; the literal is a FAKE local (its rodata is in the F6010 data blob).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern char D_802279F8[];
@@ -63,7 +63,6 @@ void func_801FAEB8(Gfx** gdlp) {
     s32 i;
     f32 f;
     f32 g;
-    u8(*c)[3];
     s32 r0;
     s32 g0;
     s32 b0;
@@ -94,14 +93,12 @@ void func_801FAEB8(Gfx** gdlp) {
             D_80228B60[i]--;
             f = (3 - D_80228B70[i]) / 3.0f;
             g = 1.0f - f;
-            c = &D_80227744[D_80228B68[i]];
-            r0 = c[0][0] * f + c[1][0] * g;
-            g0 = c[0][1] * f + c[1][1] * g;
-            b0 = c[0][2] * f + c[1][2] * g;
-            c = &D_80227754[D_80228B68[i]];
-            r1 = c[0][0] * f + c[1][0] * g;
-            g1 = c[0][1] * f + c[1][1] * g;
-            b1 = c[0][2] * f + c[1][2] * g;
+            r0 = D_80227744[D_80228B68[i]][0] * f + D_80227744[D_80228B68[i] + 1][0] * g;
+            g0 = D_80227744[D_80228B68[i]][1] * f + D_80227744[D_80228B68[i] + 1][1] * g;
+            b0 = D_80227744[D_80228B68[i]][2] * f + D_80227744[D_80228B68[i] + 1][2] * g;
+            r1 = D_80227754[D_80228B68[i]][0] * f + D_80227754[D_80228B68[i] + 1][0] * g;
+            g1 = D_80227754[D_80228B68[i]][1] * f + D_80227754[D_80228B68[i] + 1][1] * g;
+            b1 = D_80227754[D_80228B68[i]][2] * f + D_80227754[D_80228B68[i] + 1][2] * g;
             D_80228B70[i]++;
             if (D_80228B70[i] >= 3) {
                 D_80228B68[i]++;
