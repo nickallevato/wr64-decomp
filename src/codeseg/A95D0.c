@@ -373,7 +373,14 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DE690.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEA94.s")
+void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count) {
+    s32 i;
+
+    for (i = 0; i < count; i++) {
+        cursors[i].seg = 0;
+        cursors[i].frame = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DEB08.s")
 
