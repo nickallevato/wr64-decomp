@@ -61,8 +61,8 @@ void func_8007FD80(void) {
 // In Port Blue, draws each D_801C3B90 entry inside the water window (D_80192420[0]) as eight vertices at its angle,
 // on the water height (func_8004D30C), and six triangles.
 #ifdef NON_MATCHING
-// Same blocks and calls; the frame is 0x40 larger, the original keeps ax/az on the stack (sp+0x78/0x74) and the loop
-// end in s8, and the float registers differ throughout. Score 11690.
+// Same blocks and calls; the frame is 0x40 larger, the original keeps ax/az on the stack (sp+0x78/0x74), and the
+// float and saved registers differ throughout. Score 7764.
 Gfx* func_8007FFA8(Gfx* gdl) {
     UnkStruct_801C3B90* p;
     Vtx* v;
@@ -83,55 +83,58 @@ Gfx* func_8007FFA8(Gfx* gdl) {
     }
     gSPDisplayList(gdl++, D_E010F28);
     gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    for (i = 0, p = D_801C3B90; (u32) p < (u32) &D_801C3B90[16]; i += 8, p++) {
+    i = 0;
+    p = D_801C3B90;
+    do {
         dx = p->unk0 - D_80192420[0].unk8;
         dz = p->unk4 - D_80192420[0].unkC;
-        if (D_80192420[0].unk10 <= dx * dx + dz * dz) {
-            continue;
+        if (!(D_80192420[0].unk10 <= dx * dx + dz * dz)) {
+            c = gSinTable[(p->unk8 + 0x400) & 0xFFF];
+            ax = 26.24f * c;
+            s = gSinTable[p->unk8 & 0xFFF];
+            az = 26.24f * s;
+            x = p->unk0 - ax;
+            v = &gGfxPool->unk170D8[0x151 + i];
+            bx = -17.28f * s;
+            v[3].v.ob[0] = x;
+            z = p->unk4 - az;
+            bz = 17.28f * c;
+            v[3].v.ob[2] = z;
+            v[3].v.ob[1] = func_8004D30C(x, z);
+            v[0].v.ob[0] = x - bx;
+            v[0].v.ob[2] = z - bz;
+            v[0].v.ob[1] = func_8004D30C(x - bx, z - bz);
+            v[5].v.ob[0] = x + bx;
+            v[5].v.ob[2] = z + bz;
+            v[5].v.ob[1] = func_8004D30C(x + bx, z + bz);
+            v[1].v.ob[0] = p->unk0 - bx;
+            v[1].v.ob[2] = p->unk4 - bz;
+            v[1].v.ob[1] = func_8004D30C(p->unk0 - bx, p->unk4 - bz);
+            v[6].v.ob[0] = p->unk0 + bx;
+            v[6].v.ob[2] = p->unk4 + bz;
+            v[6].v.ob[1] = func_8004D30C(p->unk0 + bx, p->unk4 + bz);
+            x = p->unk0 + ax;
+            z = p->unk4 + az;
+            v[4].v.ob[0] = x;
+            v[4].v.ob[2] = z;
+            v[4].v.ob[1] = func_8004D30C(x, z);
+            v[2].v.ob[0] = x - bx;
+            v[2].v.ob[2] = z - bz;
+            v[2].v.ob[1] = func_8004D30C(x - bx, z - bz);
+            v[7].v.ob[0] = x + bx;
+            v[7].v.ob[2] = z + bz;
+            v[7].v.ob[1] = func_8004D30C(x + bx, z + bz);
+            gSPVertex(gdl++, &((GfxPool*) D_3000000)->unk170D8[0x151 + i], 8, 0);
+            gSP1Triangle(gdl++, 0, 3, 1, 0);
+            gSP1Triangle(gdl++, 1, 3, 6, 0);
+            gSP1Triangle(gdl++, 6, 3, 5, 0);
+            gSP1Triangle(gdl++, 6, 7, 4, 0);
+            gSP1Triangle(gdl++, 6, 4, 1, 0);
+            gSP1Triangle(gdl++, 1, 4, 2, 0);
         }
-        c = gSinTable[(p->unk8 + 0x400) & 0xFFF];
-        ax = 26.24f * c;
-        s = gSinTable[p->unk8 & 0xFFF];
-        az = 26.24f * s;
-        x = p->unk0 - ax;
-        v = &gGfxPool->unk170D8[0x151 + i];
-        bx = -17.28f * s;
-        v[3].v.ob[0] = x;
-        z = p->unk4 - az;
-        bz = 17.28f * c;
-        v[3].v.ob[2] = z;
-        v[3].v.ob[1] = func_8004D30C(x, z);
-        v[0].v.ob[0] = x - bx;
-        v[0].v.ob[2] = z - bz;
-        v[0].v.ob[1] = func_8004D30C(x - bx, z - bz);
-        v[5].v.ob[0] = x + bx;
-        v[5].v.ob[2] = z + bz;
-        v[5].v.ob[1] = func_8004D30C(x + bx, z + bz);
-        v[1].v.ob[0] = p->unk0 - bx;
-        v[1].v.ob[2] = p->unk4 - bz;
-        v[1].v.ob[1] = func_8004D30C(p->unk0 - bx, p->unk4 - bz);
-        v[6].v.ob[0] = p->unk0 + bx;
-        v[6].v.ob[2] = p->unk4 + bz;
-        v[6].v.ob[1] = func_8004D30C(p->unk0 + bx, p->unk4 + bz);
-        x = p->unk0 + ax;
-        z = p->unk4 + az;
-        v[4].v.ob[0] = x;
-        v[4].v.ob[2] = z;
-        v[4].v.ob[1] = func_8004D30C(x, z);
-        v[2].v.ob[0] = x - bx;
-        v[2].v.ob[2] = z - bz;
-        v[2].v.ob[1] = func_8004D30C(x - bx, z - bz);
-        v[7].v.ob[0] = x + bx;
-        v[7].v.ob[2] = z + bz;
-        v[7].v.ob[1] = func_8004D30C(x + bx, z + bz);
-        gSPVertex(gdl++, &((GfxPool*) D_3000000)->unk170D8[0x151 + i], 8, 0);
-        gSP1Triangle(gdl++, 0, 3, 1, 0);
-        gSP1Triangle(gdl++, 1, 3, 6, 0);
-        gSP1Triangle(gdl++, 6, 3, 5, 0);
-        gSP1Triangle(gdl++, 6, 7, 4, 0);
-        gSP1Triangle(gdl++, 6, 4, 1, 0);
-        gSP1Triangle(gdl++, 1, 4, 2, 0);
-    }
+        i += 8;
+        p++;
+    } while ((u32) p < (u32) &D_801C3B90[16]);
     return gdl;
 }
 #else
