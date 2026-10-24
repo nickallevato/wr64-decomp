@@ -1426,7 +1426,26 @@ void func_801E084C(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
     func_801DF668(runner->obj, pos, NULL, NULL, &out[3], NULL, NULL);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0A18.s")
+void func_801E0A18(UnkA95D0_Runner* runner, UnkA95D0_Spline3* splines) {
+    f32 out[9];
+    f32 pos[3];
+    f32 yawDeg;
+    f32 pitchDeg;
+    UnkA95D0_Payload5* p;
+
+    func_801DED88(out, runner->cursors, splines);
+    p = &runner->obj->u.p5;
+    yawDeg = func_801ED154(*runner->unk10[5], *runner->unk10[3]) + out[1];
+    pitchDeg = out[2];
+    pos[0] = *runner->unk10[0] + (out[0] * COS(DEG_TO_BINANG(pitchDeg))) * COS(DEG_TO_BINANG(yawDeg));
+    pos[1] = *runner->unk10[1] + out[0] * SIN(DEG_TO_BINANG(pitchDeg));
+    pos[2] = *runner->unk10[2] + (out[0] * COS(DEG_TO_BINANG(pitchDeg))) * SIN(DEG_TO_BINANG(yawDeg));
+    p->unkC = *runner->unk10[9];
+    p->unk24[0] = *runner->unk10[p->unk74[0] + 3];
+    p->unk24[1] = *runner->unk10[p->unk74[1] + 3];
+    p->unk34 = sqrtf(SQ(*runner->unk10[p->unk74[0] + 6]) + SQ(*runner->unk10[p->unk74[1] + 6]));
+    func_801DF668(runner->obj, pos, NULL, NULL, &out[3], &out[6], NULL);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0BE8.s")
 
