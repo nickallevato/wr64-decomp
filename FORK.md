@@ -106,6 +106,14 @@ commit (`src/`, `include/`, `linker_scripts/`, ...) never includes fork files. A
 commit stays within one area, the size of one future upstream batch: separate commits for, for
 example, the text printer, the popups and the portraits.
 
+A struct or type change that also changes the text of functions already in C (a field split into
+an array, a global turned into an array) goes in its own commit, before the function that needs
+it: `<file>: <struct> layout` (or `<symbol> type`), listing the matched functions it touches. A
+function commit holds that function plus only the declarations it needs (its prototypes and
+externs arrive in the same commit as their first caller). Mark every hack: `// FAKE` on each
+fake construct, a short comment on stack pads, odd literal forms (`seg + 5U`) and gotos, and
+`// fallthrough` where a case falls through.
+
 **`make NON_MATCHING=1` leaves its objects behind.** That build writes non-matching objects into
 `build/`, and a later plain `make` reuses them, so the ROM stops matching for no visible reason.
 Run `make clean` (or `rm -rf build`) before going back to normal builds.
