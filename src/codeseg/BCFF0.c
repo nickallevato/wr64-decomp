@@ -2066,7 +2066,7 @@ void func_801F4120(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 3870: &gRiders is not hoisted into a register (the original keeps it in t4), which shifts most registers.
+// Score 1255: one temp more early on and the loop constants (8, 1) land in other registers; the final D_80228DFC/D_80228DF8 block schedules its stores differently.
 extern s32 D_801C1FD4;
 extern s32 D_80228DD8[4];
 extern s32 D_80228DE8[4];
@@ -2076,7 +2076,6 @@ void func_801F8DD0(void) {
     s32 i;
     s32 j;
     PortraitPos* pos;
-    RiderStruct* r;
     s32 me;
     s32 d;
     s32 ad;
@@ -2106,7 +2105,7 @@ void func_801F8DD0(void) {
             pos = &gPortraitPos[i][j];
             d = pos->unkC - pos->y;
             if (pos->y != pos->unkC) {
-                ad = (d < 0) ? -d : d;
+                ad = (d >= 0) ? d : -d;
                 if (ad < 5) {
                     pos->y = pos->unkC;
                     pos->unk8 = 0;
@@ -2125,7 +2124,7 @@ void func_801F8DD0(void) {
             }
             d = pos->unk8 - pos->x;
             if (pos->x != pos->unk8) {
-                ad = (d < 0) ? -d : d;
+                ad = (d >= 0) ? d : -d;
                 if (ad < 3) {
                     pos->x = pos->unk8;
                 } else {
@@ -2161,37 +2160,36 @@ void func_801F8DD0(void) {
     }
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
-            pos = &gPortraitPos[i][j];
-            if ((pos->x == pos->unk8) && (pos->y == pos->unkC) && (D_801C1FD4 == 0)) {
-                r = &D_801C2938[j];
-                if ((r->unk2F4 == 0) && (((i == 0) && (r->unk320 == D_801C2938[D_800D48DC].unk320) &&
-                                          (r->racePosition == D_801C2938[D_800D48DC].racePosition + 1)) ||
-                                         ((i == 1) && (r->unk320 == D_801C2938[D_800D48E0].unk320) &&
-                                          (r->racePosition == D_801C2938[D_800D48E0].racePosition + 1)))) {
+            if ((gPortraitPos[i][j].x == gPortraitPos[i][j].unk8) && (gPortraitPos[i][j].y == gPortraitPos[i][j].unkC) && (D_801C1FD4 == 0)) {
+                if ((D_801C2938[j].unk2F4 == 0) && (((i == 0) && (D_801C2938[j].unk320 == D_801C2938[D_800D48DC].unk320) &&
+                                          (D_801C2938[j].racePosition == D_801C2938[D_800D48DC].racePosition + 1)) ||
+                                         ((i == 1) && (D_801C2938[j].unk320 == D_801C2938[D_800D48E0].unk320) &&
+                                          (D_801C2938[j].racePosition == D_801C2938[D_800D48E0].racePosition + 1)))) {
                     if (i == 0) {
                         me = D_800D48DC;
                     } else {
                         me = D_800D48E0;
                     }
-                    if ((r->unk310 == D_801C2938[me].unk310) && (gGameModeState == GMODE_STATE_STARTED)) {
+                    if ((D_801C2938[j].unk310 == D_801C2938[me].unk310) && (gGameModeState == GMODE_STATE_STARTED)) {
                         dx = D_80192690[me].unk44.x - D_80192690[j].unk44.x;
                         dz = D_80192690[me].unk44.z - D_80192690[j].unk44.z;
                         dist = sqrtf(dx * dx + dz * dz);
                         if (dist < 512.0f) {
+                            bob = gPortraitPos[i][j].bobPhase;
                             if (dist < 256.0f) {
-                                bob = pos->bobPhase + 2;
+                                bob += 2;
                             } else {
-                                bob = pos->bobPhase + 1;
+                                bob += 1;
                             }
-                            pos->bobPhase = bob & 7;
+                            gPortraitPos[i][j].bobPhase = bob & 7;
                         }
                     }
                 }
             }
-            if (pos->bobPhase != 0) {
-                pos->bobPhase++;
-                if (pos->bobPhase >= 8) {
-                    pos->bobPhase = 0;
+            if (gPortraitPos[i][j].bobPhase != 0) {
+                gPortraitPos[i][j].bobPhase++;
+                if (gPortraitPos[i][j].bobPhase >= 8) {
+                    gPortraitPos[i][j].bobPhase = 0;
                 }
             }
         }
