@@ -1622,7 +1622,112 @@ void func_801F9520(Gfx** gdlp) {
     *gdlp = gdl;
 }
 
+#ifdef NON_MATCHING
+// Score 10188: float register allocation; the original keeps the camera position and direction on the stack (no saved FP register left).
+extern s32 D_80223934;
+extern f32 D_80227A50;
+extern f32 gSinTable[0x1000];
+
+f32 func_801ED090(f32 arg0);
+f32 func_801ED154(f32 arg0, f32 arg1);
+
+// Place each rider ahead of the player on the radar: side offset, distance and heading.
+void func_801F9EA0(void) {
+    s32 i;
+    s32 j;
+    s32 me;
+    camera_unk_1* cam;
+    f32 camX;
+    f32 camZ;
+    f32 dirX;
+    f32 dirZ;
+    UnkStruct_80228B88* b;
+    UnkStruct_80192690* p;
+    f32 dx;
+    f32 dz;
+    f32 fwd;
+    f32 dot;
+    f32 dist;
+    f32 scale;
+    f32 side;
+    f32 sx;
+    f32 a;
+    f32 aa;
+    f32 sgn;
+    f32 ox;
+    f32 oy;
+    s32 k;
+
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            me = D_800D48DC;
+            cam = &gCameraPerspective[D_80223930];
+        } else {
+            me = D_800D48E0;
+            cam = &gCameraPerspective[D_80223934];
+        }
+        camX = cam->unk4C;
+        camZ = cam->unk54;
+        dirX = -cam->unkF0;
+        dirZ = -cam->unkF4;
+        dx = cam->unk7C - camX;
+        dz = cam->unk84 - camZ;
+        sqrtf(dx * dx + dz * dz);
+        for (j = 0; j < gRiders; j++) {
+            b = &D_80228B88[i][j];
+            b->unk10 = 0;
+            if ((j != me) && (D_801C2938[j].racePosition >= D_801C2938[me].racePosition)) {
+                p = &D_80192690[j];
+                dx = p->unk44.x - camX;
+                dz = p->unk44.z - camZ;
+                fwd = dot = dx * dirX + dz * dirZ;
+                dist = sqrtf(dx * dx + dz * dz);
+                if (dist > 0.0f) {
+                    dot = (dx / dist) * dirX + (dz / dist) * dirZ;
+                }
+                if ((dist > 1024.0f) || (func_801ED090(dot) > 135.0f)) {
+                    continue;
+                }
+                scale = ((fwd < 0.0f) ? 0.0f : fwd) * 0.0009765625f * 1024.0f + 60.0f;
+                side = (dx * dirZ + dz * -dirX) / scale;
+                sx = side;
+                if (side > 1.0f) {
+                    sx = 1.0f;
+                    a = func_801ED154(side - 1.0f, fwd / scale);
+                } else if (side < -1.0f) {
+                    sx = -1.0f;
+                    a = func_801ED154(side + 1.0f, fwd / scale);
+                } else {
+                    a = 0.0f;
+                }
+                if (a > 180.0f) {
+                    a -= 360.0f;
+                }
+                aa = (a >= 0.0f) ? a : -a;
+                sgn = (a == 0.0f) ? 0.0f : ((a > 0.0f) ? 1 : -1);
+                if (aa > 0.0f) {
+                    aa *= D_80227A50;
+                    if (aa > 90.0f) {
+                        aa = 90.0f;
+                    }
+                    k = (aa / 360.0f) * 4096.0f;
+                    ox = gSinTable[k & 0xFFF] * sgn * 32.0f;
+                    oy = -(1.0f - gSinTable[(k + 0x400) & 0xFFF]) * 24.0f;
+                } else {
+                    oy = 0.0f;
+                    ox = 0.0f;
+                }
+                b->unk10 = 1;
+                b->unk4 = oy;
+                b->unk8 = sgn * aa;
+                b->unk0 = sx * 94.0f + ox;
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F9EA0.s")
+#endif
 
 #ifdef NON_MATCHING
 // Score 5600: the rider loops count j by 1, not in 0x14-byte steps against gRiders * 20 as the original does, which shifts registers.
