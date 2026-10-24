@@ -82,10 +82,6 @@ f32 D_800D477C = 0.75f;
 f32 D_800D4780[] = { 0.0f, 0.0f, -51.2f, 38.4f, 38.4f, 51.2f, 50.0f };
 s32 D_800D479C[] = { 30, 30, 100, 0, 30, 0, 0, 0, 0 };
 s32 D_800D47C0 = 0;
-s32 D_800D47C4 = 0;
-s32 D_800D47C8 = 1;
-f32 D_800D47CC = 1024.0f;
-f32 D_800D47D0 = 1024.0f;
 
 extern f32 D_801924B4;
 extern f32 D_801924C0;
@@ -1534,10 +1530,19 @@ extern s32 D_801C1FCC;
 
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z);
 
-#ifdef NON_MATCHING
-// 5472/18800: the frame is 0x30 here, 0x28 in the original, and the addresses of D_800D47C4 and D_800D47CC/D0 are held in registers here; the original loads each with its own lui
+/*
+ * The per-frame water update. On Glacier Coast (not paused, D_801CE638 == 1) it lowers the water
+ * level while D_801C1FCC is 1 or 2. In the N = 16 scene (D_801CE64C == 1) it moves a wandering
+ * stamp (angle D_800D47C4 turning by D_800D47C8, position D_800D47CC/D0, respawned on the rim when
+ * it leaves the window) and keeps the window at (0, 0); otherwise it centres each view's window
+ * from func_80050B78.
+ */
 void func_80051238(void) {
-    s32 angle;
+    static s32 D_800D47C4 = 0;
+    static s32 D_800D47C8 = 1;
+    static f32 D_800D47CC = 1024.0f;
+    static f32 D_800D47D0 = 1024.0f;
+    s32 turn;
     f32 x;
     f32 z;
 
@@ -1552,17 +1557,16 @@ void func_80051238(void) {
     }
     if (D_801CE64C == 1) {
         if (D_801CE638 != 6) {
-            angle = (D_800D47C4 + D_800D47C8 + 0x1000) & 0xFFF;
-            D_800D47CC += 51.2 * COS(angle);
-            D_800D47C4 = angle;
-            D_800D47D0 += 51.2 * SIN(angle);
+            D_800D47C4 = (D_800D47C4 + D_800D47C8 + 0x1000) & 0xFFF;
+            D_800D47CC += 51.2 * COS(D_800D47C4);
+            D_800D47D0 += 51.2 * SIN(D_800D47C4);
             if ((f32) (D_80192498 * D_80192498) < ((D_800D47CC * D_800D47CC) + (D_800D47D0 * D_800D47D0))) {
-                angle = SysUtils_Rand() & 0xFFF;
-                D_800D47C4 = angle;
-                D_800D47CC = COS(angle) * D_80192498;
-                D_800D47D0 = SIN(angle) * D_80192498;
                 D_800D47C4 = SysUtils_Rand() & 0xFFF;
-                D_800D47C8 = (s32) (((f32) (SysUtils_Rand() & 0x3FFF) * 14.0f) / 16383.0) - 7;
+                D_800D47CC = COS(D_800D47C4) * D_80192498;
+                D_800D47D0 = SIN(D_800D47C4) * D_80192498;
+                D_800D47C4 = SysUtils_Rand() & 0xFFF;
+                turn = (s32) (((f32) (SysUtils_Rand() & 0x3FFF) * 14.0f) / 16383.0) - 7;
+                D_800D47C8 = turn;
             }
             func_8004EFB4(D_800D47CC, D_800D47D0, -50);
         }
@@ -1576,6 +1580,3 @@ void func_80051238(void) {
     func_80050B78(gCameraPerspective, &x, &z);
     func_80050F8C(0, x, z);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80051238.s")
-#endif
