@@ -978,8 +978,11 @@ void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
     }
 }
 
-#ifdef NON_MATCHING
-// 285/14800: one move (the row index copied before its shift in the first loop) is missing, so the temps after it are numbered one lower; frame and stack match
+/*
+ * Fills the field with noise: each cell's height is the sum of six random values (the first redrawn
+ * for each cell), scaled to +-amplitude: first column by column (velocity 0), then added again row
+ * by row.
+ */
 void func_8004F790(s32 amplitude) {
     s32 i;
     s32 j;
@@ -988,8 +991,8 @@ void func_8004F790(s32 amplitude) {
     s32 k;
     u8* row;
     UnkStruct_80162420* q;
-    s32 h;
     s32 rnd[6];
+    s32 h;
 
     for (k = 5; k >= 0; k--) {
         rnd[k] = SysUtils_Rand() & 0x7FFF;
@@ -1006,8 +1009,9 @@ void func_8004F790(s32 amplitude) {
                 sum += rnd[k];
             }
             h = SysUtils_Round(amplitude * (((sum / 6.0f) / 16383.5f) - 1.0f)) << 8;
-            // i and the row are byte offsets into the field (i steps by 4)
-            q = (UnkStruct_80162420*) ((u8*) D_80162420 + (j << 9) + i);
+            // i and the row are byte offsets into the field (i steps by 4); the row is written as
+            // (j << 7) << 2 (128 cells of 4 bytes): j << 9 compiles differently
+            q = (UnkStruct_80162420*) ((u8*) D_80162420 + ((j << 7) << 2) + i);
             q->unk0 = h;
             q->unk2 = 0;
         }
@@ -1016,7 +1020,7 @@ void func_8004F790(s32 amplitude) {
         rnd[k] = SysUtils_Rand() & 0x7FFF;
     }
     for (j = 0; j != 384; j++) {
-        row = (u8*) D_80162420 + (j << 9);
+        row = (u8*) D_80162420 + ((j << 7) << 2);
         for (i = 0; i != 0x200; i += 4) {
             bit = 1;
             sum = 0;
@@ -1031,9 +1035,6 @@ void func_8004F790(s32 amplitude) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F790.s")
-#endif
 
 extern s32 D_800D4684[];
 extern UnkStruct_80192420 D_80192420[];
