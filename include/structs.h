@@ -441,8 +441,7 @@ typedef struct GfxPool_s {
     /* 0x0F808 */ Mtx unkF808[4];
     /* 0x0F908 */ char padF908[0x500];
     /* 0x0FE08 */ Vtx unkFE08[0x3F6];
-    /* 0x13D68 */ Vtx *unk13D68;
-    /* 0x13D6C */ char pad13D6C[0x336C];
+    /* 0x13D68 */ Vtx unk13D68[0x337];
     /* 0x170D8 */ Vtx *unk170D8;
     /* 0x170DC */ char pad170DC[0x1F0C];
 } GfxPool; /* size = 0x18FE8 */
@@ -1280,9 +1279,11 @@ typedef struct UnkStruct_801CE5F8_s {
 } UnkStruct_801CE5F8;
 
 struct UnkStruct_801C2938 {
-    /* 0x000 */ char pad0[4];
+    /* 0x000 */ s32 unk0;
     /* 0x004 */ s32 unk4;
-    /* 0x008 */ char pad8[0x124];
+    /* 0x008 */ char pad8[4];
+    /* 0x00C */ s32 unkC;
+    /* 0x010 */ char pad10[0x11C];
     /* 0x12C */ s32 unk12C;
     /* 0x130 */ char pad130[0x6C];
     /* 0x19C */ s32 unk19C;

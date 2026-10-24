@@ -110,6 +110,8 @@ void Popup_UpdatePauseCursor(UnkStruct_menu_buffer_1*);
 void Popup_UpdateCard4(UnkStruct_menu_buffer_1*);
 void func_801DDAB8(void*, void*, void*);
 void func_800C1DA8(void);
+void func_800BF8C8(void);
+void func_800C1268(unkStruct_func_800C1268*);
 void func_800C1DEC(void);
 void func_800C1B98(void);
 void func_800804C4(void);
