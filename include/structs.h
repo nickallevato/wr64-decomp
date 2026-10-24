@@ -454,7 +454,10 @@ typedef struct TexEntry {
 
 typedef struct UnkStruct_802C96A8 {
     /* 0x00 */ s32 unk_0;
-    /* 0x04 */ char pad_4[0x20];
+    /* 0x04 */ s32 unk_4;
+    /* 0x08 */ s32 unk_8;
+    /* 0x0C */ s32 unk_C[3];
+    /* 0x18 */ s32 unk_18[3];
 } UnkStruct_802C96A8; // size = 0x24;
 
 typedef struct GfxPool_s {

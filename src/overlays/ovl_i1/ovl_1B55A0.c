@@ -10,6 +10,8 @@ extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 extern s32 D_802C96A4;
 extern s32 D_800D817C;
+extern s32 D_i1_802C9444[][3];
+extern TexEntry D_80226890[];
 
 void Race_RankUnfinishedRiders(void);
 s32 Save_EepromWriteCourse(s32);
@@ -17,6 +19,7 @@ s32 Save_EepromWriteRecord5(s32);
 s32 Save_EepromWriteHeader(void);
 Gfx* func_80093AFC(Gfx*);
 void func_801EC830(void);
+void func_800C37D4(s32);
 void func_i1_802C7570(s32 arg0);
 Gfx* func_i1_802C7E48(Gfx*);
 void func_i1_802C8E70(void);
@@ -73,7 +76,30 @@ void func_i1_802C5900(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C59E8.s")
+void func_i1_802C59E8(s32 arg0) {
+    UnkStruct_802C96A8* scroll;
+    s32 i;
+    s32 tex;
+    s32 width;
+    s32 x;
+
+    scroll = &D_802C96A8;
+    *scroll = D_i1_802C94C8;
+    scroll->unk_0 = 1;
+    x = 290;
+    for (i = 0; i < 3; i++) {
+        tex = D_i1_802C9444[arg0][i];
+        D_802C96A8.unk_C[i] = x;
+        D_802C96A8.unk_18[i] = tex;
+        if (tex != -1) {
+            scroll->unk_4++;
+            width = D_80226890[tex].width + 1;
+            scroll->unk_8 += width;
+            x += width;
+        }
+    }
+    func_800C37D4(arg0);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C5AE4.s")
 
