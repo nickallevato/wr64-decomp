@@ -32,6 +32,16 @@ typedef struct UnkStruct_800DB4A8_s {
     s32 unkC;
 } UnkStruct_800DB4A8;
 
+typedef struct UnkStruct_800DB760_s {
+    /* 0x0 */ u32 unk0;
+    /* 0x4 */ u32 unk4;
+} UnkStruct_800DB760; /* size = 0x8 */
+
+typedef struct UnkStruct_801CE7E8_s {
+    /* 0x00 */ u32 unk0[6];
+    /* 0x18 */ u32 unk18[6];
+} UnkStruct_801CE7E8; /* size = 0x30 */
+
 typedef struct UnkStruct_801CE7D8_s {
     s32 unk0;
     s32 unk4;
@@ -43,6 +53,9 @@ extern UnkStruct_800DB4A8 D_800DB558;
 extern s32 D_800DCE18[];
 extern s16 D_801CE768[];
 extern UnkStruct_801CE7D8 D_801CE7D8[];
+extern UnkStruct_800DB760* D_800DB760[6];
+extern s16 D_800DB778[][6];
+extern UnkStruct_801CE7E8 D_801CE7E8[];
 extern s32 D_800DAB90[];
 extern s32 D_800DABA0[];
 extern s32 D_800DABC0[];
@@ -438,7 +451,31 @@ u32* func_800965B8(s32 arg0) {
     return sp34;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096694.s")
+void func_80096694(void* arg0, s32 arg1, s32 arg2) {
+    s32 pad; // stack pad
+    s32 course;
+    s32 i;
+    UnkStruct_800DB760* entry;
+
+    if (gGameState == GAME_SATE_COURSE_OVERVIEW) {
+        course = gCourseID;
+    } else {
+        course = arg2;
+    }
+    for (i = 0; i < 6; i++) {
+        entry = D_800DB760[i];
+        entry += course;
+        if (D_800DB778[course][i] != 0) {
+            D_801CE7E8[course].unk0[i] = (entry->unk0 & 0xFFFFFF) + 0x08000000;
+            D_801CE7E8[course].unk18[i] = (entry->unk4 & 0xFFFFFF) + 0x08000000;
+            func_800967EC((u32*) ((entry->unk0 & 0xFFFFFF) + (u8*) arg0), arg1);
+            func_800967EC((u32*) ((entry->unk4 & 0xFFFFFF) + (u8*) arg0), arg1);
+        } else {
+            D_801CE7E8[course].unk0[i] = 0;
+            D_801CE7E8[course].unk18[i] = 0;
+        }
+    }
+}
 
 void func_800967EC(u32* arg0, s32 arg1) {
     s32 var_a0;
