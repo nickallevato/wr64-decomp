@@ -443,7 +443,11 @@ void func_801DF578(UnkA95D0_Obj* obj, UnkA95D0_Base* base, UnkA95D0_Payload5* p)
     obj->u.p5 = *p;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF5F0.s")
+void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key) {
+    obj->type = 5;
+    obj->base = key->base;
+    obj->u.p5 = key->p;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF668.s")
 
