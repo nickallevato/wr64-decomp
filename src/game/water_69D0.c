@@ -41,11 +41,96 @@ typedef struct UnkStruct_80160A98_s {
     /* 0x4 */ s32 unk4;
 } UnkStruct_80160A98;
 
+extern s32 D_80192498; /* the window radius, N << 6 */
+
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C998.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004CC7C.s")
+/* a wave generator stamped as rows of lines (the arg of func_8004CC7C) */
+typedef struct UnkStruct_8004CC7C_s {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ f32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+} UnkStruct_8004CC7C; /* size = 0x3C */
+
+void func_8004CC7C(UnkStruct_8004CC7C* arg0) {
+    UnkStruct_80162420* p0;
+    UnkStruct_80162420* p1;
+    UnkStruct_80162420* p2;
+    s32 u;
+    s32 v;
+    s32 cu;
+    s32 cv;
+    s32 h;
+    s32 i;
+    s32 j;
+    s32 phase;
+    s32 period;
+    s32 start;
+    s32 end;
+    s32 step;
+    f32 x;
+    f32 z;
+    f32 px;
+    f32 pz;
+
+    if (D_801CE72C != 1) {
+        period = arg0->unk30 << 11;
+        start = arg0->unk34 << 11;
+        end = arg0->unk38 << 11;
+        arg0->unk28 -= arg0->unk2C * 4;
+        if (arg0->unk28 < 0) {
+            arg0->unk28 += period;
+        }
+        phase = arg0->unk28;
+        step = arg0->unk24 * 4;
+        x = arg0->unk0;
+        z = arg0->unk4;
+        for (i = 0; i < arg0->unk20; i++) {
+            phase += step;
+            if (phase >= period) {
+                phase -= period;
+            }
+            if ((phase >= start) && (end >= phase)) {
+                px = x;
+                pz = z;
+                h = (s32) (SIN(phase) * arg0->unk18) << 8;
+                for (j = 0; j < arg0->unk1C; j++) {
+                    u = (s32) ((DIRLIGHT_DIRECTION * pz) + px) % 24576;
+                    v = (s32) (TWO_OVER_SQRT_3 * pz) % 24576;
+                    cv = v >> 6;
+                    cu = u >> 6;
+                    if ((u - (cu * 64)) < (v - (cv * 64))) {
+                        p0 = WATER_CELL(cu, cv + 1);
+                    } else {
+                        p0 = WATER_CELL(cu + 1, cv);
+                    }
+                    p2 = WATER_CELL(cu, cv);
+                    p1 = WATER_CELL(cu + 1, cv + 1);
+                    p0->unk0 = p2->unk0 = p1->unk0 = h;
+                    p0->unk2 = p2->unk2 = p1->unk2 = 0;
+                    px += arg0->unk8;
+                    pz += arg0->unkC;
+                }
+            }
+            x += arg0->unk10;
+            z += arg0->unk14;
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D018.s")
 
