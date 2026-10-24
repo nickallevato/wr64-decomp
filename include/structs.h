@@ -773,7 +773,7 @@ typedef struct UnkStruct_8007CB68_2_s {
     u8 unkC;
     u8 unkD[3];
     u8 unk10[4][10];
-    u8 unk38[2][4][3];
+    s8 unk38[2][4][3];
     u8 unk50[3][3];
     u8 unk59[7];
     u8 unk60[8][4][6];

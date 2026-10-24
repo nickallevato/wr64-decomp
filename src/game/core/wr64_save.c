@@ -80,7 +80,7 @@ extern OSPfs D_801C3AD0;
 extern u8 D_801C23B0[];
 extern u8 D_800D8290[];
 extern u8 D_801AEBF0[];
-extern u8 D_801AEC18;
+extern UnkStruct_8007CB68_2 D_801AEC18;
 extern UnkStruct_8007B110 D_801AEA8A[];
 extern UnkStruct_8007B110 D_801AEC8A[];
 extern UnkStruct_8007B110 D_801C202C[8][3];
