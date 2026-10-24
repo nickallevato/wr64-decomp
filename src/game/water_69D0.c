@@ -482,7 +482,7 @@ f32 func_8004D30C(f32 x, f32 z) {
 #endif
 
 #ifdef NON_MATCHING
-// 8515/30600: register allocation (saved-register numbering from the first block on; the original also orders some float multiplies the other way). Same operations as func_8004E0A4
+// 2600/30600: register allocation (saved and temp register numbering). Same operations as func_8004E0A4
 void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     f32 max;
     f32 inv;
@@ -517,6 +517,7 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
         } else {
             d1 = WATER_CELL(cu + 1, cv)->unk0 >> 8;
             d0 = h00 - d1;
+            v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576; // FAKE: a dead recomputation, in this branch only
             d1 -= WATER_CELL(cu + 1, cv + 1)->unk0 >> 8;
         }
         inv = 1.0f / sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
