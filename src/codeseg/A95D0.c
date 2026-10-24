@@ -71,6 +71,13 @@ typedef struct UnkA95D0_Base {
     /* 0x50 */ f32 unk50[2];
 } UnkA95D0_Base; // size = 0x58
 
+// A value eased toward a target: value += (target - value) * rate.
+typedef struct UnkA95D0_Ease {
+    /* 0x00 */ f32 value;
+    /* 0x04 */ f32 target;
+    /* 0x08 */ f32 rate;
+} UnkA95D0_Ease; // size = 0xC
+
 typedef struct UnkA95D0_Payload1 {
     /* 0x00 */ f32 unk0[3];
     /* 0x0C */ f32 unkC;
@@ -83,7 +90,16 @@ typedef struct UnkA95D0_Payload2 {
 } UnkA95D0_Payload2; // size = 0x38
 
 typedef struct UnkA95D0_Payload5 {
-    /* 0x00 */ f32 unk0[33];
+    /* 0x00 */ f32 unk0[3];
+    /* 0x0C */ f32 unkC[6];
+    /* 0x24 */ f32 unk24[2];
+    /* 0x2C */ f32 unk2C[2];
+    /* 0x34 */ f32 unk34;
+    /* 0x38 */ f32 unk38[4];
+    /* 0x48 */ UnkA95D0_Ease unk48[3];
+    /* 0x6C */ f32 unk6C[2];
+    /* 0x74 */ s32 unk74[3];
+    /* 0x80 */ s32 unk80;
 } UnkA95D0_Payload5; // size = 0x84
 
 typedef struct UnkA95D0_Key1 {
@@ -535,7 +551,37 @@ void func_801DF5F0(UnkA95D0_Obj* obj, UnkA95D0_Key5* key) {
     obj->u.p5 = key->p;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF668.s")
+void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4, f32* arg5, f32* arg6) {
+    UnkA95D0_Payload5* p = &obj->u.p5;
+    UnkA95D0_Base* b = &obj->base;
+    s32 i;
+
+    if (arg1 != NULL) {
+        for (i = 0; i < 3; i++) {
+            p->unk0[i] = arg1[i];
+        }
+    }
+    if (arg2 != NULL) {
+        p->unk24[0] = arg2[p->unk74[0]];
+        p->unk24[1] = arg2[p->unk74[1]];
+    }
+    if (arg3 != NULL) {
+        p->unk34 = *arg3;
+    }
+    if (arg4 != NULL) {
+        p->unk48[0].target = arg4[0];
+        p->unk48[1].target = arg4[1];
+        p->unk48[2].target = arg4[2];
+    }
+    if (arg5 != NULL) {
+        for (i = 0; i < 3; i++) {
+            b->unk24[i] = arg5[i];
+        }
+    }
+    if (arg6 != NULL) {
+        b->unk38 = *arg6;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF744.s")
 
