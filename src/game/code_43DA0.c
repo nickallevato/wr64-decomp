@@ -57,6 +57,10 @@ typedef struct UnkStruct_801CB058_s {
     /* 0x108 */ char pad108[8];
 } UnkStruct_801CB058; /* size = 0x110 */
 
+typedef struct UnkStruct_800DA624_s {
+    u8 alpha[3];
+} UnkStruct_800DA624;
+
 typedef struct UnkStruct_801C41A0_s {
     f32 fwork[0xD0];
 } UnkStruct_801C41A0;
@@ -86,6 +90,14 @@ extern s32 D_801C4164;
 extern s32 D_801C4168;
 extern s32 D_80192498;
 extern struct UnkStruct_801C3C60 D_801C3C60[];
+extern UnkStruct_800DA624 D_800DA624;
+extern s32 D_800D47E0[];
+extern s16 gColorRed;
+extern s16 gColorGreen;
+extern s16 gColorBlue;
+extern s16 gColorAlpha;
+extern u8 D_100FAB0[];
+Gfx* func_8008A0E0(Gfx* gdl);
 extern s32 D_800D98CC;
 extern s32 D_800D98D0;
 extern s32 D_800D98D4;
@@ -296,7 +308,156 @@ void func_80089F28(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008A0E0.s")
 
+#ifdef NON_MATCHING
+// Score 2641 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
+// for its unk4 load, where the original shares the lui with the unk0 load; temps are renumbered from there on, and
+// scale sits 8 bytes higher on the stack.
+Gfx* func_8008BD2C(Gfx* gdl) {
+    s32 pad[2]; // stack pad
+    f32 scale;
+    UnkStruct_800DA624 flareAlpha;
+    s32 alpha;
+    f32 mirror;
+    s32 x;
+    s32 y;
+
+    flareAlpha = D_800DA624; // probably a local array initialised from this file's data in the original
+    switch (gCourseID) {
+        case DOLPHIN_PARK:
+            scale = (gCameraPerspective[D_80223930].unk80 - 20.0f) / 100.0f;
+            if (scale > 1.0f) {
+                scale = 1.0f;
+            }
+            if (scale < 0.0f) {
+                scale = 0; // integer 0: a separate constant load from the 0.0f above
+            }
+            break;
+        case SUNSET_BAY:
+            scale = 1.0f;
+            break;
+        case GLACIER_COAST:
+            if (D_801CE638 == 0x15) {
+                return func_8008A0E0(gdl);
+            }
+            break;
+    }
+    // On other courses scale is used uninitialized, as in the original.
+    if ((gCourseID != DOLPHIN_PARK) && (gCourseID != SUNSET_BAY)) {
+        return gdl;
+    }
+    { // FAKE: the early return and this block give the original's branch layout
+        gSPClearGeometryMode(gdl++, 0xFFFFFFFF);
+        gSPSetGeometryMode(gdl++, G_SHADE);
+        gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+        gDPPipeSync(gdl++);
+        gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+        gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0);
+        gDPSetTexturePersp(gdl++, G_TP_NONE);
+        alpha = 160.0f * D_801C4170.unk14 * D_801C4170.unk14 * scale;
+        if (D_801C4170.unk14 > 0.7) {
+            D_800D47E0[0] = 2;
+            gColorAlpha = flareAlpha.alpha[gCourseID] * D_801C4170.unk14 * D_801C4170.unk14 * D_801C4170.unk14 *
+                          D_801C4170.unk14 * scale;
+            gColorRed = 0xF5;
+            gColorGreen = 0xFF;
+            gColorBlue = 0xD7;
+        } else {
+            D_800D47E0[0] = 0;
+        }
+        if (D_801C4170.unk14 >= 0.0f) {
+            gDPLoadTextureBlock(gdl++, D_100FAB0, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                                G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+            mirror = 319 - (s32) (D_801C4170.unk0 + D_801C4170.unkC);
+            x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 6.0f);
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0x10];
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 4) << 2, 0), MAX((y - 4) << 2, 0), MAX((x + 4) << 2, 0),
+                                    MAX((y + 4) << 2, 0), 0, 0 - MIN((((x - 4) << 18) >> 7), 0),
+                                    0 - MIN((((y - 4) << 18) >> 7), 0), 0x1000, 0x1000);
+            }
+            x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 3.0f);
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0x16];
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 0x14) << 2, 0), MAX((y - 0x14) << 2, 0), MAX((x + 0x14) << 2, 0),
+                                    MAX((y + 0x14) << 2, 0), 0, 0 - MIN((((x - 0x14) << 14) >> 7), 0),
+                                    0 - MIN((((y - 0x14) << 14) >> 7), 0), 0x300, 0x300);
+            }
+            x = D_801C4170.unk0 - (((D_801C4170.unk0 - mirror) * 2) / 3.0f);
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0x1C];
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0x80, 0xEB, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 0x10) << 2, 0), MAX((y - 0x10) << 2, 0), MAX((x + 0x10) << 2, 0),
+                                    MAX((y + 0x10) << 2, 0), 0, 0 - MIN(((((x - 0x10) << 2) * 0x400) >> 7), 0),
+                                    0 - MIN(((((y - 0x10) << 2) * 0x400) >> 7), 0), 0x400, 0x400);
+            }
+            x = D_801C4170.unk0 - (((D_801C4170.unk0 - mirror) * 5.0f) / 6.0f);
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0x22];
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 4) << 2, 0), MAX((y - 4) << 2, 0), MAX((x + 4) << 2, 0),
+                                    MAX((y + 4) << 2, 0), 0, 0 - MIN((((x - 4) << 18) >> 7), 0),
+                                    0 - MIN((((y - 4) << 18) >> 7), 0), 0x1000, 0x1000);
+            }
+            x = 319 - (s32) (D_801C4170.unk0 + D_801C4170.unkC);
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0x28];
+            if ((x >= -64) && (x < SCREEN_WIDTH) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 0x20) << 2, 0), MAX((y - 0x20) << 2, 0), MAX((x + 0x20) << 2, 0),
+                                    MAX((y + 0x20) << 2, 0), 0, 0 - MIN(((((x - 0x20) << 2) * 0x200) >> 7), 0),
+                                    0 - MIN(((((y - 0x20) << 2) * 0x200) >> 7), 0), 0x200, 0x200);
+            }
+            x = (2.0f * D_801C4170.unk0) - x;
+            y = D_801C4170.unk4 - D_801C41A0.fwork[4];
+            if ((x >= -32) && (x < SCREEN_WIDTH) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 8) << 2, 0), MAX((y - 8) << 2, 0), MAX((x + 8) << 2, 0),
+                                    MAX((y + 8) << 2, 0), 0, 0 - MIN((((x - 8) << 14) >> 7), 0),
+                                    0 - MIN((((y - 8) << 14) >> 7), 0), 0x800, 0x800);
+            }
+            x = ((x - D_801C4170.unk0) / 2) + D_801C4170.unk0;
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0xA];
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
+                gSPTextureRectangle(gdl++, MAX((x - 4) << 2, 0), MAX((y - 4) << 2, 0), MAX((x + 4) << 2, 0),
+                                    MAX((y + 4) << 2, 0), 0, 0 - MIN((((x - 4) << 18) >> 7), 0),
+                                    0 - MIN((((y - 4) << 18) >> 7), 0), 0x1000, 0x1000);
+            }
+            if (gCourseID == DOLPHIN_PARK) {
+                mirror = 319 - (s32) (D_801C4170.unk0 + D_801C4170.unkC);
+                x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 4);
+                y = D_801C4170.unk4 - D_801C41A0.fwork[0x2E];
+                if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                    (y < SCREEN_HEIGHT)) {
+                    gDPSetPrimColor(gdl++, 0, 0, 0xC8, 0x7F, 0xFF, alpha);
+                    gSPTextureRectangle(gdl++, MAX((x - 8) << 2, 0), MAX((y - 8) << 2, 0), MAX((x + 8) << 2, 0),
+                                        MAX((y + 8) << 2, 0), 0, 0 - MIN((((x - 8) << 14) >> 7), 0),
+                                        0 - MIN((((y - 8) << 14) >> 7), 0), 0x800, 0x800);
+                }
+                x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 2);
+                y = D_801C4170.unk4 - D_801C41A0.fwork[0x34];
+                if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+                    (y < SCREEN_HEIGHT)) {
+                    gDPSetPrimColor(gdl++, 0, 0, 0x3B, 0xD4, 0x6B, alpha);
+                    gSPTextureRectangle(gdl++, MAX((x - 8) << 2, 0), MAX((y - 8) << 2, 0), MAX((x + 8) << 2, 0),
+                                        MAX((y + 8) << 2, 0), 0, 0 - MIN((((x - 8) << 14) >> 7), 0),
+                                        0 - MIN((((y - 8) << 14) >> 7), 0), 0x800, 0x800);
+                }
+            }
+        }
+    }
+    return gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008BD2C.s")
+#endif
 
 Gfx* func_8008CFEC(Gfx* gdl) {
     UnkStruct_8008962C* var_t1;
