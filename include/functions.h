@@ -102,7 +102,7 @@ Gfx* func_800949B8(Gfx*, int courseId);
 void func_801E355C(void);
 Gfx* func_801E3698(Gfx*);
 Gfx* func_801E34F8(Gfx* gdl);
-void func_8007B31C(void);
+void Save_PackOptions(void);
 void Popup_UpdateAll(void);
 void Popup_UpdateCard1(UnkStruct_menu_buffer_1*);
 void Popup_UpdateCard2(UnkStruct_menu_buffer_1*);
@@ -145,7 +145,7 @@ void func_80097F74(u32, s32, u32); // arg1 is confirmed to be s32
 void func_800C6740();
 void Mio0_Decompress(u8* header, u8* dst);
 s32 Save_CodeToChar(s32);
-//void func_8007AE8C(void*, void*, void*, void*);
+//void Save_PackInitials(void*, void*, void*, void*);
 void AudioGeneral_PlaySound(s32, s32);
 void func_800481E0(Mtx* arg0, u16* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
 void func_80048A88(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8, f32 arg9,
@@ -211,7 +211,7 @@ void Printer_ResetColorCycle(void);
 void func_80098514(Vec3f* arg0);
 void func_800984F4(void*, f32, f32, f32);
 void func_80098AC4(u8 arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4);
-//void func_8007AE8C(UnkStruct_func_8007AE8C* arg0, UnkStruct_func_8007AE8C* arg1);
+//void Save_PackInitials(UnkStruct_func_8007AE8C* arg0, UnkStruct_func_8007AE8C* arg1);
 f32 func_8009D4A8(f32, f32);
 void func_800A52D8(s32, f32);
 void func_800C1BD8(f32, f32);

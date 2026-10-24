@@ -47,13 +47,13 @@ extern f32 D_80226330;
 extern f32 D_80228828[];
 extern f32 D_80228868[];
 extern f32 D_802288A8[];
-extern UnkStruct_AF8C0_14 D_801C1FF0[][3];
-extern UnkStruct_AF8C0_14 D_801C22C0[];
+extern UnkStruct_AF8C0_14 gBestTimes[][3];
+extern UnkStruct_AF8C0_14 gBestLaps[];
 extern UnkStruct_AF8C0_14 D_801C23B0[];
-extern UnkStruct_AF8C0_10 D_801C26E8[][3];
+extern UnkStruct_AF8C0_10 gStuntRecords[][3];
 
-s32 func_8007BEA4(s32);
-s32 func_8007C204(s32);
+s32 Save_EepromWriteCourse(s32);
+s32 Save_EepromWriteRecord5(s32);
 void func_8006DE24(Gfx**);
 Gfx* func_80094A44(Gfx*, s32);
 void GameState_EnterViewRecords(void);
@@ -406,9 +406,9 @@ Gfx* Initials_Draw(Gfx* gdl) {
                 course = D_800EAC14[gDifficulty][i];
                 if ((D_801C2660[course] != 0) || (D_801C2690[course] != 0)) {
                     if (D_800DAB68 != 0) {
-                        func_8007C204(course);
+                        Save_EepromWriteRecord5(course);
                     } else {
-                        func_8007BEA4(course);
+                        Save_EepromWriteCourse(course);
                     }
                 }
             }
@@ -697,28 +697,28 @@ void Initials_SaveToRecords(void) {
                     if (D_800DAB68 != 0) {
                         D_801C23B0[course].unk10[i] = gInitialsEntered[i];
                     } else {
-                        D_801C1FF0[course][D_801C2660[course] - 1].unk10[i] = gInitialsEntered[i];
+                        gBestTimes[course][D_801C2660[course] - 1].unk10[i] = gInitialsEntered[i];
                     }
                 }
                 if (D_800DAB68 != 0) {
                     D_801C23B0[course].unk10[i] = 0;
                 } else {
-                    D_801C1FF0[course][D_801C2660[course] - 1].unk10[i] = 0;
+                    gBestTimes[course][D_801C2660[course] - 1].unk10[i] = 0;
                 }
             }
             if (D_801C2690[course] != 0) {
                 for (i = 0; i < 4; i++) {
-                    D_801C22C0[course].unk10[i] = gInitialsEntered[i];
+                    gBestLaps[course].unk10[i] = gInitialsEntered[i];
                 }
-                D_801C22C0[course].unk10[i] = 0;
+                gBestLaps[course].unk10[i] = 0;
             }
         }
     } else if (D_801CE608.gameMode == GMODE_STUNT) {
         if (D_801C2928 != 0) {
             for (i = 0; i < 4; i++) {
-                D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = gInitialsEntered[i];
+                gStuntRecords[gCourseID][D_801C2928 - 1].unkC[i] = gInitialsEntered[i];
             }
-            D_801C26E8[gCourseID][D_801C2928 - 1].unkC[i] = 0;
+            gStuntRecords[gCourseID][D_801C2928 - 1].unkC[i] = 0;
         }
     } else {
         if (D_801C2660[gCourseID] != 0) {
@@ -726,20 +726,20 @@ void Initials_SaveToRecords(void) {
                 if (D_800DAB68 != 0) {
                     D_801C23B0[gCourseID].unk10[i] = gInitialsEntered[i];
                 } else {
-                    D_801C1FF0[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = gInitialsEntered[i];
+                    gBestTimes[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = gInitialsEntered[i];
                 }
             }
             if (D_800DAB68 != 0) {
                 D_801C23B0[gCourseID].unk10[i] = 0;
             } else {
-                D_801C1FF0[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = 0;
+                gBestTimes[gCourseID][D_801C2660[gCourseID] - 1].unk10[i] = 0;
             }
         }
         if (D_801C2690[gCourseID] != 0) {
             for (i = 0; i < 4; i++) {
-                D_801C22C0[gCourseID].unk10[i] = gInitialsEntered[i];
+                gBestLaps[gCourseID].unk10[i] = gInitialsEntered[i];
             }
-            D_801C22C0[gCourseID].unk10[i] = 0;
+            gBestLaps[gCourseID].unk10[i] = 0;
         }
     }
 }

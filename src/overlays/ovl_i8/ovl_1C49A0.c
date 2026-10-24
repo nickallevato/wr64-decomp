@@ -8,7 +8,7 @@ extern Gfx D_106F550[];
 extern Gfx D_8062290[];
 extern u8 gPrinterWidthsFont2[]; /* glyph widths, font 2 */
 
-void func_8007C31C();
+void Save_EepromWriteNames();
 void func_i8_802C5EB8();
 
 Gfx* func_i8_802C5D3C(Gfx* gdl) {
@@ -41,7 +41,7 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
     if (gGameState == 0x3E) {
         func_i8_802C5EB8();
     } else if (D_80228A16 == 1) {
-        func_8007C31C();
+        Save_EepromWriteNames();
         GameState_EnterOptionsMenu();
     }
     return gdl;

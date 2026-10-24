@@ -146,7 +146,7 @@ extern Gfx D_106F488[];
 extern Mtx D_7000A40[];
 extern Mtx D_7000A80[];
 extern Vp D_7001280[];
-extern CourseRecord D_801C26E8[][3];
+extern CourseRecord gStuntRecords[][3];
 extern s32 D_80226350[];
 extern s8 D_80226E44[];
 
@@ -198,7 +198,7 @@ Gfx* func_801E3698(Gfx* gdl) {
     for (i = 0; i < 3; i++) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, D_801C26E8[gCourseID][i].rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, gStuntRecords[gCourseID][i].rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
     }
     if (D_801C2928 == 0) {
         gSPViewport(gdl++, &D_7001280[i]);
@@ -230,7 +230,7 @@ Gfx* func_801E3698(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        rec = &D_801C26E8[gCourseID][i];
+        rec = &gStuntRecords[gCourseID][i];
         if (i & 1) {
             x = D_802288FC;
         } else {

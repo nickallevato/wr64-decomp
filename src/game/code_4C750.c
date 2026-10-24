@@ -7,8 +7,8 @@ typedef struct UnkStruct_801CB6C8 {
 
 void func_8004BA18(void);
 void func_80051530(void);
-void func_8007BD70(void);
-s32 func_8007BE00(void);
+void Save_EepromProbe(void);
+s32 Save_EepromLoad(void);
 void func_80088EA0(void);
 void func_801DD85C(void);
 void func_80094FE8(void);
@@ -177,8 +177,8 @@ void func_80091F50(void) {
     func_80088EA0();
     func_801DD85C();
     func_80094FE8();
-    func_8007BD70();
-    func_8007BE00();
+    Save_EepromProbe();
+    Save_EepromLoad();
 
     temp_t3 = D_801CB280 & 0xC0;
     if (temp_t3 & 0x40) {

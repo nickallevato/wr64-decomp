@@ -8,7 +8,7 @@ extern s32 D_i2_802C8BD8[];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5AE4.s")
 
-void* func_8007C31C();
+void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
 void* func_i2_802C5E28();
 void* func_i2_802C6ADC(Gfx*);
@@ -84,7 +84,7 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
             D_i2_802C8BC0 = 1;
         }
     } else if (D_80228A16 == 1) {
-        func_8007C31C();
+        Save_EepromWriteNames();
         switch (D_801CE630) {
             case 2:
                 GameState_EnterTitleScreen();

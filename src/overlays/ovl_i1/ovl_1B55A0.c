@@ -10,9 +10,9 @@ extern s32 D_i1_802C9510;
 extern s32 D_802C96A0;
 
 void func_80077F5C(void);
-s32 func_8007BEA4(s32);
-s32 func_8007C204(s32);
-s32 func_8007C494(void);
+s32 Save_EepromWriteCourse(s32);
+s32 Save_EepromWriteRecord5(s32);
+s32 Save_EepromWriteHeader(void);
 Gfx* func_80093AFC(Gfx*);
 void func_801EC830(void);
 void func_i1_802C7570(s32 arg0);
@@ -247,12 +247,12 @@ Gfx* func_i1_802C7D00(Gfx* dList) {
     func_i1_802C8E70();
 
     if (D_80228A16 == 1) {
-        func_8007C494();
+        Save_EepromWriteHeader();
         if ((D_801C2650 != 0) || (D_801C2654 != 0)) {
             if (D_800DAB68 != 0) {
-                func_8007C204(gCourseID);
+                Save_EepromWriteRecord5(gCourseID);
             } else {
-                func_8007BEA4(gCourseID);
+                Save_EepromWriteCourse(gCourseID);
             }
         }
         GameState_EnterCeremony();

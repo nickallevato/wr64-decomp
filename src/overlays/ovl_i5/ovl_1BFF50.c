@@ -10,7 +10,7 @@ extern u16 D_802C7B06;
 extern s32 D_802C7B08;
 extern s32 D_802C7B0C;
 
-s32 func_8007C494(void);
+s32 Save_EepromWriteHeader(void);
 void func_800C3E4C(void);
 void func_801EC944(void);
 Gfx* func_i5_802C5DC0(Gfx*);
@@ -100,7 +100,7 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     }
 
     if (D_801CE638 != 9) {
-        func_8007C494();
+        Save_EepromWriteHeader();
     }
     return gdl;
 }
