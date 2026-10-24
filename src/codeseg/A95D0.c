@@ -824,8 +824,6 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DCD34.s")
 #endif
 
-#ifdef NON_MATCHING
-// Stack layout and loop strength reduction differ (the D_80228110 load moves above the unk8 store; s7/s8 swap).
 void func_801DD2D0(UnkA95D0_Runner* runner) {
     UnkStruct_801DB0E4_arg0* e;
     f32 vec[3];
@@ -834,15 +832,16 @@ void func_801DD2D0(UnkA95D0_Runner* runner) {
     s32 j;
     UnkStruct_801DD2D0_Pos spDC = D_80225E68;
     UnkStruct_801DD2D0_Groups sp64 = D_80225E98;
+    s32 index;
 
-    if (runner->step - D_802245B4 != 2) {
+    index = runner->step - D_802245B4;
+    if (index != 2) {
         return;
     }
     D_802287A8 = 16;
     if (runner->frame == 1) {
         func_800AB92C();
-        for (i = 0; i < 2; i++) {
-            e = &D_80228190[i];
+        for (i = 0, e = D_80228190; i < 2; i++, e++) {
             e->unk0 = 3;
             e->unk4 = 0;
             e->unk8 = 0;
@@ -864,8 +863,7 @@ void func_801DD2D0(UnkA95D0_Runner* runner) {
                           sp64.unk0[i].end - sp64.unk0[i].start);
         }
     }
-    for (i = 0; i < 2; i++) {
-        e = &D_80228190[i];
+    for (i = 0, e = D_80228190; i < 2; i++, e++) {
         e->unk8 += (e->unk8 < 0x10) ? 2 : 1;
         if (D_80228110[i] > 0) {
             if (e->unk8 >= 0x10) {
@@ -889,9 +887,6 @@ void func_801DD2D0(UnkA95D0_Runner* runner) {
                       sp64.unk0[i].end - sp64.unk0[i].start);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DD2D0.s")
-#endif
 
 
 void func_801DD6B4(UnkA95D0_Runner* runner) {
