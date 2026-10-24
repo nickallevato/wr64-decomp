@@ -543,28 +543,40 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     (pt)->unk10 *= body->unk10;                                               \
     (pt)->unk14 = (d * dz * k) + (body->unk14 * vz);
 
+#define WATER_DAMP_POINT2(pt)                                                 \
+    vx2 = (pt)->unkC;                                                         \
+    vz2 = (pt)->unk14;                                                        \
+    d = (vx2 * dx) + (vz2 * dz);                                              \
+    (pt)->unkC = (d * dx * k) + (body->unk14 * vx2);                          \
+    (pt)->unk10 *= body->unk10;                                               \
+    (pt)->unk14 = (d * dz * k) + (body->unk14 * vz2);
+
 #ifdef NON_MATCHING
-// 3191/36500: the original keeps 1.0f in $fs0 across sqrtf (frame 0x40 with $fs0/$fs1 saved; 0x20 here), so the float registers differ throughout; the per-point blocks match in shape
+// 487/36500: in the pair blocks the original keeps the second point's vz in $fs1 (so it saves $fs0
+// and $fs1, and ra and the k spill sit 8 bytes higher); here it gets $f0 and d moves to $f2. The
+// `.0f` (not `0.0f`) in the test keeps the two zeros apart, as in the original
 void func_8004DAF0(void* arg0) {
     UnkStruct_80192690* body = arg0;
+    f32 vx;
     UnkStruct_8004B0F8_1* pt2;
-    f32 dz;
     UnkStruct_8004B0F8_1* pt;
     f32 vz;
-    f32 len;
-    f32 inv;
-    f32 d;
+    f32 vz2;
     f32 k;
     f32 dx;
-    f32 vx;
+    f32 inv;
+    f32 d;
+    f32 dz;
+    f32 vx2;
+    f32 len;
 
-    dx = body->unk6C;
-    dz = body->unk74;
+    vx = body->unk6C;
+    vz = body->unk74;
     k = 1.0f - body->unk14;
-    len = (dx * dx) + (dz * dz);
-    if (len == 0.0f) {
-        dx = 0.0f;
+    len = (vx * vx) + (vz * vz);
+    if (.0f == len) {
         dz = 0.0f;
+        dx = 0.0f;
     } else {
         inv = 1.0f / sqrtf(len);
         dx = body->unk6C * inv;
@@ -590,19 +602,19 @@ void func_8004DAF0(void* arg0) {
     pt2 = &body->unk30[5];
     if ((pt->unk1C | pt2->unk1C) & 1) {
         WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT(pt2);
+        WATER_DAMP_POINT2(pt2);
     }
     pt = &body->unk30[6];
     pt2 = &body->unk30[7];
     if ((pt->unk1C | pt2->unk1C) & 1) {
         WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT(pt2);
+        WATER_DAMP_POINT2(pt2);
     }
     pt = &body->unk30[9];
     pt2 = &body->unk30[10];
     if ((pt->unk1C | pt2->unk1C) & 1) {
         WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT(pt2);
+        WATER_DAMP_POINT2(pt2);
     }
     pt2 = &body->unk30[2];
     if ((body->unk30[0].unk1C | pt2->unk1C) & 1) {
