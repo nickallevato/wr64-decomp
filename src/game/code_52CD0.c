@@ -4949,14 +4949,14 @@ extern s32 D_800E62D4;
 extern s32 D_801CB340;
 
 #ifdef NON_MATCHING
-// Score 16915 of 116800: registers and scheduling; the per-course loops are written over D_801CF060[i] where the original steps pointers.
+// Score 10230 of 116800: registers and scheduling; the loop-invariant float constants take f20/f22 the other way round, and some loop values are spilled differently.
 void func_800AC184(void) {
     UnkStruct_80192690* rider;
     UnkStruct_80192690* rider2;
     GfxPool* pool;
     s32 i;
+    s32 t;
     s32 j;
-    s32 sp54;
 
     rider = &D_80192690[D_800D48DC];
     if (gPlayers == TWO_PLAYERS) {
@@ -5081,9 +5081,12 @@ void func_800AC184(void) {
                         D_801CF060[i].unk7C = 0xFF;
                         D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
                         D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
-                        D_801CF060[i].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
+                        t = SysUtils_Rand() & 0x3F;
                         D_801CF060[i].unk8 = 5;
-                        D_801CF060[i].unk80 = D_801CF060[i].unk84 = D_801CF060[i].unk88 = 100000.0f;
+                        D_801CF060[i].unk80 = 100000.0f;
+                        D_801CF060[i].unk84 = 100000.0f;
+                        D_801CF060[i].unk88 = 100000.0f;
+                        D_801CF060[i].unk10 = -80.0f - t;
                         if ((i % 3) == 0) {
                             D_801CF060[i].unk0 = 7;
                         }
@@ -5105,9 +5108,12 @@ void func_800AC184(void) {
                     D_801CF060[i].unk7C = 0xFF;
                     D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
                     D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
-                    D_801CF060[i].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
+                    t = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk8 = 5;
-                    D_801CF060[i].unk80 = D_801CF060[i].unk84 = D_801CF060[i].unk88 = 100000.0f;
+                    D_801CF060[i].unk80 = 100000.0f;
+                    D_801CF060[i].unk84 = 100000.0f;
+                    D_801CF060[i].unk88 = 100000.0f;
+                    D_801CF060[i].unk10 = -80.0f - t;
                     if ((i % 3) == 0) {
                         D_801CF060[i].unk0 = 7;
                     }
@@ -5119,18 +5125,17 @@ void func_800AC184(void) {
                     }
                     D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
                 }
-                for (i = 6, j = 100; j != 350; i++, j += 50) {
+                for (i = 6; i < 11; i++) {
                     D_801CF060[i].unk0 = 3;
                     D_801CF060[i].unk7C = 0xFF;
                     D_801CF060[i].unk8 = 1;
-                    sp54 = j;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 3000.0f;
-                    D_801CF060[i].unk10 = sp54;
+                    D_801CF060[i].unk10 = (i - 4) * 50;
                     D_801CF060[i].unk18 = 90.0f;
                     D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + 1100.0f;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
-                    D_801CF060[i].unk70 = ((s32) (SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
+                    D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
             }
             D_800E62CC = D_800E62C8 = 12;
@@ -5138,15 +5143,15 @@ void func_800AC184(void) {
         case SUNSET_BAY:
             if (gPlayers == ONE_PLAYER) {
                 if (D_800DAB68 == 0) {
-                    for (i = 0, j = 0; j != 360; i++, j += 120) {
+                    for (i = 0; i < 3; i++) {
                         D_801CF060[i].unkC = -4300.0f;
                         D_801CF060[i].unk14 = -800.0f;
                         D_801CF060[i].unk8 = 1;
                         D_801CF060[i].unk0 = 6;
                         D_801CF060[i].unk4C = 40.0f;
-                        D_801CF060[i].unk80 = COS((j / 360) * 4096) * 200.0f;
+                        D_801CF060[i].unk80 = COS(((i * 120) / 360) * 4096) * 200.0f;
                         D_801CF060[i].unk84 = 100000.0f;
-                        D_801CF060[i].unk88 = SIN((j / 360) * 4096) * 200.0f;
+                        D_801CF060[i].unk88 = SIN(((i * 120) / 360) * 4096) * 200.0f;
                     }
                     D_801CF060[0].unk9C = 10;
                     D_801CF060[1].unk9C = 11;
@@ -5208,9 +5213,12 @@ void func_800AC184(void) {
                     D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
                     D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
                     D_801CF060[i].unk8C = j;
-                    D_801CF060[i].unk10 = -50.0f - (s32) (SysUtils_Rand() & 0x3F);
+                    t = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk8 = 5;
-                    D_801CF060[i].unk80 = D_801CF060[i].unk84 = D_801CF060[i].unk88 = 100000.0f;
+                    D_801CF060[i].unk80 = 100000.0f;
+                    D_801CF060[i].unk84 = 100000.0f;
+                    D_801CF060[i].unk88 = 100000.0f;
+                    D_801CF060[i].unk10 = -50.0f - t;
                     D_801CF060[i].unk0 = 10;
                     D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
                 }
@@ -5273,18 +5281,17 @@ void func_800AC184(void) {
                         D_801CF060[2].unk4C = 50.0f;
                     }
                 }
-                for (i = 3, j = 270; j != 320; i++, j += 10) {
+                for (i = 3; i < 8; i++) {
                     D_801CF060[i].unk0 = 3;
                     D_801CF060[i].unk7C = 0xFF;
                     D_801CF060[i].unk8 = 1;
-                    sp54 = j;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 5000.0f;
-                    D_801CF060[i].unk10 = sp54;
+                    D_801CF060[i].unk10 = (i * 10) + 240;
                     D_801CF060[i].unk18 = 90.0f;
                     D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
-                    D_801CF060[i].unk70 = ((s32) (SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
+                    D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
             }
             D_800E62CC = D_800E62C8 = 9;
