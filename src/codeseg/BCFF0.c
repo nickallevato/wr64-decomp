@@ -1,45 +1,5 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EE9C0.s")
-
-// HUD_Init
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EED70.s")
-
-// Set up the HUD projection matrices in the current Gfx pool.
-extern f32 D_80227A24;
-extern u16 D_80228D24;
-
-void func_801EF3C4(void) {
-    MtxF sp40;
-
-    func_800481E0(&D_801AE948->unk4080, &D_80228D24, 24.0f, 1.3333334f, 16.0f, 4096.0f, 0.0f, 0.0f);
-    func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, D_80227A24, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-    guOrtho(&D_801AE948->unk4000, -160.0f, 160.0f, -120.0f, 120.0f, -1024.0f, 1024.0f, 1.0f);
-    guOrtho(&D_801AE948->unk4040, 0.0f, 320.0f, 240.0f, 0.0f, -1024.0f, 1024.0f, 1.0f);
-}
-
-// Per-frame update of the guide arrow
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EF504.s")
-
-// Draw the guide arrow (next-buoy compass) for each player.
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EFFD8.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F03E0.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F06A0.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F14B4.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F1CFC.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F2060.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F23A0.s")
-
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F25E0.s")
-
 typedef struct UnkStruct_80228C30 {
     /* 0x00 */ char pad0[0x18];
     /* 0x18 */ s32 unk18;
@@ -93,6 +53,7 @@ extern u8* gPortraitFaces[];
 extern f32 gPortraitBob[];
 extern char D_802279E0[];
 extern char D_802279EC[];
+extern f32 D_80227A24;
 extern s32 D_80228A9C;
 extern s32 D_80228AAC;
 extern s32 D_80228AB0;
@@ -104,6 +65,7 @@ extern s32 D_80228B50;
 extern s32 D_80228B54;
 extern UnkStruct_80228C30 D_80228C30[];
 extern s8 D_80228CF8[5];
+extern u16 D_80228D24;
 extern PortraitPos gPortraitPos[2][4];
 extern s32 D_80228DC8[];
 extern s32 D_80228DF8;
@@ -128,6 +90,44 @@ extern s32 D_801CE704;
 #define HUD_SCISRECT(gdl, x, y, w, h)                                                                            \
     gSPScisTextureRectangle(gdl++, ((x) << 2), ((y) << 2), (((x) + (w)) << 2), (((y) + (h)) << 2), G_TX_RENDERTILE, 0, \
                             0, 1 << 10, 1 << 10)
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EE9C0.s")
+
+// HUD_Init
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EED70.s")
+
+// Set up the HUD projection matrices in the current Gfx pool.
+
+void func_801EF3C4(void) {
+    MtxF sp40;
+
+    func_800481E0(&D_801AE948->unk4080, &D_80228D24, 24.0f, 1.3333334f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, D_80227A24, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    guOrtho(&D_801AE948->unk4000, -160.0f, 160.0f, -120.0f, 120.0f, -1024.0f, 1024.0f, 1.0f);
+    guOrtho(&D_801AE948->unk4040, 0.0f, 320.0f, 240.0f, 0.0f, -1024.0f, 1024.0f, 1.0f);
+}
+
+// Per-frame update of the guide arrow
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EF504.s")
+
+// Draw the guide arrow (next-buoy compass) for each player.
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EFFD8.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F03E0.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F06A0.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F14B4.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F1CFC.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F2060.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F23A0.s")
+
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F25E0.s")
 
 #ifdef NON_MATCHING
 // Same control flow and stack frame; register allocation and scheduling differ throughout
