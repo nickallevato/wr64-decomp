@@ -46,7 +46,195 @@ extern UnkStruct_80160430 D_80160430[];
 extern UnkStruct_80160A98 D_80160A98[];
 extern s32 D_80192498; /* the window radius, N << 6 */
 
+extern f32 D_800D4738;
+extern f32 D_800D473C;
+extern f32 D_800D4740;
+extern f32 D_800D4744;
+extern s32 D_800D4748;
+extern s32 D_800D474C;
+extern f32 D_800D4750;
+extern s32 D_800D4754;
+extern s32 D_800D4758;
+extern s32 D_800D475C;
+extern s32 D_800D4760;
+extern f32 D_800D4764;
+extern f32 D_801924B4;
+extern f32 D_801924C0;
+extern f32 D_801924C4;
+extern f32 D_801924C8;
+extern s32 D_80223934;
+
+/*
+ * Seven vertices at height D_800D4740 around a point ahead of the camera, found as in
+ * func_80050B78 from the view's corner rays: alpha from the distance to the camera, and texture
+ * coordinates projected towards the camera height and scrolled by D_800D475C/D_800D4760.
+ */
+
+#ifdef NON_MATCHING
+// 21445/49800: float register allocation and stack layout (frame 0x108 here, 0xF0 in the original), as in func_80050B78
+void func_8004C1D0(s32 view, Vtx* vtx) {
+    camera_unk_1* cam;
+    s32 angle;
+    s32 i;
+    f32 d;
+    f32 h;
+    f32 hv;
+    f32 w;
+    f32 s;
+    f32 ax;
+    f32 ay;
+    f32 az;
+    f32 bx;
+    f32 by;
+    f32 bz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 e;
+    f32 rx;
+    f32 ry;
+    f32 rz;
+    f32 dist;
+    f32 r;
+    f32 upx;
+    f32 upy;
+    f32 upz;
+    f32 lox;
+    f32 loy;
+    f32 loz;
+    f32 hix;
+    f32 hiy;
+    f32 hiz;
+    f32 px;
+    f32 pz;
+    f32 k;
+    f32 a;
+    Vtx* vp;
+
+    if (view != 0) {
+        cam = &gCameraPerspective[D_80223934];
+    } else {
+        cam = &gCameraPerspective[D_80223930];
+    }
+    angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
+    d = cam->unk9C;
+    h = (d * SIN(angle)) / COS(angle);
+    hv = h;
+    w = (h * 320.0f) / 240.0f;
+    if (gPlayers == TWO_PLAYERS) {
+        hv = h;
+        if (D_801CE638 == 1) {
+            hv = h * 0.5f;
+        }
+    }
+    ax = cam->unk70;
+    ay = cam->unk74;
+    az = cam->unk78;
+    bx = cam->unk64;
+    by = cam->unk68;
+    bz = cam->unk6C;
+    cx = (ay * bz) - (az * by);
+    cy = (az * bx) - (ax * bz);
+    cz = (ax * by) - (ay * bx);
+    e = cam->unk94;
+    hix = (e + w) * cx;
+    hiy = (e + w) * cy;
+    hiz = (e + w) * cz;
+    lox = (e - w) * cx;
+    loy = (e - w) * cy;
+    loz = (e - w) * cz;
+    upx = d * bx;
+    upy = d * by;
+    upz = d * bz;
+    r = D_800D4744;
+    s = D_800D4740 - cam->unk50;
+    dist = (d * r * 1.732f) / 320.0f;
+
+    e = cam->unk98 - hv;
+    rx = (ax * e) + upx;
+    ry = (ay * e) + upy;
+    rz = (az * e) + upz;
+    if ((ry + hiy) > 5.0f) {
+        a = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+        if (a < dist) {
+            dist = a;
+        }
+    }
+    if ((ry + loy) > 5.0f) {
+        a = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+        if (a < dist) {
+            dist = a;
+        }
+    }
+    e = cam->unk98 + hv;
+    rx = (ax * e) + upx;
+    ry = (ay * e) + upy;
+    rz = (az * e) + upz;
+    if ((ry + hiy) > 5.0f) {
+        a = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+        if (a < dist) {
+            dist = a;
+        }
+    }
+    if ((ry + loy) > 5.0f) {
+        a = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+        if (a < dist) {
+            dist = a;
+        }
+    }
+    dist = (r * 0.866f) + dist;
+    px = cam->unk4C + (dist * cam->unkF0);
+    pz = cam->unk54 + (dist * cam->unkF4);
+    k = r * D_800D4764;
+
+    vtx[6].v.ob[0] = SysUtils_Round(px - r);
+    vtx[1].v.ob[0] = vtx[5].v.ob[0] = SysUtils_Round(px - (D_800D4744 * 0.5f));
+    vtx[0].v.ob[0] = SysUtils_Round(px - (cam->unkF0 * k));
+    vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + px);
+    vtx[3].v.ob[0] = SysUtils_Round(px + D_800D4744);
+    vtx[0].v.ob[1] = vtx[1].v.ob[1] = vtx[2].v.ob[1] = vtx[3].v.ob[1] = vtx[4].v.ob[1] = vtx[5].v.ob[1] =
+        vtx[6].v.ob[1] = SysUtils_Round(D_800D4740);
+    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(pz - (D_800D4744 * 0.866f));
+    vtx[0].v.ob[2] = SysUtils_Round(pz - (cam->unkF4 * k));
+    vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(pz);
+    vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + pz);
+
+    if (gCourseID == DOLPHIN_PARK) {
+        D_800D475C = D_800D4760 = 0;
+    } else if (D_801CE638 == 21) {
+        D_800D475C = 0x708;
+        D_800D4760 = 0x76C;
+    } else {
+        D_800D475C = (D_800D475C + D_800D4748) & 0xFFF;
+        D_800D4760 = (D_800D4760 + D_800D474C) & 0x7FF;
+    }
+    D_801924C4 = D_801924B4 / (f32) (D_800D4754 << 12);
+    D_801924C8 = D_801924C0 / (f32) (D_800D4758 << 11);
+    s = D_800D4740 - cam->unk50;
+    if (s == 0.0f) {
+        k = 1.0f;
+    } else {
+        k = (D_800D4750 - cam->unk50) / s;
+    }
+    for (i = 6; i >= 0; i--) {
+        vp = &vtx[i];
+        px = vp->v.ob[0] - cam->unk4C;
+        pz = vp->v.ob[2] - cam->unk54;
+        a = (sqrtf((px * px) + (pz * pz)) * D_800D4738) + D_800D473C;
+        if (a < 0.5f) {
+            vp->v.cn[3] = 0;
+        } else if (a > 254.5f) {
+            vp->v.cn[3] = 255;
+        } else {
+            vp->v.cn[3] = a + 0.5f;
+        }
+        vp->v.tc[0] = SysUtils_Round((cam->unk4C + (k * px)) / D_801924C4) + D_800D475C;
+        vp->v.tc[1] = SysUtils_Round((cam->unk54 + (k * pz)) / D_801924C8) + D_800D4760;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
+#endif
 
 extern f32 D_800D4768;
 extern s32 D_800D476C;
