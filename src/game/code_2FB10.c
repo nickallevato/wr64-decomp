@@ -18,11 +18,6 @@ typedef struct UnkStruct_801C26E8 {
     /* 0x0C */ s8 name[4];
 } UnkStruct_801C26E8; /* size = 0x10 */
 
-typedef struct UnkStruct_80228AE0 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ char pad4[0x18];
-} UnkStruct_80228AE0; /* size = 0x1C */
-
 extern s32 gPlayer2Rider;
 extern UnkStruct_801C1FF0 gBestTimes[][3];
 extern UnkStruct_801C1FF0 gBestLaps[];
