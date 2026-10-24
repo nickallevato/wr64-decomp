@@ -26,6 +26,14 @@ extern RiderStruct gRiderRaceState[];
 extern s32 D_801CE708[4];
 // The asm names this word D_801CE6FC + 8; its symbol is in linker_scripts/us/rev1/resolve.txt.
 extern s32 D_801CE704;
+// The asm names these D_801CB350 + 0x80 and + 0xA0; their symbols are in linker_scripts/us/rev1/resolve.txt.
+extern s32 D_801CB3D0[];
+extern s32 D_801CB3F0[2];
+extern s32 D_801CB340[];
+extern const s16 D_800EABB0[];
+extern const s16 D_800EABBC[][8];
+extern u16 D_801CE72E;
+extern s32 D_80228AA8;
 extern s32 D_i1_802C9444[][3];
 extern TexEntry D_80226890[];
 
@@ -36,6 +44,10 @@ s32 Save_EepromWriteHeader(void);
 Gfx* func_80093AFC(Gfx*);
 void func_801EC830(void);
 void func_800C37D4(s32);
+void func_800BFE70(u8* arg0);
+void func_i1_802C6DCC(void);
+void func_i1_802C6FE0(void);
+void func_i1_802C7394(void);
 s32 Save_EepromWriteStunt(s32);
 void GameState_EnterTimeTrialsResults(void);
 void GameState_EnterStuntModeResults(void);
@@ -208,7 +220,139 @@ Gfx* func_i1_802C5AE4(Gfx* dList) {
     return dList;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C5DF4.s")
+void func_i1_802C5DF4(void) {
+    s32 flag;
+    s32 points;
+    s32 need;
+
+    if ((D_80228A16 == 1) && (gGameState == 0x28)) {
+        if ((D_800DAB64 != 0) && (gGameModes == GMODE_CHAMPIONSHIP) && (gCourseID == DOLPHIN_PARK)) {
+            func_800BFE70((u8*) &D_80192610);
+        } else {
+            func_800BFDD0(&D_80192610);
+        }
+        func_800BFEF8((u8*) &D_80192630);
+    }
+
+    if (gCourseID == DOLPHIN_PARK) {
+        if (D_801CE6FC != 0) {
+            if (D_i1_802C9440 == 0) {
+                gGameModeState = 1;
+                D_i1_802C9440 = -1;
+            }
+            if ((gGameModeState == 2) && GAME_NOT_PAUSED) {
+                gRiderGameModes = RACE_MODE;
+            }
+        }
+    } else {
+        flag = 0;
+        if (D_i1_802C9440 >= 0) {
+            D_i1_802C9440++;
+            if (gPlayers == ONE_PLAYER) {
+                if ((gGameModes == GMODE_STUNT) || (gGameModes == GMODE_TIME_TRIALS)) {
+                    if (D_i1_802C9440 >= 10) {
+                        flag = 1;
+                    }
+                } else if (D_i1_802C9440 >= 50) {
+                    flag = 1;
+                }
+            } else if (D_i1_802C9440 >= 46) {
+                flag = 1;
+            }
+            if (flag != 0) {
+                gGameModeState = 1;
+                D_i1_802C9440 = -1;
+            }
+        }
+        if ((gGameModeState == 2) && GAME_NOT_PAUSED) {
+            gRiderGameModes = RACE_MODE;
+        }
+    }
+
+    if (gPlayers == ONE_PLAYER) {
+        if (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) {
+            if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
+                D_801CB3D0[D_801CB334] = gRiderRaceState[gPlayer1Rider].raceTime;
+                if (D_802C96CC == D_801CB334) {
+                    points = D_801CB340[0] + D_800EABB0[gRiderRaceState[gPlayer1Rider].racePosition];
+                    need = D_800EABBC[gDifficulty][D_801CB334];
+                    if (points >= need) {
+                        D_i1_802C9510 = 1;
+                    }
+                }
+            }
+            func_i1_802C6FE0();
+        } else if ((D_801CE72E != 0) && (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
+            if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
+                D_801CB3D0[D_801CB334] = gRiderRaceState[gPlayer1Rider].raceTime;
+                if (D_802C96CC == D_801CB334) {
+                    points = D_801CB340[0];
+                    need = D_800EABBC[gDifficulty][D_801CB334];
+                    if (points >= need) {
+                        D_i1_802C9510 = 1;
+                    }
+                }
+            }
+            D_801CE6F0 = 1;
+            func_i1_802C6DCC();
+        }
+    } else if ((gRiderRaceState[gPlayer1Rider].unk2F4 != 0) && (gRiderRaceState[gPlayer2Rider].unk2F4 != 0)) {
+        if (gRiderRaceState[gPlayer1Rider].raceTime == gRiderRaceState[gPlayer2Rider].raceTime) {
+            D_801CE6F0 = 3;
+            func_i1_802C7394();
+            D_80228AA8 = 3;
+        } else if (gRiderRaceState[gPlayer1Rider].raceTime < gRiderRaceState[gPlayer2Rider].raceTime) {
+            D_801CE6F0 = 2;
+            if (D_801CB3F0[0] < 99) {
+                D_801CB3F0[0]++;
+            }
+            func_i1_802C6FE0();
+            D_80228AA8 = 1;
+        } else {
+            D_801CE6F0 = 1;
+            if (D_801CB3F0[1] < 99) {
+                D_801CB3F0[1]++;
+            }
+            func_i1_802C6FE0();
+            D_80228AA8 = 2;
+        }
+    } else if (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) {
+        D_801CE6F0 = 2;
+        if (D_801CB3F0[0] < 99) {
+            D_801CB3F0[0]++;
+        }
+        func_i1_802C6FE0();
+        D_80228AA8 = 1;
+    } else if (gRiderRaceState[gPlayer2Rider].unk2F4 != 0) {
+        D_801CE6F0 = 1;
+        if (D_801CB3F0[1] < 99) {
+            D_801CB3F0[1]++;
+        }
+        func_i1_802C6FE0();
+        D_80228AA8 = 2;
+    } else if (D_801CE72E != 0) {
+        if ((gRiderRaceState[gPlayer1Rider].finishState != 0) && (gRiderRaceState[gPlayer2Rider].finishState != 0)) {
+            D_801CE6F0 = 3;
+            func_i1_802C7394();
+            D_80228AA8 = 3;
+        } else if (gRiderRaceState[gPlayer1Rider].finishState != 0) {
+            D_801CE6F0 = 1;
+            if (D_801CB3F0[1] < 99) {
+                D_801CB3F0[1]++;
+            }
+            D_80228AA8 = 2;
+        } else if (gRiderRaceState[gPlayer2Rider].finishState != 0) {
+            D_801CE6F0 = 2;
+            if (D_801CB3F0[0] < 99) {
+                D_801CB3F0[0]++;
+            }
+            D_80228AA8 = 1;
+        }
+        if ((D_801CE6F0 == 1) || (D_801CE6F0 == 2)) {
+            func_i1_802C6DCC();
+        }
+    }
+}
 
 void func_i1_802C63B4(void) {
     s32 i;

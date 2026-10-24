@@ -10,3 +10,6 @@ D_801CE704 = 0x801CE704;
 D_801CE700 = 0x801CE700;
 /* func_i1_802C6DCC (ovl_i1) reads D_801CE708[4], which the asm names D_801CE6FC + 0xC. */
 D_801CE708 = 0x801CE708;
+/* func_i1_802C5DF4 (ovl_i1) uses D_801CB3D0[] and D_801CB3F0[2], which the asm names D_801CB350 + 0x80 and + 0xA0. */
+D_801CB3D0 = 0x801CB3D0;
+D_801CB3F0 = 0x801CB3F0;
