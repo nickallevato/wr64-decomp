@@ -4719,7 +4719,7 @@ void func_800AAAC8(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 680 of 39700: float register allocation in the case 1/2 position and the steering block.
+// Score 60 of 39700: two float registers swap in each of the case 1/2 position blocks (the 200.0f constant and the SIN value).
 void func_800AB25C(s32 arg0) {
     s32 angle;
     f32 dist;
@@ -4731,7 +4731,7 @@ void func_800AB25C(s32 arg0) {
                 case 1:
                     angle = ((D_801D0758 - 20.0f) / 360.0f) * 4096.0f;
                     dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
-                    D_801D0754 = (COS(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unkC;
+                    D_801D0754 = D_801CF060[D_801CF060[arg0].unk7C].unkC + (COS(angle) * dist);
                     D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
                     if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
                         (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 50)) {
@@ -4747,7 +4747,7 @@ void func_800AB25C(s32 arg0) {
                 case 2:
                     angle = ((D_801D0758 + 20.0f) / 360.0f) * 4096.0f;
                     dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
-                    D_801D0754 = (COS(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unkC;
+                    D_801D0754 = D_801CF060[D_801CF060[arg0].unk7C].unkC + (COS(angle) * dist);
                     D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
                     if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
                         (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 55)) {
@@ -4788,7 +4788,7 @@ void func_800AB25C(s32 arg0) {
             D_801CF060[arg0].unk1C = 0.0f;
             D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
             D_801D0764 =
-                ((D_801CF060[arg0].unk4C * ((180 - FABS(D_801D0760)) / 180.0f)) - D_801D0768) * 0.15 + D_801D0768;
+                ((((180 - FABS(D_801D0760)) / 180.0f) * D_801CF060[arg0].unk4C) - D_801D0768) * 0.15 + D_801D0768;
             D_801CF060[arg0].unkC +=
                 (D_801CF060[arg0].unk24 = COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
             D_801CF060[arg0].unk14 +=
