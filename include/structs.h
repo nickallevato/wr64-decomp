@@ -755,6 +755,12 @@ typedef struct UnkStruct_8007CB68_2_s {
     u8 unk1D8[8][5];
 } UnkStruct_8007CB68_2;
 
+typedef struct UnkStruct_80052C6C_2_s {
+    /* 0x00 */ Vec3f unk0;
+    /* 0x0C */ Vec3f unkC;
+    /* 0x18 */ Vec3f unk14;
+} UnkStruct_80052C6C_2; /* size = 0x24 */
+
 // Pointers into the rider's parts at 0x660 (RiderPart, defined in code_C6C0.c).
 typedef struct UnkStruct_80192690_A48 {
     /* 0x00 */ struct RiderPart* unk0;

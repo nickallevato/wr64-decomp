@@ -18,12 +18,6 @@ typedef struct UnkStruct_80052C6C_1_s {
     /* 0xB */ s8 unkB;  /* inferred */
 } UnkStruct_80052C6C_1; /* size = 0xC */
 
-typedef struct UnkStruct_80052C6C_2_s {
-    /* 0x0 */ Vec3f unk0;
-    /* 0xC */ Vec3f unkC;
-    /* 0x14 */ Vec3f unk14;
-} UnkStruct_80052C6C_2; /* size = 0x24 */
-
 struct UnkStruct_80052480 {
     /* 0x00 */ s8 unk0;       /* inferred */
     /* 0x01 */ s8 unk1;       /* inferred */
