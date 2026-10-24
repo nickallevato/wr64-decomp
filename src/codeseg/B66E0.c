@@ -21,7 +21,13 @@ extern UnkStruct_80228A78 D_80226E30; /* initial value, copied by func_801EAF78 
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8800.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8A84.s")
+/* Sets the printer's mode and corner colours, then has func_801E8B24 print arg2 (the time-trial best times) at (x, y). */
+Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 arg2, s32 x, s32 y, s32 mode, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1,
+                   u8 r2, u8 g2, u8 b2, u8 r3, u8 g3, u8 b3) {
+    gdl = func_801E946C(gdl, mode, (s32) r0, (s32) g0, (s32) b0, (s32) r1, (s32) g1, (s32) b1,
+                        (s32) r2, (s32) g2, (s32) b2, (s32) r3, (s32) g3, (s32) b3);
+    return func_801E8B24(gdl, font, arg2, x, y);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E8B24.s")
 
