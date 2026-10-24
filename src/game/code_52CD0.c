@@ -3525,13 +3525,12 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 17031 of 259500: registers and scheduling; the frame is 0x78 against 0x70. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
+// Score 16348 of 259500: registers and scheduling; locals sit higher in the frame than in the original. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
     camera_unk_1* cam;
     f32 sp4C;
     f32 sp48;
     StructVarS0* lead;
-    f32 diff;
     s32 t;
     UnkStruct_801CE780_unk4_unk4* node;
     s32 angle;
@@ -3994,11 +3993,10 @@ void func_800A68A4(s32 arg0) {
             }
         } else if (D_801CF060[arg0].unk8 == 13) {
             D_801D0754 = Math_Normalize_Angle(D_801CF060[arg0].unk8C - D_801CF060[arg0].unk18);
-            diff = D_801D0754;
-            if (diff >= 10.0f) {
+            if (D_801D0754 >= 10.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 10.0f);
             }
-            if (diff <= -10.0f) {
+            if (D_801D0754 <= -10.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 10.0f);
             }
             D_801CF060[arg0].unk1C = Math_Normalize_Angle(
