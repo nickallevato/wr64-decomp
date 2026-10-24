@@ -353,7 +353,234 @@ void func_801EF3C4(void) {
 }
 
 // Per-frame update of the guide arrow
+#ifdef NON_MATCHING
+// Score 9735: the float literal at 0x80227A34 is an extern here (its rodata is in the F6010 data blob), so its address is hoisted into s7 and i moves to s8; node selection and the show flag also schedule differently.
+extern s32 D_80223934;
+extern UnkStruct_801BC940 D_801BC940[];
+extern s32 D_801BFA40;
+extern f32 D_80227A28;
+extern f32 D_80227A2C;
+extern f32 D_80227A30;
+extern f32 D_80227A34;
+extern f32 D_80227A38;
+extern f32 D_80227A3C;
+extern f32 D_80227A40;
+
+f32 func_801ED090(f32 arg0);
+s32 func_801ED388(s32 arg0, s32 arg1);
+s32 func_801ED4E0(s32 arg0, s32 arg1);
+
+void func_801EF504(void) {
+    s32 i;
+    camera_unk_1* cam;
+    UnkStruct_80192690* p;
+    RiderStruct* rider;
+    UnkStruct_801AEE20* node;
+    UnkStruct_801BC940* obj;
+    s32 show;
+    s32 found;
+    f32 dirX;
+    f32 dirZ;
+    f32 dx;
+    f32 dz;
+    f32 fwd;
+    f32 cross;
+    f32 dot;
+    s32 angle;
+    s32 diff;
+    s32 step;
+    f32 dist;
+
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            cam = &gCameraPerspective[D_80223930];
+            p = &D_80192690[D_800D48DC];
+            rider = &D_801C2938[D_800D48DC];
+        } else {
+            cam = &gCameraPerspective[D_80223934];
+            p = &D_80192690[D_800D48E0];
+            rider = &D_801C2938[D_800D48E0];
+        }
+        dirX = cam->unk64;
+        dirZ = cam->unk6C;
+        dist = sqrtf(dirX * dirX + dirZ * dirZ);
+        if (dist > 0.0f) {
+            dirX /= dist;
+            dirZ /= dist;
+        }
+        if (rider->unk2F0 != 0) {
+            node = &D_801AEE20[rider->unkC];
+        } else if ((rider->unkC == rider->unk310) && (rider->lapCount == rider->unk320)) {
+            node = &D_801AEE20[rider->unkC];
+            if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > 0.0f) {
+                node = &D_801AEE20[node->unkA0];
+            }
+        } else {
+            node = &D_801AEE20[rider->unk310];
+            if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > -256.0f) {
+                node = &D_801AEE20[node->unkA0];
+            }
+        }
+        dx = node->unk0 - cam->unk4C;
+        dz = node->unk8 - cam->unk54;
+        dist = sqrtf(dx * dx + dz * dz);
+        if (dist > 0.0f) {
+            dx /= dist;
+            dz /= dist;
+        }
+        if ((node->unk9C == 0) && (rider->unk2DC == 0)) {
+            dot = node->unk70 * dirX + node->unk74 * dirZ;
+            cross = node->unk70 * dz - node->unk74 * dx;
+            if (((node->unk98 == 0) && (cross > 0.0f)) || ((node->unk98 == 1) && (cross < 0.0f)) || (dot < 0.0f)) {
+                show = 0;
+            } else {
+                show = 1;
+            }
+        } else {
+            show = 0;
+        }
+        fwd = dirX * dx + dirZ * dz;
+        dot = fwd;
+        angle = func_801ED090(fwd);
+        rider->unk2D4 = angle;
+        cross = dirX * dz - dirZ * dx;
+        if (cross > 0.0f) {
+            rider->unk2D4 = 360 - angle;
+        }
+        diff = func_801ED388(rider->unk2D4, rider->unk2D0);
+        step = diff / 8;
+        if (step < 2) {
+            step = 2;
+        }
+        if (step >= diff) {
+            rider->unk2D0 = rider->unk2D4;
+        } else {
+            rider->unk2D0 += func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
+        }
+        if ((fwd < D_80227A28) && (node->unk9C == 1)) {
+            dx = node->unkC - cam->unk4C;
+            dz = node->unk14 - cam->unk54;
+            dist = sqrtf(dx * dx + dz * dz);
+            if (dist > 0.0f) {
+                dx /= dist;
+                dz /= dist;
+            }
+            cross = dirX * dz - dirZ * dx;
+            dot = dirX * dx + dirZ * dz;
+            if (dot < D_80227A2C) {
+                dx = node->unk18 - cam->unk4C;
+                dz = node->unk20 - cam->unk54;
+                dist = sqrtf(dx * dx + dz * dz);
+                if (dist > 0.0f) {
+                    dx /= dist;
+                    dz /= dist;
+                }
+                if ((cross < 0.0f) && (dirX * dz - dirZ * dx > 0.0f)) {
+                    dot = 1.0f;
+                } else {
+                    dot = dirX * dx + dirZ * dz;
+                }
+            }
+        }
+        show = (dot < D_80227A30) && ((dist > 2048.0f) || !show);
+        if (rider->unk31C != 0) {
+            show = 0;
+        }
+        if (func_80074448(cam->unk4C, cam->unk54) != 0) {
+            show = 0;
+        }
+        if (gGameModes == GMODE_STUNT) {
+            found = 0;
+            obj = D_801BC940;
+            if (D_801BFA40 > 0) do {
+                if (obj->unk4C == 8) {
+                    dx = obj->unk0 - cam->unk4C;
+                    dz = obj->unk8 - cam->unk54;
+                    dist = sqrtf(dx * dx + dz * dz);
+                    if (dist > 0.0f) {
+                        dx /= dist;
+                        dz /= dist;
+                    }
+                    if ((D_80227A34 <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (0) { // FAKE: from the permuter; keeps i in a saved register
+                }
+                obj++;
+            } while (obj < &D_801BC940[D_801BFA40]);
+            if (found) {
+                show = 0;
+            }
+        }
+        if ((rider->unk2F0 != 0) || (rider->unk2E4 != 0) || (rider->unk328 >= 40)) {
+            show = 1;
+        }
+        if ((gGameModes != GMODE_STUNT) && (gCourseID == DOLPHIN_PARK)) {
+            show = 0;
+        }
+        if (show && (D_800DAB68 != 0) && (gCourseID == MARINE_FORTRESS) && (rider->lapCount >= 2)) {
+            dx = p->unk44.x - D_80227A38;
+            dz = p->unk44.z - 2800.0f;
+            if (dx * dx + dz * dz < D_80227A3C) {
+                show = 0;
+            }
+        }
+        if (show) {
+            if (rider->unk2D8 < 0x7FFFFFFF) {
+                rider->unk2D8++;
+            }
+        } else {
+            rider->unk2D8 = 0;
+        }
+        if ((rider->unk2D8 >= 8) || (rider->unk2E0 >= 2)) {
+            if (rider->unk2E0 == 0) {
+                rider->unk2E0 = 8;
+            }
+            if (rider->unk2DC < 4) {
+                rider->unk2DC++;
+            }
+            if (rider->unk2E0 >= 2) {
+                rider->unk2E0--;
+            }
+        } else if (rider->unk2E0 == 0) {
+            if (rider->unk2DC > 0) {
+                rider->unk2DC--;
+            }
+        } else {
+            rider->unk2E0--;
+        }
+        dirX = p->unk6C;
+        dirZ = p->unk74;
+        dist = sqrtf(dirX * dirX + dirZ * dirZ);
+        if (dist > 0.0f) {
+            dirX /= dist;
+            dirZ /= dist;
+        }
+        dx = node->unk0 - p->unk44.x;
+        dz = node->unk8 - p->unk44.z;
+        dist = sqrtf(dx * dx + dz * dz);
+        if (dist > 0.0f) {
+            dx /= dist;
+            dz /= dist;
+        }
+        if ((func_801ED090(dirX * dx + dirZ * dz) >= 100.0f) && (p->unkB90 * D_80227A40 >= 10.0f) &&
+            (func_80074448(p->unk44.x, p->unk44.z) == 0) && (gCourseID != DOLPHIN_PARK)) {
+            if (rider->unk328 < 0x7FFFFFFF) {
+                rider->unk328++;
+            }
+        } else {
+            rider->unk328 = 0;
+        }
+        if ((rider->unk328 >= 40) && ((rider->unk328 % 20) == 0) && (gGameModeState == GMODE_STATE_STARTED)) {
+            AudioGeneral_PlaySound(0x35, i);
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EF504.s")
+#endif
 
 // Draw the guide arrow (next-buoy compass) for each player.
 extern Gfx D_1010528[];
