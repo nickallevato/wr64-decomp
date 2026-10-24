@@ -37,3 +37,9 @@ ctx_includes.c
 ctx.c.m2c
 venv/*
 venv_dir/*
+
+# Fork tooling (not tracked). No trailing slashes: worktrees link these in as symlinks.
+.venv
+tools/decomp-permuter
+tools/m2c
+/m2c/
