@@ -43,6 +43,13 @@ typedef struct UnkStruct_801DBF68 {
 
 extern struct UnkStruct_801DBF68 D_80225CF4;
 
+typedef struct UnkStruct_801DC0AC {
+    UnkStruct_801DBF68_s0 unk0[3];
+} UnkStruct_801DC0AC;
+
+extern UnkStruct_801DC0AC D_80225D94;
+extern UnkStruct_801DBF68_s0 D_80225E0C;
+
 void func_800AB92C(void);
 
 #define ANG_NORMALIZE_1(x) (x < 0.0f ? 360.0f : 0.0f)
@@ -50,8 +57,8 @@ void func_800AB92C(void);
 
 #define SIGNF(x) (x >= 0 ? 1.0f : -1.0f)
 
-extern s32 D_80228110;
-extern struct UnkStruct_801DB0E4_arg0 D_80228190;
+extern s32 D_80228110[];
+extern struct UnkStruct_801DB0E4_arg0 D_80228190[];
 extern s32 D_802287A8;
 extern s32 D_802287AC;
 
@@ -392,14 +399,38 @@ void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
             D_802287A8 = 1;
 
             if (arg0->unk8 == sp4C.unk0[var_s2].unk0) {
-                func_801DB0E4(&D_80228190, (UnkStruct_801DB0E4_arg1*) &sp4C.unk0[var_s2].unk8, &D_80228110);
+                func_801DB0E4(&D_80228190[0], (UnkStruct_801DB0E4_arg1*) &sp4C.unk0[var_s2].unk8, &D_80228110[0]);
             }
-            func_801DB1DC(&D_80228190, (UnkStruct_801DB0E4_arg1*) &sp4C.unk0[var_s2].unk8, &D_80228110);
+            func_801DB1DC(&D_80228190[0], (UnkStruct_801DB0E4_arg1*) &sp4C.unk0[var_s2].unk8, &D_80228110[0]);
         }
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC0AC.s")
+void func_801DC0AC(UnkA95D0_Runner* runner) {
+    s32 i;
+    UnkStruct_801DC0AC sp6C = D_80225D94;
+    UnkStruct_801DBF68_s0 sp44 = D_80225E0C;
+
+    if (runner->frame == 0) {
+        func_800AB92C();
+    }
+    for (i = 0; i < 3; i++) {
+        if ((runner->frame >= sp6C.unk0[i].unk0) && (runner->frame < sp6C.unk0[i].unk4)) {
+            D_802287A8++;
+            if (runner->frame == sp6C.unk0[i].unk0) {
+                func_801DB0E4(&D_80228190[0], (UnkStruct_801DB0E4_arg1*) &sp6C.unk0[i].unk8, &D_80228110[0]);
+            }
+            func_801DB1DC(&D_80228190[0], (UnkStruct_801DB0E4_arg1*) &sp6C.unk0[i].unk8, &D_80228110[0]);
+        }
+    }
+    if ((runner->frame >= sp44.unk0) && (runner->frame < sp44.unk4)) {
+        D_802287A8++;
+        if (runner->frame == sp44.unk0) {
+            func_801DB0E4(&D_80228190[1], (UnkStruct_801DB0E4_arg1*) &sp44.unk8, &D_80228110[1]);
+        }
+        func_801DB1DC(&D_80228190[1], (UnkStruct_801DB0E4_arg1*) &sp44.unk8, &D_80228110[1]);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC274.s")
 
@@ -417,13 +448,13 @@ void func_801DC404(UnkA95D0_Runner* runner) {
     D_802287A8 = 8;
     if (runner->frame == 1) {
         func_800AB92C();
-        func_801DB284(&D_80228190, &sp20, D_80228120, 8);
+        func_801DB284(&D_80228190[0], &sp20, D_80228120, 8);
     }
     t = runner->frame / runner->step->duration;
     sp20.unk0[0] += 300.0f * t;
     sp20.unk0[1] += -200.0f * t;
     sp20.unk0[2] += -200.0f * t;
-    func_801DB430(&D_80228190, &sp20, D_80228120, 8);
+    func_801DB430(&D_80228190[0], &sp20, D_80228120, 8);
 }
 
 void func_801DC5A8(UnkA95D0_Runner* runner) {
@@ -500,7 +531,7 @@ void func_801DD6B4(UnkA95D0_Runner* runner) {
     }
     if (func != NULL) {
         func(runner);
-        func_800AC098(&D_80228190, D_802287A8);
+        func_800AC098(&D_80228190[0], D_802287A8);
     }
 }
 
@@ -968,6 +999,8 @@ void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
 }
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0FF0.s")
+
+
 
 void func_801E11B4(GfxPool* pool, camera_unk_1* cam) {
     func_800481E0(&pool->unkE008[cam->unkE8], &cam->unkE4, cam->unk88, 4.0f / 3.0f, cam->unk9C, cam->unkA0,
