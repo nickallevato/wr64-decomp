@@ -1,5 +1,11 @@
 #include "global.h"
 
+extern const s16 D_800EAC14[][8];
+extern s32 D_801CB288[];
+extern s32 D_i4_802C7534;
+extern s32 D_802C76C4;
+extern s32 D_802C76C8;
+
 extern s16 D_801CE60C;
 extern s32 D_802C76D0;
 
@@ -36,7 +42,89 @@ void func_i4_802C5800(void) {
     func_80069798(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_802C76AC, &D_80198310, &D_80198350);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C58F8.s")
+void func_i4_802C58F8(void) {
+    s32 idx;
+    s32 i;
+    s32 j;
+    s32 isFound;
+
+    if (D_801CE608.gameMode == 11) {
+        D_i4_802C7534 = 1;
+    } else {
+        D_i4_802C7534 = 0;
+    }
+
+    if (D_801CE608.player == 1) {
+        D_802C76B0 = 0;
+        if (D_801CB280 & 8) {
+            D_802C76C8 = 1;
+            D_802C76D0 = 4;
+            D_802C76C4 = 1;
+        } else {
+            D_802C76C8 = 0;
+            D_802C76D0 = 3;
+            D_802C76C4 = 0;
+        }
+    } else {
+        D_802C76B0 = 2;
+        if (D_801CB280 & 8) {
+            D_802C76C8 = 3;
+            D_802C76D0 = 4;
+            D_802C76C4 = 1;
+        } else {
+            D_802C76C8 = 2;
+            D_802C76D0 = 3;
+            D_802C76C4 = 0;
+        }
+    }
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < D_801CB288[i] + 1; j++) {
+            idx = (i == 3) ? D_800EAC14[i - 1][j] : D_800EAC14[i][j];
+            D_i4_802C757C[idx][i] = 1;
+        }
+    }
+
+    if ((D_801CE608.gameMode == 0) || (D_801CE608.gameMode == 1)) {
+        if (!(D_801CB280 & 1)) {
+            D_i4_802C757C[1][1] = 0;
+        }
+        if (!(D_801CB280 & 2)) {
+            D_i4_802C757C[1][2] = 0;
+        }
+    }
+
+    for (i = 0; i < 9; i++) {
+        isFound = 0;
+        for (j = 0; j < 4; j++) {
+            if (D_i4_802C757C[i][j] != 0) {
+                isFound = 1;
+                break;
+            }
+        }
+        if (isFound) {
+            D_i4_802C7558[i] = 1;
+        }
+    }
+
+    if ((D_801CE608.gameMode == 0) || (D_801CE608.gameMode == 1)) {
+        D_i4_802C7558[0] = 0;
+    }
+
+    if (D_801CE608.player == 1) {
+        if (D_801CE608.gameMode == 0) {
+            D_802C76A4 = 1;
+        } else {
+            D_802C76A4 = 0;
+        }
+    } else {
+        D_802C76A4 = 1;
+    }
+
+    if (D_800DA9D0 < D_802C76A4) {
+        D_800DA9D0 = D_802C76A4;
+    }
+}
 
 Gfx* func_i4_802C5B78(Gfx* dList) {
     Gfx* temp_v0;
