@@ -39,7 +39,7 @@ Notes:
 
 - `tools/Torch` (asset extraction) is fetched by the submodule step but not built; `make init` does not need it.
 - The Makefile uses `.venv/bin/python3` automatically when it exists.
-- `make ctx` in the Makefile points at `tools/m2ctx.py`, which does not exist; the script is `tools/m2ctx` (`python3 tools/m2ctx <file.c>` writes `ctx.c`).
+- `make context` in the Makefile points at `tools/m2ctx.py`, which does not exist; the script is `tools/m2ctx` (`python3 tools/m2ctx <file.c>` writes `ctx.c`).
 
 ## Baseline (at e00a55f, clean build)
 
