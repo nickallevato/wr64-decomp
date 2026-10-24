@@ -587,7 +587,93 @@ void func_800AF798(Gfx** gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B08F8.s")
 
+extern s32 (*D_800E6D68)[16];
+extern s32 (*D_800E6D70)[10];
+extern s32 (*D_800E6D78)[10];
+extern UnkStruct_801D0798_unk1AA0* D_800E6D80;
+
+void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
+void func_801EDBD4(f32, f32, f32, f32*, f32*, f32*);
+void func_800AFBD0(s32);
+void func_800B08F8(s32);
+
+#ifdef NON_MATCHING
+// 8560: same blocks and calls. Here &gCameraPerspective and 0x10C stay in saved registers
+// (multu), where the original rebuilds each camera address with shifts and keeps the
+// D_800E6D60..D_800E6D80 addresses in s2-s7 instead; the frame is 0x80, not 0x78.
+void func_800B2ABC(void) {
+    s32 i;
+    UnkStruct_801D0798* e;
+    struct camera_unk_1* other;
+    struct camera_unk_1* cam;
+
+    D_801D7B18 = osGetTime();
+
+    D_801D7968 = &gCameraPerspective[D_80223930];
+    func_801EDBD4(D_801D7968->unk64, D_801D7968->unk68, D_801D7968->unk6C, &D_801D7974, &D_801D7978, &D_801D797C);
+    if ((D_801D7968->unk64 != 0.0f) || (D_801D7968->unk6C != 0.0f)) {
+        func_801EDAE0(D_801D7968->unk64, D_801D7968->unk68, D_801D7968->unk6C, 0.0f, 1.0f, 0.0f, &D_801D7980,
+                      &D_801D7984, &D_801D7988);
+        func_801EDAE0(D_801D7980, D_801D7984, D_801D7988, D_801D7968->unk64, D_801D7968->unk68, D_801D7968->unk6C,
+                      &D_801D798C, &D_801D7990, &D_801D7994);
+    } else {
+        D_801D7984 = 0.0f;
+        D_801D7988 = 0.0f;
+        D_801D7980 = 1.0f;
+        D_801D798C = 0.0f;
+        D_801D7990 = 0.0f;
+        D_801D7994 = 1.0f;
+    }
+    if (gPlayers == TWO_PLAYERS) {
+        D_801D7968 = &gCameraPerspective[D_80223934];
+        func_801EDBD4(D_801D7968->unk64, D_801D7968->unk68, D_801D7968->unk6C, &D_801D7998, &D_801D799C,
+                      &D_801D79A0);
+        if ((D_801D7968->unk64 != 0.0f) || (D_801D7968->unk6C != 0.0f)) {
+            func_801EDAE0(D_801D7968->unk64, D_801D7968->unk68, D_801D7968->unk6C, 0.0f, 1.0f, 0.0f, &D_801D79A4,
+                          &D_801D79A8, &D_801D79AC);
+            func_801EDAE0(D_801D79A4, D_801D79A8, D_801D79AC, D_801D7968->unk64, D_801D7968->unk68,
+                          D_801D7968->unk6C, &D_801D79B0, &D_801D79B4, &D_801D79B8);
+        } else {
+            D_801D79A8 = 0.0f;
+            D_801D79AC = 0.0f;
+            D_801D79A4 = 1.0f;
+            D_801D79B0 = 0.0f;
+            D_801D79B4 = 0.0f;
+            D_801D79B8 = 1.0f;
+        }
+    }
+    for (i = 0, e = D_801D0798; i < D_801D0790; i++, e++) {
+        D_800E6D60 = e;
+        D_800E6D68 = e->unk0;
+        D_800E6D70 = e->unk1000;
+        D_800E6D78 = e->unk1A00;
+        D_800E6D80 = e->unk1AA0;
+        func_800AE210(i);
+        if ((gPlayers == ONE_PLAYER) || ((gPlayers == TWO_PLAYERS) && (i != D_800D48E0))) {
+            D_801D7968 = cam = &gCameraPerspective[D_80223930];
+            other = &gCameraPerspective[D_80223934];
+        } else {
+            D_801D7968 = other = &gCameraPerspective[D_80223934];
+            cam = &gCameraPerspective[D_80223930];
+        }
+        D_801D796C = cam;
+        D_801D7970 = other;
+        if (gCurrentPauseMenuOption == -1) {
+            func_800B08F8(i);
+        }
+        func_800AFBD0(i);
+    }
+    D_801D7B18 = osGetTime() - D_801D7B18;
+    D_801D7B28 += D_801D7B18;
+    D_801D7B30++;
+    if (D_801D7B18 > D_801D7B20) {
+        D_801D7B20 = D_801D7B18;
+    }
+    func_800AF51C();
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B2ABC.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B305C.s")
 
