@@ -35,12 +35,15 @@ typedef struct UnkStruct_80160430_s {
     /* 0x1 */ s8 unk1;
 } UnkStruct_80160430;
 
-/* 8 bytes a cell */
+/* 8 bytes a cell: the cell's field offset, and its x and z offsets from the window centre */
 typedef struct UnkStruct_80160A98_s {
     /* 0x0 */ s32 unk0;
-    /* 0x4 */ s32 unk4;
+    /* 0x4 */ s16 unk4;
+    /* 0x6 */ s16 unk6;
 } UnkStruct_80160A98;
 
+extern UnkStruct_80160430 D_80160430[];
+extern UnkStruct_80160A98 D_80160A98[];
 extern s32 D_80192498; /* the window radius, N << 6 */
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004C1D0.s")
@@ -287,7 +290,62 @@ void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
     }
 }
 
+#ifdef NON_MATCHING
+// 285/14800: one move (the row index copied before its shift in the first loop) is missing, so the temps after it are numbered one lower; frame and stack match
+void func_8004F790(s32 amplitude) {
+    s32 i;
+    s32 j;
+    s32 bit;
+    s32 sum;
+    s32 k;
+    u8* row;
+    UnkStruct_80162420* q;
+    s32 h;
+    s32 rnd[6];
+
+    for (k = 5; k >= 0; k--) {
+        rnd[k] = SysUtils_Rand() & 0x7FFF;
+    }
+    for (i = 0; i < 0x200; i += 4) {
+        for (j = 0; j < 384; j++) {
+            bit = 1;
+            sum = 0;
+            for (k = 5; k >= 0; k--) {
+                if (bit & 1) {
+                    rnd[k] = SysUtils_Rand() & 0x7FFF;
+                }
+                bit *= 2;
+                sum += rnd[k];
+            }
+            h = SysUtils_Round(amplitude * (((sum / 6.0f) / 16383.5f) - 1.0f)) << 8;
+            // i and the row are byte offsets into the field (i steps by 4)
+            q = (UnkStruct_80162420*) ((u8*) D_80162420 + (j << 9) + i);
+            q->unk0 = h;
+            q->unk2 = 0;
+        }
+    }
+    for (k = 5; k >= 0; k--) {
+        rnd[k] = SysUtils_Rand() & 0x7FFF;
+    }
+    for (j = 0; j != 384; j++) {
+        row = (u8*) D_80162420 + (j << 9);
+        for (i = 0; i != 0x200; i += 4) {
+            bit = 1;
+            sum = 0;
+            for (k = 5; k >= 0; k--) {
+                if (bit & 1) {
+                    rnd[k] = SysUtils_Rand() & 0x7FFF;
+                }
+                bit *= 2;
+                sum += rnd[k];
+            }
+            ((UnkStruct_80162420*) (row + i))->unk0 += SysUtils_Round(amplitude * (((sum / 6.0f) / 16383.5f) - 1.0f)) << 8;
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F790.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F9E0.s")
 
