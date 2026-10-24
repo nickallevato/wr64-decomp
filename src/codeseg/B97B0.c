@@ -13,8 +13,12 @@ extern s32 D_800DA9FC;
 extern s32 D_800DAA08;
 extern s32 D_801CB334;
 extern s16 D_800EAC44[][4];
+extern s32 D_801CB330;
+extern s32 D_801CE704;
 
+void func_8004A208(void);
 void func_8009684C(s32 arg0, s32 arg1, s32 arg2);
+void func_800C4998(s32 arg0, s32 arg1);
 void func_801EE040(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
 void func_801EE274(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
 void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
@@ -102,7 +106,108 @@ void func_801EB180(void) {
     func_800C21F4(0, 0);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB4F4.s")
+void func_801EB4F4(void) {
+    s32 i;
+    s32 course;
+    s32 riders[4];
+
+    gPrevGameState = gGameState;
+    D_801CE630 = 0;
+    gGameState = GAME_STATE_DEMO;
+    D_801CE638 = 1;
+    D_801CE63C = 1;
+    D_801CE640 = 0;
+    D_801CE644 = 0;
+    D_800DAB1C = 0;
+    gVIsPerFrame = 3;
+    gDifficulty = DIFFICULTY_EXPERT;
+    switch (D_800DA9F8) {
+        case 0:
+            gGameModes = GMODE_CHAMPIONSHIP;
+            gPlayers = ONE_PLAYER;
+            gRiders = 4;
+            D_801CB330 = 2;
+            gCourseID = D_801CB330;
+            riders[0] = D_800EAC44[D_800DA9FC][0];
+            riders[1] = D_800EAC44[D_800DA9FC][1];
+            riders[2] = D_800EAC44[D_800DA9FC][2];
+            riders[3] = D_800EAC44[D_800DA9FC][3];
+            func_80096960(0, riders[0], riders[1], riders[2], riders[3]);
+            D_801CE728[0] = 3;
+            D_801CE6F8 = 1;
+            D_801CE704 = 4;
+            func_800C4998(0, gCourseID);
+            break;
+        case 1:
+            gGameModes = GMODE_STUNT;
+            gPlayers = ONE_PLAYER;
+            gRiders = 1;
+            D_801CB330 = 1;
+            gCourseID = D_801CB330;
+            riders[0] = D_800EAC44[D_800DA9FC][0];
+            riders[2] = riders[1] = riders[3] = 0;
+            func_80096960(0, riders[0], riders[1], riders[2], riders[3]);
+            D_801CE728[0] = 1;
+            D_801CE6F8 = 0;
+            func_800C4998(3, gCourseID);
+            break;
+        default:
+            gGameModes = GMODE_2P_VS;
+            gPlayers = TWO_PLAYERS;
+            gRiders = 2;
+            D_801CB330 = 1;
+            gCourseID = D_801CB330;
+            riders[0] = D_800EAC44[D_800DA9FC][0];
+            riders[1] = D_800EAC44[D_800DA9FC][1];
+            riders[2] = 0;
+            riders[3] = 0;
+            func_80096960(4, riders[0], riders[1], riders[0], riders[1]);
+            D_801CE728[0] = 3;
+            D_800D4970 = 0;
+            D_801CE6F8 = 0;
+            func_800C4998(1, gCourseID);
+            break;
+    }
+    D_800D49B0 = 0x14;
+    gBuoyMisses = 5;
+    D_801CE608.gameMode = gGameModes;
+    D_801CE608.player = gPlayers;
+    D_801CE608.rider = gRiders;
+    D_801CE608.waveLevel = D_800D49B0;
+    D_801CE608.powerMisses = gBuoyMisses;
+    D_801CE608.lapCount = D_801CE728[0];
+    D_801CE608.unk_14 = 0;
+    D_800D8178 = 0;
+    D_801CE600 = 1;
+    D_801CB334 = 0;
+    D_801CE6F0 = 0;
+    D_800DAB68 = 0;
+    for (i = 0; i < gRiders; i++) {
+        D_80192690[i].unkB68 = riders[i];
+        D_80192690[i].unkB6C = D_800D96A4[gCourseID][riders[i]].unk0;
+        D_80192690[i].unkB70 = D_800D96A4[gCourseID][riders[i]].unk4;
+        D_80192690[i].unkB74 = D_800D96A4[gCourseID][riders[i]].unk8;
+    }
+    D_801CE6F4[1] = 0;
+    D_801CE6F4[0] = D_801CE6F4[1];
+    gRiderGameModes = AI_MODE;
+    D_801CE64C = 0;
+    gGameModeState = GMODE_STATE_0;
+    course = gCourseID;
+    if (course < DOLPHIN_PARK) {
+        course = DOLPHIN_PARK;
+    }
+    if (course >= RIDER_SELECTION) {
+        course = SOUTHERN_ISLAND;
+    }
+    func_8009684C(0x08060000, D_800DB568[course].unk0, D_800DB568[course].unk2);
+    FadeTransition_SetProps(2, 4, 0);
+    func_801E6A4C(0, 0);
+    gCameraPerspective->viewMode = 3;
+    if (gPlayers == TWO_PLAYERS) {
+        gCameraPerspective[1].viewMode = gCameraPerspective->viewMode;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EB91C.s")
 
