@@ -5,7 +5,7 @@
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5AE4.s")
 
 void* func_8007C31C();
-void* func_801EB91C();
+void* GameState_EnterCourseOverview();
 void* func_i2_802C5E28();
 void* func_i2_802C6ADC(Gfx*);
 Gfx* func_i2_802C7C50(Gfx*);
@@ -86,10 +86,10 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
                 func_801EB180();
                 break;
             case 30:
-                func_801EB91C();
+                GameState_EnterCourseOverview();
                 break;
             case 20:
-                func_801EBFE4();
+                GameState_EnterCourseSelect();
                 break;
         }
     }

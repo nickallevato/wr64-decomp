@@ -4,7 +4,7 @@
 
 void func_i0_802C6878(void);
 Gfx* func_i0_802C6AE4(Gfx*);
-void func_801EB4F4(void);
+void GameState_EnterDemo(void);
 extern s32 D_801519D4;
 extern s32 D_80154344;
 extern s32 D_i0_802C6BC4;
@@ -98,16 +98,16 @@ Gfx* func_i0_802C6944(Gfx* arg0) {
     if (D_80228A16 == 1) {
         switch (D_801CE630) { /* irregular */
             case 0xA:
-                func_801EBD28();
+                GameState_EnterRiderSelect();
                 break;
             case 0x3C:
-                func_801EC304();
+                GameState_EnterOptionsMenu();
                 break;
             case 0x2:
                 func_801EB180();
                 break;
             case 0x7:
-                func_801EB4F4();
+                GameState_EnterDemo();
                 break;
         }
     }

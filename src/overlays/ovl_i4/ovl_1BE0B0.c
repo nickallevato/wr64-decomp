@@ -49,7 +49,7 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
                 break;
 
             case 10:
-                func_801EBD28();
+                GameState_EnterRiderSelect();
                 break;
 
             default:

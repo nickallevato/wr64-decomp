@@ -15,7 +15,7 @@ Gfx* func_i12_802C5800(Gfx* dList) {
     if (gGameState == 0x46) {
         func_i12_802C5F6C();
     } else if (D_80228A16 == 1) {
-        func_801EC304();
+        GameState_EnterOptionsMenu();
     }
 
     return dList;

@@ -1,11 +1,11 @@
 #include "global.h"
 
-void func_801EC3AC(void);
-void func_801EC500(void);
-void func_801EC5B4(void);
-void func_801EC650(void);
-void func_801EC6EC(void);
-void func_801EC780(void);
+void GameState_EnterChangeNames(void);
+void GameState_EnterViewRecords(void);
+void GameState_EnterChangeConditions(void);
+void GameState_EnterAudio(void);
+void GameState_EnterEraseCourseRecords(void);
+void GameState_EnterSaveAndLoad(void);
 Gfx* func_i7_802C5A18(void);
 void func_i7_802C5C94(s32);
 extern s32 gCurrentOptionsMenuItem;
@@ -44,22 +44,22 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
     } else if (D_80228A16 == 1) {
         switch (D_801CE630) {
             case 0x3E:
-                func_801EC3AC();
+                GameState_EnterChangeNames();
                 break;
             case 0x42:
-                func_801EC500();
+                GameState_EnterViewRecords();
                 break;
             case 0x44:
-                func_801EC5B4();
+                GameState_EnterChangeConditions();
                 break;
             case 0x46:
-                func_801EC6EC();
+                GameState_EnterEraseCourseRecords();
                 break;
             case 0x40:
-                func_801EC780();
+                GameState_EnterSaveAndLoad();
                 break;
             case 0x48:
-                func_801EC650();
+                GameState_EnterAudio();
                 break;
             default:
                 func_801EB180();

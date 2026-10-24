@@ -110,7 +110,7 @@ void func_801EB180(void) {
     func_800C21F4(0, 0);
 }
 
-void func_801EB4F4(void) {
+void GameState_EnterDemo(void) {
     s32 i;
     s32 course;
     s32 riders[4];
@@ -213,7 +213,7 @@ void func_801EB4F4(void) {
     }
 }
 
-void func_801EB91C(void) {
+void GameState_EnterCourseOverview(void) {
     s32 rand;
     s32 rider;
     s32 course;
@@ -302,7 +302,7 @@ void func_801EB91C(void) {
     func_800C21F4(2, gCourseID);
 }
 
-void func_801EBD28(void) {
+void GameState_EnterRiderSelect(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = GAME_STATE_RIDER_SELECT;
@@ -364,7 +364,7 @@ void func_801EBD28(void) {
     }
 }
 
-void func_801EBFE4(void) {
+void GameState_EnterCourseSelect(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = GAME_STATE_COURSE_SELECT;
@@ -389,7 +389,7 @@ void func_801EBFE4(void) {
     osViBlack(1);
 }
 
-void func_801EC0D4(void) {
+void GameState_EnterRaceResults(void) {
     s32 i;
     s32 args[4];
 
@@ -419,7 +419,7 @@ void func_801EC0D4(void) {
     osViBlack(true);
 }
 
-void func_801EC20C(void) {
+void GameState_EnterTimeTrialsResults(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = GAME_STATE_TIME_TRIALS_RESULTS;
@@ -442,7 +442,7 @@ void func_801EC20C(void) {
     func_800C21F4(3, 0);
 }
 
-void func_801EC304(void) {
+void GameState_EnterOptionsMenu(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = GAME_STATE_OPTIONS_MENU;
@@ -458,7 +458,7 @@ void func_801EC304(void) {
     func_800C21F4(9, 0);
 }
 
-void func_801EC3AC(void) {
+void GameState_EnterChangeNames(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = GAME_STATE_OPTIONS_CHANGE_NAMES;
@@ -486,7 +486,7 @@ void func_801EC3AC(void) {
     gCameraPerspective->viewMode = 2;
 }
 
-void func_801EC500(void) {
+void GameState_EnterViewRecords(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 0x42;
@@ -502,7 +502,7 @@ void func_801EC500(void) {
     func_801E6A4C(0, 0);
 }
 
-void func_801EC5B4(void) {
+void GameState_EnterChangeConditions(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 0x44;
@@ -517,7 +517,7 @@ void func_801EC5B4(void) {
     func_801E6A4C(0, 0);
 }
 
-void func_801EC650(void) {
+void GameState_EnterAudio(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 0x48;
@@ -532,7 +532,7 @@ void func_801EC650(void) {
     func_801E6A4C(0, 0);
 }
 
-void func_801EC6EC(void) {
+void GameState_EnterEraseCourseRecords(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 0x46;
@@ -546,7 +546,7 @@ void func_801EC6EC(void) {
     func_801E6A4C(0, 0);
 }
 
-void func_801EC780(void) {
+void GameState_EnterSaveAndLoad(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 0x40;
@@ -650,7 +650,7 @@ void func_801ECAF4(void) {
     func_800C21F4(8, 0);
 }
 
-void func_801ECB98(void) {
+void GameState_EnterCeremony(void) {
     s32 i;
     s32 var_a1;
 
@@ -712,7 +712,7 @@ void func_801ECE50(void) {
     osViBlack(1);
 }
 
-void func_801ECF18(void) {
+void GameState_EnterStuntModeResults(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = GAME_STATE_STUNT_MODE_RESULTS;

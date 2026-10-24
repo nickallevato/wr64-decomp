@@ -56,13 +56,13 @@ s32 func_8007BEA4(s32);
 s32 func_8007C204(s32);
 void func_8006DE24(Gfx**);
 Gfx* func_80094A44(Gfx*, s32);
-void func_801EC500(void);
+void GameState_EnterViewRecords(void);
 Gfx* func_801E2058(Gfx*);
 Gfx* func_801E229C(Gfx*);
 void func_801E2530(void);
 void func_801E2B8C(s32);
 void func_801E2C14(void);
-void func_801EC20C(void);
+void GameState_EnterTimeTrialsResults(void);
 f32 func_801E31A0(void);
 void func_801E1BA8(void);
 void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
@@ -413,7 +413,7 @@ Gfx* func_801E1E8C(Gfx* gdl) {
                 }
             }
         }
-        func_801EC500();
+        GameState_EnterViewRecords();
     }
     return gdl;
 }
@@ -522,7 +522,7 @@ void func_801E2530(void) {
             if (D_801CE608.gameMode == GMODE_CHAMPIONSHIP) {
                 func_801E2B8C(0x42);
             } else if (D_801CE608.gameMode == GMODE_TIME_TRIALS) {
-                func_801EC20C();
+                GameState_EnterTimeTrialsResults();
             } else if (D_801CE608.gameMode == GMODE_STUNT) {
                 func_801ED004();
             }

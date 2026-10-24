@@ -23,7 +23,7 @@ Gfx* func_i9_802C5D24(Gfx* gdl) {
     } else if (D_80228A16 == 1) {
         switch (D_801CE630) {
             case 0x3C:
-                func_801EC304();
+                GameState_EnterOptionsMenu();
                 break;
             case 0x02:
                 func_801EB180();
