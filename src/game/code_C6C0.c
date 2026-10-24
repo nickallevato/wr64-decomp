@@ -4038,8 +4038,10 @@ void func_80062918(Vec3f* arg0) {
 }
 
 #ifdef NON_MATCHING
-// One difference: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of
-// reusing the copy in $f18, so this version is 0x10 bytes shorter. The rest matches.
+// The original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of reusing the copy
+// in $f18, and schedules the unk16CE load later, so this version is 0x10 bytes shorter. Before t
+// the code matches; after it, this version keeps t in $f16 (the original: $f0) and the float registers of the
+// unk16CE blocks shift with it. Control flow matches.
 void func_800629A8(UnkStruct_80192690* arg0) {
     f32 t;
     f32 v;
