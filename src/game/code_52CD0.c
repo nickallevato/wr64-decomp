@@ -1357,7 +1357,6 @@ extern UnkStruct_800E60DC D_800E61FC[];
 extern UnkStruct_800E60DC D_800E6214[];
 extern UnkStruct_800E60DC D_800E622C[];
 
-#ifdef NEEDS_RODATA
 void func_8009C2CC(UnkStruct_801CEBE0* arg0) {
     s32 pad[3];
     s16 sp22;
@@ -1433,7 +1432,7 @@ void func_8009C2CC(UnkStruct_801CEBE0* arg0) {
         }
         if (sp22 == D_801CEA98[D_800E5138]) {
             D_801CEA98[D_800E5138] = 0;
-            D_801CEA94[D_800E5138]++;
+            D_801CEA94[D_800E5138] = (s16) D_801CEA94[D_800E5138] + 1;
             func_800988D8(D_800E5138);
         }
     } else {
@@ -1449,9 +1448,6 @@ void func_8009C2CC(UnkStruct_801CEBE0* arg0) {
     }
     func_8009C240(arg0);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_8009C2CC.s")
-#endif
 
 void func_8009C814(UnkStruct_8009A04C* arg0, s32 arg1) {
     UnkStruct_801CEBE0* temp_s1;
@@ -1608,7 +1604,7 @@ u8 func_8009CD50(UnkStruct_func_8009CCE8* arg0) {
             temp_s1->unk_0 = arg0->unk7C;
             temp_s1->unk4 = arg0->unk80;
             temp_s1->unk8 = arg0->unk84;
-            func_8009C2CC(temp_s1);
+            func_8009C2CC((UnkStruct_801CEBE0*) temp_s1); // D_801CEAB0 entry seen as UnkStruct_801CEBE0
             func_80098FF8(&temp_s1->unkC, (Vec3f*) temp_s1, &sp5C, &sp64, &sp60);
             if ((sp64 >= 80.0f) && (sp64 < 180.0f)) {
                 sp64 = 80.0f;
