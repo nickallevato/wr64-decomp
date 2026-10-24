@@ -44,10 +44,6 @@ typedef struct PortraitPos {
 } PortraitPos; /* size = 0x14 */
 
 void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 color);
-Gfx* func_801E8A84(Gfx* gdl, s32 font, s32 value, s32 x, s32 y, s32 mode, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
-                   u8 arg10, u8 arg11, u8 arg12, u8 arg13, u8 arg14, u8 arg15, u8 arg16, u8 arg17);
-Gfx* func_801E92FC(Gfx* gdl, s32 font, char* str, s32 x, s32 y, s32 mode, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
-                   u8 arg10, u8 arg11, u8 arg12, u8 arg13, u8 arg14, u8 arg15, u8 arg16, u8 arg17);
 
 extern Gfx D_1014708[];
 extern Gfx D_1014760[];
