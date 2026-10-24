@@ -165,7 +165,42 @@ void func_8004F3D4(f32 arg0, f32 arg1, s32 arg2) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F520.s")
+void func_8004F520(f32 height, f32 x, f32 z, f32 dx, f32 dz, s32 count) {
+    UnkStruct_80162420* p0;
+    UnkStruct_80162420* p1;
+    UnkStruct_80162420* p2;
+    s32 u;
+    s32 v;
+    s32 cu;
+    s32 cv;
+    s32 t; // FAKE
+    s32 h;
+    f32 px = x;
+    f32 pz = z;
+
+    if (count != 0) {
+        h = (s32) height << 8;
+        do {
+            count--;
+            u = (s32) ((DIRLIGHT_DIRECTION * pz) + px) % 24576;
+            v = (s32) (TWO_OVER_SQRT_3 * pz) % 24576;
+            t = v >> 6; // FAKE: the copy through t gives the original register choice
+            cv = t;
+            cu = u >> 6;
+            if ((u - (cu * 64)) < (v - (cv * 64))) {
+                p0 = WATER_CELL(cu, cv + 1);
+            } else {
+                p0 = WATER_CELL(cu + 1, cv);
+            }
+            p2 = WATER_CELL(cu, cv);
+            p1 = WATER_CELL(cu + 1, cv + 1);
+            p0->unk0 = p2->unk0 = p1->unk0 = h;
+            p0->unk2 = p2->unk2 = p1->unk2 = 0;
+            px += dx;
+            pz += dz;
+        } while (count != 0);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F790.s")
 
