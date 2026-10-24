@@ -4,7 +4,7 @@ extern UnkStruct_menu_buffer_1 gPopupSlotInit;
 
 extern UnkStruct_menu_buffer_1 menu_buffer_1[];
 
-void func_801E5470(void) {
+void Popup_UpdateAll(void) {
     UnkStruct_menu_buffer_1* var_s0;
     s32 i;
 
@@ -202,12 +202,12 @@ void Popup_UpdateCard1(UnkStruct_menu_buffer_1* slot) {
             if (D_801CE608.gameMode == 4) {
                 if (slot->frame >= 11) {
                     slot->type = 0;
-                    func_801E6A4C(2, 0);
+                    Popup_Spawn(2, 0);
                 }
             } else if ((D_801CE608.gameMode == 0) && (slot->frame >= 11)) {
                 slot->type = 0;
                 if (D_801C2650 == 1) {
-                    func_801E6A4C(2, 1);
+                    Popup_Spawn(2, 1);
                 }
             }
             break;
@@ -326,7 +326,7 @@ void Popup_UpdateCard4(UnkStruct_menu_buffer_1* slot) {
             break;
     }
 }
-void func_801E6A4C(u16 kind, u16 param) {
+void Popup_Spawn(u16 kind, u16 param) {
     s32 i;
     s32 idx;
     s32 t3;

@@ -64,7 +64,7 @@ extern struct UnkStruct_801C3C50* D_801C3C50;
 extern struct UnkStruct_801C3C54* D_801C3C54;
 extern struct UnkStruct_80192690 D_80192690[];
 extern struct_801C3C58* D_801C3C58;
-extern s32 D_80228A90;
+extern s32 gStartCountdown;
 extern s32 D_800DAB2C;
 extern Game_801CE608 D_801CE608;
 extern s16 D_80228A16;

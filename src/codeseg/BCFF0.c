@@ -248,7 +248,7 @@ void func_801EED70(void) {
         } while (s3 < D_80227788[4]);
     }
     gStartLightsState = 0;
-    D_80228A90 = 60;
+    gStartCountdown = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
         flag = 1;
     } else {
@@ -663,14 +663,14 @@ void Hud_UpdateStartCountdown(void) {
                 gStartLightsState = 1;
             }
         } else {
-            if ((D_80228A90 % 15) == 0) {
+            if ((gStartCountdown % 15) == 0) {
                 if (gGameModeState != GMODE_STATE_2) {
-                    AudioGeneral_PlaySound(0x22, (D_80228A90 / 15) - 1);
+                    AudioGeneral_PlaySound(0x22, (gStartCountdown / 15) - 1);
                 } else {
                     AudioGeneral_PlaySound(0x23, 0);
                 }
             }
-            d = D_80228A90 - 15;
+            d = gStartCountdown - 15;
             if (d < 0) {
                 d = -d;
             }
@@ -696,11 +696,11 @@ void Hud_UpdateStartCountdown(void) {
                     }
                 }
             }
-            D_80228A90--;
-            if (D_80228A90 == 15) {
+            gStartCountdown--;
+            if (gStartCountdown == 15) {
                 gGameModeState = GMODE_STATE_2;
                 D_800D817C = 0;
-            } else if (D_80228A90 <= 0) {
+            } else if (gStartCountdown <= 0) {
                 gGameModeState = GMODE_STATE_STARTED;
                 gStartLightsState = 2;
             }
@@ -744,7 +744,7 @@ void Hud_DrawStartLights(Gfx** gdlp) {
     Gfx* gdl;
     MtxF mf;
 
-    n = (D_80228A90 - 1) / 15;
+    n = (gStartCountdown - 1) / 15;
     gdl = *gdlp;
     if (n < 0) {
         n = 0;

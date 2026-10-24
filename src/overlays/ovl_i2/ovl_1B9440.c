@@ -87,7 +87,7 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
         func_8007C31C();
         switch (D_801CE630) {
             case 2:
-                func_801EB180();
+                GameState_EnterTitleScreen();
                 break;
             case 30:
                 GameState_EnterCourseOverview();
@@ -233,7 +233,7 @@ void func_i2_802C84EC(s32 arg0) {
     } else {
         FadeTransition_SetProps(1, 4, 0);
     }
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     if (D_801CE630 == 0x1E) {
         func_800C1F60(2);
     }

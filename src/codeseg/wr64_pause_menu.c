@@ -81,19 +81,19 @@ Gfx* PauseMenu_Update(Gfx* gdl) {
                 if (D_801CE658->unk_00.unk_2 & START_BUTTON) {
                     startBtnPressed = true;
                     D_801CE62C = 1;
-                    func_801E6A4C(3, 2);
-                    func_801E6A4C(3, 3);
+                    Popup_Spawn(3, 2);
+                    Popup_Spawn(3, 3);
                 }
             } else if (D_801CE658->unk_00.unk_2 & START_BUTTON) {
                 startBtnPressed = true;
                 D_801CE62C = 1;
-                func_801E6A4C(3, 4);
-                func_801E6A4C(3, 5);
+                Popup_Spawn(3, 4);
+                Popup_Spawn(3, 5);
             } else if (D_801CE658[1].unk_00.unk_2 & START_BUTTON) {
                 startBtnPressed = true;
                 D_801CE62C = 2;
-                func_801E6A4C(3, 6);
-                func_801E6A4C(3, 7);
+                Popup_Spawn(3, 6);
+                Popup_Spawn(3, 7);
             }
             if (startBtnPressed) {
                 gCurrentPauseMenuOption = 0;

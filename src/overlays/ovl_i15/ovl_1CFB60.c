@@ -105,7 +105,7 @@ Gfx* func_i15_802C5F50(Gfx* gdl) {
         func_i15_802C6C1C();
     } else if (D_80228A16 == 1) {
         if (D_801CE630 == 2) {
-            func_801EB180();
+            GameState_EnterTitleScreen();
         } else {
             func_801EC9C8();
         }

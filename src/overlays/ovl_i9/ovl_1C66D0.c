@@ -26,7 +26,7 @@ Gfx* func_i9_802C5D24(Gfx* gdl) {
                 GameState_EnterOptionsMenu();
                 break;
             case 0x02:
-                func_801EB180();
+                GameState_EnterTitleScreen();
                 break;
             case 0x50:
                 func_801EC830();

@@ -111,7 +111,7 @@ void func_80080630(void) {
 
     switch (D_801C3C58->unk5C) {
         case -1:
-            if (D_80228A90 < 0x10) {
+            if (gStartCountdown < 0x10) {
                 D_801C3C50->unkB50 = (u16) (D_801C3C50->unkB50 | 0xA000);
                 return;
             }
@@ -129,7 +129,7 @@ void func_80080630(void) {
                     sp4 = 0;
                     break;
             }
-            if ((0xF - sp4) >= D_80228A90) {
+            if ((0xF - sp4) >= gStartCountdown) {
                 D_801C3C50->unkB50 = (u16) (D_801C3C50->unkB50 | 0xA000);
                 return;
             }
@@ -147,7 +147,7 @@ void func_80080630(void) {
                     sp4 = 2;
                     break;
             }
-            if ((0xF - sp4) >= D_80228A90) {
+            if ((0xF - sp4) >= gStartCountdown) {
                 D_801C3C50->unkB50 = (u16) (D_801C3C50->unkB50 | 0xA000);
                 return;
             }
@@ -165,7 +165,7 @@ void func_80080630(void) {
                     sp4 = 4;
                     break;
             }
-            if ((0xF - sp4) >= D_80228A90) {
+            if ((0xF - sp4) >= gStartCountdown) {
                 D_801C3C50->unkB50 = (u16) (D_801C3C50->unkB50 | 0xA000);
                 return;
             }

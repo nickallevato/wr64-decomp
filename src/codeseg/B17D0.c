@@ -237,14 +237,14 @@ Gfx* func_801E3698(Gfx* gdl) {
             x = D_802288F8;
         }
         sprintf(buf, "%1d", i + 1);
-        gdl = func_801E9858(gdl, 2, buf, D_80226E44[i + 1] + x + 17, y);
+        gdl = Printer_DrawString(gdl, 2, buf, D_80226E44[i + 1] + x + 17, y);
         if (rec->flag == 0) {
             sprintf(buf, "%s", "N");
         } else {
             sprintf(buf, "%s", "C");
         }
-        gdl = func_801E9858(gdl, 1, buf, x + 59, y);
-        gdl = func_801E9858(gdl, 2, rec->name, x + 119, y);
+        gdl = Printer_DrawString(gdl, 1, buf, x + 59, y);
+        gdl = Printer_DrawString(gdl, 2, rec->name, x + 119, y);
         gdl = func_80094200(gdl, 2, rec->time, x + 208, y);
     }
     if (D_801C2928 == 0) {
@@ -254,7 +254,7 @@ Gfx* func_801E3698(Gfx* gdl) {
         } else {
             sprintf(buf, "%s", "C");
         }
-        gdl = func_801E9858(gdl, 1, buf, D_802288FC + 59, 196);
+        gdl = Printer_DrawString(gdl, 1, buf, D_802288FC + 59, 196);
         gdl = func_80094200(gdl, 2, D_801C26D0, D_802288FC + 208, 196);
     }
     return gdl;

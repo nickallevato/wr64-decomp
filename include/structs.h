@@ -1288,7 +1288,7 @@ typedef struct UnkStruct_menu_buffer_1_s {
     /* 0x00 */ u16 type;                            /* 0 free, 1 and 2 cards, 3 spinning cursor, 4 eight-strip card */
     /* 0x02 */ u16 state;                           /* 0 sliding in, 1 settled (2 for type 4) */
     /* 0x04 */ s16 index;                           /* own slot number; picks the card's matrix */
-    /* 0x06 */ u16 active;                          /* set by func_801E5470 each frame; func_801E5554 draws only these */
+    /* 0x06 */ u16 active;                          /* set by Popup_UpdateAll each frame; func_801E5554 draws only these */
     /* 0x08 */ s32 x;
     /* 0x0C */ s32 y;
     /* 0x10 */ char pad10[4];
@@ -1333,7 +1333,7 @@ typedef struct UnkStruct_801C43F8_s {
 
 typedef struct UnkStruct_801CE5F8_s {
     char pad[0x40];
-    Vtx unk40[120]; /* the text printer's quad vertices (Printer_DrawQuad), from D_80228A40 (clamped to 0x74 + 4) */
+    Vtx unk40[120]; /* the text printer's quad vertices (Printer_DrawQuad), from gPrinterNextQuadVtx (clamped to 0x74 + 4) */
     char pad7C0[0x280];
     Mtx unkA40[1];
     Mtx unkA80[1];

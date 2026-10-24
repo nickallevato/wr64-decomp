@@ -62,7 +62,7 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
                 GameState_EnterAudio();
                 break;
             default:
-                func_801EB180();
+                GameState_EnterTitleScreen();
                 break;
         }
     }

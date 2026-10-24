@@ -95,7 +95,7 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
             }
             GameState_EnterCourseOverview();
         } else {
-            func_801EB180();
+            GameState_EnterTitleScreen();
         }
     }
 

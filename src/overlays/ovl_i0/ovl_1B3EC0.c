@@ -33,9 +33,9 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
 
         arg0 = Printer_SetMode(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
         sprintf(buf, "%8XH", D_801519D4);
-        arg0 = func_801E9858(arg0, 1, buf, 0x1C, 0x28);
+        arg0 = Printer_DrawString(arg0, 1, buf, 0x1C, 0x28);
         sprintf(buf, "%dKB", (s32) D_801519D4 / 1024);
-        arg0 = func_801E9858(arg0, 1, buf, 0x1C, 0x3C);
+        arg0 = Printer_DrawString(arg0, 1, buf, 0x1C, 0x3C);
     }
     if (D_i0_802C6BEC != 0) {
         arg0 = func_i0_802C6AE4(
@@ -78,9 +78,9 @@ void func_i0_802C6878(void) {
     D_802C6EE0 = 0;
 
     Printer_ResetColorCycle();
-    func_801E6A4C(0, 0);
-    func_801E6A4C(3, 0);
-    func_801E6A4C(3, 1);
+    Popup_Spawn(0, 0);
+    Popup_Spawn(3, 0);
+    Popup_Spawn(3, 1);
 
     D_i0_802C6BE0 = 0;
     D_802C6F14 = 0;
@@ -104,7 +104,7 @@ Gfx* func_i0_802C6944(Gfx* arg0) {
                 GameState_EnterOptionsMenu();
                 break;
             case 0x2:
-                func_801EB180();
+                GameState_EnterTitleScreen();
                 break;
             case 0x7:
                 GameState_EnterDemo();
@@ -126,7 +126,7 @@ void func_i0_802C6A1C(s32 arg0) {
     gVIsPerFrame = 3;
 
     FadeTransition_SetProps(1, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     if (D_801CE630 == 10) {
         func_800C1F60(1);

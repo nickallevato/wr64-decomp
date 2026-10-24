@@ -123,7 +123,7 @@ void func_801FAEB8(Gfx** gdlp) {
                 }
                 gdl = Printer_PrintScaled(gdl, 0, D_802279F8, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
                 sprintf((char*) D_80228CF8, D_802279FC, rider->lapCount);
-                gdl = func_801E9858(gdl, 0, (char*) D_80228CF8, x + w, y);
+                gdl = Printer_DrawString(gdl, 0, (char*) D_80228CF8, x + w, y);
             } else {
                 x = 100;
                 if (gPlayers == ONE_PLAYER) {
@@ -140,7 +140,7 @@ void func_801FAEB8(Gfx** gdlp) {
                         y = 150;
                     }
                 }
-                gdl = func_801E9858(Printer_PrintScaled(gdl, 0, D_80227A00, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
+                gdl = Printer_DrawString(Printer_PrintScaled(gdl, 0, D_80227A00, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
                                                   g1, b1, scale),
                                     0, D_80227A08, x + w, y);
             }

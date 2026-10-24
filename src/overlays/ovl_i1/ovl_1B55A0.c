@@ -117,7 +117,7 @@ void func_i1_802C63B4(void) {
                     break;
 
                 default:
-                    func_801EB180();
+                    GameState_EnterTitleScreen();
                     break;
             }
         } else {
@@ -156,7 +156,7 @@ void func_i1_802C7394(void) {
     gVIsPerFrame = 3;
 
     FadeTransition_SetProps(1, 4, 100);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     D_801CE62A = 0;
 
@@ -219,7 +219,7 @@ void func_i1_802C7570(s32 arg0) {
     D_801CE644 = 0;
     D_800DAB1C = 0;
     gVIsPerFrame = 3;
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     D_80228AA4 = 1;
     func_800C21F4(3, 0);
 }
@@ -438,7 +438,7 @@ Gfx* func_i1_802C913C(Gfx* dList) {
             func_i1_802C9380(2);
         }
     } else if (D_80228A16 == 1) {
-        func_801EB180();
+        GameState_EnterTitleScreen();
     }
 
     return dList;
@@ -456,7 +456,7 @@ void func_i1_802C9380(s32 arg0) {
     gVIsPerFrame = 3;
 
     FadeTransition_SetProps(1, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     func_800BFD34();
     func_800BFD68();
 

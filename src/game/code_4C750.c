@@ -22,7 +22,7 @@ extern s16 D_801CE62A;
 extern s16 D_801CE62E;
 extern u16 D_801CE690;
 extern s16 D_80228A36;
-extern s32 D_80228A40;
+extern s32 gPrinterNextQuadVtx;
 extern u8 D_1008290[];
 extern s32 D_800DA940[];
 extern s32 D_800DA988[][3];
@@ -215,10 +215,10 @@ void func_80092938(void);
 void func_800AD418(void);
 void func_800B2ABC(void);
 void func_801DDE48(void);
-void func_801E1290(void);
+void Initials_Update(void);
 void func_801E3250(void);
-void func_801E71A8(void);
-void func_801EAFB4(void);
+void FadeTransition_Update(void);
+void Printer_StepColorCycle(void);
 void func_802C7090(void);
 void func_802C7608(void);
 void func_i3_802C5800(void);
@@ -354,7 +354,7 @@ void func_800922E4(void) {
             func_801DDE48();
             func_80051238();
             func_8008E794();
-            func_801E1290();
+            Initials_Update();
             break;
         case 0x5:
         case 0x6:
@@ -379,9 +379,9 @@ void func_800922E4(void) {
             func_801E3250();
             break;
     }
-    func_801E5470();
-    func_801EAFB4();
-    func_801E71A8();
+    Popup_UpdateAll();
+    Printer_StepColorCycle();
+    FadeTransition_Update();
 }
 
 extern s32 D_800D49B0;
@@ -559,7 +559,7 @@ Gfx* func_80092CF0(Gfx* dList) {
     D_801CE62E = 0;
     D_801CE62A = 1;
     D_80228A36 = 0;
-    D_80228A40 = 0;
+    gPrinterNextQuadVtx = 0;
 
     //! FAKE:
     switch (gGameState) {
@@ -576,9 +576,9 @@ Gfx* func_80092CF0(Gfx* dList) {
             dList = func_80093F78(dList);
 
             if (func_80093104() != 0) {
-                func_801ECAF4();
+                GameState_EnterBootUp();
             } else {
-                func_801EB180();
+                GameState_EnterTitleScreen();
             }
             break;
 
@@ -726,7 +726,7 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x64:
         case 0x65:
             D_801CE62A = 0;
-            dList = func_801E1E8C(dList);
+            dList = Initials_Draw(dList);
             break;
 
         case 0x66:
@@ -771,11 +771,11 @@ Gfx* func_80092CF0(Gfx* dList) {
 
     D_80228A36 = 1;
 
-    dList = func_801E7908(dList);
+    dList = FadeTransition_Draw(dList);
 
     if (D_801CE62E != 0) {
         D_801CE62E = 0;
-        func_801EB180();
+        GameState_EnterTitleScreen();
     }
 
     if (++D_801CE5FC >= 30000) {
@@ -1039,7 +1039,7 @@ void func_8009345C(void) {
 
     func_8009684C(0x08060000, D_800DB568[id].unk0, D_800DB568[id].unk2);
     FadeTransition_SetProps(2, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     gCameraPerspective->viewMode = 3;
     if (gPlayers == TWO_PLAYERS) {
@@ -1217,7 +1217,7 @@ Gfx* func_80094200(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     for (var_s1 = 0, var_s2 = arg3 + var_v0 * 4; var_s1 < 5; var_s1++, var_s2 += -var_v0, var_s0 /= 10) {
         sprintf(buf, "%d", var_s0 % 10);
-        arg0 = func_801E9858(arg0, arg1, buf, var_s2, arg4);
+        arg0 = Printer_DrawString(arg0, arg1, buf, var_s2, arg4);
     }
 
     return arg0;

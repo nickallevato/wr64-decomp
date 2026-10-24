@@ -98,6 +98,6 @@ void func_i3_802C6E9C(void) {
     D_i3_802C6FE0 = 1;
 
     FadeTransition_SetProps(5, 0, 20);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
     AudioGeneral_PlaySound(58, 0);
 }

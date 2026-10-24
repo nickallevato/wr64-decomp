@@ -222,3 +222,5 @@ D_801D7B20 = 0x801D7B20; //size:0x8
 D_801D7B38 = 0x801D7B38; //size:0x8
 D_801D7B40 = 0x801D7B40; //size:0x8
 D_801D7B58 = 0x801D7B58; //size:0x8
+gPrinterNextQuadVtx = 0x80228A40;
+gStartCountdown = 0x80228A90;

@@ -98,7 +98,7 @@ void func_i11_802C6098(s32 arg0) {
     gVIsPerFrame = 2;
 
     FadeTransition_SetProps(1, 4, 0);
-    func_801E6A4C(0, 0);
+    Popup_Spawn(0, 0);
 
     if (D_801CE630 == 60) {
         func_800C1F60(9);

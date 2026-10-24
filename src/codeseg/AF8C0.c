@@ -107,7 +107,7 @@ s32 gInitialsPanelShown = 0;
 Gfx* D_802261EC[] = { (Gfx*) 0x080973D0, (Gfx*) 0x08097428, (Gfx*) 0x08097448 };
 s32 D_802261F8 = 0;
 
-void func_801E1290(void) {
+void Initials_Update(void) {
     static f32 D_802261FC = 50.0f;
     static f32 D_80226200 = -50.0f;
     s32 i;
@@ -387,7 +387,7 @@ void func_801E1BA8(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1BA8.s")
 #endif
 
-Gfx* func_801E1E8C(Gfx* gdl) {
+Gfx* Initials_Draw(Gfx* gdl) {
     s32 i;
     s16 course;
 
@@ -501,7 +501,7 @@ Gfx* Initials_DrawPanel(Gfx* gdl) {
         } else {
             offset = gInitialsLetterOffsets[j];
         }
-        gdl = func_801E9858(gdl, 0, (char*) str, i * 26 + offset + 0x7A, 0xB4);
+        gdl = Printer_DrawString(gdl, 0, (char*) str, i * 26 + offset + 0x7A, 0xB4);
     }
     return gdl;
 }
