@@ -214,7 +214,31 @@ s32 func_801E9B04(s32 font, s8 c) {
     return glyph;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B66E0/func_801E9D6C.s")
+/* Colour cycle for D_80228A78 by phase: red -> yellow -> white -> yellow -> red. */
+void func_801E9D6C(void) {
+    switch (D_80228A78.unk2) {
+        case 0:
+            D_80228A78.r = 255;
+            D_80228A78.g = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            D_80228A78.b = 0;
+            break;
+        case 1:
+            D_80228A78.r = 255;
+            D_80228A78.g = 255;
+            D_80228A78.b = (u32) ((D_80228A78.unk4 * 255.0f) / D_80228A78.unk8);
+            break;
+        case 2:
+            D_80228A78.r = 255;
+            D_80228A78.g = 255;
+            D_80228A78.b = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            break;
+        case 3:
+            D_80228A78.r = 255;
+            D_80228A78.g = (u32) (((D_80228A78.unk8 - D_80228A78.unk4) * 255.0f) / D_80228A78.unk8);
+            D_80228A78.b = 0;
+            break;
+    }
+}
 
 /* Colour cycle for D_80228A78 by phase: black -> red -> yellow -> red -> black. */
 void func_801EA0B0(void) {
