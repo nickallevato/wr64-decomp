@@ -448,6 +448,13 @@ extern f32 D_800D95F0[];
 extern f32 D_800D9600[];
 extern f32 D_800D9610[];
 extern f32 D_800D9620[];
+extern s16 D_800DAB60;
+extern s16 D_800D4928;
+extern u16 D_800D4964;
+extern s16 D_800D496C;
+extern s16 D_800D4974;
+extern s16 D_800D4978;
+extern s32 D_80223934;
 extern f32 D_800D4AF0;
 extern f32 D_800D4AF4;
 extern Gfx D_1007968[];
@@ -480,6 +487,9 @@ void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
 void func_8004AC80(struct UnkStruct_8004B0F8* arg0, f32 arg1, f32 arg2, f32 arg3);
+void func_8006AC84(s32, void*);
+void func_8006390C(s32, void*);
+void func_80067C6C(void);
 void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
@@ -2994,7 +3004,87 @@ void func_80067C6C(void) {
     }
 }
 
+#ifdef NON_MATCHING
+// After the rider loop the original keeps the constant 1 in $s2 and stores D_800D496C through
+// an address in $v1; this version uses $v1 = 1 and a %lo store. The rest matches.
+void func_80067E40(void) {
+    u8 sp50[0x48];
+    camera_unk_1* cam;
+    s32 i;
+
+    if ((D_801CE638 == 0) && (D_800DAB60 != 0)) {
+        D_800D4928 ^= 1;
+    }
+    for (i = gRiders - 1; i >= 0; i--) {
+        if ((D_801CE638 == 0) || (D_801CE638 == 8)) {
+            D_80192690[i].unk16CE = 1;
+        } else if (i == D_800D48DC) {
+            if (((D_800D4964 != 0) || (gRiderGameModes == AI_MODE)) && (D_801CE638 != 4)) {
+                D_80192690[i].unk16CE = 1;
+            } else {
+                D_80192690[i].unk16CE = 0;
+            }
+        } else if (i == D_800D48E0) {
+            if ((gRiderGameModes == AI_MODE) || (gPlayers == ONE_PLAYER)) {
+                D_80192690[i].unk16CE = 1;
+            } else {
+                D_80192690[i].unk16CE = 0;
+            }
+        } else {
+            D_80192690[i].unk16CE = 1;
+        }
+        func_8006AC84(i, sp50);
+        func_8006390C(i, sp50);
+    }
+    if ((gCourseID < 9) && (D_801CE638 != 21)) {
+        D_800D496C = 1;
+        D_800D4974 = 1;
+    } else {
+        D_800D496C = 0;
+        D_800D4974 = 0;
+    }
+    if (D_801CE638 == 4) {
+        D_800D4978 = 0;
+    } else {
+        D_800D4978 = 1;
+    }
+    func_80067C6C();
+    cam = &gCameraPerspective[D_80223930];
+    cam->unk4 = D_80192690[D_800D48DC].unk44.x;
+    *(f32*) &cam->unk8 = D_80192690[D_800D48DC].unk44.y;
+    cam->unkC = D_80192690[D_800D48DC].unk44.z;
+    cam->unk10 = D_80192690[D_800D48DC].unk50;
+    cam->unk14 = D_80192690[D_800D48DC].unk54;
+    cam->unk18 = D_80192690[D_800D48DC].unk58;
+    cam->unk1C = D_80192690[D_800D48DC].unk6C;
+    cam->unk20 = D_80192690[D_800D48DC].unk70;
+    cam->unk24 = D_80192690[D_800D48DC].unk74;
+    cam->unk28 = D_80192690[D_800D48DC].unk78;
+    cam->unk2C = D_80192690[D_800D48DC].unk7C;
+    cam->unk30 = D_80192690[D_800D48DC].unk80;
+    cam->unk34 = D_80192690[D_800D48DC].unk84;
+    cam->unk38 = D_80192690[D_800D48DC].unk88;
+    cam->unk3C = D_80192690[D_800D48DC].unk8C;
+    cam = &gCameraPerspective[D_80223934];
+    cam->unk4 = D_80192690[D_800D48E0].unk44.x;
+    *(f32*) &cam->unk8 = D_80192690[D_800D48E0].unk44.y;
+    cam->unkC = D_80192690[D_800D48E0].unk44.z;
+    cam->unk10 = D_80192690[D_800D48E0].unk50;
+    cam->unk14 = D_80192690[D_800D48E0].unk54;
+    cam->unk18 = D_80192690[D_800D48E0].unk58;
+    cam->unk1C = D_80192690[D_800D48E0].unk6C;
+    cam->unk20 = D_80192690[D_800D48E0].unk70;
+    cam->unk24 = D_80192690[D_800D48E0].unk74;
+    cam->unk28 = D_80192690[D_800D48E0].unk78;
+    cam->unk2C = D_80192690[D_800D48E0].unk7C;
+    cam->unk30 = D_80192690[D_800D48E0].unk80;
+    cam->unk34 = D_80192690[D_800D48E0].unk84;
+    cam->unk38 = D_80192690[D_800D48E0].unk88;
+    cam->unk3C = D_80192690[D_800D48E0].unk8C;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067E40.s")
+#endif
 
 void func_800683A0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
