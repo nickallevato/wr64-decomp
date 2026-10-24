@@ -1341,7 +1341,75 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
     }
 }
 
+#ifdef NON_MATCHING
+// obj stays on the stack instead of in s0, so the frame is 8 bytes short and registers differ throughout.
+void func_801DF744(UnkA95D0_Obj* obj) {
+    f32 d[2];
+    f32 v[2];
+    f32 x;
+    f32 y;
+    UnkA95D0_Payload5* p;
+
+    obj->u.p5.unk48[0].value += (obj->u.p5.unk48[0].target - obj->u.p5.unk48[0].value) * obj->u.p5.unk48[0].rate;
+    obj->u.p5.unk48[2].value += (obj->u.p5.unk48[2].target - obj->u.p5.unk48[2].value) * obj->u.p5.unk48[2].rate;
+    obj->u.p5.unk48[1].value += (obj->u.p5.unk48[1].target - obj->u.p5.unk48[1].value) * obj->u.p5.unk48[1].rate;
+    d[0] = obj->u.p5.unk18[0] - obj->u.p5.unk0[obj->u.p5.unk74[0]];
+    d[1] = obj->u.p5.unk18[1] - obj->u.p5.unk0[obj->u.p5.unk74[1]];
+    p = &obj->u.p5;
+    x = p->unk20 / sqrtf(SQ(d[1]) + SQ(d[0]));
+    p->unk18[0] = d[0] * x + p->unk0[p->unk74[0]];
+    p->unk18[1] = d[1] * x + p->unk0[p->unk74[1]];
+    x = func_801ED154(d[1], d[0]) + p->unk48[1].value;
+    obj->base.unkC[p->unk74[0]] =
+        COS(DEG_TO_BINANG(x)) * (p->unk48[0].value * COS(DEG_TO_BINANG(p->unk48[2].value))) + p->unk0[p->unk74[0]];
+    obj->base.unkC[p->unk74[1]] =
+        SIN(DEG_TO_BINANG(x)) * (p->unk48[0].value * COS(DEG_TO_BINANG(p->unk48[2].value))) + p->unk0[p->unk74[1]];
+    obj->base.unkC[p->unk74[2]] = SIN(DEG_TO_BINANG(p->unk48[2].value)) * p->unk48[0].value +
+                           ((p->unk0[p->unk74[2]] - p->unkC) * p->unk6C + p->unkC);
+    x = p->unk34 * p->unk38;
+    if (x < p->unk3C) {
+        x = x / p->unk3C;
+    } else {
+        x = 1.0f;
+    }
+    x = -2.0f * x * x * x + 3.0f * x * x;
+    v[0] = p->unk24[0] * x;
+    v[1] = p->unk24[1] * x;
+    x = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[1]) + SQ(d[0]));
+    d[0] = (d[0] * x + v[0]) * p->unk2C;
+    d[1] = (d[1] * x + v[1]) * p->unk2C;
+    x = sqrtf(SQ(d[1]) + SQ(d[0]));
+    if (p->unk30 < x) {
+        x = p->unk30 / x;
+        d[0] *= x;
+        d[1] *= x;
+    }
+    obj->base.unk0[p->unk74[0]] = d[0] + p->unk0[p->unk74[0]];
+    obj->base.unk0[p->unk74[1]] = d[1] + p->unk0[p->unk74[1]];
+    if (p->unk80 != 0) {
+        obj->base.unk24[0] = d[0] * p->unk70;
+        obj->base.unk24[1] = p->unk30;
+        obj->base.unk24[2] = d[1] * p->unk70;
+    } else {
+        obj->base.unk24[0] = 0.0f;
+        obj->base.unk24[2] = 0.0f;
+        obj->base.unk24[1] = 1.0f;
+    }
+    y = p->unk0[p->unk74[2]];
+    if (y <= p->unk10) {
+        x = p->unk40;
+    } else if (p->unk14 <= y) {
+        x = p->unk44;
+    } else {
+        x = (y - p->unk10) / (p->unk14 - p->unk10);
+        x = x * x * (p->unk44 - p->unk40) + p->unk40;
+    }
+    obj->base.unk0[p->unk74[2]] = (y - p->unkC) * x + p->unkC;
+    func_801DEEC4(obj);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DF744.s")
+#endif
 
 void func_801DFC48(UnkA95D0_Obj* obj) {
     switch (obj->type) {
