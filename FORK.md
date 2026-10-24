@@ -114,6 +114,10 @@ externs arrive in the same commit as their first caller). Mark every hack: `// F
 fake construct, a short comment on stack pads, odd literal forms (`seg + 5U`) and gotos, and
 `// fallthrough` where a case falls through.
 
+**A 0 from `./diff` can be stale.** When the gcc check pass fails, make stops before the object is
+rebuilt, and `./diff` (or any script reading `build/`) compares the old object and can score 0.
+Only `tools/fork/check.sh` counts as proof.
+
 **`make NON_MATCHING=1` leaves its objects behind.** That build writes non-matching objects into
 `build/`, and a later plain `make` reuses them, so the ROM stops matching for no visible reason.
 Run `make clean` (or `rm -rf build`) before going back to normal builds.
