@@ -1303,9 +1303,6 @@ void func_801EE6F4(MtxF* mf, f32 rx, f32 ry, f32 rz, f32 x, f32 y, f32 z);
 void func_801EDC60(MtxF* mf, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
 void func_801EDD04(MtxF* mf, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
 
-#ifdef NON_MATCHING
-// 7030: same blocks, calls and stores. The original loads both sine pairs before the zero
-// stores, reloads unk4C in each case of the second switch, and numbers registers differently.
 void func_800744EC(void) {
     s32 i;
     s32 k;
@@ -1323,15 +1320,17 @@ void func_800744EC(void) {
         rot = e->unk48;
         e->unk0 = e->unk24;
         e->unk4 = e->unk28;
-        e->unk10 = rot + 180.0f;
         e->unk8 = e->unk2C;
-        e->unk20 = e->unk1C = e->unk18 = 0.0f;
+        e->unk10 = rot + 180.0f;
+        e->unk18 = e->unk1C = e->unk20 = 0.0f;
         e->unkC = 0.0f;
         e->unk14 = 0.0f;
         angle = (rot / 360.0f) * 4096.0f;
         e->unk30 = gSinTable[angle & 0xFFF];
         e->unk34 = gSinTable[(angle + 0x400) & 0xFFF];
         angle = ((rot + 90.0f) / 360.0f) * 4096.0f;
+        e->unk38 = gSinTable[angle & 0xFFF];
+        e->unk3C = gSinTable[(angle + 0x400) & 0xFFF];
         e->unk40 = 0.0f;
         e->unk44 = 0.0f;
         e->unkBC = 0;
@@ -1342,8 +1341,6 @@ void func_800744EC(void) {
         e->unk64 = 0;
         e->unk68 = 0;
         e->unk60 = NULL;
-        e->unk38 = gSinTable[angle & 0xFFF];
-        e->unk3C = gSinTable[(angle + 0x400) & 0xFFF];
         switch (e->unk4C) {
             case 3:
             case 4:
@@ -1358,6 +1355,8 @@ void func_800744EC(void) {
                 break;
         }
         switch (e->unk4C) {
+            case 1:
+                break;
             case 2:
                 e->unk58 = 3;
                 break;
@@ -1445,35 +1444,35 @@ void func_800744EC(void) {
                 e->unk4 = -24.0f;
             }
         } else if (e->unk4C == 2) {
+            e->unk64 = D_801C0578;
             e->unk68 = 1;
             e->unk60 = D_800D7630;
             e->unkB4 = D_E00D678;
             e->unkB8 = D_E00D5D8;
-            e->unk64 = D_801C0578;
         } else if (e->unk4C == 5) {
             e->unkB4 = D_E00D720;
-            e->unkB8 = NULL;
             e->unk40 = 50.0f;
+            e->unkB8 = NULL;
         } else if (e->unk4C == 6) {
+            e->unk64 = D_801C0578;
             e->unk68 = 1;
             e->unk60 = D_800D7670;
             e->unkB4 = D_E00D7C8;
             e->unkB8 = NULL;
-            e->unk64 = D_801C0578;
         } else if (e->unk4C == 7) {
+            e->unk64 = D_801C0578;
             e->unk68 = 1;
             e->unk60 = D_800D76B0;
             e->unkB4 = D_E00D8A8;
             e->unkB8 = NULL;
-            e->unk64 = D_801C0578;
         } else if (e->unk4C == 9) {
             e->unkB4 = D_E0109C0;
-            e->unkB8 = NULL;
             e->unk40 = 25.0f;
+            e->unkB8 = NULL;
         } else if (e->unk4C == 10) {
             e->unkB4 = D_E009808;
-            e->unkB8 = NULL;
             e->unk40 = 50.0f;
+            e->unkB8 = NULL;
         } else if ((e->unk4C == 3) || (e->unk4C == 4)) {
             e->unkB4 = NULL;
             e->unkB8 = D_E0098B0;
@@ -1495,10 +1494,10 @@ void func_800744EC(void) {
         func_801EE6F4(mf, e->unkC, e->unk10, e->unk14, e->unk0, e->unk4, e->unk8);
         _MtxF_to_Mtx(mf, mtx);
         for (k = 0; k < e->unk68; k++) {
-            box = &D_801BFD78[D_801C0578];
             if ((e->unk68 + D_801C0578) >= 33) {
                 break;
             }
+            box = &D_801BFD78[D_801C0578];
             src = &e->unk60[k];
             func_801EDC60(mf, src->unk0, src->unk4, src->unk8, &box->unk0, &box->unk4, &box->unk8);
             func_801EDD04(mf, src->unkC, src->unk10, src->unk14, &box->unkC, &box->unk10, &box->unk14);
@@ -1536,9 +1535,6 @@ void func_800744EC(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_800744EC.s")
-#endif
 
 void func_80075274(void) {
     func_80071E70();
