@@ -846,4 +846,9 @@ void func_801E0F8C(camera_unk_1* cam, UnkA95D0_Obj* obj) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E0FF0.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801E11B4.s")
+void func_801E11B4(GfxPool* pool, camera_unk_1* cam) {
+    func_800481E0(&pool->unkE008[cam->unkE8], &cam->unkE4, cam->unk88, 4.0f / 3.0f, cam->unk9C, cam->unkA0,
+                  cam->unk94, cam->unk98);
+    func_800484C8(&pool->unkE088[cam->unkE8], &cam->unkA4, cam->unk4C, cam->unk50, cam->unk54, cam->unk7C, cam->unk80,
+                  cam->unk84, cam->unk70, cam->unk74, cam->unk78);
+}
