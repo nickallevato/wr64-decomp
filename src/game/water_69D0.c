@@ -10,6 +10,14 @@ typedef struct UnkStruct_80162420_s {
 
 extern UnkStruct_80162420 D_80162420[];
 
+/*
+ * The field entry for lattice cell (cu, cv): 384 rows of 128, the row taking the high bits of cu.
+ * The byte offset is added to the address as an integer; indexing the array instead makes IDO
+ * scale the row and the column separately, which the original does not do.
+ */
+#define WATER_CELL(cu, cv) \
+    ((UnkStruct_80162420*) ((s32) D_80162420 + (((((cv) + ((cu) & ~0x7F) + 0x600) % 384) * 128) + ((cu) & 0x7F)) * 4))
+
 /* 0x1C bytes per view; func_80050F8C writes the window centre here */
 typedef struct UnkStruct_80192420_s {
     /* 0x00 */ s32 unk0;
@@ -77,7 +85,30 @@ void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EFB4.s")
+void func_8004EFB4(f32 x, f32 z, s32 height) {
+    UnkStruct_80162420* p0;
+    UnkStruct_80162420* p1;
+    UnkStruct_80162420* p2;
+    s32 u;
+    s32 v;
+    s32 cu;
+    s32 cv;
+
+    u = (s32) ((DIRLIGHT_DIRECTION * z) + x) % 24576;
+    v = (s32) (TWO_OVER_SQRT_3 * z) % 24576;
+    cv = v >> 6;
+    cu = u >> 6;
+
+    if ((u - (cu * 64)) < (v - (cv * 64))) {
+        p0 = WATER_CELL(cu, cv + 1);
+    } else {
+        p0 = WATER_CELL(cu + 1, cv);
+    }
+    p2 = WATER_CELL(cu, cv);
+    p1 = WATER_CELL(cu + 1, cv + 1);
+    p0->unk0 = p2->unk0 = p1->unk0 = height << 8;
+    p0->unk2 = p2->unk2 = p1->unk2 = 0;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004F1EC.s")
 
