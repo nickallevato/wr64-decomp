@@ -15,10 +15,35 @@ typedef struct UnkStruct_801D0798_unk1AA0_s {
     /* 0x2C */ char pad2C[4];
 } UnkStruct_801D0798_unk1AA0; /* size = 0x30 */
 
+typedef struct UnkStruct_801D0798_unk0_s {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ f32 unkC;
+    /* 0x10 */ f32 unk10;
+    /* 0x14 */ f32 unk14;
+    /* 0x18 */ char pad18[0x18];
+    /* 0x30 */ f32 unk30;
+    /* 0x34 */ char pad34[0x4];
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s32 unk3C;
+} UnkStruct_801D0798_unk0; /* size = 0x40 */
+
+typedef struct UnkStruct_801D0798_unk1000_s {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ char padC[0xC];
+    /* 0x18 */ f32 unk18;
+    /* 0x1C */ char pad1C[0x4];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+} UnkStruct_801D0798_unk1000; /* size = 0x28 */
+
 typedef struct UnkStruct_801D0798_s {
-    /* 0x38 */ s32 unk0[64][16];
-    s32 unk1000[64][10];
-    s32 unk1A00[4][10];
+    /* 0x0000 */ UnkStruct_801D0798_unk0 unk0[64];
+    /* 0x1000 */ UnkStruct_801D0798_unk1000 unk1000[64];
+    /* 0x1A00 */ UnkStruct_801D0798_unk1000 unk1A00[4];
     /* 0x1AA0 */ UnkStruct_801D0798_unk1AA0 unk1AA0[8];
     /* 0x1C20 */ char pad1C20[0xC];
     /* 0x1C30 */ s32 unk1C2C;
@@ -286,13 +311,13 @@ void func_800AE7C4(void) {
     for (i = 0; i < D_801D0790; i++) {
         D_800E6D60 = &D_801D0798[i];
         for (j = 63; j >= 0; j--) {
-            D_800E6D60->unk0[j][14] = 0;
+            D_800E6D60->unk0[j].unk38 = 0;
         }
         for (j = 63; j >= 0; j--) {
-            D_800E6D60->unk1000[j][8] = 0;
+            D_800E6D60->unk1000[j].unk20 = 0;
         }
         for (j = 3; j >= 0; j--) {
-            D_800E6D60->unk1A00[j][8] = 0;
+            D_800E6D60->unk1A00[j].unk20 = 0;
         }
     }
 
@@ -587,9 +612,9 @@ void func_800AF798(Gfx** gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B08F8.s")
 
-extern s32 (*D_800E6D68)[16];
-extern s32 (*D_800E6D70)[10];
-extern s32 (*D_800E6D78)[10];
+extern UnkStruct_801D0798_unk0* D_800E6D68;
+extern UnkStruct_801D0798_unk1000* D_800E6D70;
+extern UnkStruct_801D0798_unk1000* D_800E6D78;
 extern UnkStruct_801D0798_unk1AA0* D_800E6D80;
 
 void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
