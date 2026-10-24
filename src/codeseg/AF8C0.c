@@ -46,9 +46,13 @@ extern s8 D_802288E8[];
 extern u16 D_802288EC;
 extern s32 D_802261C4;
 extern s32 D_802261C8;
+extern f32 D_802261CC;
+extern f32 D_802261D0;
 extern f32 D_802261D4;
 extern s32 D_802261E0;
 extern s16 D_800DAB6C;
+extern s32 D_801C2650;
+extern s32 D_801C2654;
 extern s8 D_801CE700[];
 extern f32 D_802261D8;
 extern s16 D_802261DC;
@@ -75,7 +79,85 @@ f32 func_801E31A0(void);
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1290.s")
 
+#ifdef NON_MATCHING
+// The four initials stores in the D_800DAB6C branch use the hoisted &D_802288E8 in $v1;
+// the original addresses them from $at (lui once, four sb). Everything else matches.
+void func_801E1BA8(void) {
+    s32 i;
+    s32 j;
+
+    D_802261C4 = 0;
+    D_802261C8 = 0;
+    D_802261CC = 0.0f;
+    D_802261D0 = 0.0f;
+    D_802261D4 = 0.0f;
+    D_802261E0 = 0;
+    D_802261E4 = 0;
+    D_802261E8 = 0;
+    D_802288EC = 0;
+    for (i = 0; i < 16; i++) {
+        if (i < 8) {
+            D_802287E8[i] = i;
+        } else {
+            D_802287E8[i] = i + 15;
+        }
+    }
+    if (D_800DAB6C != 0) {
+        D_800DAB6C = 0;
+        D_802288E8[0] = 0;
+        D_802288E8[1] = 0;
+        D_802288E8[2] = 0;
+        D_802288E8[3] = 0;
+    } else {
+        for (i = 0; i < 4; i++) {
+            D_802288E8[i] = D_801CE700[i];
+        }
+        for (i = 0; i < 3; i++) {
+            if (D_802288E8[i] == 0) {
+                break;
+            }
+        }
+        D_802261E4 = i;
+        j = (D_802261C4 + 8) % 16;
+        D_802287E8[j] = D_802287E8[(j + 1) % 16] - 1;
+        if (D_802287E8[j] < 0) {
+            D_802287E8[j] += 31;
+        }
+        D_802261C4--;
+        if (D_802261C4 < 0) {
+            D_802261C4 = 15;
+        }
+        D_802261D4 = (D_802261C4 * 6.2831855f) / 16;
+        D_802261D0 = D_802261D4;
+    }
+    D_802261F8 = 0;
+    switch (D_801CE608.gameMode) {
+        case 4:
+            i = 0;
+            if (gDifficulty == DIFFICULTY_NORMAL) {
+                i = 1;
+            }
+            for (; i < D_801CB334 + 1; i++) {
+                if ((D_801C2660[D_800EAC14[gDifficulty][i]] == 1) || (D_801C2690[D_800EAC14[gDifficulty][i]] != 0)) {
+                    D_802261F8 = 1;
+                }
+            }
+            break;
+        case 0:
+            if ((D_801C2650 == 1) || (D_801C2654 != 0)) {
+                D_802261F8 = 1;
+            }
+            break;
+        case 11:
+            if (D_801C2928 == 1) {
+                D_802261F8 = 1;
+            }
+            break;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1BA8.s")
+#endif
 
 Gfx* func_801E1E8C(Gfx* gdl) {
     s32 i;
