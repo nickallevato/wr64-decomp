@@ -249,7 +249,109 @@ void func_801F03E0(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F06A0.s")
+extern Gfx D_10106C0[];
+extern Gfx D_1010730[];
+extern Gfx D_1010998[];
+extern Gfx D_10109F8[];
+extern u8 D_10123A8[];
+extern u8 D_1012BA8[];
+extern u8 D_10133A8[];
+extern u8 D_1013BA8[];
+extern Vp D_1014490;
+extern Vp D_10144A0;
+extern Vp D_10144B0;
+extern Gfx D_1014658[];
+
+void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3);
+
+#define LIGHT_TEX(gdl, img)                                                                                    \
+    gDPLoadTextureBlock(gdl++, img, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,       \
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD)
+
+// Draw the start lights: three red lamps lit one by one as the countdown runs, then the green one.
+void func_801F06A0(Gfx** gdlp) {
+    s32 i;
+    f32 angle;
+    s32 n;
+    u8* lamp1;
+    u8* lamp2;
+    u8* lamp3;
+    u8* go;
+    Gfx* gdl;
+    MtxF mf;
+
+    n = (D_80228A90 - 1) / 15;
+    gdl = *gdlp;
+    if (n < 0) {
+        n = 0;
+    }
+    if (D_80228D08 == 0) {
+        n = 4;
+    }
+    if ((n > 0) && (n < 4)) {
+        lamp1 = D_1013BA8;
+    } else {
+        lamp1 = D_10133A8;
+    }
+    if ((n > 0) && (n < 3)) {
+        lamp2 = D_1013BA8;
+    } else {
+        lamp2 = D_10133A8;
+    }
+    if (n == 1) {
+        lamp3 = D_1013BA8;
+    } else {
+        lamp3 = D_10133A8;
+    }
+    if (n == 0) {
+        go = D_1012BA8;
+    } else {
+        go = D_10123A8;
+    }
+    gSPDisplayList(gdl++, D_1014658);
+    func_800481E0(&D_801AE948->unk4140[D_801AE950], &D_80228D24, 120.0f, 1.3333334f, 16.0f, 1024.0f, 0.0f, 0.0f);
+    gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    func_800484C8(&D_801AE948->unk4140[D_801AE950], &mf, 0.0f, 0.0f, (gPlayers == TWO_PLAYERS) * 20.0f + 60.0f,
+                  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPPerspNormalize(gdl++, D_80228D24);
+    func_801EDFFC(&D_801AE948->unk4140[D_801AE950], 0.0f, D_80228D0C, 0.0f);
+    gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    angle = (D_80228D0C / 100.0f) * 120.0f;
+    if (D_80228D08 == 2) {
+        angle = -angle;
+    }
+    func_801EE228(&D_801AE948->unk4140[D_801AE950], angle, 0.0f, 1.0f, 0.0f);
+    gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    for (i = 0; i < gPlayers; i++) {
+        if (gPlayers == ONE_PLAYER) {
+            gSPViewport(gdl++, &D_1014490);
+        } else if (i == 0) {
+            gSPViewport(gdl++, &D_10144A0);
+        } else {
+            gDPPipeSync(gdl++);
+            gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 122, 311, 229);
+            gSPViewport(gdl++, &D_10144B0);
+        }
+        LIGHT_TEX(gdl, lamp1);
+        gSPDisplayList(gdl++, D_10106C0);
+        LIGHT_TEX(gdl, lamp2);
+        gSPDisplayList(gdl++, D_1010730);
+        LIGHT_TEX(gdl, lamp3);
+        gSPDisplayList(gdl++, D_1010998);
+        LIGHT_TEX(gdl, go);
+        gSPDisplayList(gdl++, D_10109F8);
+    }
+    gSPViewport(gdl++, &D_1014450);
+    if (gPlayers == TWO_PLAYERS) {
+        gDPPipeSync(gdl++);
+        gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 12, 311, 229);
+    }
+    gSPMatrix(gdl++, &D_300E008, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gdl++, &D_300E088, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+    gSPPerspNormalize(gdl++, gCameraPerspective[D_80223930].unkE4);
+    *gdlp = gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
 
