@@ -44,6 +44,9 @@ extern s8 D_801CE700[];
 // 2 * pi. This copy sits just past the end of this file's split rodata (splat gives
 // 0x80226330 to B17D0's data), so the code names it rather than writing the literal.
 extern f32 D_80226330;
+extern f32 D_80228828[];
+extern f32 D_80228868[];
+extern f32 D_802288A8[];
 extern UnkStruct_AF8C0_14 D_801C1FF0[][3];
 extern UnkStruct_AF8C0_14 D_801C22C0[];
 extern UnkStruct_AF8C0_14 D_801C23B0[];
@@ -61,6 +64,10 @@ void func_801E2B8C(s32);
 void func_801E2C14(void);
 void func_801EC20C(void);
 f32 func_801E31A0(void);
+void func_801E1BA8(void);
+void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
+void func_8004EFB4(f32, f32, s32);
+void func_8004F1EC(f32, f32, s32, s32);
 
 // Display lists for the 31 letter-wheel slots: A-Z, '-', '.', ' ', delete and end.
 Gfx* D_80226040[] = {
@@ -99,10 +106,206 @@ s32 D_802261E4 = 0;
 s32 D_802261E8 = 0;
 Gfx* D_802261EC[] = { (Gfx*) 0x080973D0, (Gfx*) 0x08097428, (Gfx*) 0x08097448 };
 s32 D_802261F8 = 0;
-f32 D_802261FC = 50.0f;
-f32 D_80226200 = -50.0f;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1290.s")
+void func_801E1290(void) {
+    static f32 D_802261FC = 50.0f;
+    static f32 D_80226200 = -50.0f;
+    s32 i;
+    s32 splash;
+    s32 side;
+    s32 active;
+    s32 letter;
+    f32 step;
+    f32 dist;
+    f32 angle;
+    f32 frame;
+    Mtx mtx;
+    Mtx mtx2;
+    MtxF wheelMtx;
+    MtxF letterMtx;
+    MtxF posMtx;
+    MtxF mtx2F;
+    MtxF finalMtx;
+
+    active = 0;
+    if ((D_801CE63C != 0) && (gGameState == GAME_STATE_64)) {
+        func_801E1BA8();
+    }
+    switch (D_802261C8) {
+        case 0:
+            D_802261CC = (D_802261E0 * 750.0f) / 30.0f;
+            D_802261E0++;
+            if (D_802261E0 >= 31) {
+                D_802261E0 = 0;
+                D_802261C8 = 1;
+                D_802261CC = 750.0f;
+                D_802261E8 = 1;
+            }
+            break;
+        case 1:
+            active = 1;
+            break;
+        case 2:
+        case 8:
+            active = 1;
+            if (D_802261C8 == 8) {
+                step = 0.3f;
+            } else {
+                if (D_802261DC != 0) {
+                    D_802261D8 = func_801E31A0();
+                }
+                step = 0.05f * D_802261D8;
+            }
+            D_802261D0 -= step;
+            if (D_802261D0 < 0.0f) {
+                if (D_802261D4 != 0.0f) {
+                    D_802261D0 += 6.2831855f;
+                }
+            }
+            if (D_802261D0 <= D_802261D4) {
+                D_802261D0 = D_802261D4;
+                if ((D_802261C8 == 8) && (D_802288EC & 1)) {
+                    D_802261C8 = 10;
+                } else {
+                    D_802261C8 = 1;
+                }
+            }
+            break;
+        case 3:
+        case 9:
+            active = 1;
+            if (D_802261C8 == 9) {
+                step = 0.3f;
+            } else {
+                if (D_802261DC != 0) {
+                    D_802261D8 = func_801E31A0();
+                }
+                step = 0.05f * D_802261D8;
+            }
+            D_802261D0 += step;
+            if (D_802261D0 >= D_802261D4) {
+                D_802261D0 = D_802261D4;
+                if ((D_802261C8 == 9) && (D_802288EC & 2)) {
+                    D_802261C8 = 10;
+                } else {
+                    D_802261C8 = 1;
+                }
+            }
+            if (D_802261D0 >= 6.2831855f) {
+                D_802261D0 -= 6.2831855f;
+            }
+            break;
+        case 4:
+            active = 1;
+            D_802261E0++;
+            frame = D_802261E0;
+            angle = (frame * (2.0 * 3.1415927f)) / 16;
+            if (D_802261E0 >= 16) {
+                letter = D_802287E8[D_802261C4];
+                dist = 750.0f;
+                if (letter == 30) {
+                    if (D_801CE608.gameMode == 4) {
+                        D_802261C8 = 5;
+                    } else {
+                        D_802261C8 = 7;
+                        D_802261E8 = 0;
+                        D_802261E0 = 0;
+                    }
+                } else if (letter == 29) {
+                    D_802261C8 = 1;
+                    if (D_802261E4 > 0) {
+                        D_802261E4--;
+                    }
+                    D_802288E8[D_802261E4] = 0;
+                } else {
+                    D_802288E8[D_802261E4] = *D_802260BC[letter];
+                    D_802261E4++;
+                    if (D_802261E4 == 3) {
+                        D_802261C8 = 10;
+                        if (D_802287E8[D_802261C4] >= 16) {
+                            D_802288EC = 2;
+                        } else {
+                            D_802288EC = 1;
+                        }
+                    } else {
+                        D_802261C8 = 1;
+                    }
+                }
+            } else if (D_802261E0 >= 8) {
+                dist = (((D_802261E0 - 8) * 400.0f) / 8) + 350.0f;
+            } else {
+                dist = 750.0f - ((frame * 400.0f) / 8);
+            }
+            break;
+        case 6:
+            D_802261E0++;
+            if (D_802261E0 >= 11) {
+                D_802261C8 = 7;
+                D_802261E8 = 0;
+                D_802261E0 = 0;
+            }
+            break;
+        case 7:
+            D_802261CC = ((30 - D_802261E0) * 750.0f) / 30.0f;
+            D_802261E0++;
+            if (D_802261E0 >= 31) {
+                D_802261E0 = 0;
+                D_802261C8 = 5;
+                D_802261CC = 0;
+            }
+            break;
+    }
+    D_802287E0 = D_802261C4 - 3;
+    if (D_802287E0 < 0) {
+        D_802287E0 += 16;
+    }
+    D_802287E4 = D_802261C4 + 3;
+    if (D_802287E4 >= 16) {
+        D_802287E4 -= 16;
+    }
+    for (i = 0; i < 16; i++) {
+        func_80049A94(&mtx, &wheelMtx, 0.0f, -0.2f, D_802261D0 - ((i * 6.2831855f) / 16), 0.0f, -540.0f, 0.0f);
+        splash = 0;
+        if ((D_802261C8 == 4) && (i == D_802261C4)) {
+            func_80049A94(&mtx, &letterMtx, angle, 1.7707964f, -1.5707964f, 0.0f, dist, 0.0f);
+        } else {
+            func_80049A94(&mtx, &letterMtx, 0.0f, 1.7707964f, -1.5707964f, 0.0f, D_802261CC, 0.0f);
+        }
+        SysUtils_MatrixAffineMultiply(&wheelMtx, &letterMtx, &posMtx);
+        func_80048A88(&mtx2, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f);
+        SysUtils_MtxToMtxF(&mtx2, &mtx2F);
+        SysUtils_MatrixAffineMultiply(&posMtx, &mtx2F, &finalMtx);
+        SysUtils_MtxFToMtx(&finalMtx, &D_801CE5F8->unk1380[i]);
+        if (D_801CE63C == 0) {
+            if ((D_80228868[i] < 0.0f) && (posMtx.mf[3][1] >= 0.0f)) {
+                splash = 1;
+            } else if ((D_80228868[i] >= 0.0f) && (posMtx.mf[3][1] < 0.0f)) {
+                splash = 2;
+            }
+            if (active == 0) {
+                if (splash == 1) {
+                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], D_802261FC);
+                } else if (splash == 2) {
+                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], 0.0f - D_802261FC);
+                }
+            } else if (i == D_802261C4) {
+                if (posMtx.mf[3][1] < 0.0f) {
+                    func_8004EFB4(posMtx.mf[3][0], posMtx.mf[3][2], -50);
+                }
+            } else {
+                side = (posMtx.mf[3][0] >= 0.0f) ? 1 : 0;
+                if (splash == 1) {
+                    func_8004F1EC(D_80228828[i], D_802288A8[i], D_802261FC, side);
+                } else if (splash == 2) {
+                    func_8004F1EC(D_80228828[i], D_802288A8[i], 0.0f - D_802261FC, side);
+                }
+            }
+        }
+        D_80228828[i] = posMtx.mf[3][0];
+        D_80228868[i] = posMtx.mf[3][1];
+        D_802288A8[i] = posMtx.mf[3][2];
+    }
+}
 
 #ifdef NON_MATCHING
 // The four initials stores in the D_800DAB6C branch use the hoisted &D_802288E8 in $v1;
