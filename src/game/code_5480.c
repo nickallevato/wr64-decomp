@@ -16,16 +16,11 @@ Vec3f D_80158450[17];
 UnkStruct_801603E0 D_80158520[0x3F6];
 UnkStruct_801603E0 D_801603E0[1];
 UnkStruct_801603E0 D_80160400[1];
-s32 D_80160420;
 
 // .data
 s32 D_800D4650 = 0;
 s32 D_800D4654 = 0;
 s32 D_800D4658[] = { 0x31493149, 0x310B310B, 0x218B218B, 0x29892989, 0x214D214D, 0x290D290D };
-s32 D_800D4670 = 0;
-s32 D_800D4674 = 0;
-f32 D_800D4678 = 6.0f;
-u16 D_800D467C = 1;
 extern s32 D_800D4610;
 
 extern s32 D_1000140;
@@ -409,23 +404,25 @@ Gfx* func_8004BC40(Gfx* gdl) {
     return gdl;
 }
 
-// The title ripple's per-frame update: the controller toggles D_800D467C/D_800D4670 or steers the second centre
+// The grid effect's per-frame update: the controller toggles D_800D467C/D_800D4670 or steers the second centre
 // (D_80160400); otherwise it circles, and every 300 counts it restarts (func_8004B6E0) with a new speed and every
 // seventh time a new fill colour (D_800D4650). Then each of the 0x3F6 cells moves along its offset and its vertex
 // (gGfxPool->unkFE08) follows.
-#ifdef NON_MATCHING
-// The original reloads D_800D467C, D_800D4674, D_80160420 and D_800D4670 with lui at each use (function-scope statics,
-// as in water_69D0?) where IDO here keeps their addresses in saved registers. Score 7405.
 void func_8004BC98(void) {
+    static s32 D_800D4670 = 0;
+    static s32 D_800D4674 = 0;
+    static f32 D_800D4678 = 6.0f;
+    static u16 D_800D467C = 1;
+    static s32 D_80160420;
     UnkStruct_801603E0* e;
     Vtx* v;
     s32 i;
+    u16 angle;
     s32 dx;
     s32 dz;
     s32 speed;
-    s32 last;
+    s32 dist;
     f32 w;
-    f32 k;
 
     if (gControllerOne[D_80154330[0]].unk_2 & 0x800) {
         D_800D467C ^= 1;
@@ -438,9 +435,8 @@ void func_8004BC98(void) {
         D_80160400->unk10 = gControllerOne[D_80154330[0]].unk_8 * 5;
         D_80160400->unk14 = gControllerOne[D_80154330[0]].unk_9 * -5;
     } else {
-        last = D_80160420;
+        D_800D4674 += D_800D4610 - D_80160420;
         D_80160420 = D_800D4610;
-        D_800D4674 = (D_800D4674 + D_800D4610) - last;
         if (D_800D4674 > 300) {
             if (++D_800D4654 == 7) {
                 D_800D4650 = ((SysUtils_Rand() & 0xFFFF) * 6) >> 16;
@@ -455,35 +451,37 @@ void func_8004BC98(void) {
                 D_800D4678 = (((SysUtils_Rand() >> 16) * 5) / 65536.0) + 7.0;
             }
         }
-        D_80160400->unk10 = gSinTable[((D_800D4610 * 8) + 0x400) & 0xFFF] * D_800D4678;
-        D_80160400->unk14 = gSinTable[(D_800D4610 * 8) & 0xFFF] * D_800D4678;
+        angle = D_800D4610 * 8;
+        D_80160400->unk10 = gSinTable[(angle + 0x400) & 0xFFF] * D_800D4678;
+        D_80160400->unk14 = gSinTable[(u32) angle & 0xFFF] * D_800D4678; // FAKE: the (u32) cast
         if (D_800D467C == 0) {
-            D_80160400->unk14 = 0;
-            D_80160400->unk10 = 0;
+            D_80160400->unk10 = D_80160400->unk14 = 0;
         }
     }
     D_80160400->unk0 = D_80160400->unk8 + D_80160400->unk10;
     D_80160400->unk4 = D_80160400->unkC + D_80160400->unk14;
-    for (i = 0, e = D_80158520; e != D_801603E0; i++, e++) {
+    // One line: IDO orders the loop setup by source line.
+    e = D_80158520; i = 0; do {
         v = &gGfxPool->unkFE08[i];
+        dx = D_80160400->unk10;
+        dz = D_80160400->unk14;
+        speed = sqrtf(SQ(dx) + SQ(dz)) + 0.5;
         dx = D_80160400->unk0 - e->unk8;
         dz = D_80160400->unk4 - e->unkC;
-        speed = sqrtf(SQ(D_80160400->unk10) + SQ(D_80160400->unk14)) + 0.5;
-        w = (e->unk1C + e->unk18) * (s32) (sqrtf(SQ(dx) + SQ(dz)) + 0.5);
+        dist = sqrtf(SQ(dx) + SQ(dz)) + 0.5;
+        w = (e->unk1C + e->unk18) * dist;
         if (w != 0.0f) {
-            k = (f32) (e->unk18 * speed) / w;
+            w = (f32) (e->unk18 * speed) / w;
             if (D_800D4670 != 0) {
-                e->unk10 = 0.5 - dx * k;
-                e->unk14 = 0.5 - dz * k;
+                e->unk10 = 0.5 - dx * w;
+                e->unk14 = 0.5 - dz * w;
             } else {
-                e->unk10 = dx * k + 0.5;
-                e->unk14 = dz * k + 0.5;
+                e->unk10 = dx * w + 0.5;
+                e->unk14 = dz * w + 0.5;
             }
         }
         v->v.ob[0] = e->unk0 = e->unk10 + e->unk8;
         v->v.ob[1] = e->unk4 = e->unk14 + e->unkC;
-    }
+        i++;
+    } while (++e != D_801603E0);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_5480/func_8004BC98.s")
-#endif
