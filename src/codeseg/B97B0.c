@@ -860,7 +860,47 @@ void func_801EE46C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
+#ifdef NON_MATCHING
+// Score 239: sxsy and cxsy sit 4 bytes lower on the stack, and arg4 is loaded one store later.
+void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+    f32 sx;
+    f32 sy;
+    f32 sz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 sxsy;
+    f32 cxsy;
+
+    sx = SIN(ANGLE_TO_CUSTOM_UNITS(arg1));
+    sy = SIN(ANGLE_TO_CUSTOM_UNITS(arg2));
+    sz = SIN(ANGLE_TO_CUSTOM_UNITS(arg3));
+    cx = COS(ANGLE_TO_CUSTOM_UNITS(arg1));
+    cy = COS(ANGLE_TO_CUSTOM_UNITS(arg2));
+    cz = COS(ANGLE_TO_CUSTOM_UNITS(arg3));
+
+    arg0[0][0] = cy * cz;
+    sxsy = sx * sy;
+    arg0[1][0] = (-cx * sz) + (sxsy * cz);
+    cxsy = cx * sy;
+    arg0[2][0] = (sx * sz) + (cxsy * cz);
+    arg0[0][1] = cy * sz;
+    arg0[3][0] = arg4;
+    arg0[1][1] = (cx * cz) + (sxsy * sz);
+    arg0[2][1] = (-sx * cz) + (cxsy * sz);
+    arg0[3][1] = arg5;
+    arg0[0][2] = -sy;
+    arg0[1][2] = sx * cy;
+    arg0[2][2] = cx * cy;
+    arg0[3][2] = arg6;
+    arg0[0][3] = 0.0f;
+    arg0[1][3] = 0.0f;
+    arg0[2][3] = 0.0f;
+    arg0[3][3] = 1.0f;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE4D0.s")
+#endif
 
 void func_801EE698(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     MtxF mtx;
