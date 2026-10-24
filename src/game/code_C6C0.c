@@ -401,6 +401,41 @@ extern s32 D_800D4934;
 extern s16 D_800D492C;
 extern s32 D_800D4930;
 extern u16* D_800D48D0[];
+extern f32 D_800D93D0[];
+extern f32 D_800D93E0[];
+extern f32 D_800D93F0[];
+extern f32 D_800D9420[];
+extern f32 D_800D9430[];
+extern f32 D_800D9440[];
+extern f32 D_800D9450[];
+extern f32 D_800D9460[];
+extern f32 D_800D9470[];
+extern f32 D_800D9490[];
+extern f32 D_800D94A0[];
+extern f32 D_800D94B0[];
+extern f32 D_800D94C0[];
+extern f32 D_800D94D0[];
+extern f32 D_800D94E0[];
+extern f32 D_800D94F0[];
+extern f32 D_800D9500[];
+extern f32 D_800D9510[];
+extern f32 D_800D9520[];
+extern f32 D_800D9530[];
+extern f32 D_800D9540[];
+extern f32 D_800D9550[];
+extern f32 D_800D9560[];
+extern f32 D_800D9570[];
+extern f32 D_800D9580[];
+extern f32 D_800D9590[];
+extern f32 D_800D95A0[];
+extern f32 D_800D95B0[];
+extern f32 D_800D95C0[];
+extern f32 D_800D95D0[];
+extern f32 D_800D95E0[];
+extern f32 D_800D95F0[];
+extern f32 D_800D9600[];
+extern f32 D_800D9610[];
+extern f32 D_800D9620[];
 extern f32 D_800D4AF0;
 extern f32 D_800D4AF4;
 extern Gfx D_1007968[];
@@ -432,6 +467,7 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* func_80067810(Gfx*, s32, s32);
+void func_8004AC80(struct UnkStruct_8004B0F8* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
@@ -2552,7 +2588,73 @@ void func_80062918(Vec3f* arg0) {
     }
 }
 
+#ifdef NON_MATCHING
+// One difference: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of
+// reusing the copy in $f18, so this version is 0x10 bytes shorter. The rest matches.
+void func_800629A8(UnkStruct_80192690* arg0) {
+    f32 t;
+    f32 v;
+    s32 i;
+
+    if (arg0->unk16CE != 0) {
+        arg0->unk4 = D_800D9440[arg0->unkB64];
+        arg0->unk8 = D_800D9450[arg0->unkB64];
+        arg0->unk15E8 = D_800D9570[arg0->unkB64];
+    } else {
+        arg0->unk4 = D_800D9420[arg0->unkB64];
+        arg0->unk8 = D_800D9430[arg0->unkB64];
+        arg0->unk15E8 = LERP(D_800D9550[arg0->unkB64], D_800D9560[arg0->unkB64], arg0->unkB74  / 11.0f);
+    }
+    arg0->unk14 = arg0->unk15E8;
+    arg0->unk15D0 = D_800D9490[arg0->unkB68];
+    arg0->unk1568 = D_800D93D0[arg0->unkB64];
+    arg0->unk156C = D_800D93E0[arg0->unkB64];
+    arg0->unk1570 = D_800D93F0[arg0->unkB64];
+    arg0->unk1580 = D_800D9460[arg0->unkB64];
+    arg0->unk1584 = D_800D9470[arg0->unkB64];
+    if (arg0->unk16CE != 0) {
+        arg0->unkBB8 = D_800D94C0[arg0->unkB64];
+        arg0->unk1590 = arg0->unk1594 = D_800D95F0[arg0->unkB64];
+        arg0->unk158C = D_800D9620[arg0->unkB64];
+    } else {
+        arg0->unkBB8 = LERP(D_800D94A0[arg0->unkB64], D_800D94B0[arg0->unkB64], arg0->unkB6C  / 11.0f);
+        arg0->unk1590 = arg0->unk1594 = LERP(D_800D95D0[arg0->unkB64], D_800D95E0[arg0->unkB64], arg0->unkB74  / 11.0f);
+        arg0->unk158C = LERP(D_800D9600[arg0->unkB64], D_800D9610[arg0->unkB64], arg0->unkB74  / 11.0f);
+    }
+    t = arg0->unkB70 / 11.0f;
+    if (arg0->unk16CE != 0) {
+        arg0->unkBC8 = D_800D94F0[arg0->unkB64];
+        arg0->unkBCC = D_800D9520[arg0->unkB64];
+        v = D_800D9540[arg0->unkB64];
+        arg0->unkBD0 = ((v / 1.8f) / 5.0f) + ((((100.0f - v) / 1.8f) / 5.0f) * t);
+        arg0->unkBC4 = D_800D95A0[arg0->unkB64];
+        arg0->unkBBC = D_800D95C0[arg0->unkB64] + arg0->unkBC4;
+    } else {
+        arg0->unkBC8 = LERP(D_800D94D0[arg0->unkB64], D_800D94E0[arg0->unkB64], t);
+        arg0->unkBCC = LERP(D_800D9500[arg0->unkB64], D_800D9510[arg0->unkB64], t);
+        v = D_800D9530[arg0->unkB64];
+        arg0->unkBD0 = ((v / 1.8f) / 5.0f) + ((((100.0f - v) / 1.8f) / 5.0f) * t);
+        arg0->unkBC4 = LERP(D_800D9580[arg0->unkB64], D_800D9590[arg0->unkB64], arg0->unkB74  / 11.0f);
+        arg0->unkBBC = D_800D95B0[arg0->unkB64] + arg0->unkBC4;
+    }
+    arg0->unkBC0 = arg0->unkBC4 * arg0->unkBC8;
+    if (arg0->unkBD0 != 0.0f) {
+        arg0->unkBD4 = 2048.0f / arg0->unkBD0;
+        arg0->unkBD8 = (1.0f - arg0->unkBC8) * 0.5f;
+    }
+    v = 11.111112f - arg0->unkBD0;
+    if (v != 0.0f) {
+        arg0->unkBE0 = 1.0f - arg0->unkBCC;
+        arg0->unkBDC = 1024.0f / v;
+    }
+    func_8004AC80((struct UnkStruct_8004B0F8*) arg0, arg0->unk44.x, arg0->unk44.y, arg0->unk44.z);
+    for (i = 11; i >= 0; i--) {
+        arg0->unk630[i] = arg0->unk90[i].unk18;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800629A8.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80062E50.s")
 
