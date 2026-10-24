@@ -1539,7 +1539,7 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// 19969: same blocks, display-list commands and loops; register allocation and scheduling
+// 19964: same blocks, display-list commands and loops; register allocation and scheduling
 // differ (the original keeps more command words in saved registers).
 void func_800B305C(Gfx** gdl) {
     s32 i;
@@ -1680,7 +1680,7 @@ void func_800B305C(Gfx** gdl) {
     }
     // The unk1000 triangles of the human's entry, 5 to a vertex load.
     gDPPipeSync(gdlh++);
-    gDPSetRenderMode(gdlh++, G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
+    gDPSetRenderMode(gdlh++, G_RM_CLD_SURF, G_RM_CLD_SURF2);
     gDPLoadTextureBlock(gdlh++, D_1047458, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801D0790; i++) {
