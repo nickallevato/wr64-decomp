@@ -82,7 +82,9 @@ typedef struct UnkStruct_801AEE20_s {
     /* 0x098 */ s32 unk98;
     /* 0x09C */ s32 unk9C; /* inferred */
     /* 0x0A0 */ s32 unkA0; /* maybe part of unk9C[0xB]? */
-    char padA4[0x24];
+    /* 0x0A4 */ char padA4[0x1C];
+    /* 0x0C0 */ s32 unkC0;
+    /* 0x0C4 */ char padC4[4];
     /* 0x0C8 */ s32 unkC8;        /* inferred */
     /* 0x0CC */ char padCC[0x38]; /* maybe part of unkC8[0xF]? */
 } UnkStruct_801AEE20;             /* size = 0x104 */
