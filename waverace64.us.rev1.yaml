@@ -332,6 +332,9 @@ segments:
       # code_5480's .bss, 0x80158450..0x8016042F
       - { type: .bss, start: 0xA95D0, vram: 0x80158450, name: game/code_5480 }
       - { type: bss, start: 0xA95D0, vram: 0x80160430, name: bss2 }
+      # code_68A10's .bss, 0x801D0790..0x801D7B6F
+      - { type: .bss, start: 0xA95D0, vram: 0x801D0790, name: game/code_68A10 }
+      - { type: bss, start: 0xA95D0, vram: 0x801D7B70, name: bss3 }
 
       # Libultra bss
       - { type: .bss, start: 0xA95D0, vram: 0x801D86B0, name: libultra/os/sptask }

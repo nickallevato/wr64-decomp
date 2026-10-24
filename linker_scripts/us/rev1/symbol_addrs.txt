@@ -211,3 +211,14 @@ gHudColorStep = 0x80228D1C;
 gHudColorFrame = 0x80228D20;
 gHudPerspNorm = 0x80228D24;
 gPortraitPos = 0x80228D28;
+
+// D_801D0798 (code_68A10's 4 x 0x1C74 per-rider array) is defined in C; its size keeps
+// asm references into it (D_801D23B8 = entry 0 + 0x1C20) as offsets from the array.
+D_801D0798 = 0x801D0798; //size:0x71D0
+// code_68A10's s64 timers, defined in C; sized so asm reads of their low words stay
+// symbol + 4.
+D_801D7B18 = 0x801D7B18; //size:0x8
+D_801D7B20 = 0x801D7B20; //size:0x8
+D_801D7B38 = 0x801D7B38; //size:0x8
+D_801D7B40 = 0x801D7B40; //size:0x8
+D_801D7B58 = 0x801D7B58; //size:0x8
