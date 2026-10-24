@@ -13,9 +13,16 @@ extern s32 D_801C2660[];
 extern s32 D_801C2690[];
 extern const s16 D_800EAC14[][8];
 extern Mtx D_8011F820;
+extern Gfx D_106F6C0[];
+extern Gfx* D_80226040[];
+extern s32 D_802261F8;
+extern s32 D_802287E0;
+extern s32 D_802287E4;
+extern s32 D_802287E8[];
 
 s32 func_8007BEA4(s32);
 s32 func_8007C204(s32);
+void func_8006DE24(Gfx**);
 Gfx* func_80094A44(Gfx*, s32);
 void func_801EC500(void);
 Gfx* func_801E2058(Gfx*);
@@ -57,7 +64,55 @@ Gfx* func_801E1E8C(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E2058.s")
+Gfx* func_801E2058(Gfx* gdl) {
+    s32 i;
+    s32 wrap;
+    s32 draw;
+
+    gdl = func_800949B8(gdl, gCourseID);
+    gSPDisplayList(gdl++, D_106F6C0);
+    if (D_802261F8 != 0) {
+        func_8006DE24(&gdl);
+    }
+    if (D_802287E0 < D_802287E4) {
+        wrap = 0;
+    } else {
+        wrap = 1;
+    }
+    for (i = 0; i < 16; i += 2) {
+        draw = 0;
+        if (wrap == 0) {
+            if ((i >= D_802287E0) && (i <= D_802287E4)) {
+                draw = 1;
+            }
+        } else if ((i >= D_802287E0) || (i <= D_802287E4)) {
+            draw = 1;
+            if (1) {} // FAKE
+            if (1) {}
+            if (1) {}
+            if (1) {}
+        }
+        if (draw != 0) {
+            gSPMatrix(gdl++, &D_801CE5F8->unk1380[i], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+            gSPDisplayList(gdl++, D_80226040[D_802287E8[i]]);
+            gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+        }
+        draw = 0;
+        if (wrap == 0) {
+            if ((i >= D_802287E0 - 1) && (i < D_802287E4)) {
+                draw = 1;
+            }
+        } else if ((i >= D_802287E0 - 1) || (i < D_802287E4)) {
+            draw = 1;
+        }
+        if (draw) {
+            gSPMatrix(gdl++, &D_801CE5F8->unk1380[i + 1], G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+            gSPDisplayList(gdl++, D_80226040[D_802287E8[i + 1]]);
+            gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
+        }
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E229C.s")
 

@@ -1084,7 +1084,7 @@ typedef struct UnkStruct_801CE5F8_s {
     char pad12B0[0x50];
     Mtx unk1300[1];
     Mtx unk1340[1];
-    char pad1380[0x400];
+    Mtx unk1380[16];
     Mtx unk1780[1];
 } UnkStruct_801CE5F8;
 
