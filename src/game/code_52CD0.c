@@ -2252,7 +2252,7 @@ Gfx* func_8009FCB0(Gfx* gdl, s32 arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 46 of 68200: spE0 sits at 0xDC instead of 0xE0, and two temporaries swap t0/t5 at the pause check. FAKE: spE0 also holds gCurrentPauseMenuOption (found by the permuter).
+// Score 16 of 68200: spE0's stack slot is 0xDC instead of 0xE0; the code is otherwise identical. FAKE: unk78 is read into spE0 in the pause check.
 Gfx* func_800A063C(Gfx* gdl, s32 arg1) {
     UnkStruct_801CE780_unk4** v1;
     StructVarS0* e;
@@ -2270,8 +2270,7 @@ Gfx* func_800A063C(Gfx* gdl, s32 arg1) {
     v1 = D_801CE780[index].unk4;
 
     temp_s2 = v1[k % 2];
-    spE0 = gCurrentPauseMenuOption; // FAKE
-    if ((spE0 == -1) && (e->unk78 >= temp_s2->unk0)) {
+    if ((gCurrentPauseMenuOption == -1) && ((spE0 = e->unk78) >= temp_s2->unk0)) { // FAKE: spE0
         e->unk78 = 0;
     }
     spE0 = e->unk78 % temp_s2->unk0;
