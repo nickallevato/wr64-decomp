@@ -30,9 +30,6 @@ void Popup_UpdateAll(void) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 40 of 71200.
-// Regalloc only: case 4's loop counter and its texture-offset induction temp swap $t0/$t1 (6 instructions).
 extern Gfx D_106F030[];
 extern Gfx D_106F0A8[];
 extern Gfx D_106F3A0[];
@@ -88,7 +85,8 @@ Gfx* func_801E5554(Gfx* gdl) {
                     } while (row != 40);
                     break;
                 case 2:
-                    if (slot->state == 1) {
+                    i = slot->state == 1; // FAKE: i is case 4's loop counter; using it here swaps its register with the offset temp
+                    if (i) {
                         gSPDisplayList(gdl++, D_106F030);
                     } else {
                         gSPDisplayList(gdl++, D_106F0A8);
@@ -170,9 +168,6 @@ Gfx* func_801E5554(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3AA0/func_801E5554.s")
-#endif
 
 extern s32 D_801C2650;
 
