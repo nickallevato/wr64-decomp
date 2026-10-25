@@ -15,7 +15,9 @@ extern f32 D_i8_802C750C;
 
 void Save_EepromWriteNames();
 void func_i8_802C5EB8();
+void func_i8_802C6ADC(void);
 void func_i8_802C6D58(void);
+void func_i8_802C6F4C(void);
 void ChangeNames_DeleteChar(void);
 void ChangeNames_StoreName(void);
 void ChangeNames_LoadName(void* arg0);
@@ -35,6 +37,8 @@ extern UnkStruct_i8_802C7054 D_i8_802C7054[];
 extern s32 D_802C7538;
 extern s32 D_802C753C;
 extern s8 D_802C7558[];
+extern s32 D_i8_802C704C;
+extern s32 D_802C7540;
 
 void func_i8_802C5800(void) {
     s32 i;
@@ -139,7 +143,150 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C5EB8.s")
+void func_i8_802C5EB8(void) {
+    s32 pad[2]; // stack pad: the frame is 0x28
+    s32 sound = false;
+    s32 idx;
+
+    if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
+        switch (D_801CE640) {
+            case 0:
+                D_801CE640 = 1;
+                D_802C753C = D_802C7538 = 0;
+                sound = true;
+                func_i8_802C6D58();
+                break;
+            case 1:
+                sound = true;
+                D_802C756C = 0;
+                if (D_801CE65A->unk0 & (CONT_A | CONT_G)) {
+                    func_i8_802C6ADC();
+                } else if (D_801CE65A->unk0 & CONT_START) {
+                    ChangeNames_StoreName();
+                }
+                if (D_802C756C != 0) {
+                    func_i8_802C6F4C();
+                }
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x11, 0);
+        }
+    } else if (D_801CE65A->unk0 & CONT_B) {
+        switch (D_801CE640) {
+            case 0:
+                sound = true;
+                func_i8_802C6F4C();
+                break;
+            case 1:
+                sound = true;
+                ChangeNames_DeleteChar();
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x16, 0);
+        }
+    } else if (D_801CE65A->unk0 & CONT_UP) {
+        if (D_801CE640 == 1) {
+            D_802C7540 = D_802C753C;
+            sound = true;
+            D_802C753C--;
+            if (D_802C753C < 0) {
+                D_802C753C = 5;
+            }
+            for (;;) {
+                idx = D_802C753C * 7 + D_802C7538;
+                if (D_i8_802C7054[idx].unk0 & 1) {
+                    break;
+                }
+                D_802C7538--;
+            }
+            if (D_802C7540 == 4 && D_802C753C == 3 && D_i8_802C704C != -1) {
+                D_802C7538 = D_i8_802C704C;
+                D_i8_802C704C = -1;
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE65A->unk0 & CONT_DOWN) {
+        if (D_801CE640 == 1) {
+            D_802C7540 = D_802C753C;
+            sound = true;
+            D_802C753C++;
+            if (D_802C753C >= 6) {
+                D_802C753C = 0;
+            }
+            if (D_802C7540 == 3 && D_802C753C == 4) {
+                D_i8_802C704C = D_802C7538;
+            }
+            for (;;) {
+                idx = D_802C753C * 7 + D_802C7538;
+                if (D_i8_802C7054[idx].unk0 & 1) {
+                    break;
+                }
+                if (D_802C753C == 5) {
+                    D_802C7538++;
+                } else {
+                    D_802C7538--;
+                }
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE65A->unk0 & CONT_LEFT) {
+        switch (D_801CE640) {
+            case 0:
+                sound = true;
+                D_i8_802C7040--;
+                if (D_i8_802C7040 < 0) {
+                    D_i8_802C7040 = 3;
+                }
+                D_i8_802C7050 = 0x200;
+                break;
+            case 1:
+                D_i8_802C704C = -1;
+                sound = true;
+                do {
+                    D_802C7538--;
+                    if (D_802C7538 < 0) {
+                        D_802C7538 = 6;
+                    }
+                    idx = D_802C753C * 7 + D_802C7538;
+                } while (!(D_i8_802C7054[idx].unk0 & 1));
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE65A->unk0 & CONT_RIGHT) {
+        switch (D_801CE640) {
+            case 0:
+                sound = true;
+                D_i8_802C7040++;
+                if (D_i8_802C7040 >= 4) {
+                    D_i8_802C7040 = 0;
+                }
+                D_i8_802C7050 = 0x200;
+                break;
+            case 1:
+                D_i8_802C704C = -1;
+                sound = true;
+                do {
+                    D_802C7538++;
+                    if (D_802C7538 >= 7) {
+                        D_802C7538 = 0;
+                    }
+                    idx = D_802C753C * 7 + D_802C7538;
+                } while (!(D_i8_802C7054[idx].unk0 & 1));
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C63E4.s")
 
