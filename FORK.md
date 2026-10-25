@@ -90,7 +90,8 @@ tools/fork/check.sh func_801E93B4
 - A function counts as done only when `check.sh` passes on the commit that adds it.
 - `tools/fork/remote-check.sh <name> <commit>...`: runs `check.sh` on each commit on
   na-workhorse (or `$WR64_REMOTE`), which has its own extracted checkout at the same path.
-  It pushes the local branches there first, so unpushed commits work. Use it for the
+  It pushes the local branches there first, so unpushed commits work, and resolves commit
+  names (`HEAD`, branch names) locally. Use it for the
   one-by-one recheck of a batch's commits and for merge reviews, to keep full rebuilds off
   the local machine.
 
@@ -691,8 +692,9 @@ Measured at `f40b21d` and at this branch's tip: the same except `func_8007687C` 
 - **Gate a commit on check.sh's own status.** `check.sh ... | tail -2 && git commit` commits on `tail`'s
   status; it happened once. Run it unpiped or test `${PIPESTATUS[0]}`.
 - **`tools/fork/remote-check.sh <name> <sha>...`** runs check.sh per commit on na-workhorse and keeps
-  full rebuilds off the local machine; batches 4 and 5 and this branch used it. Pass shas: a ref like
-  `HEAD` is resolved in the remote checkout (it checked the remote's own `HEAD` once here).
+  full rebuilds off the local machine; batches 4 and 5 and this branch used it. At first it resolved
+  a ref like `HEAD` in the remote checkout, so it once checked the remote's own `HEAD` here and said OK;
+  it now resolves every commit name locally and refuses one that isn't a commit.
 - **A `symbol_addrs.txt` entry changes what splat calls every reference to that address,** including
   main code's raw `func_802Cxxxx` and other overlays' data at the same vram. Rename, re-extract and
   link before believing a rename is free; `check.sh` does not run `make extract`.

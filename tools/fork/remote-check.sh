@@ -11,9 +11,15 @@ host=${WR64_REMOTE:-na-workhorse}
 repo=$(git -C "$(dirname "$0")" rev-parse --path-format=absolute --git-common-dir)/..
 repo=$(cd "$repo" && pwd)
 name=$1; shift
+# Resolve each commit here: a name like HEAD would otherwise mean the remote checkout's HEAD.
+shas=()
+for c in "$@"; do
+    sha=$(git rev-parse --verify --quiet "$c^{commit}") || { echo "remote-check: $c is not a commit here" >&2; exit 2; }
+    shas+=("$sha")
+done
 git -C "$repo" push -q -f "ssh://$host$repo" \
     'refs/heads/*:refs/remotes/local/*' 'refs/remotes/origin/*:refs/remotes/local-origin/*' || exit 1
-command ssh "$host" bash -s -- "$repo" "$name" "$@" <<'REMOTE'
+command ssh "$host" bash -s -- "$repo" "$name" "${shas[@]}" <<'REMOTE'
 set -u
 main=$1; name=$2; shift 2
 wt=$main-wt/rcheck-$name
