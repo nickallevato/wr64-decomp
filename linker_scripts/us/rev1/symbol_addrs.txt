@@ -433,3 +433,27 @@ MainMenu_Leave = 0x802C6A1C; //segment:ovl_i0
 // here would make splat rename those references:
 //   MainMenu_Draw 0x802C5A7C
 //   MainMenu_DrawLeaving 0x802C6944
+
+// ovl_i1, the race (game states 0x28 to 0x2D) and the demo (GAME_STATE_DEMO, 8)
+Race_OverlayUpdate = 0x802C5800; //segment:ovl_i1
+Race_FirstFrame = 0x802C587C; //segment:ovl_i1
+Race_UpdateScroller = 0x802C5900; //segment:ovl_i1
+Race_StartScroller = 0x802C59E8; //segment:ovl_i1
+Race_UpdateInRace = 0x802C5DF4; //segment:ovl_i1
+Race_UpdateState29 = 0x802C63B4; //segment:ovl_i1
+Race_UpdateState2A = 0x802C6550; //segment:ovl_i1
+Race_UpdateState2C = 0x802C6B00; //segment:ovl_i1
+Race_EnterState29 = 0x802C6DCC; //segment:ovl_i1
+Race_EnterState2A = 0x802C6FE0; //segment:ovl_i1
+Race_EnterState2C = 0x802C7394; //segment:ovl_i1
+Race_EnterStandings = 0x802C7570; //segment:ovl_i1
+RaceStandings_DrawTable = 0x802C7E48; //segment:ovl_i1
+RaceStandings_Step = 0x802C8E70; //segment:ovl_i1
+Demo_Leave = 0x802C9380; //segment:ovl_i1
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   Race_Draw 0x802C5AE4
+//   Race_Leave 0x802C744C
+//   RaceStandings_Update 0x802C7608
+//   RaceStandings_Draw 0x802C7D00
+//   Demo_Draw 0x802C913C
