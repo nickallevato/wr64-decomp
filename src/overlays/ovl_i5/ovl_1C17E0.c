@@ -4,9 +4,14 @@ extern Gfx D_106F6C0[];
 extern Mtx D_7001380[];
 extern Gfx* D_i5_802C7AA8[];
 extern s32 D_i5_802C7AC8;
+extern s32 D_i5_802C7ACC;
+extern s32 D_i5_802C7AD0;
+extern s32 D_802C7B30;
+extern s32 D_802C7B34;
 extern Mtx D_8011F820;
 
 Gfx* func_80094A44(Gfx*, s32);
+Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 Gfx* func_i5_802C7594(Gfx* gdl);
 Gfx* func_i5_802C7698(Gfx* gdl);
 void func_i5_802C781C(void);
@@ -47,7 +52,17 @@ Gfx* func_i5_802C7594(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1C17E0/func_i5_802C7698.s")
+Gfx* func_i5_802C7698(Gfx* gdl) {
+    gSPDisplayList(gdl++, D_106F628);
+    gdl = func_80094338(gdl, 0, D_i5_802C7ACC, 145, 208, 15);
+    gdl = func_80094338(gdl, 0, D_i5_802C7AD0, 166, 208, 15);
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 1, 6, D_i5_802C7ACC + 10, 147, 0);
+    gdl = func_801E3EE0(gdl, 1, 7, D_i5_802C7AD0 + 10, 168, 0);
+    gdl = Printer_DrawNumber(gdl, 2, D_802C7B34, D_i5_802C7ACC + 186, 147);
+    gdl = Printer_DrawNumber(gdl, 2, D_802C7B30, D_i5_802C7AD0 + 186, 168);
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1C17E0/func_i5_802C781C.s")
 
