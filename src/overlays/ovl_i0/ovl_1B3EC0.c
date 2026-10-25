@@ -285,7 +285,7 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 1035 of 30800: register allocation only. The original computes the B test in t5 and
+// Score 1035 of 30700: register allocation only. The original computes the B test in t5 and
 // D_i0_802C6BCC * 4 once for both history stores; this C gets the B test in t9, recomputes the
 // index, and its temporaries are numbered one off from the switch on.
 void func_i0_802C63AC(void) {

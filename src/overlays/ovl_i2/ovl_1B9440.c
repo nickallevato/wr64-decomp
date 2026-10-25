@@ -181,7 +181,7 @@ extern s32 D_i2_802C8BB8[];
 extern s16 D_80228A32;
 
 #ifdef NON_MATCHING
-// Score 590 of 59400: the "held" check before the repeat counter is scheduled as
+// Score 590 of 59300: the "held" check before the repeat counter is scheduled as
 // li -3 / beqzl instead of beqz with li -3 in the delay slot, which makes the function one
 // instruction longer and shifts everything after it; the rest matches.
 void func_i2_802C5E28(void) {
