@@ -1,6 +1,16 @@
 #include "global.h"
 
+extern s32 D_801C2650;
+extern s32 D_801C2654;
+extern s32 D_801CB334;
+
 void func_i14_802C5840(void);
+Gfx* func_i14_802C5B70(Gfx*);
+void func_i14_802C5F60(void);
+s32 Save_EepromWriteCourse(s32);
+s32 Save_EepromWriteRecord5(s32);
+s32 Save_EepromWriteStunt(s32);
+void GameState_EnterCourseOverview(void);
 
 void func_i14_802C5800(void) {
     if ((D_801CE63C != 0) && (gGameState == 0x50)) {
@@ -38,7 +48,74 @@ void func_i14_802C5840(void) {
     AudioGeneral_PlaySound(0x31, 0);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i14/ovl_1CF180/func_i14_802C5924.s")
+Gfx* func_i14_802C5924(Gfx* dList) {
+    s32 flag;
+
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        // FAKE (maybe): flag first holds gPrevGameState (the original's register choice)
+        if ((gGameState == 0x50) && ((flag = gPrevGameState) != 0x32) && (flag != 0x39) && (flag != 100)) {
+            flag = 0;
+            if (D_801CE608.gameMode == 4) {
+                if (gPrevGameState == 0x43) {
+                    flag = 1;
+                }
+            } else {
+                flag = 1;
+            }
+            if (flag != 0) {
+                osViBlack(0);
+                return func_80093C44(dList);
+            }
+        }
+    }
+
+    D_800DAB2C = 0;
+    dList = func_i14_802C5B70(Draw_WaterEffects(func_800949B8(func_8008FB74(dList), gCourseID)));
+
+    if (gGameState == 0x50) {
+        func_i14_802C5F60();
+    } else if (D_80228A16 == 1) {
+        if (D_801CE608.gameMode == 0) {
+            if ((D_801C2650 != 0) || (D_801C2654 != 0)) {
+                if (D_800DAB68 != 0) {
+                    Save_EepromWriteRecord5(gCourseID);
+                } else {
+                    Save_EepromWriteCourse(gCourseID);
+                }
+            }
+        } else if ((D_801CE608.gameMode == 11) && (D_801C2928 != 0)) {
+            Save_EepromWriteStunt(gCourseID);
+        }
+        switch (D_801CE630) {
+            case 30:
+                D_801CE6F8 = 1;
+                D_801CB334 = 0;
+                if (gDifficulty == DIFFICULTY_NORMAL) {
+                    D_801CB334 = 1;
+                }
+                GameState_EnterCourseOverview();
+                break;
+
+            case 40:
+                func_8009345C();
+                break;
+
+            case 10:
+                GameState_EnterRiderSelect();
+                break;
+
+            case 20:
+                GameState_EnterCourseSelect();
+                break;
+
+            case 2:
+                GameState_EnterTitleScreen();
+                break;
+        }
+    }
+    return dList;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i14/ovl_1CF180/func_i14_802C5B70.s")
 
