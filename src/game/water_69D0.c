@@ -437,8 +437,6 @@ void Water_StampDiagonalSine(f32 x, f32 z, s32 amplitude, s32 period, s32 step) 
     }
 }
 
-#ifdef NON_MATCHING
-// Score 24 of 19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
 // CU and CV are macros so that IDO keeps them as common subexpressions: as named locals they add
 // stack slots
 #define CU (((s32) ((INV_SQRT3 * z) + x) % 24576) >> 6)
@@ -449,10 +447,12 @@ f32 func_8004D30C(f32 x, f32 z) {
     s32 dv;
     s32 d0;
     s32 d1;
+    s32 pad1; // stack pad: the spill slots of du and dv sit just below the declared locals
+    s32 pad2; // stack pad
 
     du = (CU << 6) - ((s32) ((INV_SQRT3 * z) + x) % 24576);
-    h00 = WATER_CELL(CU, CV)->unk0 >> 8;
     dv = (CV << 6) - ((s32) (TWO_OVER_SQRT_3 * z) % 24576);
+    h00 = WATER_CELL(CU, CV)->unk0 >> 8;
     if (dv < du) {
         d0 = WATER_CELL(CU, CV + 1)->unk0 >> 8;
         d1 = h00 - d0;
@@ -467,9 +467,6 @@ f32 func_8004D30C(f32 x, f32 z) {
 }
 #undef CU
 #undef CV
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D30C.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 2600 of 30600: register allocation (saved and temp register numbering). Same operations as func_8004E0A4
