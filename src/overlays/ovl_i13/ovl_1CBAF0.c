@@ -17,8 +17,9 @@ extern s32 D_i13_802C8DCC;
 extern s32 D_i13_802C8DD0;
 extern s32 D_i13_802C8DD4;
 extern s32 D_i13_802C8DE0[];
-extern s32 D_802C8E90;
-extern s32 D_802C8E94;
+// Message box position; u32: func_i13_802C832C only matches with them unsigned (copied into a1/a2 by moves)
+extern u32 D_802C8E90;
+extern u32 D_802C8E94;
 extern s32 D_802C8E9C;
 
 s32 Save_EepromReset(void);
@@ -33,6 +34,9 @@ Gfx* func_i13_802C711C(Gfx*);
 void SaveLoad_OpenResultMessage(s32 arg0);
 void SaveLoad_OpenPromptMessage(s32 arg0);
 Gfx* func_i13_802C832C(Gfx*);
+Gfx* func_i13_802C8484(Gfx* gdl, s32 arg1);
+Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 void SaveLoad_Leave(void);
 void GameState_EnterOptionsMenu(void);
 s32 Save_PfsCheckFree(void);
@@ -567,7 +571,32 @@ void SaveLoad_OpenPromptMessage(s32 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C832C.s")
+Gfx* func_i13_802C832C(Gfx* gdl) {
+    s32 height;
+
+    switch (D_i13_802C8D78) {
+        case 1:
+            D_802C8E98++;
+            height = D_802C8E98 * 20 / 5;
+            if (D_802C8E98 >= 5) {
+                D_802C8E90 = 0x1C;
+                D_802C8E94 = 0x44;
+            }
+            D_802C8E94 = 0x58 - height;
+            gdl = func_801E7E74(gdl, 0, 0, 0, 255);
+            gdl = func_801E7FD8(gdl, D_802C8E90, D_802C8E94, D_802C8E90 + 0x108, height * 2 + D_802C8E94);
+            break;
+
+        case 2:
+        case 3:
+        case 5:
+            gdl = func_801E7E74(gdl, 0, 0, 0, 255);
+            gdl = func_801E7FD8(gdl, D_802C8E90, D_802C8E94, D_802C8E90 + 0x108, D_802C8E94 + 0x28);
+            gdl = func_i13_802C8484(gdl, 0);
+            break;
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C8484.s")
 
