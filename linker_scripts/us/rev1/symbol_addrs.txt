@@ -557,3 +557,11 @@ AudioOptions_Draw = 0x802C5800; //segment:ovl_i11
 AudioOptions_Input = 0x802C5D48; //segment:ovl_i11
 AudioOptions_Apply = 0x802C5F7C; //segment:ovl_i11
 AudioOptions_Leave = 0x802C6098; //segment:ovl_i11
+
+// ovl_i12, erase course records (GAME_STATE_OPTIONS_ERASE_COURSE_RECORDS, 0x47)
+EraseCourseRecords_Draw = 0x802C5800; //segment:ovl_i12
+EraseCourseRecords_DrawScreen = 0x802C58A0; //segment:ovl_i12
+EraseCourseRecords_Leave = 0x802C5EE4; //segment:ovl_i12
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   EraseCourseRecords_Input 0x802C5F6C
