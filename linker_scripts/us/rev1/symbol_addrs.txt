@@ -514,3 +514,8 @@ TimeTrialsResults_Update = 0x802C6B34; //segment:ovl_i6
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   TimeTrialsResults_Draw 0x802C5B74
+
+// ovl_i7, the options menu (GAME_STATE_OPTIONS_MENU, 0x3D)
+OptionsMenu_Draw = 0x802C5800; //segment:ovl_i7
+OptionsMenu_DrawItems = 0x802C5A18; //segment:ovl_i7
+OptionsMenu_Leave = 0x802C5C94; //segment:ovl_i7
