@@ -473,3 +473,10 @@ RiderSelect_DrawBackground = 0x802C88DC; //segment:ovl_i2
 // here would make splat rename those references:
 //   RiderSelect_Init 0x802C5AE4
 //   RiderSelect_Draw 0x802C5B4C
+
+// ovl_i3, the course overview (GAME_SATE_COURSE_OVERVIEW, GAME_SATE_1F)
+CourseOverview_SetCamera = 0x802C5AF0; //segment:ovl_i3
+CourseOverview_Leave = 0x802C6E9C; //segment:ovl_i3
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   CourseOverview_Draw 0x802C5B40

@@ -52,11 +52,11 @@ extern u32 D_800DB718[][2];
 Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 
 void func_i3_802C5AE8(void);
-void func_i3_802C5AF0(void);
+void CourseOverview_SetCamera(void);
 Gfx* func_i3_802C5D54(Gfx*);
 Gfx* func_i3_802C6344(Gfx*);
 void GameState_EnterCourseOverview(void);
-void func_i3_802C6E9C(void);
+void CourseOverview_Leave(void);
 
 void func_i3_802C5800(void) {
     s32 i;
@@ -129,7 +129,7 @@ void func_i3_802C5800(void) {
             func_i3_802C5AE8();
             break;
         case 1:
-            func_i3_802C5AF0();
+            CourseOverview_SetCamera();
             break;
     }
 }
@@ -137,11 +137,11 @@ void func_i3_802C5800(void) {
 void func_i3_802C5AE8(void) {
 }
 
-void func_i3_802C5AF0(void) {
+void CourseOverview_SetCamera(void) {
     Camera_SetOrbitMatrices(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_i3_802C7024, &D_80198310, &D_80198350);
 }
 
-Gfx* func_i3_802C5B40(Gfx* arg0) {
+Gfx* CourseOverview_Draw(Gfx* arg0) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 30) {
@@ -170,11 +170,11 @@ Gfx* func_i3_802C5B40(Gfx* arg0) {
         } else {
             if (D_801CE692[0].unk0 & 0xB000) {
                 if (D_i3_802C6F84 != 0) {
-                    func_i3_802C6E9C();
+                    CourseOverview_Leave();
                 }
             } else if (D_80223938 != 0) {
                 if (D_801CE644 >= D_i3_802C702C) {
-                    func_i3_802C6E9C();
+                    CourseOverview_Leave();
                 }
             }
             SysUtils_Rand();
@@ -448,7 +448,7 @@ Gfx* func_i3_802C6344(Gfx* gdl) {
 void func_i3_802C6E94(void) {
 }
 
-void func_i3_802C6E9C(void) {
+void CourseOverview_Leave(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 31;
