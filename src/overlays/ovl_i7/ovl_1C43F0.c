@@ -6,10 +6,20 @@ void GameState_EnterChangeConditions(void);
 void GameState_EnterAudio(void);
 void GameState_EnterEraseCourseRecords(void);
 void GameState_EnterSaveAndLoad(void);
-Gfx* func_i7_802C5A18(void);
+Gfx* func_i7_802C5A18(Gfx*);
 void func_i7_802C5C94(s32);
 extern s32 gCurrentOptionsMenuItem;
 extern s32 D_i7_802C5D20[];
+
+typedef struct {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} UnkStruct_i7_802C5D3C; // size = 0x8
+
+extern UnkStruct_i7_802C5D3C D_i7_802C5D3C[];
+extern Mtx D_7000000[];
+extern Mtx D_2000A40[];
+extern Gfx D_106F550[];
 
 Gfx* func_i7_802C5800(Gfx* arg0) {
     if (D_801CE63C != 0) {
@@ -22,7 +32,7 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
         }
     }
     D_800DAB2C = 0;
-    arg0 = func_i7_802C5A18();
+    arg0 = func_i7_802C5A18(arg0);
     if (gGameState == 0x3C) {
         if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
             func_i7_802C5C94(D_i7_802C5D20[gCurrentOptionsMenuItem]);
@@ -69,7 +79,33 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
     return arg0;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i7/ovl_1C43F0/func_i7_802C5A18.s")
+Gfx* func_i7_802C5A18(Gfx* gdl) {
+    s32 i;
+    UnkStruct_i7_802C5D3C* item;
+
+    gSPMatrix(gdl++, D_7000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_106F550);
+    gSPDisplayList(gdl++, D_106F628);
+
+    for (i = 0; i < 7; i++) {
+        gdl = func_80094338(gdl, 0, 58, i * 19 + 73, 204, 16);
+    }
+
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 2, 5, 107, 34, 0);
+
+    for (i = 0, item = D_i7_802C5D3C; i < 7; i++, item++) {
+        if (i != gCurrentOptionsMenuItem) {
+            if (1) {} // FAKE: gives the original's i * 19 (shifts, not a multu by a hoisted 19)
+            gdl = func_801E3EE0(gdl, 1, item->texture, item->x + 109, i * 19 + 76, 0);
+        }
+    }
+
+    gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    item = &D_i7_802C5D3C[gCurrentOptionsMenuItem];
+    return func_801E3EE0(gdl, 1, item->texture, item->x + 109, gCurrentOptionsMenuItem * 19 + 76, 0);
+}
 
 void func_i7_802C5C94(s32 arg0) {
     gPrevGameState = gGameState;

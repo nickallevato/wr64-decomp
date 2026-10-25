@@ -2,11 +2,115 @@
 
 extern s32 D_i11_802C618C[][2];
 
+typedef struct {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} UnkStruct_i11_802C6160; // size = 0x8
+
+extern s32 D_i11_802C6154[];
+extern UnkStruct_i11_802C6160 D_i11_802C6160[];
+extern s32 D_i11_802C6178[];
+extern s32 D_i11_802C6184[];
+extern Mtx D_7000000[];
+extern Mtx D_2000A40[];
+extern Gfx D_106F550[];
+
+void Save_EepromWriteHeader(void);
+
 void func_800C3050(s32);
+void func_i11_802C5D48(void);
 void func_i11_802C5F7C(void);
 void func_i11_802C6098(s32);
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i11/ovl_1CA480/func_i11_802C5800.s")
+Gfx* func_i11_802C5800(Gfx* gdl) {
+    s32 i;
+    s32* value;
+    // Only set for rows 0 and 1; the original keeps it in a register across the loop.
+    s32 texture;
+    s32 useString;
+    s32 mode;
+    UnkStruct_i11_802C6160* item;
+    char buf[12];
+
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        if (gGameState == 0x48) {
+            return func_80093C44(gdl);
+        }
+    }
+
+    D_800DAB2C = 0;
+    gSPMatrix(gdl++, D_7000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_106F550);
+    gSPDisplayList(gdl++, D_106F628);
+
+    for (i = 0; i < 3; i++) {
+        gdl = func_80094338(gdl, 0, 28, i * 21 + 100, 148, 16);
+        gdl = func_80094338(gdl, 0, 178, i * 21 + 100, 105, 16);
+    }
+    gdl = func_80094338(gdl, 0, 106, 163, 107, 16);
+
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 2, 19, 122, 50, 0);
+
+    for (i = 0, item = D_i11_802C6160, value = D_800DA9EC; i < 3; i++, item++, value++) {
+        if (i == D_i11_802C6150) {
+            mode = 6;
+        } else {
+            mode = 0;
+        }
+        gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+        gdl = func_801E3EE0(gdl, 1, item->texture, item->x + 38, i * 21 + 103, 0);
+        gdl = Printer_DrawString(gdl, 2, ">", 158, i * 21 + 102);
+
+        if (i == D_i11_802C6150) {
+            if (*value == D_i11_802C6154[i]) {
+                mode = 6;
+            } else if (i == 2) {
+                mode = 6;
+            } else {
+                mode = 4;
+            }
+        } else {
+            mode = 0;
+        }
+        gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+
+        if (i == 0) {
+            useString = false;
+            texture = D_i11_802C6178[*value];
+        } else if (i == 1) {
+            useString = false;
+            texture = D_i11_802C6184[*value];
+        } else {
+            useString = true;
+            sprintf(buf, "%d", *value);
+        }
+
+        if (!useString) {
+            gdl = func_801E3EE0(gdl, 1, texture, 188, i * 21 + 103, 0);
+        } else {
+            gdl = Printer_DrawString(gdl, 2, buf, 188, i * 21 + 102);
+        }
+    }
+
+    if (D_i11_802C6150 == 3) {
+        mode = 6;
+    } else {
+        mode = 0;
+    }
+    gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 1, 63, 144, 166, 0);
+
+    if (gGameState == 0x48) {
+        func_i11_802C5D48();
+    } else if (D_80228A16 == 1) {
+        GameState_EnterOptionsMenu();
+        Save_EepromWriteHeader();
+    }
+    return gdl;
+}
 
 void func_i11_802C5D48(void) {
     s32* limits;
