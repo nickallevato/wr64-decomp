@@ -29,7 +29,25 @@ extern u32 D_800DB5B0[][2];
 extern u32 D_800DB5F8[][2];
 extern u32 D_800DB6D0[][2];
 
+typedef struct {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} UnkStruct_i4_802C7630; // size = 0x8
+
+extern u16 D_80A3DD8[];
+extern Gfx D_80A6DB0[];
+extern UnkStruct_i4_802C7630 D_i4_802C7630[];
+extern UnkStruct_i4_802C7630 D_i4_802C7650[];
+extern s32 D_i4_802C7660[];
+extern s32 D_800DAA10[];
+extern UnkStruct_AF8C0_14 gBestTimes[][3];
+extern UnkStruct_AF8C0_14 gBestLaps[];
+extern UnkStruct_AF8C0_14 D_801C23B0[];
+extern UnkStruct_AF8C0_10 gStuntRecords[][3];
+
 void func_i4_802C7344(void);
+Gfx* func_i4_802C6778(Gfx*);
+Gfx* func_i4_802C69C4(Gfx*, s32, s32);
 
 void func_i4_802C5800(void) {
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_COURSE_SELECT)) {
@@ -170,7 +188,146 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
     return dList;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C5CDC.s")
+Gfx* func_i4_802C5CDC(Gfx* dList) {
+    s32 i;
+    s32 mode;
+    s32 yOffset;
+    s32 y;
+    s32 pad[6]; // stack pad: the frame is 0xD8
+    s32 j;
+    s32 offset;
+    s32 height;
+    s32 posY;
+    UnkStruct_i4_802C7630* item;
+
+    gSPDisplayList(dList++, D_80A6DB0);
+    gDPFillRectangle(dList++, 150, 53, 291, 158);
+    dList = func_i4_802C6778(dList);
+    if (D_i4_802C7540 != 0) {
+        gSPDisplayList(dList++, D_80A6DB0);
+        gDPFillRectangle(dList++, D_802C76B4 + 8, D_802C76B8 + 20, D_802C76B4 + D_802C76BC + 7,
+                         D_802C76B8 + D_802C76C0 + 19);
+    }
+    gSPDisplayList(dList++, D_106F628);
+
+    dList = func_80094338(dList, 0, 28, 24, 264, 24);
+    if (D_801CE608.gameMode == 11) {
+        dList = func_80094338(dList, 0, 171, 185, 101, 10);
+        dList = func_80094338(dList, 0, 171, 197, 101, 16);
+    } else {
+        dList = func_80094338(dList, 0, 171, 161, 101, 12);
+        dList = func_80094338(dList, 0, 171, 174, 101, 12);
+        dList = func_80094338(dList, 0, 171, 188, 101, 12);
+        dList = func_80094338(dList, 0, 171, 201, 101, 12);
+    }
+    for (j = 0; j < 9; j++) {
+        dList = func_80094338(dList, 0, 28, j * 18 + 53, 118, 16);
+    }
+
+    if (D_i4_802C7548 != 0) {
+        switch (D_802C76C8) {
+            case 0:
+            case 1:
+                dList = func_i4_802C69C4(dList, 162, 73);
+                break;
+
+            case 2:
+            case 3:
+                dList = func_i4_802C69C4(dList, 162, 55);
+                for (offset = 0, j = 0, posY = 124; posY < 158; j += 17, posY += 17, offset += 0x7D6) {
+                    if (posY != 141) {
+                        height = 17;
+                    } else {
+                        height = 16;
+                    }
+                    if (1) { // FAKE (permuter): gives the original's registers for offset and j
+                        gDPLoadTextureTile(dList++, D_80A3DD8 + offset, G_IM_FMT_RGBA, G_IM_SIZ_16b, 118, height, 0, 0,
+                                           117, height - 1, 0, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                        gSPTextureRectangle(dList++, 162 << 2, posY << 2, 280 << 2, (j + height + 124) << 2, 0, 0, 0,
+                                            1 << 10, 1 << 10);
+                    }
+                }
+                break;
+        }
+    }
+
+    dList = Printer_SetMode(dList, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    dList = func_801E3EE0(dList, 2, 4, 64, 27, 0);
+    if (D_801CE608.gameMode == 11) {
+        dList = func_801E3EE0(dList, 0, 30, 191, 186, 0);
+        dList = func_80094200(dList, 2, gStuntRecords[D_800DAAD8[D_800DA9D0]][0].unk0, 191, 200);
+    } else {
+        dList = func_801E3EE0(dList, 0, 14, 195, 163, 0);
+        dList = func_801E3EE0(dList, 0, 13, 197, 190, 0);
+        if ((D_i4_802C754C == 3) && (D_i4_802C7548 != 0)) {
+            dList = Printer_DrawTime(dList, 1, D_801C23B0[D_800DAAD8[D_800DA9D0]].unk0, 195, 176);
+            dList = Printer_DrawString(dList, 1, "-'--@---", 195, 203);
+        } else {
+            dList = Printer_DrawTime(dList, 1, gBestTimes[D_800DAAD8[D_800DA9D0]][0].unk0, 195, 176);
+            dList = Printer_DrawTime(dList, 1, gBestLaps[D_800DAAD8[D_800DA9D0]].unk0, 195, 203);
+        }
+    }
+
+    for (i = 0; i < 9; i++) {
+        if (i == D_800DA9D0) {
+            mode = 6;
+        } else if (D_i4_802C7558[D_800DAAD8[i]] != 0) {
+            mode = 0;
+        } else {
+            mode = 7;
+        }
+        dList = Printer_SetMode(dList, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+        dList = func_801E3EE0(dList, 1, D_800DAA10[D_800DAAD8[i]], D_i4_802C7660[D_800DAAD8[i]] + 48, i * 18 + 56, 0);
+    }
+
+    if (D_i4_802C7548 != 0) {
+        yOffset = 0;
+        if (D_801CE60C == 1) {
+            if (D_802C76C4 != 0) {
+                yOffset = -6;
+            }
+            y = 65;
+        } else {
+            if (D_802C76C4 != 0) {
+                yOffset = -8;
+            }
+            y = 47;
+            dList = Printer_SetMode(dList, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+            dList = func_801E3EE0(dList, 0, 32, 195, 128, 0);
+            for (i = 0, item = D_i4_802C7650; i < 2; i++, item++) {
+                if (D_i4_802C7554 != 0) {
+                    if (i == D_800DAA04) {
+                        mode = 6;
+                    } else {
+                        mode = 0;
+                    }
+                } else {
+                    mode = 0;
+                }
+                dList = Printer_SetMode(dList, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+                dList = func_801E3EE0(dList, 1, item->texture, item->x + 193, 143 - i, 0); // y 143 - i as in the asm
+            }
+        }
+        for (i = 0, item = D_i4_802C7630; i < D_802C76D0; i++, item++) {
+            if (D_i4_802C7550 != 0) {
+                if (i == D_i4_802C754C) {
+                    mode = 6;
+                } else if (D_i4_802C757C[D_800DAAD8[D_800DA9D0]][i] == 0) {
+                    mode = 7;
+                } else {
+                    mode = 0;
+                }
+            } else if (D_i4_802C757C[D_800DAAD8[D_800DA9D0]][i] == 0) {
+                mode = 7;
+            } else {
+                mode = 0;
+            }
+            dList = Printer_SetMode(dList, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+            dList = func_801E3EE0(dList, 1, item->texture, item->x + 194, y + yOffset + 20 + i * 15, 0);
+        }
+    }
+    return dList;
+}
 
 #ifdef NON_MATCHING
 // Score 5050 of 14700. The commands and their order match; IDO here keeps the second 0xB6000000 (clear geometry
