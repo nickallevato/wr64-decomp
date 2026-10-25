@@ -272,7 +272,176 @@ Gfx* func_i0_802C6044(Gfx* gdl) {
     return func_801E5554(func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + D_802C6EE4 * 20, 0));
 }
 
+extern s32 D_801CB308[][3];
+extern s32 D_801CB330;
+extern s32 D_801CB334;
+extern s32 D_801CB340[];
+extern s32 D_801CB350[][4];
+extern s32 D_801CB3D0[];
+extern s32 D_801CB3F0[2];
+extern s16 D_800DAA00;
+extern s16 D_800EAC14[][8];
+extern s32 D_802C6EE8[];
+extern s32 D_802C6EF8[];
+
+#ifdef NON_MATCHING
+// Score 1035 of 30800: register allocation only. The original computes the B test in t5 and
+// D_i0_802C6BCC * 4 once for both history stores; this C gets the B test in t9, recomputes the
+// index, and its temporaries are numbered one off from the switch on.
+void func_i0_802C63AC(void) {
+    UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_802C6EE0];
+    UnkStruct_i0_802C6C28* items = menu->items;
+    s32 idle = 1;
+    s32 next;
+    UnkStruct_i0_802C6C28* item;
+    s32 i;
+    s32 j;
+
+    if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+        next = D_i0_802C6BCC; // FAKE: next as a temp moves the D_i0_802C6BCC load first
+        D_802C6EE8[next] = D_802C6EE4;
+        D_802C6EF8[D_i0_802C6BCC] = D_802C6EE0;
+        idle = 0;
+        if (D_i0_802C6BCC < 2) {
+            D_i0_802C6BCC++;
+        }
+        if (D_802C6EE0 == 0) {
+            D_800DA9D8 = D_802C6EE4;
+        }
+        item = &items[D_802C6EE4];
+        if (item->unk0 == -1) {
+            item = &menu->items[D_802C6EE4];
+            D_801CE608.gameMode = item->gameMode;
+            D_801CE608.player = item->player;
+            D_801CE608.rider = item->rider;
+            gDifficulty = item->difficulty;
+            if (item->unk16 == 4) {
+                D_800DAB68 = 1;
+            }
+            switch (D_801CE608.gameMode) {
+                case 4:
+                    D_801CE608.waveLevel = 0;
+                    D_801CE608.unk_14 = 0;
+                    if (gDifficulty == DIFFICULTY_NORMAL) {
+                        D_801CE608.powerMisses = D_801CB308[0][1];
+                        D_801CE608.lapCount = D_801CB308[0][2];
+                    } else if (gDifficulty == DIFFICULTY_HARD) {
+                        D_801CE608.powerMisses = D_801CB308[1][1];
+                        D_801CE608.lapCount = D_801CB308[1][2];
+                    } else {
+                        D_801CE608.powerMisses = D_801CB308[2][1];
+                        D_801CE608.lapCount = D_801CB308[2][2];
+                    }
+                    next = 10;
+                    D_801CE6F8 = 1;
+                    for (i = 0; i < 4; i++) {
+                        D_801CB340[i] = 0;
+                    }
+                    D_801CB334 = 0;
+                    if (item->unk16 == 2) {
+                        D_801CB334 = 1;
+                    }
+                    D_801CB330 = D_800EAC14[gDifficulty][D_801CB334];
+                    for (i = 0; i < 8; i++) {
+                        // A do-while: a for loop over j unrolls into another store order.
+                        j = 0;
+                        do {
+                            D_801CB350[i][j] = 0;
+                        } while (++j < 4);
+                        D_801CB3D0[i] = 0;
+                    }
+                    break;
+                case 0:
+                    next = 10;
+                    D_801CE608.waveLevel = 0;
+                    D_801CE608.unk_14 = 0;
+                    break;
+                case 11:
+                    next = 10;
+                    D_801CE608.waveLevel = 0;
+                    D_801CE608.powerMisses = 1;
+                    D_801CE608.lapCount = 1;
+                    D_801CE608.unk_14 = 0;
+                    break;
+                case 1:
+                    D_801CB3F0[0] = D_801CB3F0[1] = 0;
+                    next = 10;
+                    D_801CE608.waveLevel = 0;
+                    D_801CE608.unk_14 = 0;
+                    break;
+                case 5:
+                    next = 60;
+                    break;
+                default:
+                    next = 2;
+                    break;
+            }
+            AudioGeneral_PlaySound(0x37, 0);
+            func_i0_802C6A1C(next);
+        } else {
+            D_802C6EE0 = item->unk0;
+            D_802C6EE4 = 0;
+            switch (item->unk16) {
+                case 1:
+                    if (D_800DAA00 > 0) {
+                        D_802C6EE4 = 1;
+                    }
+                    break;
+                case 3:
+                    if (D_i0_802C6BC0 != 0) {
+                        D_802C6EE0 = 5;
+                    }
+                    break;
+            }
+            D_i0_802C6BD0 = D_i0_802C6E08[D_802C6EE0].unk10;
+            AudioGeneral_PlaySound(0x11, 0);
+        }
+    } else {
+        // FAKE: the B test through next computes it before the A branch, as the original does
+        next = D_801CE65A[0].unk0;
+        next &= B_BUTTON;
+        if (next) {
+            idle = 0;
+            if (D_802C6EE0 != 0) {
+                if (D_i0_802C6BCC > 0) {
+                    D_i0_802C6BCC--;
+                }
+                D_802C6EE0 = D_802C6EF8[D_i0_802C6BCC];
+                D_802C6EE4 = D_802C6EE8[D_i0_802C6BCC];
+                D_i0_802C6BD0 = D_i0_802C6E08[D_802C6EE0].unk10;
+                AudioGeneral_PlaySound(0x16, 0);
+            }
+        } else if (D_801CE65A[0].unk0 & U_JPAD) {
+            D_802C6EE4--;
+            if (D_802C6EE4 < 0) {
+                D_802C6EE4 = D_802C6F10 - 1;
+            }
+            D_801CE644 = 0;
+            AudioGeneral_PlaySound(0x10, 0);
+        } else if (D_801CE65A[0].unk0 & D_JPAD) {
+            D_802C6EE4++;
+            if (D_802C6EE4 >= D_802C6F10) {
+                D_802C6EE4 = 0;
+            }
+            D_801CE644 = 0;
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    }
+    if (idle) {
+        if ((D_801CE65A[0].unk0 == 0) && (D_801CE658[0].unk_00.unk_0 == 0)) {
+            D_802C6F14++;
+        } else {
+            D_802C6F14 = 0;
+        }
+        if (D_802C6F14 >= 600) {
+            func_i0_802C6A1C(7);
+        }
+    }
+    SysUtils_Rand();
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i0/ovl_1B3EC0/func_i0_802C63AC.s")
+#endif
 
 void func_i0_802C6878(void) {
     gPrevGameState = gGameState;
