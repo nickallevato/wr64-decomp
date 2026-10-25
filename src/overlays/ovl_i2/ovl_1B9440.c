@@ -89,7 +89,7 @@ void func_i2_802C5AE4(void) {
 void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
 void* func_i2_802C5E28();
-void* func_i2_802C6ADC(Gfx*);
+Gfx* func_i2_802C6ADC(Gfx*);
 Gfx* func_i2_802C7C50(Gfx*);
 Gfx* func_i2_802C88DC(Gfx*);
 void func_i2_802C84EC(s32 arg0);
@@ -266,7 +266,69 @@ void func_i2_802C6864(s32 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C6ADC.s")
+Gfx* func_i2_802C70EC(Gfx* gdl, s32 player);
+Gfx* func_i2_802C86E4(Gfx* gdl, s32 x, s32 y);
+Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
+extern Gfx D_106F488[];
+extern Mtx D_7000A40[];
+extern Mtx D_7000A80[];
+extern u8 D_80B6590[];
+extern Gfx D_80BE248[];
+extern Gfx D_80BE2B8[];
+extern Gfx D_80BE468[];
+extern Gfx D_80BE478[];
+extern Gfx D_80BE488[];
+extern Gfx D_80BE498[];
+extern s16 D_i2_802C8BD0[];
+
+Gfx* func_i2_802C6ADC(Gfx* gdl) {
+    u32 shade;
+
+    gSPDisplayList(gdl++, D_80BE248);
+    gSPDisplayList(gdl++, D_106F628);
+    gdl = func_80094338(gdl, 0, 28, 22, 264, 30);
+    gdl = func_80094338(gdl, 0, 28, 96, 130, 13);
+    gdl = func_80094338(gdl, 0, 32, 110, 59, 13);
+    gdl = func_80094338(gdl, 0, 95, 110, 59, 13);
+    gdl = func_i2_802C86E4(gdl, 19, 104);
+    if (D_802C8C58.ready[0] != 5) {
+        gSPDisplayList(gdl++, D_80BE2B8);
+    }
+    gDPPipeSync(gdl++);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+    if (D_802C8C6A == 0) {
+        shade = (D_802C8C68 * 255.0f) / 4;
+    } else {
+        shade = ((4 - (f32) D_802C8C68) * 255.0f) / 4;
+    }
+    D_802C8C68++;
+    if (D_802C8C68 >= 4) {
+        D_802C8C68 = 0;
+        D_802C8C6A ^= 1;
+    }
+    gDPSetPrimColor(gdl++, 0, 0, shade, 255, shade, 255);
+    gDPLoadTextureTile(gdl++, D_80B6590, G_IM_FMT_IA, G_IM_SIZ_8b, 64, 36, 0, 0, 63, 35, 0, G_TX_CLAMP, G_TX_CLAMP, 0,
+                       0, 0, 0);
+    gSPTextureRectangle(gdl++, (D_i2_802C8BD0[D_800DA9C0[0]] + 8) << 2, 55 << 2,
+                        (D_i2_802C8BD0[D_800DA9C0[0]] + 72) << 2, 91 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+    gdl = func_i2_802C70EC(gdl, 0);
+    gSPPerspNormalize(gdl++, D_802C8C50);
+    gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPDisplayList(gdl++, D_106F488);
+    gSPDisplayList(gdl++, D_80BE468);
+    gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gSPDisplayList(gdl++, D_80BE478);
+    gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gSPDisplayList(gdl++, D_80BE488);
+    gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gSPDisplayList(gdl++, D_80BE498);
+    gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    return func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C70EC.s")
 
