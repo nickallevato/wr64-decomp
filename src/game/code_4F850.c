@@ -697,36 +697,27 @@ void func_80095CE8(u8* arg0, s32 arg1) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 60 of 9200: one instruction. The original clears j (s2) after computing entry; here IDO clears it two
-// instructions earlier. Every other order of the setup statements swaps j's and src's registers (s2/s3).
 void func_80096048(void* arg0, s32 arg1) {
     s32 count;
     s32 type;
-    s32* src;
     UnkStruct_801CE780* entry;
     s32 base;
-    s32 j;
     s32 list;
     s32* table;
 
     type = D_801CE7D8[arg1].unk0;
-    j = 0;
     table = D_800DB484[type];
-    src = table; // FAKE: the copy through table (a permuter find) gets the D_800DB484 load
     count = 0;
     entry = &D_801CE780[arg1];
     base = D_801CE7D8[arg1].unk4 & 0xFFFFFF;
     while (1) {
-        list = *src;
+        list = table[count];
         if (list == 0) {
             break;
         }
         func_800967EC((u32*) ((list & 0xFFFFFF) + (u8*) arg0), base);
-        *(u32*) ((u8*) &entry->unk8 + j) = list + base; // j is a byte offset into unk8..unk28
+        ((u32*) &entry->unk8)[count] = list + base;
         count++;
-        j += 4;
-        src++;
     }
     entry->unk0 = count;
     switch (type) {
@@ -749,9 +740,6 @@ void func_80096048(void* arg0, s32 arg1) {
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096048.s")
-#endif
 
 u32* func_800961B8(s32 arg0, s32 arg1) {
     s32 pad; // stack pad
