@@ -9,6 +9,10 @@ typedef struct {
 } UnkStruct_i9_802C80E4; // size = 0x10
 
 extern s32 D_800DAA10[];
+extern u8 D_7000000[];
+extern u8 D_2000A40[];
+extern Gfx D_106F550[];
+extern u8 D_8060008[];
 extern s32 D_i9_802C80C0;
 extern s32 D_i9_802C80C4;
 extern s32 D_i9_802C80C8;
@@ -23,9 +27,14 @@ extern Vp D_i9_802C8128;
 extern s32 D_i9_802C8138[];
 extern s32 D_i9_802C8144[];
 extern s32 D_i9_802C8150[];
+extern s32 D_i9_802C8174[];
 extern s32 D_i9_802C81A4;
 extern s32 D_i9_802C81B4;
 extern u16 D_802C8280;
+
+Gfx* func_i9_802C6750(Gfx* gdl);
+Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x);
+Gfx* func_i9_802C71AC(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 
 void func_i9_802C5800(void) {
     s32 k;
@@ -173,7 +182,81 @@ Gfx* func_i9_802C5D24(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i9/ovl_1C66D0/func_i9_802C5E5C.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i9/ovl_1C66D0/func_i9_802C6750.s")
+// The first arrow's dtdy 0xFC00 makes gSPScisTextureRectangle expand yl*dtdy to (y + 21) << 2*0xFC00, a shift
+// IDO folds to none (the original's code); gcc's check pass warns about it.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshift-count-overflow"
+#endif
+Gfx* func_i9_802C6750(Gfx* gdl) {
+    s32 j;
+    s32 count;
+    s32 x;
+    s32 y;
+
+    if (D_i9_802C80DC == 0) {
+        count = 1;
+    } else {
+        count = 2;
+    }
+
+    gSPMatrix(gdl++, D_7000000, (G_MTX_PROJECTION | G_MTX_LOAD) | G_MTX_NOPUSH);
+    gSPMatrix(gdl++, D_2000A40, (G_MTX_MODELVIEW | G_MTX_LOAD) | G_MTX_NOPUSH);
+    gSPDisplayList(gdl++, D_106F550);
+
+    for (j = 0; j < count; j++) {
+        x = D_i9_802C8104[j].unk0 + D_i9_802C80D4;
+        y = D_i9_802C8104[j].unk4 + D_i9_802C80D8;
+        switch (D_i9_802C8104[j].unk8) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                gSPDisplayList(gdl++, D_106F628);
+                gdl = func_80094338(gdl, 0, x + 28, y + 30, 264, 24);
+                gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+                gdl = func_801E3EE0(gdl, 2, D_800DAA34[D_i9_802C8104[j].unk8],
+                                    D_i9_802C8174[D_i9_802C8104[j].unk8] + x + 76, y + 33, 0);
+                gDPLoadTextureBlock(gdl++, D_8060008, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                                    G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+                gSPScisTextureRectangle(gdl++, (x + 152) << 2, (y + 21) << 2, (x + 160) << 2, (y + 29) << 2, 0, 0,
+                                        7 << 5, 1 << 10, 0xFC00);
+                gSPScisTextureRectangle(gdl++, (x + 152) << 2, (y + 211) << 2, (x + 160) << 2, (y + 219) << 2, 0, 0, 0,
+                                        1 << 10, 1 << 10);
+                break;
+            case 10:
+                break;
+        }
+        x = D_i9_802C80E4[j].unk0 + D_i9_802C80CC;
+        y = D_i9_802C80E4[j].unk4 + D_i9_802C80D0;
+        switch (D_i9_802C80E4[j].unk8) {
+            case 10:
+                gdl = func_i9_802C6CC8(gdl, x);
+                break;
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                gdl = func_i9_802C71AC(gdl, j, D_i9_802C80E4[j].unk8, D_i9_802C80E4[j].unkC, x, y);
+                break;
+        }
+    }
+    return gdl;
+}
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x) {
     s32 i;
