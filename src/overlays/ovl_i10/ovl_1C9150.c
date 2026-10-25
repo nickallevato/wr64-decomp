@@ -1,5 +1,13 @@
 #include "global.h"
 
+extern s32 D_801CB308[][3];
+extern s32 D_800DA988[][3];
+extern s32 D_802C6B38;
+extern s32 D_i10_802C6AF8[][2];
+extern s32 D_i10_802C6B10;
+
+void func_i10_802C6A00(s32);
+
 void func_i10_802C5800(void) {
     s32 i;
 
@@ -71,7 +79,241 @@ Gfx* func_i10_802C5968(Gfx* gfxP) {
     return gfxP;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i10/ovl_1C9150/func_i10_802C5A10.s")
+void func_i10_802C5A10(void) {
+    s32* limits;
+    s32* value;
+    s32 sound = 0;
+    s32 sel;
+    s32 i;
+    s32 j;
+    s32 idx;
+
+    if (D_801CE658[2].unk_00.unk_2 & (A_BUTTON | START_BUTTON | Z_TRIG)) {
+        switch (D_801CE640) {
+            case 0:
+                sound = 1;
+                sel = D_802C6B34 * 3 + D_802C6B30;
+                if (sel == 4) {
+                    func_i10_802C6A00(60);
+                } else if (sel == 3) {
+                    for (i = 0; i < 3; i++) {
+                        for (j = 0; j < 3; j++) {
+                            D_801CB308[i][j] = D_800DA988[i][j];
+                        }
+                    }
+                } else {
+                    D_801CE640 = 1;
+                    D_802C6B38 = 0;
+                }
+                break;
+
+            case 1:
+                D_801CE640 = 2;
+                sound = 1;
+                D_802C6B38 = 1;
+                break;
+
+            case 2:
+                D_801CE640 = 3;
+                sound = 1;
+                D_802C6B38 = 2;
+                break;
+
+            case 3:
+                sound = 1;
+                D_801CE640 = 0;
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x11, 0);
+        }
+    } else if (D_801CE658[2].unk_00.unk_2 & B_BUTTON) {
+        switch (D_801CE640) {
+            case 0:
+                sound = 1;
+                func_i10_802C6A00(60);
+                break;
+
+            case 1:
+                D_801CE640 = 0;
+                sound = 1;
+                D_802C6B38 = 0;
+                break;
+
+            case 2:
+                D_801CE640 = 1;
+                sound = 1;
+                D_802C6B38 = 0;
+                break;
+
+            case 3:
+                D_801CE640 = 2;
+                sound = 1;
+                D_802C6B38 = 1;
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x16, 0);
+        }
+    } else if (D_801CE658[0].unk_00.unk_2 & U_JPAD) {
+        if (D_801CE640 == 0) {
+            sound = 1;
+            if ((D_802C6B34 == 1) && (D_i10_802C6B10 != -1)) {
+                D_802C6B30 = D_i10_802C6B10;
+            }
+            if ((D_i10_802C6B14 == 1) && (D_802C6B34 == 1)) {
+                D_802C6B30 = 0;
+            } else if ((D_i10_802C6B14 == 3) && (D_802C6B34 == 0) && (D_802C6B30 == 2)) {
+                D_802C6B30 = 1;
+            }
+            if (--D_802C6B34 < 0) {
+                D_802C6B34 = 1;
+            }
+            for (;;) {
+                idx = D_802C6B34 * 3 + D_802C6B30;
+                if (D_802C6B40[idx] != 0) {
+                    break;
+                }
+                if (--D_802C6B34 < 0) {
+                    D_802C6B34 = 1;
+                }
+            }
+            if (D_802C6B34 == 1) {
+                if (D_i10_802C6B14 == 3) {
+                    D_i10_802C6B10 = D_802C6B30;
+                }
+                if ((D_i10_802C6B14 == 3) && (D_802C6B30 == 2)) {
+                    D_802C6B30 = 1;
+                }
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE658[0].unk_00.unk_2 & D_JPAD) {
+        if (D_801CE640 == 0) {
+            sound = 1;
+            if ((D_802C6B34 == 1) && (D_i10_802C6B10 != -1)) {
+                D_802C6B30 = D_i10_802C6B10;
+                D_i10_802C6B10 = -1;
+            }
+            if ((D_i10_802C6B14 == 1) && (D_802C6B34 == 1)) {
+                D_802C6B30 = 0;
+            } else if ((D_i10_802C6B14 == 3) && (D_802C6B34 == 0) && (D_802C6B30 == 2)) {
+                D_802C6B30 = 1;
+            }
+            if (++D_802C6B34 >= 2) {
+                D_802C6B34 = 0;
+            }
+            for (;;) {
+                idx = D_802C6B34 * 3 + D_802C6B30;
+                if (D_802C6B40[idx] != 0) {
+                    break;
+                }
+                if (++D_802C6B34 >= 2) {
+                    D_802C6B34 = 0;
+                }
+            }
+            if (D_802C6B34 == 1) {
+                if (D_i10_802C6B14 == 3) {
+                    D_i10_802C6B10 = D_802C6B30;
+                }
+                if ((D_i10_802C6B14 == 3) && (D_802C6B30 == 2)) {
+                    D_802C6B30 = 1;
+                }
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE658[0].unk_00.unk_2 & L_JPAD) {
+        switch (D_801CE640) {
+            case 0:
+                sound = 1;
+                if (--D_802C6B30 < 0) {
+                    if (D_802C6B34 == 0) {
+                        D_802C6B30 = 2;
+                    } else {
+                        D_802C6B30 = 1;
+                    }
+                }
+                for (;;) {
+                    idx = D_802C6B34 * 3 + D_802C6B30;
+                    if (D_802C6B40[idx] != 0) {
+                        break;
+                    }
+                    if (--D_802C6B30 < 0) {
+                        if (D_802C6B34 == 0) {
+                            D_802C6B30 = 2;
+                        } else {
+                            D_802C6B30 = 1;
+                        }
+                    }
+                }
+                D_i10_802C6B10 = -1;
+                break;
+
+            case 1:
+            case 2:
+            case 3:
+                idx = D_802C6B34 * 3 + D_802C6B30;
+                limits = D_i10_802C6AF8[D_802C6B38];
+                value = &D_801CB308[idx][D_802C6B38];
+                sound = 1;
+                if (--*value < limits[0]) {
+                    *value = limits[1];
+                }
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE658[0].unk_00.unk_2 & R_JPAD) {
+        switch (D_801CE640) {
+            case 0:
+                sound = 1;
+                D_802C6B30++;
+                if (D_802C6B34 == 0) {
+                    if (D_802C6B30 >= 3) {
+                        D_802C6B30 = 0;
+                    }
+                } else if (D_802C6B30 >= 2) {
+                    D_802C6B30 = 0;
+                }
+                for (;;) {
+                    idx = D_802C6B34 * 3 + D_802C6B30;
+                    if (D_802C6B40[idx] != 0) {
+                        break;
+                    }
+                    D_802C6B30++;
+                    if (D_802C6B34 == 0) {
+                        if (D_802C6B30 >= 3) {
+                            D_802C6B30 = 0;
+                        }
+                    } else if (D_802C6B30 >= 2) {
+                        D_802C6B30 = 0;
+                    }
+                }
+                D_i10_802C6B10 = -1;
+                break;
+
+            case 1:
+            case 2:
+            case 3:
+                idx = D_802C6B34 * 3 + D_802C6B30;
+                limits = D_i10_802C6AF8[D_802C6B38];
+                value = &D_801CB308[idx][D_802C6B38];
+                sound = 1;
+                if (++*value > limits[1]) {
+                    *value = limits[0];
+                }
+                break;
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i10/ovl_1C9150/func_i10_802C6200.s")
 
