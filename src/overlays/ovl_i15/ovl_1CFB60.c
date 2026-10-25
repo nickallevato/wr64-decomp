@@ -58,8 +58,8 @@ void func_i15_802C5800(void) {
     s32 j;
     s32 course;
     s32 draw;
-    f32 temp_fv1; // FAKE (as in func_i5_802C5850): temp needed for match
-    f32 temp_fa0; // FAKE (as in func_i5_802C5850): temp needed for match
+    f32 temp_fv1; // FAKE (as in RaceResults_SetModelMatrices): temp needed for match
+    f32 temp_fa0; // FAKE (as in RaceResults_SetModelMatrices): temp needed for match
     UnkStruct_D_802C6E80* thing;
     MtxF sp17C;
     MtxF sp13C;
@@ -99,7 +99,7 @@ void func_i15_802C5800(void) {
     func_80048A88(&spB8, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.04f);
     temp_fv1 = COS(0) * 500.0f;
     temp_fa0 = SIN(0) * 500.0f;
-    // FAKE: arg3 is an int 0 literal to match (li a3, 0), as in func_i5_802C5850
+    // FAKE: arg3 is an int 0 literal to match (li a3, 0), as in RaceResults_SetModelMatrices
     func_800484C8(&sp78, &sp13C, temp_fv1, 0, temp_fa0, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     SysUtils_MtxToMtxF(&spB8, &sp17C);
     SysUtils_MatrixAffineMultiply(&sp13C, &sp17C, &spFC);

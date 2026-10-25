@@ -28,9 +28,9 @@ extern Vp D_7001280[];
 s32 Save_EepromWriteHeader(void);
 void func_800C3E4C(void);
 void func_801EC944(void);
-Gfx* func_i5_802C5DC0(Gfx*);
+Gfx* RaceResults_DrawTable(Gfx*);
 void RaceResults_Update(void);
-void func_i5_802C6F84(s32 arg0);
+void RaceResults_Leave(s32 arg0);
 void GameState_EnterCeremony(void);
 void GameState_EnterCourseOverview(void);
 Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
@@ -38,15 +38,15 @@ Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
-void func_i5_802C5800(void) {
+void RaceResults_OverlayUpdate(void) {
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_RACE_RESULTS)) {
         func_80094ACC();
-        func_i5_802C5A98();
+        RaceResults_CheckQualified();
     }
-    func_i5_802C5850();
+    RaceResults_SetModelMatrices();
 }
 
-void func_i5_802C5850(void) {
+void RaceResults_SetModelMatrices(void) {
     s32 i;
     f32 temp_fv1; // FAKE: temp needed for match
     f32 temp_fa0; // FAKE: temp needed for match
@@ -78,7 +78,7 @@ void func_i5_802C5850(void) {
     }
 }
 
-void func_i5_802C5A98(void) {
+void RaceResults_CheckQualified(void) {
     s32 last = D_i5_802C7A2C[gDifficulty];
     s32 need = D_800EABBC[gDifficulty][D_801CB334];
 
@@ -107,7 +107,7 @@ void func_i5_802C5A98(void) {
     func_800C21F4(3, (D_i5_802C7B00 != 0) ? 0 : 1);
 }
 
-Gfx* func_i5_802C5C1C(Gfx* gdl) {
+Gfx* RaceResults_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == GAME_STATE_RACE_RESULTS) {
@@ -121,7 +121,7 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     gdl = func_800949B8(gdl, gCourseID);
     gdl = func_8008FB74(gdl);
     gdl = Draw_WaterEffects(gdl);
-    gdl = func_i5_802C5DC0(gdl);
+    gdl = RaceResults_DrawTable(gdl);
 
     if (gGameState == GAME_STATE_RACE_RESULTS) {
         RaceResults_Update();
@@ -151,7 +151,7 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_i5_802C5DC0(Gfx* gdl) {
+Gfx* RaceResults_DrawTable(Gfx* gdl) {
     s32 i;
     s32 mode;
     s32 showPoints;
@@ -464,7 +464,7 @@ void RaceResults_Update(void) {
             D_801CE644++;
             if (D_801CE644 >= 0x1E) {
                 if (D_i5_802C7B08 != 0x5A) {
-                    func_i5_802C6F84(D_i5_802C7B08);
+                    RaceResults_Leave(D_i5_802C7B08);
                 } else {
                     D_801CE640 = 7;
                     playSound = true;
@@ -487,7 +487,7 @@ void RaceResults_Update(void) {
     }
 }
 
-void func_i5_802C6F84(s32 arg0) {
+void RaceResults_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x35;

@@ -491,3 +491,18 @@ CourseSelect_Leave = 0x802C7474; //segment:ovl_i4
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   CourseSelect_Draw 0x802C5B78
+
+// ovl_i5, race results (GAME_STATE_RACE_RESULTS, 0x35) and GAME_STATE_5A (championship not qualified)
+RaceResults_OverlayUpdate = 0x802C5800; //segment:ovl_i5
+RaceResults_SetModelMatrices = 0x802C5850; //segment:ovl_i5
+RaceResults_CheckQualified = 0x802C5A98; //segment:ovl_i5
+RaceResults_DrawTable = 0x802C5DC0; //segment:ovl_i5
+RaceResults_Leave = 0x802C6F84; //segment:ovl_i5
+NotQualified_DrawObjects = 0x802C7594; //segment:ovl_i5
+NotQualified_DrawPanels = 0x802C7698; //segment:ovl_i5
+NotQualified_Update = 0x802C781C; //segment:ovl_i5
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   RaceResults_Draw 0x802C5C1C
+//   NotQualified_UpdateAnimation 0x802C7090
+//   NotQualified_Draw 0x802C7484

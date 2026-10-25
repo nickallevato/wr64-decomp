@@ -831,7 +831,7 @@ void RaceStandings_Update(void) {
     s32 i;
     s32 showPoints;
     s32 x;
-    f32 temp_fv1; // FAKE: temp needed for match, as in func_i5_802C5850
+    f32 temp_fv1; // FAKE: temp needed for match, as in RaceResults_SetModelMatrices
     f32 temp_fa0; // FAKE: temp needed for match
     MtxF sp154;
     MtxF sp114;
@@ -939,7 +939,7 @@ void RaceStandings_Update(void) {
     func_80048A88(&sp90, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.04f);
     temp_fv1 = COS(0) * 500.0f;
     temp_fa0 = SIN(0) * 500.0f;
-    // FAKE: arg3 is an int 0 literal to match (li a3, 0), as in func_i5_802C5850
+    // FAKE: arg3 is an int 0 literal to match (li a3, 0), as in RaceResults_SetModelMatrices
     func_800484C8(&sp50, &sp114, temp_fv1, 0, temp_fa0, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     SysUtils_MtxToMtxF(&sp90, &sp154);
     SysUtils_MatrixAffineMultiply(&sp114, &sp154, &spD4);
