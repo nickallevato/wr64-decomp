@@ -2,9 +2,9 @@
 #include "global.h"
 #include "rider.h"
 
-void func_i0_802C6878(void);
-void func_i0_802C6A1C(s32 arg0);
-Gfx* func_i0_802C6AE4(Gfx*);
+void TitleScreen_EnterMainMenu(void);
+void MainMenu_Leave(s32 arg0);
+Gfx* TitleScreen_DrawScroller(Gfx*);
 void GameState_EnterDemo(void);
 extern s32 D_801519D4;
 extern s32 D_80154344;
@@ -94,7 +94,7 @@ UnkStruct_i0_802C6E08 D_i0_802C6E08[6] = {
     { D_i0_802C6D18, 3, 1, 98, 78, 1 }, { D_i0_802C6D60, 3, 1, 98, 78, 1 }, { D_i0_802C6DA8, 4, 4, 98, 78, 0 },
 };
 
-Gfx* func_i0_802C5800(Gfx* arg0) {
+Gfx* TitleScreen_Draw(Gfx* arg0) {
 
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
@@ -120,7 +120,7 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
         arg0 = Printer_DrawString(arg0, 1, buf, 0x1C, 0x3C);
     }
     if (D_i0_802C6BEC != 0) {
-        arg0 = func_i0_802C6AE4(
+        arg0 = TitleScreen_DrawScroller(
             Printer_SetMode(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
     }
     if (D_i0_802C6BC8 < 0x14) {
@@ -131,7 +131,7 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
     }
     if ((D_801CE65A->unk0 & 0xB000) || (D_800DAB0C != 0)) {
         D_800DAB0C = 0;
-        func_i0_802C6878();
+        TitleScreen_EnterMainMenu();
     }
     SysUtils_Rand();
     return arg0;
@@ -140,12 +140,12 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
 void stub_func_i0_802C5800() {
 }
 
-Gfx* func_i0_802C6044(Gfx* gdl);
+Gfx* MainMenu_DrawRows(Gfx* gdl);
 void func_i0_802C63AC(void);
 extern Gfx D_805A6F8[];
 extern u8 D_803D610[];
 
-Gfx* func_i0_802C5A7C(Gfx* gdl) {
+Gfx* MainMenu_Draw(Gfx* gdl) {
     s32 i;
     s32 y;
 
@@ -194,7 +194,7 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
             gSPDisplayList(gdl++, D_106F168);
             break;
         case 1:
-            gdl = func_i0_802C6044(gdl);
+            gdl = MainMenu_DrawRows(gdl);
             gSPDisplayList(gdl++, D_106F168);
             for (i = 0; i < D_i0_802C6F0C; i++) {
                 gDPFillRectangle(gdl++, 89, D_i0_802C6BD0 + i * 20 - 3, 231, D_i0_802C6BD0 + i * 20 + 14);
@@ -202,7 +202,7 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
             break;
     }
     if (D_i0_802C6BEC != 0) {
-        gdl = func_i0_802C6AE4(
+        gdl = TitleScreen_DrawScroller(
             Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
     }
     if (D_i0_802C6BC8 < 20) {
@@ -223,7 +223,7 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
             } else {
                 D_i0_802C6F14++;
                 if (D_i0_802C6F14 >= 600) {
-                    func_i0_802C6A1C(7);
+                    MainMenu_Leave(7);
                 }
             }
             break;
@@ -234,7 +234,7 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_i0_802C6044(Gfx* gdl) {
+Gfx* MainMenu_DrawRows(Gfx* gdl) {
     s32 pad[5]; // stack pad: the original frame is 0x88
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
@@ -377,7 +377,7 @@ void func_i0_802C63AC(void) {
                     break;
             }
             AudioGeneral_PlaySound(0x37, 0);
-            func_i0_802C6A1C(next);
+            MainMenu_Leave(next);
         } else {
             D_i0_802C6EE0 = item->unk0;
             D_i0_802C6EE4 = 0;
@@ -434,7 +434,7 @@ void func_i0_802C63AC(void) {
             D_i0_802C6F14 = 0;
         }
         if (D_i0_802C6F14 >= 600) {
-            func_i0_802C6A1C(7);
+            MainMenu_Leave(7);
         }
     }
     SysUtils_Rand();
@@ -443,7 +443,7 @@ void func_i0_802C63AC(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i0/ovl_1B3EC0/func_i0_802C63AC.s")
 #endif
 
-void func_i0_802C6878(void) {
+void TitleScreen_EnterMainMenu(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 3;
@@ -467,7 +467,7 @@ void func_i0_802C6878(void) {
     AudioGeneral_PlaySound(0x2D, 0);
 }
 
-Gfx* func_i0_802C6944(Gfx* arg0) {
+Gfx* MainMenu_DrawLeaving(Gfx* arg0) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
     }
@@ -493,7 +493,7 @@ Gfx* func_i0_802C6944(Gfx* arg0) {
     return arg0;
 }
 
-void func_i0_802C6A1C(s32 arg0) {
+void MainMenu_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 4;
@@ -517,7 +517,7 @@ void func_i0_802C6A1C(s32 arg0) {
     }
 }
 
-Gfx* func_i0_802C6AE4(Gfx* gdl) {
+Gfx* TitleScreen_DrawScroller(Gfx* gdl) {
     s32 i;
     s32 gone = 0;
     UnkStruct_i0_802C6BF0* item;

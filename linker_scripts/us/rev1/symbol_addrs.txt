@@ -422,3 +422,14 @@ D_i15_802C6E80 = 0x802C6E80; //segment:ovl_i15
 D_i15_802C6F20 = 0x802C6F20; //segment:ovl_i15
 D_i15_802C6F40 = 0x802C6F40; //segment:ovl_i15
 D_i15_802C6F44 = 0x802C6F44; //segment:ovl_i15
+
+// ovl_i0, the title screen (GAME_STATE_TITLE_SCREEN) and the main menu (GAME_STATE_MAIN_MENU, 4)
+TitleScreen_Draw = 0x802C5800; //segment:ovl_i0
+TitleScreen_DrawScroller = 0x802C6AE4; //segment:ovl_i0
+TitleScreen_EnterMainMenu = 0x802C6878; //segment:ovl_i0
+MainMenu_DrawRows = 0x802C6044; //segment:ovl_i0
+MainMenu_Leave = 0x802C6A1C; //segment:ovl_i0
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   MainMenu_Draw 0x802C5A7C
+//   MainMenu_DrawLeaving 0x802C6944
