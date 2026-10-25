@@ -1,11 +1,5 @@
 #include "global.h"
 
-/* A tab of the save/load screen: x offset and texture of its label */
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 tex;
-} UnkStruct_i13_802C8D9C; // size = 0x8
-
 extern s32 D_i13_802C8D50;
 extern s32 D_i13_802C8D54;
 extern s32 D_i13_802C8D58;
@@ -21,7 +15,7 @@ extern s32 D_i13_802C8D8C;
 extern s32 D_i13_802C8D90;
 extern s32 D_i13_802C8D94;
 extern s32 D_i13_802C8D98;
-extern UnkStruct_i13_802C8D9C D_i13_802C8D9C[3];
+extern TexLabel D_i13_802C8D9C[3]; // the three tabs
 extern s32 D_i13_802C8DB4[3];
 extern s32 D_i13_802C8DC4;
 extern s32 D_i13_802C8DC8;
@@ -712,7 +706,7 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     s8 pad3; // stack pad
     s8 active;
     s8 drawRow2;
-    UnkStruct_i13_802C8D9C* tab;
+    TexLabel* tab;
 
     drawRow1 = false;
     drawModels = false;
@@ -860,7 +854,7 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     gdl = func_801E3EE0(gdl, 2, 0, 66, 22, 0);
     gdl = func_801E3EE0(gdl, 4, 12, 87, 206, 0);
     gdl = func_801E3EE0(gdl, 4, 13, 169, 206, 0);
-    gdl = func_801E3EE0(gdl, 1, D_i13_802C8D9C[D_i13_802C8D50].tex, D_i13_802C8DB4[D_i13_802C8D50] + 139, 82, 0);
+    gdl = func_801E3EE0(gdl, 1, D_i13_802C8D9C[D_i13_802C8D50].texture, D_i13_802C8DB4[D_i13_802C8D50] + 139, 82, 0);
     gdl = func_801E3EE0(gdl, 0, 0, 67, 95, 0);
     gdl = func_801E3EE0(gdl, 0, 1, 161, 95, 0);
     tab = D_i13_802C8D9C;
@@ -871,7 +865,7 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, tab->tex, i * 89 + tab->x + 53, 51, 0);
+        gdl = func_801E3EE0(gdl, 1, tab->texture, i * 89 + tab->x + 53, 51, 0);
     }
 
     if (drawRow1) {

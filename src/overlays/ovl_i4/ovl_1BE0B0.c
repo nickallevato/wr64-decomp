@@ -29,15 +29,10 @@ extern u32 D_800DB5B0[][2];
 extern u32 D_800DB5F8[][2];
 extern u32 D_800DB6D0[][2];
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i4_802C7630; // size = 0x8
-
 extern u16 D_80A3DD8[];
 extern Gfx D_80A6DB0[];
-extern UnkStruct_i4_802C7630 D_i4_802C7630[];
-extern UnkStruct_i4_802C7630 D_i4_802C7650[];
+extern TexLabel D_i4_802C7630[];
+extern TexLabel D_i4_802C7650[];
 extern s32 D_i4_802C7660[];
 extern s32 D_800DAA10[];
 extern UnkStruct_AF8C0_14 gBestTimes[][3];
@@ -198,7 +193,7 @@ Gfx* func_i4_802C5CDC(Gfx* dList) {
     s32 offset;
     s32 height;
     s32 posY;
-    UnkStruct_i4_802C7630* item;
+    TexLabel* item;
 
     gSPDisplayList(dList++, D_80A6DB0);
     gDPFillRectangle(dList++, 150, 53, 291, 158);

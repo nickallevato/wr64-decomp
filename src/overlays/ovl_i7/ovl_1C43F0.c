@@ -11,12 +11,7 @@ void func_i7_802C5C94(s32);
 extern s32 gCurrentOptionsMenuItem;
 extern s32 D_i7_802C5D20[];
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i7_802C5D3C; // size = 0x8
-
-extern UnkStruct_i7_802C5D3C D_i7_802C5D3C[];
+extern TexLabel D_i7_802C5D3C[];
 extern Mtx D_7000000[];
 extern Mtx D_2000A40[];
 extern Gfx D_106F550[];
@@ -81,7 +76,7 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
 
 Gfx* func_i7_802C5A18(Gfx* gdl) {
     s32 i;
-    UnkStruct_i7_802C5D3C* item;
+    TexLabel* item;
 
     gSPMatrix(gdl++, D_7000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

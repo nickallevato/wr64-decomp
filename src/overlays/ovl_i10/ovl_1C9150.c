@@ -6,12 +6,7 @@ extern s32 D_802C6B38;
 extern s32 D_i10_802C6AF8[][2];
 extern s32 D_i10_802C6B10;
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i10_802C6AA0; // size = 0x8
-
-extern UnkStruct_i10_802C6AA0 D_i10_802C6AA0[];
+extern TexLabel D_i10_802C6AA0[];
 extern s32 D_i10_802C6AC8[];
 extern s32 D_i10_802C6AD4[];
 extern s32 D_i10_802C6AE4[];
@@ -337,7 +332,7 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
     s32 mode;
     s32 useString;
     s32 changed;
-    UnkStruct_i10_802C6AA0* item;
+    TexLabel* item;
     s32 texture;
     s32 pad; // stack pad
     s32 sel;

@@ -2,13 +2,8 @@
 
 extern s32 D_i11_802C618C[][2];
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i11_802C6160; // size = 0x8
-
 extern s32 D_i11_802C6154[];
-extern UnkStruct_i11_802C6160 D_i11_802C6160[];
+extern TexLabel D_i11_802C6160[];
 extern s32 D_i11_802C6178[];
 extern s32 D_i11_802C6184[];
 extern Mtx D_7000000[];
@@ -29,7 +24,7 @@ Gfx* func_i11_802C5800(Gfx* gdl) {
     s32 texture;
     s32 useString;
     s32 mode;
-    UnkStruct_i11_802C6160* item;
+    TexLabel* item;
     char buf[12];
 
     if (D_801CE63C != 0) {

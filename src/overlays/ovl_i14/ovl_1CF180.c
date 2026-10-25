@@ -4,13 +4,8 @@ extern s32 D_801C2650;
 extern s32 D_801C2654;
 extern s32 D_801CB334;
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i14_802C60F4; // size = 0x8
-
-extern UnkStruct_i14_802C60F4 D_i14_802C60F4[];
-extern UnkStruct_i14_802C60F4 D_i14_802C6114[];
+extern TexLabel D_i14_802C60F4[];
+extern TexLabel D_i14_802C6114[];
 
 void func_i14_802C5840(void);
 Gfx* func_i14_802C5B70(Gfx*);
@@ -128,7 +123,7 @@ Gfx* func_i14_802C5924(Gfx* dList) {
 Gfx* func_i14_802C5B70(Gfx* gdl) {
     s32 i;
     s32 x;
-    UnkStruct_i14_802C60F4* item;
+    TexLabel* item;
 
     gSPDisplayList(gdl++, D_106F628);
 

@@ -29,13 +29,8 @@ extern s32 D_i3_802C6F74;
 extern s32 D_i3_802C6F78;
 extern s32 D_i3_802C6F7C;
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i3_802C6FB4; // size = 0x8
-
-extern UnkStruct_i3_802C6FB4 D_i3_802C6FB4[];
-extern UnkStruct_i3_802C6FB4 D_i3_802C6FCC;
+extern TexLabel D_i3_802C6FB4[];
+extern TexLabel D_i3_802C6FCC;
 extern s32 D_i3_802C6F80;
 extern s32 D_i3_802C6F90[];
 extern s32 D_i3_802C6FD4[];
@@ -210,7 +205,7 @@ Gfx* func_i3_802C5B40(Gfx* arg0) {
 // D_i3_802C6F78 and D_i3_802C6F7C in registers (base-register stores in every case) where IDO here stores
 // through `lui at`, so the C is 0x20 bytes shorter and the overlay's data after it moves.
 Gfx* func_i3_802C5D54(Gfx* gdl) {
-    UnkStruct_i3_802C6FB4* label;
+    TexLabel* label;
 
     switch (D_i3_802C6F64) {
         case 0:

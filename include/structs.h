@@ -470,6 +470,13 @@ typedef struct TexEntry {
     /* 0x4 */ u32 width;
 } TexEntry; /* size = 0x8 */
 
+// A label drawn with func_801E3EE0: an x offset and a texture index (menu rows, tabs and titles of
+// the overlay screens: ovl_i3, i4, i7, i10, i11, i13, i14).
+typedef struct TexLabel {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} TexLabel; // size = 0x8
+
 typedef struct UnkStruct_802C96A8 {
     /* 0x00 */ s32 unk_0;
     /* 0x04 */ s32 unk_4;
