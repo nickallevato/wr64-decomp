@@ -10,7 +10,7 @@ extern s32 D_801CB334;
 extern s32 D_801CB340[];
 extern s32 D_801CB350[][4];
 extern s32 D_801CB3D0[];
-extern RiderStruct D_801C2C70[];
+extern RiderStruct gRiderRaceState[];
 extern const s16 D_800EABB0[];
 extern const s16 D_800EABBC[][8];
 extern s32 D_800E9AB0;
@@ -76,7 +76,7 @@ void func_i3_802C5800(void) {
                 D_801CB340[i] = 0;
             }
             for (i = 0; i < 4; i++) {
-                D_801C2C70[i].lapCount = 0;
+                gRiderRaceState[i].unk338 = 0;
             }
         }
 
