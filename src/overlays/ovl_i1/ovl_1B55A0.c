@@ -1022,7 +1022,7 @@ Gfx* func_i1_802C7E48(Gfx* dList) {
     s32 start;
     s32 rider;
     s32 valueX;
-    UnkStruct_func_i8_802C6E00* name;
+    PlayerName* name;
     char placeBuf[12];
     char valueBuf[12];
 

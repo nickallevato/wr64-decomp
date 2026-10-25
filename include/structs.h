@@ -700,10 +700,12 @@ typedef struct ControllerBase {
     /* 0x9 */ s8 unk_9;
 } ControllerBase; // size 0xA
 
-typedef struct UnkStruct_func_i8_802C6E00 {
+// An entry of gPlayerNames: the name (10 characters and a NUL) and the custom stats edited on the
+// rider select screen (unk_B[0..2], 0..11).
+typedef struct PlayerName {
     /* 0x0 */ s8 unk_0[0xB];
     /* 0xB */ s8 unk_B[0x3];
-} UnkStruct_func_i8_802C6E00;
+} PlayerName;
 
 typedef struct UnkStruct_8004B0F8_1 {
     f32 unk0;

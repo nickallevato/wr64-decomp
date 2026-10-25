@@ -303,15 +303,15 @@ void func_i2_802C5E28(void) {
                 allowMove = D_i2_802C8BD8[D_800DA9C0[i]];
                 switch (D_i2_802C8C58.ready[i]) {
                     case 2:
-                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] =
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] =
                             D_800DA950[allowMove].unk_B[0];
                         break;
                     case 3:
-                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] =
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] =
                             D_800DA950[allowMove].unk_B[1];
                         break;
                     case 4:
-                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] =
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] =
                             D_800DA950[allowMove].unk_B[2];
                         break;
                 }
@@ -485,7 +485,7 @@ void func_i2_802C5E28(void) {
 #endif
 
 s32 func_i2_802C676C(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
+    PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -498,7 +498,7 @@ s32 func_i2_802C676C(s32 arg0, s32 arg1) {
 }
 
 s32 func_i2_802C67E4(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
+    PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -648,7 +648,7 @@ Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
     s32 showName;
     s32 stateGe2;
     s32 stateLive; // D_i2_802C8C58 entry 1..5
-    UnkStruct_func_i8_802C6E00* entry;
+    PlayerName* entry;
     s32 x;
     s32 nameX;
 
@@ -660,7 +660,7 @@ Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
     if ((D_800DA9C8[player] == 0) || (D_i2_802C8C58.ready[player] == 0)) {
         entry = &D_800DA950[D_i2_802C8BD8[D_800DA9C0[player]]];
     } else {
-        entry = &((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[player][D_i2_802C8BD8[D_800DA9C0[player]]];
+        entry = &((PlayerName(*)[4]) gPlayerNames)[player][D_i2_802C8BD8[D_800DA9C0[player]]];
     }
     showBars = 0;
     showMode = 0;
@@ -855,8 +855,8 @@ Gfx* func_i2_802C7C50(Gfx* gdl) {
 }
 
 void func_i2_802C84EC(s32 arg0) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
-    UnkStruct_func_i8_802C6E00* entry;
+    PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
+    PlayerName* entry;
     s32 player;
     s32 i;
 

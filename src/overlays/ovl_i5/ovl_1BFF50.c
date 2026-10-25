@@ -171,7 +171,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
     s32 rider;
     s32 panelMode;
     s32 pad; // stack pad
-    UnkStruct_func_i8_802C6E00* name;
+    PlayerName* name;
     char placeBuf[12];
     char valueBuf[12];
 

@@ -275,7 +275,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
     s32 valueMode;
     s32 valueX;
     s32* place;
-    UnkStruct_func_i8_802C6E00* name;
+    PlayerName* name;
     UnkStruct_D_802C6E80* thing;
     char placeBuf[20];
     char valueBuf[12];

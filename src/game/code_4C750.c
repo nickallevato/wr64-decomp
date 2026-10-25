@@ -58,7 +58,7 @@ extern s32 D_801CB334;
 
 s32 D_800DA940[] = { 1, 0, 0, 0 };
 
-UnkStruct_func_i8_802C6E00 D_800DA950[] = {
+PlayerName D_800DA950[] = {
     { "R.HAYAMI", 5, 5, 5 },
     { "D.MARINER", 5, 5, 5 },
     { "A.STEWART", 5, 5, 5 },
@@ -876,7 +876,7 @@ Gfx* func_800933C4(Gfx* arg0) {
 }
 
 void func_8009345C(void) {
-    UnkStruct_func_i8_802C6E00* var_v1;
+    PlayerName* var_v1;
     s32 var_a1;
     s32 var_a2;
     s32 id;
