@@ -189,7 +189,6 @@ extern u8 D_8004400[];
 extern u8 D_8004C00[];
 extern s32 D_800D9944[];
 extern s8 D_800D9918[][3];
-s32 D_800DA914 = 0;
 extern s32 D_8035C800[];
 extern s32 D_8035D200[];
 extern s32 D_8035DC00[];
@@ -1696,10 +1695,6 @@ Gfx* func_80091CD8(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 30 of 9800: the code matches, only the static's address differs. The static (D_800DA914, 0x800DA914) has
-// to be in this file's .data, which is still part of the 0x8F000 data blob. As an extern, IDO no longer sinks the
-// store below the gdl writes (score 2610).
 void* func_80091DBC(Gfx* gdl) {
     static s32 D_800DA914 = { 0 };
 
@@ -1726,6 +1721,3 @@ void* func_80091DBC(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_80091DBC.s")
-#endif
