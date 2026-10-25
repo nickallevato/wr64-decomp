@@ -42,7 +42,6 @@ extern UnkStruct_801CE658 D_801CE658[];
 extern s32 D_801CE6AC;
 extern s16 D_801CE72E;
 extern struct UnkStruct_801CB6C8 D_801CB6C8[];
-extern s32 D_800DAB60[];
 extern s32 D_800DC4F0[];
 extern s32 D_800DC514[];
 extern s32 D_800DC698[];

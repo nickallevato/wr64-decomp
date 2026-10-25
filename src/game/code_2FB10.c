@@ -1280,7 +1280,6 @@ typedef struct UnkStruct_800D92BC {
 extern UnkStruct_800D92BC D_800D92BC;
 extern s32 D_800D92B8;
 extern s32 D_800D8178;
-extern s16 D_800DAB60;
 extern s32 D_801BB134;
 extern s32 D_80228A94;
 

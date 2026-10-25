@@ -510,7 +510,6 @@ extern f32 D_800D95F0[];
 extern f32 D_800D9600[];
 extern f32 D_800D9610[];
 extern f32 D_800D9620[];
-extern s16 D_800DAB60;
 extern s16 D_800D4928;
 extern u16 D_800D4964;
 extern s16 D_800D496C;

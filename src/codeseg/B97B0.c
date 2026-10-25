@@ -7,7 +7,6 @@
 extern RiderStruct D_801C2C70[];
 extern s32 D_800DA9C8[];
 extern s32 D_80226EF0[];
-extern s16 D_800DAB60;
 extern s32 D_800DA9F8;
 extern s32 D_800DA9FC;
 extern s32 D_800DAA08;

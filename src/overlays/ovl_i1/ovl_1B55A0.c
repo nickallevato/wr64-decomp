@@ -18,7 +18,6 @@ extern UnkStruct_AF8C0_14 gBestLaps[];
 extern UnkStruct_AF8C0_14 D_801C23B0[];
 extern UnkStruct_AF8C0_10 gStuntRecords[][3];
 extern s32 D_801C2930;
-extern s16 D_800DAB60;
 extern Gfx D_106F1B8[];
 extern s16 D_801CE628;
 extern RiderStruct gRiderRaceState[];

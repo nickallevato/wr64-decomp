@@ -158,6 +158,7 @@ extern u16 D_802C76AC;
 extern s32 D_i3_802C6FE0;
 extern u16 D_802C7024;
 extern s16 D_801CE62A;
+extern s16 D_800DAB60;
 extern s16 D_800DAB64;
 extern s32 D_i0_802C6BE0;
 extern s32 D_802C6EE0;

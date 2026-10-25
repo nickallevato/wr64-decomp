@@ -179,7 +179,6 @@ void func_i2_802C6864(s32 arg0);
 extern s32 D_i2_802C8BB0[];
 extern s32 D_i2_802C8BB8[];
 extern s16 D_80228A32;
-extern s16 D_800DAB60;
 
 #ifdef NON_MATCHING
 // Score 590 of 59400: the "held" check before the repeat counter is scheduled as
