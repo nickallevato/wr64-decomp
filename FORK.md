@@ -99,7 +99,9 @@ One function per worktree; every step runs from the worktree root with `. .venv/
    line with the C. Then `make extract`, so splat drops the function's `.s` (without it the
    progress count does not move).
 3. **Diff.** `./diff <func>` (watch mode: rebuilds on save). One-shot:
-   `python3 tools/asm-differ/diff.py -s <func> --no-pager` (`--format json` gives `current_score`; 0 = clean).
+   `python3 tools/asm-differ/diff.py <func> --no-pager --max-size <size in bytes / 4>` (`--format json` gives
+   `current_score`; 0 = clean). Don't pass `-s`: it is `--stop-at-ret` and scores only up to the first `jr ra`,
+   so set-aside scores measured with it before milestone 4 may be too low for functions with an early return.
    Check the function's rodata (floats, strings, jump tables) moved with it.
 4. **Permute,** only if stuck and within the cap (about 2 h per function, about 1 h of it permuter):
    `tools/decomp-permuter/import.py <c file> <asm file>`, then
