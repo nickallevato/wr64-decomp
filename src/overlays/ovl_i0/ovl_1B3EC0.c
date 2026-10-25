@@ -475,7 +475,7 @@ Gfx* MainMenu_DrawLeaving(Gfx* arg0) {
     gSPDisplayList(arg0++, &D_106F168);
 
     if (D_80228A16 == 1) {
-        switch (D_801CE630) { /* irregular */
+        switch (D_801CE630) {
             case 0xA:
                 GameState_EnterRiderSelect();
                 break;
