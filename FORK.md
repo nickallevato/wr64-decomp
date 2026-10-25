@@ -88,6 +88,11 @@ tools/fork/check.sh func_801E93B4
   worktree): it `cd`s into the repository it lives in, so running the main checkout's copy
   checks the main checkout, whatever the current directory is.
 - A function counts as done only when `check.sh` passes on the commit that adds it.
+- `tools/fork/remote-check.sh <name> <commit>...`: runs `check.sh` on each commit on
+  na-workhorse (or `$WR64_REMOTE`), which has its own extracted checkout at the same path.
+  It pushes the local branches there first, so unpushed commits work. Use it for the
+  one-by-one recheck of a batch's commits and for merge reviews, to keep full rebuilds off
+  the local machine.
 
 ## The loop
 
