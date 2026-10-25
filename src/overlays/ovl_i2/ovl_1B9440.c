@@ -303,16 +303,13 @@ void func_i2_802C5E28(void) {
                 allowMove = D_i2_802C8BD8[D_800DA9C0[i]];
                 switch (D_i2_802C8C58.ready[i]) {
                     case 2:
-                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] =
-                            D_800DA950[allowMove].unk_B[0];
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] = D_800DA950[allowMove].unk_B[0];
                         break;
                     case 3:
-                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] =
-                            D_800DA950[allowMove].unk_B[1];
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] = D_800DA950[allowMove].unk_B[1];
                         break;
                     case 4:
-                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] =
-                            D_800DA950[allowMove].unk_B[2];
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] = D_800DA950[allowMove].unk_B[2];
                         break;
                 }
             } else {

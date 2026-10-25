@@ -343,7 +343,7 @@ void ViewRecords_Input(void) {
             } else if (D_i9_802C80E4[0].unkC == 2) {
                 D_i9_802C80DC = 1;
                 ViewRecords_SetPanel(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8],
-                                 (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
+                                     (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
                 AudioGeneral_PlaySound(0x2A, 0);
             } else if (D_i9_802C80E4[0].unkC == 1 && D_i9_802C81B4 != 0) {
                 D_i9_802C80DC = 1;
@@ -379,7 +379,7 @@ void ViewRecords_Input(void) {
             } else if (D_i9_802C80E4[0].unkC == 1) {
                 D_i9_802C80DC = 2;
                 ViewRecords_SetPanel(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8],
-                                 (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
+                                     (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
                 AudioGeneral_PlaySound(0x2A, 0);
             } else if (D_i9_802C80E4[0].unkC == 3) {
                 D_i9_802C80DC = 2;
