@@ -506,3 +506,11 @@ NotQualified_Update = 0x802C781C; //segment:ovl_i5
 //   RaceResults_Draw 0x802C5C1C
 //   NotQualified_UpdateAnimation 0x802C7090
 //   NotQualified_Draw 0x802C7484
+
+// ovl_i6, time trials results (GAME_STATE_TIME_TRIALS_RESULTS, GAME_STATE_33)
+TimeTrialsResults_OverlayUpdate = 0x802C5800; //segment:ovl_i6
+TimeTrialsResults_DrawPanel = 0x802C5C2C; //segment:ovl_i6
+TimeTrialsResults_Update = 0x802C6B34; //segment:ovl_i6
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   TimeTrialsResults_Draw 0x802C5B74

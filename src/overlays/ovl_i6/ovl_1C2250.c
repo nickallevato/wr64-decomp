@@ -24,10 +24,10 @@ Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
-void func_i6_802C6B34(void);
-Gfx* func_i6_802C5C2C(Gfx*);
+void TimeTrialsResults_Update(void);
+Gfx* TimeTrialsResults_DrawPanel(Gfx*);
 
-void func_i6_802C5800(void) {
+void TimeTrialsResults_OverlayUpdate(void) {
     s32 i;
     s32 x;
     MtxF sp170;
@@ -83,7 +83,7 @@ void func_i6_802C5800(void) {
     D_801CE5F8->unk1280[i].vp.vtrans[1] = 206 << 2;
 }
 
-Gfx* func_i6_802C5B74(Gfx* gdl) {
+Gfx* TimeTrialsResults_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if ((gGameState == 0x32) && (gPrevGameState != 0x64)) {
@@ -92,15 +92,15 @@ Gfx* func_i6_802C5B74(Gfx* gdl) {
     }
 
     D_800DAB2C = 0;
-    gdl = func_i6_802C5C2C(Draw_WaterEffects(func_800949B8(func_8008FB74(gdl), gCourseID)));
+    gdl = TimeTrialsResults_DrawPanel(Draw_WaterEffects(func_800949B8(func_8008FB74(gdl), gCourseID)));
 
     if (gGameState == 0x32) {
-        func_i6_802C6B34();
+        TimeTrialsResults_Update();
     }
     return gdl;
 }
 
-Gfx* func_i6_802C5C2C(Gfx* gdl) {
+Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
     UnkStruct_AF8C0_14* rec;
     s32 x;
     s32 lapX;
@@ -296,7 +296,7 @@ Gfx* func_i6_802C5C2C(Gfx* gdl) {
     return gdl;
 }
 
-void func_i6_802C6B34(void) {
+void TimeTrialsResults_Update(void) {
     s32 var_a2 = 0;
 
     switch (D_i6_802C6D30) {
