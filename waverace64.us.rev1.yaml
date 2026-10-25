@@ -446,7 +446,7 @@ segments:
     - [0x1B91E0, data, ovl_1B55A0]
     - [0x1B9320, .rodata, ovl_1B55A0]
 
-    # Rider selection?
+    # Rider select
   - name: ovl_i2
     type: code
     dir: overlays/ovl_i2
@@ -574,7 +574,7 @@ segments:
     - [0x1C8F90, data, ovl_1C66D0]
     - [0x1C9090, .rodata, ovl_1C66D0]
 
-    # Options - Change names
+    # Options - Change conditions
   - name: ovl_i10
     type: code
     dir: overlays/ovl_i10
