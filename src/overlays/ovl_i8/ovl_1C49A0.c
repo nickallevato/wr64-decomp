@@ -10,6 +10,26 @@ extern u8 gPrinterWidthsFont2[]; /* glyph widths, font 2 */
 
 void Save_EepromWriteNames();
 void func_i8_802C5EB8();
+void func_i8_802C6D58(void);
+void ChangeNames_DeleteChar(void);
+void ChangeNames_StoreName(void);
+void ChangeNames_LoadName(void* arg0);
+s32 ChangeNames_StringWidth(s8* str, s32 arg1);
+
+/* One key of the name-entry grid (7 keys a row). */
+typedef struct {
+    /* 0x00 */ u8 unk0;
+    /* 0x01 */ u8 unk1; /* 0, 3: insert unkC (3: a space); 1: clear; 2: delete; 4, 5: cursor left, right;
+                           6: load the name from D_800DA950; 7: store the name */
+    /* 0x02 */ u8 unk2[0xA];
+    /* 0x0C */ s8 unkC;
+    /* 0x0D */ u8 unkD[0xF];
+} UnkStruct_i8_802C7054; // size = 0x1C
+
+extern UnkStruct_i8_802C7054 D_i8_802C7054[];
+extern s32 D_802C7538;
+extern s32 D_802C753C;
+extern s8 D_802C7558[];
 
 Gfx* func_i8_802C5D3C(Gfx* gdl) {
     Gfx* p;
@@ -51,7 +71,65 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C63E4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C6ADC.s")
+void func_i8_802C6ADC(void) {
+    s32 i;
+    s32 ok;
+    s32 idx = D_802C753C * 7 + D_802C7538;
+    UnkStruct_i8_802C7054* key = &D_i8_802C7054[idx];
+    s8* p;
+    s32 pad; // stack pad: the frame is 0x38
+
+    switch (key->unk1) {
+        case 0:
+        case 3:
+            ok = 1;
+            if (Strlen2(D_802C7548) >= 10) {
+                ok = 0;
+            } else if (ChangeNames_StringWidth(D_802C7548, 2) >= 119) {
+                ok = 0;
+            }
+            if (ok) {
+                func_i8_802C6FD4(D_802C7548, D_802C7558, 11);
+                for (i = D_802C7564 + 1; i < 11; i++) {
+                    D_802C7548[i] = D_802C7558[i - 1];
+                }
+                p = &D_802C7548[D_802C7564];
+                if (key->unk1 == 3) {
+                    *p = ' ';
+                } else {
+                    *p = key->unkC;
+                }
+                if (ChangeNames_StringWidth(D_802C7548, 2) >= 124) {
+                    func_i8_802C6FD4(D_802C7558, D_802C7548, 11);
+                } else if (D_802C7558[D_802C7564] == 0) {
+                    D_802C7564++;
+                }
+            }
+            break;
+        case 1:
+            func_i8_802C6D58();
+            break;
+        case 2:
+            ChangeNames_DeleteChar();
+            break;
+        case 5:
+            if (D_802C7548[D_802C7564] != 0 && D_802C7564 < 10) {
+                D_802C7564++;
+            }
+            break;
+        case 4:
+            if (D_802C7564 > 0) {
+                D_802C7564--;
+            }
+            break;
+        case 6:
+            ChangeNames_LoadName(&D_800DA950[D_i8_802C74F8[D_i8_802C7040]]);
+            break;
+        case 7:
+            ChangeNames_StoreName();
+            break;
+    }
+}
 
 void func_i8_802C6D58(void) {
     s32 i;
