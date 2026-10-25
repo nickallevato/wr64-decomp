@@ -219,6 +219,8 @@ void FadeTransition_Update(void);
 void Printer_StepColorCycle(void);
 void func_802C7090(void);
 void func_802C7608(void);
+// The update switch below calls 0x802C5800, the first function of whichever overlay is loaded (ovl_i1's
+// Race_OverlayUpdate, ovl_i2's RiderSelect_OverlayUpdate, ...), under ovl_i3's name.
 void func_i3_802C5800(void);
 extern s32 D_800D47E0;
 extern s8 D_801CB400;
@@ -588,8 +590,9 @@ Gfx* func_80092CF0(Gfx* dList) {
 
         case 0x2:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i0's TitleScreen_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x3:
@@ -673,8 +676,9 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x3C:
         case 0x3D:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i7's OptionsMenu_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x3E:
@@ -698,15 +702,17 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x48:
         case 0x49:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i11's AudioOptions_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x46:
         case 0x47:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i12's EraseCourseRecords_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x40:
