@@ -655,7 +655,6 @@ extern s32 D_801B2F20[];
 extern s32 D_801B7020[];
 extern s16 D_801CE628;
 extern s32 D_80223934;
-extern s16 D_801CE72E;
 extern s32 D_80228A98;
 extern f32 D_801C39A0[];
 

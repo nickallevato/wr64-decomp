@@ -31,7 +31,6 @@ extern s32 D_801CB3F0[2];
 extern s32 D_801CB340[];
 extern const s16 D_800EABB0[];
 extern const s16 D_800EABBC[][8];
-extern u16 D_801CE72E;
 extern s32 D_80228AA8;
 extern s32 D_802C96D4;
 extern u16 D_802C96D8;

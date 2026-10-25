@@ -353,6 +353,7 @@ extern s16 D_801CE6F4[];
 extern s32 D_801CE6F8;
 extern s16 D_801CE6FC;
 extern s16 D_801CE72C;
+extern u16 D_801CE72E;
 extern s32 gRiders;
 extern UnkStruct_func_i8_802C6E00 D_800DA950[];
 extern s32 D_800DA9B0[4];

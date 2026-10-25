@@ -1103,7 +1103,6 @@ void Hud_DrawMarkers(Gfx** gdlp) {
     *gdlp = gdl;
 }
 
-extern u16 D_801CE72E;
 extern s32 D_80228B5C;
 
 void Hud_UpdateOffCourseCountdown(void) {
