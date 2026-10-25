@@ -6,7 +6,7 @@ void GameState_EnterChangeConditions(void);
 void GameState_EnterAudio(void);
 void GameState_EnterEraseCourseRecords(void);
 void GameState_EnterSaveAndLoad(void);
-Gfx* func_i7_802C5A18(void);
+Gfx* func_i7_802C5A18(Gfx*);
 void func_i7_802C5C94(s32);
 extern s32 gCurrentOptionsMenuItem;
 extern s32 D_i7_802C5D20[];
@@ -22,7 +22,7 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
         }
     }
     D_800DAB2C = 0;
-    arg0 = func_i7_802C5A18();
+    arg0 = func_i7_802C5A18(arg0);
     if (gGameState == 0x3C) {
         if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
             func_i7_802C5C94(D_i7_802C5D20[gCurrentOptionsMenuItem]);
