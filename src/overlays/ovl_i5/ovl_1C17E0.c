@@ -7,6 +7,19 @@ typedef struct {
     /* 0x08 */ u32 frames[8]; // segmented, s16[frameCount] per object
 } UnkStruct_i5_802C7B38;      // size = 0x28
 
+/* One key of an animated object: position * 10, then two direction vectors */
+typedef struct {
+    /* 0x0 */ s16 x;
+    /* 0x2 */ s16 y;
+    /* 0x4 */ s16 z;
+    /* 0x6 */ s8 fx;
+    /* 0x7 */ s8 fy;
+    /* 0x8 */ s8 fz;
+    /* 0x9 */ s8 ux;
+    /* 0xA */ s8 uy;
+    /* 0xB */ s8 uz;
+} UnkStruct_i5_802C7B80; // size = 0xC
+
 extern Gfx D_106F6C0[];
 extern Mtx D_7001380[];
 extern Gfx* D_i5_802C7AA8[];
@@ -14,22 +27,99 @@ extern s32 D_i5_802C7AA0;
 extern s32 D_i5_802C7AC8;
 extern s32 D_i5_802C7ACC;
 extern s32 D_i5_802C7AD0;
+extern f32 D_802C7B10[8];
 extern s32 D_802C7B30;
 extern s32 D_802C7B34;
 extern UnkStruct_i5_802C7B38* D_802C7B38[2];
+extern s16* D_802C7B40[2][8];
+extern UnkStruct_i5_802C7B80* D_802C7B80[2];
 extern s32 D_802C7B88;
 extern s32 D_802C7B8C;
 extern s32 D_802C7B90;
 extern Mtx D_8011F820;
+extern s32 D_801CB334;
+extern s32 D_801CB340[];
+extern const s16 D_800EABBC[][8];
+extern const s16 D_800EAC14[][8];
+extern s32 D_801C2660[];
+extern s32 D_801C2690[];
+extern u8 D_80B0E28[];
+extern u8 D_80B1550[];
 
 Gfx* func_80094A44(Gfx*, s32);
 Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 void func_801EC830(void);
+void Water_StampPoint(f32, f32, s32);
+void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 x, f32 y, f32 z, f32 scale);
 Gfx* func_i5_802C7594(Gfx* gdl);
 Gfx* func_i5_802C7698(Gfx* gdl);
 void func_i5_802C781C(void);
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1C17E0/func_i5_802C7090.s")
+void func_i5_802C7090(void) {
+    s32 i;
+    s32 j;
+    s32 anim;
+    s32 course;
+    s16* row;
+    s32 idx;
+    UnkStruct_i5_802C7B80* key;
+    f32 x;
+    f32 y;
+    f32 z;
+
+    if ((D_801CE63C != 0) && (gGameState == GAME_STATE_5A)) {
+        D_802C7B30 = D_801CB340[gPlayer1Rider];
+        D_802C7B34 = D_800EABBC[gDifficulty][D_801CB334];
+        for (i = 0; i < 2; i++) {
+            if (i == 0) {
+                D_802C7B38[i] = (UnkStruct_i5_802C7B38*) SegmentedToVirtual((u32) D_80B0E28);
+            } else {
+                D_802C7B38[i] = (UnkStruct_i5_802C7B38*) SegmentedToVirtual((u32) D_80B1550);
+            }
+            for (j = 0; j < 8; j++) {
+                D_802C7B40[i][j] = (s16*) SegmentedToVirtual(D_802C7B38[i]->frames[j]);
+            }
+            D_802C7B80[i] = (UnkStruct_i5_802C7B80*) SegmentedToVirtual(D_802C7B38[i]->keys);
+        }
+        D_802C7B8C = D_802C7B90 = 0;
+        for (j = 0; j < D_801CB334 + 1; j++) {
+            course = D_800EAC14[gDifficulty][j];
+            if (D_801C2660[course] != 0) {
+                D_802C7B8C = 1;
+            }
+            if (D_801C2690[course] != 0) {
+                D_802C7B90 = 1;
+            }
+        }
+        j = 0;
+        do { // a for loop unrolls with the stores rotated
+            D_802C7B10[j] = 0.0f;
+            j++;
+        } while (j < 8);
+    }
+
+    if ((D_i5_802C7AC8 != 2) && (D_i5_802C7AC8 != 3)) {
+        anim = 1;
+    } else {
+        anim = 0;
+    }
+    for (j = 0; j < 8; j++) {
+        row = D_802C7B40[anim][j];
+        row += D_i5_802C7AA0;
+        idx = *row;
+        key = D_802C7B80[anim];
+        key += idx;
+        x = key->x / 10.0f;
+        y = key->y / 10.0f;
+        z = key->z / 10.0f;
+        // `== 0` (int): with 0.0f IDO reuses the register of the `y >= 0.0f` constant
+        if ((y >= 0.0f) && (D_802C7B10[j] == 0) && (D_i5_802C7AA0 > 0)) {
+            D_802C7B10[j] = 1.0f;
+            Water_StampPoint(x, z, 50);
+        }
+        func_801E4C60(&D_801CE5F8->unk1380[j], key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, x, y, z, 0.05f);
+    }
+}
 
 Gfx* func_i5_802C7484(Gfx* gdl) {
     if (D_801CE63C != 0) {
