@@ -18,7 +18,56 @@ s16 D_802C8C68;
 s16 D_802C8C6A;
 s16 D_802C8C70[4];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5800.s")
+void func_i2_802C5AE4(void);
+
+void func_i2_802C5800(void) {
+    s32 i;
+    s32 j;
+    s32 found;
+    f32 x;
+    f32 z;
+    MtxF sp1A4;
+    MtxF sp164;
+    MtxF sp124;
+    Mtx spE0;
+    Mtx spA0;
+    s32 angle;
+
+    if ((D_801CE63C != 0) && (gGameState == GAME_STATE_RIDER_SELECT)) {
+        func_i2_802C5AE4();
+    }
+    func_800481E0(D_801CE5F8->unkA40, &D_802C8C50, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_80048A88(&spE0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.07f);
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < D_801CE608.player; j++) {
+            found = 0;
+            if (i == D_800DA9C0[j]) {
+                found = 1;
+            }
+            if (found) {
+                angle = D_802C8C60[j] % 4096;
+                x = COS(angle) * 500.0f;
+                z = SIN(angle) * 500.0f;
+            } else {
+                x = COS(0x200) * 500.0f;
+                z = SIN(0x200) * 500.0f;
+            }
+            if (found) {
+                break;
+            }
+        }
+        func_800484C8(&spA0, &sp164, x, 500.0f, z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+        SysUtils_MtxToMtxF(&spE0, &sp1A4);
+        SysUtils_MatrixAffineMultiply(&sp164, &sp1A4, &sp124);
+        SysUtils_MtxFToMtx(&sp124, &D_801CE5F8->unkA80[i]);
+    }
+    for (i = 0; i < D_801CE608.player; i++) {
+        D_802C8C60[i] += 0x30;
+        if (D_802C8C60[i] >= 0x1000) {
+            D_802C8C60[i] -= 0x1000;
+        }
+    }
+}
 
 void func_i2_802C5AE4(void) {
     s32 i;
