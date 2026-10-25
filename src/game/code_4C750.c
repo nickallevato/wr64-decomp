@@ -154,7 +154,7 @@ void func_80091F50(void) {
     gCurrentPauseMenuOption = -1;
     D_801CE628 = 0;
     D_801CE62C = 0;
-    D_802C6EE4 = 0;
+    D_i0_802C6EE4 = 0;
     D_801CE72E = one;
     D_801CB280 = 0;
 

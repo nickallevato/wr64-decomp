@@ -40,7 +40,7 @@ extern s32 D_i9_802C8174[];
 extern s32 D_i9_802C8198[];
 extern s32 D_i9_802C81A4;
 extern s32 D_i9_802C81B4;
-extern u16 D_802C8280;
+extern u16 D_i9_802C8280;
 
 void func_i9_802C5E5C(void);
 Gfx* func_i9_802C6750(Gfx* gdl);
@@ -139,7 +139,7 @@ void func_i9_802C5800(void) {
         }
     }
 
-    func_800481E0(D_801CE5F8->unkA40, &D_802C8280, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_800481E0(D_801CE5F8->unkA40, &D_i9_802C8280, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
     func_80048A88(&spB8, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.025f);
     func_800484C8(&sp78, &sp138, 500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     SysUtils_MtxToMtxF(&spB8, &sp178);
@@ -560,7 +560,7 @@ Gfx* func_i9_802C71AC(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y) {
     }
     gDPPipeSync(gdl++);
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
-    gSPPerspNormalize(gdl++, D_802C8280);
+    gSPPerspNormalize(gdl++, D_i9_802C8280);
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gdl++, D_106F488);
 

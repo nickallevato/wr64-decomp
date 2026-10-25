@@ -254,7 +254,7 @@ void Popup_UpdateCard2(UnkStruct_menu_buffer_1* slot) {
     }
 }
 
-extern s32 D_802C6BD0;
+extern s32 D_i0_802C6BD0; // ovl_i0's menu y (78)
 
 void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
 
@@ -265,7 +265,7 @@ void Popup_UpdatePauseCursor(UnkStruct_menu_buffer_1* slot) {
 
     switch (slot->state) {
         case 0:
-            slot->y = D_802C6BD0 + 6 + D_802C6EE4 * 20;
+            slot->y = D_i0_802C6BD0 + 6 + D_i0_802C6EE4 * 20; // the main menu (ovl_i0) cursor row
             angle = 2.0f * (slot->frame / 40.0f) * 3.1415927f;
             // The last argument is the double 0.0: with 0.0f IDO shares one zero register for both.
             func_80049A94((Mtx*) ((u8*) D_801CE5F8 + ((u16) slot->index << 6) + 0x900), &mf, angle, angle, 0.0f,

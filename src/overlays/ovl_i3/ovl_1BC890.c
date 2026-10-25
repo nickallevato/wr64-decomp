@@ -1,8 +1,8 @@
 #include "global.h"
 
 extern s32 D_80223938;
-extern s32 D_802C7028;
-extern s32 D_802C702C;
+extern s32 D_i3_802C7028;
+extern s32 D_i3_802C702C;
 extern s32 D_i3_802C6F84;
 extern s32 D_i3_802C6F88;
 extern s32 D_801CB330;
@@ -18,7 +18,7 @@ extern s32 D_800E9AB0;
 extern s32 D_801CE704;
 // The asm names this array D_801CE6FC + 0xC; its symbol is in linker_scripts/us/rev1/resolve.txt.
 extern s32 D_801CE708[4];
-extern s32 D_802C7020;
+extern s32 D_i3_802C7020;
 extern s32 D_i3_802C6F8C;
 extern s32 D_i3_802C6FE4[];
 extern s32 D_i3_802C6F64;
@@ -80,33 +80,33 @@ void func_i3_802C5800(void) {
             }
         }
 
-        D_802C7028 = 1;
+        D_i3_802C7028 = 1;
         D_i3_802C6F84 = 0;
         if (gDifficulty == DIFFICULTY_NORMAL) {
             if (D_801CB334 == 1) {
-                D_802C7028 = 0;
-                D_802C702C = 240;
+                D_i3_802C7028 = 0;
+                D_i3_802C702C = 240;
             } else {
-                D_802C702C = 180;
+                D_i3_802C702C = 180;
             }
         } else if (D_801CB334 == 0) {
-            D_802C7028 = 0;
-            D_802C702C = 240;
+            D_i3_802C7028 = 0;
+            D_i3_802C702C = 240;
         } else {
-            D_802C702C = 180;
+            D_i3_802C702C = 180;
         }
 
         if (D_801CB330 == 0) {
-            D_802C7020 = 0;
+            D_i3_802C7020 = 0;
             for (i = 0; i < 4; i++) {
                 D_801CE708[i] = 4;
             }
             D_801CE704 = D_801CE708[gPlayer1Rider];
         } else {
             for (i = 0; i < 4; i++) {
-                D_802C7020 = D_800EABBC[gDifficulty][D_801CB334] - D_801CB340[i];
+                D_i3_802C7020 = D_800EABBC[gDifficulty][D_801CB334] - D_801CB340[i];
                 for (j = 1; j < 5; j++) {
-                    if (D_800EABB0[j] < D_802C7020) {
+                    if (D_800EABB0[j] < D_i3_802C7020) {
                         break;
                     }
                 }
@@ -124,7 +124,7 @@ void func_i3_802C5800(void) {
         }
     }
 
-    switch (D_802C7028) {
+    switch (D_i3_802C7028) {
         case 0:
             func_i3_802C5AE8();
             break;
@@ -138,7 +138,7 @@ void func_i3_802C5AE8(void) {
 }
 
 void func_i3_802C5AF0(void) {
-    Camera_SetOrbitMatrices(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_802C7024, &D_80198310, &D_80198350);
+    Camera_SetOrbitMatrices(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_i3_802C7024, &D_80198310, &D_80198350);
 }
 
 Gfx* func_i3_802C5B40(Gfx* arg0) {
@@ -152,7 +152,7 @@ Gfx* func_i3_802C5B40(Gfx* arg0) {
     arg0 = func_8009328C(arg0);
 
     if (D_80223938 != 0) {
-        switch (D_802C7028) {
+        switch (D_i3_802C7028) {
             case 0:
                 arg0 = func_i3_802C5D54(arg0);
                 break;
@@ -173,7 +173,7 @@ Gfx* func_i3_802C5B40(Gfx* arg0) {
                     func_i3_802C6E9C();
                 }
             } else if (D_80223938 != 0) {
-                if (D_801CE644 >= D_802C702C) {
+                if (D_801CE644 >= D_i3_802C702C) {
                     func_i3_802C6E9C();
                 }
             }
@@ -260,7 +260,7 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F68 = 0;
                 D_i3_802C6F6C = 0;
                 D_i3_802C6F70 = 0;
-                D_802C7028 = 1;
+                D_i3_802C7028 = 1;
             } else {
                 D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
                 D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
@@ -412,7 +412,7 @@ Gfx* func_i3_802C6344(Gfx* gdl) {
     gSPDisplayList(gdl++, D_804E418);
     gDPPipeSync(gdl++);
     gDPSetColorImage(gdl++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, OS_K0_TO_PHYSICAL(gFrameBuffers[gFramebuffersIdx]));
-    gSPPerspNormalize(gdl++, D_802C7024);
+    gSPPerspNormalize(gdl++, D_i3_802C7024);
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, D_801CE5F8->unkA80, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPViewport(gdl++, &D_106F728);

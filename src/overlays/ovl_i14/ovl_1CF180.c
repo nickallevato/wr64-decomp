@@ -24,7 +24,7 @@ void func_i14_802C5800(void) {
 void func_i14_802C5840(void) {
     s32 flag = 0;
 
-    D_802C61EC = 4;
+    D_i14_802C61EC = 4;
 
     if (D_801CE608.gameMode == 4) {
         if (gPrevGameState == 0x43) {
@@ -35,18 +35,18 @@ void func_i14_802C5840(void) {
     }
 
     if (D_801CE608.gameMode == 4) {
-        D_802C61EC = 2;
+        D_i14_802C61EC = 2;
     }
 
     if (flag != 0) {
-        D_802C61E0 = 1;
-        D_802C61E4 = D_802C61E8 = 0x4C;
+        D_i14_802C61E0 = 1;
+        D_i14_802C61E4 = D_i14_802C61E8 = 0x4C;
         return;
     }
 
-    D_802C61E0 = 0;
-    D_802C61E4 = 0x140;
-    D_802C61E8 = -0xA9;
+    D_i14_802C61E0 = 0;
+    D_i14_802C61E4 = 0x140;
+    D_i14_802C61E8 = -0xA9;
 
     AudioGeneral_PlaySound(0x31, 0);
 }
@@ -127,11 +127,11 @@ Gfx* func_i14_802C5B70(Gfx* gdl) {
 
     gSPDisplayList(gdl++, D_106F628);
 
-    for (i = 0; i < D_802C61EC; i++) {
+    for (i = 0; i < D_i14_802C61EC; i++) {
         if (i & 1) {
-            x = D_802C61E4;
+            x = D_i14_802C61E4;
         } else {
-            x = D_802C61E8;
+            x = D_i14_802C61E8;
         }
         gdl = func_80094338(gdl, 0, x + 8, i * 18 + 97, 169, 16);
     }
@@ -143,13 +143,13 @@ Gfx* func_i14_802C5B70(Gfx* gdl) {
     } else {
         item = D_i14_802C60F4;
     }
-    for (i = 0; i < D_802C61EC; i++, item++) {
+    for (i = 0; i < D_i14_802C61EC; i++, item++) {
         if (i != D_i14_802C60F0) {
             if (i & 1) {
-                x = D_802C61E4;
+                x = D_i14_802C61E4;
                 if (1) {} // FAKE: the original's s3/s4/s5 order for the three globals
             } else {
-                x = D_802C61E8;
+                x = D_i14_802C61E8;
             }
             gdl = func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
         }
@@ -157,9 +157,9 @@ Gfx* func_i14_802C5B70(Gfx* gdl) {
 
     i = D_i14_802C60F0;
     if (i & 1) {
-        x = D_802C61E4;
+        x = D_i14_802C61E4;
     } else {
-        x = D_802C61E8;
+        x = D_i14_802C61E8;
     }
     if (D_801CE608.gameMode == 4) {
         item = &D_i14_802C6114[i];
@@ -202,13 +202,13 @@ void func_i14_802C5E5C(s32 arg0) {
 }
 
 void func_i14_802C5F60(void) {
-    if (D_802C61E0 == 0) {
-        D_802C61E4 -= 0x14;
-        if (D_802C61E4 < 0x4C) {
-            D_802C61E0 = 1;
-            D_802C61E4 = 0x4C;
+    if (D_i14_802C61E0 == 0) {
+        D_i14_802C61E4 -= 0x14;
+        if (D_i14_802C61E4 < 0x4C) {
+            D_i14_802C61E0 = 1;
+            D_i14_802C61E4 = 0x4C;
         }
-        D_802C61E8 = 0x98 - D_802C61E4;
+        D_i14_802C61E8 = 0x98 - D_i14_802C61E4;
         return;
     }
 
@@ -229,14 +229,14 @@ void func_i14_802C5F60(void) {
 
     if (D_801CE65A[0].unk0 & U_JPAD) {
         if (--D_i14_802C60F0 < 0) {
-            D_i14_802C60F0 = D_802C61EC - 1;
+            D_i14_802C60F0 = D_i14_802C61EC - 1;
         }
         AudioGeneral_PlaySound(0x10, 0);
         return;
     }
 
     if (D_801CE65A[0].unk0 & D_JPAD) {
-        if (++D_i14_802C60F0 >= D_802C61EC) {
+        if (++D_i14_802C60F0 >= D_i14_802C61EC) {
             D_i14_802C60F0 = 0;
         }
         AudioGeneral_PlaySound(0x10, 0);

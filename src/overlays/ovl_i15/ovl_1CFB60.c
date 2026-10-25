@@ -9,14 +9,14 @@ extern s32 D_i15_802C6D68;
 extern s32 D_i15_802C6D6C;
 extern s32 D_i15_802C6D70[];
 extern UnkStruct_D_802C6E80 D_i15_802C6D8C;
-extern s32 D_802C6E7C;
-extern s32 D_802C6F20[];
-extern s32 D_802C6F44;
+extern s32 D_i15_802C6E7C;
+extern s32 D_i15_802C6F20[];
+extern s32 D_i15_802C6F44;
 extern const s16 D_800EAC14[][8];
 extern s32 D_801C2660[];
 extern s32 D_801C2690[];
 extern s32 D_801CB334;
-extern u16 D_802C6F40;
+extern u16 D_i15_802C6F40;
 extern s32 D_i15_802C6DD4;
 extern s32 D_i15_802C6DD8;
 extern s32 D_i15_802C6DDC;
@@ -69,14 +69,14 @@ void func_i15_802C5800(void) {
 
     if ((D_801CE63C != 0) && (gGameState == 0x66)) {
         func_i15_802C5CE8();
-        D_802C6E74 = D_802C6E78 = 0;
+        D_i15_802C6E74 = D_i15_802C6E78 = 0;
         for (i = 0; i < D_801CB334 + 1; i++) {
             course = D_800EAC14[gDifficulty][i];
             if (D_801C2660[course] != 0) {
-                D_802C6E74 = 1;
+                D_i15_802C6E74 = 1;
             }
             if (D_801C2690[course] != 0) {
-                D_802C6E78 = 1;
+                D_i15_802C6E78 = 1;
             }
         }
     }
@@ -85,7 +85,7 @@ void func_i15_802C5800(void) {
     if ((--D_i15_802C6D6C < 0) && (D_i15_802C6D68 != -1)) {
         func_i15_802C5EE4(D_i15_802C6D68);
         D_i15_802C6D6C = 40;
-        if (D_i15_802C6D68 == D_802C6E7C) {
+        if (D_i15_802C6D68 == D_i15_802C6E7C) {
             D_i15_802C6D68 = 10;
             D_i15_802C6D6C = 110;
         } else if (D_i15_802C6D68 == 10) {
@@ -95,7 +95,7 @@ void func_i15_802C5800(void) {
         }
     }
 
-    func_800481E0(D_801CE5F8->unkA40, &D_802C6F40, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_800481E0(D_801CE5F8->unkA40, &D_i15_802C6F40, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
     func_80048A88(&spB8, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.04f);
     temp_fv1 = COS(0) * 500.0f;
     temp_fa0 = SIN(0) * 500.0f;
@@ -104,7 +104,7 @@ void func_i15_802C5800(void) {
     SysUtils_MtxToMtxF(&spB8, &sp17C);
     SysUtils_MatrixAffineMultiply(&sp13C, &sp17C, &spFC);
 
-    thing = D_802C6E80;
+    thing = D_i15_802C6E80;
     do {
         if (thing->unk0 != 0) {
             draw = 0;
@@ -170,41 +170,41 @@ void func_i15_802C5CE8(void) {
     s32 j;
 
     for (i = 0; i < 10; i++) {
-        D_802C6E80[i] = D_i15_802C6D8C;
+        D_i15_802C6E80[i] = D_i15_802C6D8C;
     }
-    D_802C6E7C = D_i15_802C6D54[gDifficulty];
+    D_i15_802C6E7C = D_i15_802C6D54[gDifficulty];
     if (gRiderRaceState[gPlayer1Rider].unk338 == 3) {
-        D_802C6F44 = 6;
+        D_i15_802C6F44 = 6;
     } else if (gDifficulty == DIFFICULTY_EXPERT) {
         if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
-            D_802C6F44 = 3;
+            D_i15_802C6F44 = 3;
         } else if (gRiderRaceState[gPlayer1Rider].unk338 == 1) {
-            D_802C6F44 = 4;
+            D_i15_802C6F44 = 4;
         } else {
-            D_802C6F44 = 5;
+            D_i15_802C6F44 = 5;
         }
     } else {
         if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
-            D_802C6F44 = 0;
+            D_i15_802C6F44 = 0;
         } else if (gRiderRaceState[gPlayer1Rider].unk338 == 1) {
-            D_802C6F44 = 1;
+            D_i15_802C6F44 = 1;
         } else {
-            D_802C6F44 = 2;
+            D_i15_802C6F44 = 2;
         }
     }
-    D_i15_802C6D6C = D_i15_802C6D70[D_802C6F44];
+    D_i15_802C6D6C = D_i15_802C6D70[D_i15_802C6F44];
     if (gDifficulty == DIFFICULTY_NORMAL) {
         D_i15_802C6D68 = 1;
     } else {
         D_i15_802C6D68 = 0;
     }
-    for (i = 0; i < D_802C6E7C + 1; i++) {
+    for (i = 0; i < D_i15_802C6E7C + 1; i++) {
         for (j = 0; j < 4; j++) {
             if (D_800EABB0[j] == D_801CB350[i][0]) {
                 break;
             }
         }
-        D_802C6F20[i] = j;
+        D_i15_802C6F20[i] = j;
     }
     D_800DAA08 = 1;
 }
@@ -213,13 +213,13 @@ void func_i15_802C5EE4(s32 arg0) {
     UnkStruct_D_802C6E80* thing;
     s32 i;
 
-    for (i = 0, thing = &D_802C6E80[0]; i < 10; i++, thing++) {
+    for (i = 0, thing = &D_i15_802C6E80[0]; i < 10; i++, thing++) {
         if (thing->unk0 == 0) {
             break;
         }
     }
 
-    thing = &D_802C6E80[i];
+    thing = &D_i15_802C6E80[i];
 
     if (i != 10) {
         thing->unk0 = 1;
@@ -282,7 +282,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
     s32 idx;
     s32 pad; // stack pad
 
-    for (i = 0, thing = D_802C6E80; i < 10; i++, thing++) {
+    for (i = 0, thing = D_i15_802C6E80; i < 10; i++, thing++) {
         if (thing->unk0 == 0) {
             continue;
         }
@@ -303,11 +303,11 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 if (gDifficulty == DIFFICULTY_NORMAL) {
                     race--;
                 }
-                if (D_802C6E7C == thing->unk4) {
+                if (D_i15_802C6E7C == thing->unk4) {
                     race = 8;
                 }
                 gdl = func_801E3EE0(gdl, 1, D_i15_802C6D9C[race], thing->unk8 + 24, thing->unkC + 4, 1);
-                idx = D_802C6F20[thing->unk4];
+                idx = D_i15_802C6F20[thing->unk4];
                 place = &D_i15_802C6DC0[idx];
                 gdl = func_801E3EE0(gdl, 1, *place, thing->unk8 + 39, thing->unkC + 16, 0);
                 // The last place texture (index 4) is a separate symbol in the asm.
@@ -418,7 +418,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 gDPPipeSync(gdl++);
                 gDPSetColorImage(gdl++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320,
                                  OS_K0_TO_PHYSICAL(gFrameBuffers[gFramebuffersIdx]));
-                gSPPerspNormalize(gdl++, D_802C6F40);
+                gSPPerspNormalize(gdl++, D_i15_802C6F40);
                 gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
                 gSPDisplayList(gdl++, D_106F488);
                 gDPPipeSync(gdl++);
@@ -441,7 +441,7 @@ void func_i15_802C6C1C(void) {
     if (D_i15_802C6DF4) {
         D_i15_802C6DF8++;
         if ((D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) || (D_i15_802C6DF8 > 600)) {
-            if ((D_802C6E74 != 0) || (D_802C6E78 != 0)) {
+            if ((D_i15_802C6E74 != 0) || (D_i15_802C6E78 != 0)) {
                 func_i15_802C6CAC(100);
             } else {
                 func_i15_802C6CAC(2);
