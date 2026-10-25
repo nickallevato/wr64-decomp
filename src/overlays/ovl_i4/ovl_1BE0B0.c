@@ -40,13 +40,13 @@ extern UnkStruct_AF8C0_14 gBestLaps[];
 extern UnkStruct_AF8C0_14 D_801C23B0[];
 extern UnkStruct_AF8C0_10 gStuntRecords[][3];
 
-void func_i4_802C7344(void);
+void CourseSelect_Step3Input(void);
 Gfx* func_i4_802C6778(Gfx*);
 Gfx* func_i4_802C69C4(Gfx*, s32, s32);
 
-void func_i4_802C5800(void) {
+void CourseSelect_OverlayUpdate(void) {
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_COURSE_SELECT)) {
-        func_i4_802C58F8();
+        CourseSelect_Init();
     }
 
     if (D_i4_802C7530 != 0) {
@@ -58,7 +58,7 @@ void func_i4_802C5800(void) {
     Camera_SetOrbitMatrices(D_801CE5F8->unkA80, D_801CE5F8->unk1780, D_801CE5F8->unkA40, &D_i4_802C76AC, &D_80198310, &D_80198350);
 }
 
-void func_i4_802C58F8(void) {
+void CourseSelect_Init(void) {
     s32 idx;
     s32 i;
     s32 j;
@@ -142,7 +142,7 @@ void func_i4_802C58F8(void) {
     }
 }
 
-Gfx* func_i4_802C5B78(Gfx* dList) {
+Gfx* CourseSelect_Draw(Gfx* dList) {
     Gfx* temp_v0;
 
     if (D_801CE63C != 0) {
@@ -154,14 +154,14 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
     }
     D_i4_802C76A8 = D_800DA9D0;
     D_800DAB2C = 0;
-    temp_v0 = func_i4_802C5CDC(Draw_WaterEffects(func_800949B8(func_8008FB74(dList), gCourseID)));
+    temp_v0 = CourseSelect_DrawScreen(Draw_WaterEffects(func_800949B8(func_8008FB74(dList), gCourseID)));
 
     dList = temp_v0 + 1;
 
     gSPDisplayList(temp_v0++, &D_106F168);
 
     if (gGameState == GAME_STATE_COURSE_SELECT) {
-        func_i4_802C6BAC();
+        CourseSelect_UpdateInput();
     } else if (D_80228A16 == 1) {
         switch (D_801CE630) {
             case 0x28:
@@ -183,7 +183,7 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
     return dList;
 }
 
-Gfx* func_i4_802C5CDC(Gfx* dList) {
+Gfx* CourseSelect_DrawScreen(Gfx* dList) {
     s32 i;
     s32 mode;
     s32 yOffset;
@@ -391,7 +391,7 @@ Gfx* func_i4_802C69C4(Gfx* dList, s32 x, s32 y) {
     return dList;
 }
 
-void func_i4_802C6BAC(void) {
+void CourseSelect_UpdateInput(void) {
     switch (D_i4_802C7538) {
         case 0:
             CourseSelect_Input();
@@ -403,7 +403,7 @@ void func_i4_802C6BAC(void) {
             CourseSelect_DifficultyInput();
             break;
         case 3:
-            func_i4_802C7344();
+            CourseSelect_Step3Input();
             break;
     }
 }
@@ -414,7 +414,7 @@ void CourseSelect_Input(void) {
     if (D_801CE65A[D_i4_802C76B0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
         D_800D8240 = 0;
         if (D_801CE608.gameMode == 11) {
-            func_i4_802C7474(0x28);
+            CourseSelect_Leave(0x28);
             AudioGeneral_PlaySound(0x37, 0);
         } else {
             D_i4_802C7538 = 1;
@@ -431,7 +431,7 @@ void CourseSelect_Input(void) {
             AudioGeneral_PlaySound(0x11, 0);
         }
     } else if (D_801CE65A[D_i4_802C76B0].unk0 & B_BUTTON) {
-        func_i4_802C7474(10);
+        CourseSelect_Leave(10);
         AudioGeneral_PlaySound(0x16, 0);
     } else if (D_801CE65A[D_i4_802C76B0].unk0 & U_JPAD) {
         if (--D_800DA9D0 < D_i4_802C76A4) {
@@ -513,7 +513,7 @@ void CourseSelect_DifficultyInput(void) {
             D_800DAB68 = 0;
         }
         if (D_801CE60C == 1) {
-            func_i4_802C7474(0x28);
+            CourseSelect_Leave(0x28);
             AudioGeneral_PlaySound(0x37, 0);
             return;
         }
@@ -565,14 +565,14 @@ void CourseSelect_DifficultyInput(void) {
     }
 }
 
-void func_i4_802C7344(void) {
+void CourseSelect_Step3Input(void) {
     if (D_801CE65A[D_i4_802C76B0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
         if (D_800DAA04 == 0) {
             D_801CE61C = 1;
         } else {
             D_801CE61C = 0;
         }
-        func_i4_802C7474(0x28);
+        CourseSelect_Leave(0x28);
         AudioGeneral_PlaySound(0x37, 0);
         return;
     }
@@ -601,7 +601,7 @@ void func_i4_802C7344(void) {
     }
 }
 
-void func_i4_802C7474(s32 arg0) {
+void CourseSelect_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 21;

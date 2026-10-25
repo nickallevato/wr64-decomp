@@ -7,7 +7,7 @@
 // 0x800B
 
 void func_800C010C(u32, u32);
-void func_i4_802C6BAC(void);
+void CourseSelect_UpdateInput(void);
 void func_8009345C(void);
 void GameState_EnterRiderSelect(void);
 void Race_StartScroller(s32);
@@ -97,7 +97,7 @@ void AudioThread_QueueCmdS8(s32 opArgs, s8 val);
 void AudioThread_QueueCmdF32(u32 opArgs, f32 val);
 Gfx* func_8008FB74(Gfx* arg0);
 Gfx* Draw_WaterEffects(Gfx*);
-Gfx* func_i4_802C5CDC(Gfx*);
+Gfx* CourseSelect_DrawScreen(Gfx*);
 Gfx* func_800949B8(Gfx*, int courseId);
 void func_801E355C(void);
 Gfx* func_801E3698(Gfx*);
@@ -151,7 +151,7 @@ void func_800481E0(Mtx* arg0, u16* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5,
 void func_80048A88(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8, f32 arg9,
                    f32 argA);
 Gfx* func_801E7C58(Gfx* dList, u32 ulx, u32 uly, u32 lrx, u32 lry, u32 r, u32 g, u32 b, u32 a);
-void func_i4_802C7474(s32);
+void CourseSelect_Leave(s32);
 void func_i8_802C6FD4(s8* src, s8* dest, s32 count);
 s32 Strlen2(s8*);
 void func_800C2FDC(s32);
@@ -192,8 +192,8 @@ void func_i10_802C5A10(void);
 void func_800C1F60(s32);
 void func_800BFD9C(u8*);
 //void func_8009B57C(Vec3f*);
-void func_i4_802C5800(void);
-void func_i4_802C58F8(void);
+void CourseSelect_OverlayUpdate(void);
+void CourseSelect_Init(void);
 void func_80069740(UnkStruct_80069740* arg0, UnkStruct_80069740* arg1);
 void func_8006977C(void*, s32);
 void Camera_SetOrbitMatrices(void*, void*, void*, void*, void*, void*);
