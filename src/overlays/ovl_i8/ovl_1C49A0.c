@@ -15,6 +15,7 @@ extern f32 D_i8_802C750C;
 
 void Save_EepromWriteNames();
 void func_i8_802C5EB8();
+Gfx* func_i8_802C63E4(Gfx* gdl);
 void func_i8_802C6ADC(void);
 void func_i8_802C6D58(void);
 void func_i8_802C6F4C(void);
@@ -25,9 +26,9 @@ s32 ChangeNames_StringWidth(s8* str, s32 arg1);
 
 /* One key of the name-entry grid (7 keys a row). */
 typedef struct {
-    /* 0x00 */ u8 unk0; /* 1: the cursor can stop on it; 2: drawn; 4: drawn as texture unk18; 8: unk4/unk6 absolute */
-    /* 0x01 */ u8 unk1; /* 0, 3: insert unkC (3: a space); 1: clear; 2: delete; 4, 5: cursor left, right;
-                           6: load the name from D_800DA950; 7: store the name */
+    /* 0x00 */ u8 unk0;  /* 1: the cursor can stop on it; 2: drawn; 4: drawn as texture unk18; 8: unk4/unk6 absolute */
+    /* 0x01 */ u8 unk1;  /* 0, 3: insert unkC (3: a space); 1: clear; 2: delete; 4, 5: cursor left, right;
+                            6: load the name from D_800DA950; 7: store the name */
     /* 0x02 */ u16 unk2; /* font of unkC */
     /* 0x04 */ s16 unk4;
     /* 0x06 */ s16 unk6;
@@ -42,6 +43,20 @@ extern s32 D_802C753C;
 extern s8 D_802C7558[];
 extern s32 D_i8_802C704C;
 extern s32 D_802C7540;
+extern s16 D_i8_802C74F0[];
+extern char D_i8_802C7508[];
+extern Gfx D_8061E50[];
+extern Gfx D_8061EC0[];
+extern Gfx D_8061F70[];
+extern Gfx D_8061F80[];
+extern Gfx D_8061F90[];
+extern Gfx D_8061FA0[];
+extern Gfx D_8061FB0[];
+extern Gfx D_106F488[];
+extern Mtx D_7000A40[];
+extern Mtx D_7000A80[];
+
+Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
 void func_i8_802C5800(void) {
     s32 i;
@@ -291,7 +306,94 @@ void func_i8_802C5EB8(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C63E4.s")
+Gfx* func_i8_802C63E4(Gfx* gdl) {
+    UnkStruct_i8_802C7054* key;
+    s32 i;
+    s32 x;
+    s32 y;
+    s32 sel;
+
+    gSPDisplayList(gdl++, D_8061E50);
+    gSPDisplayList(gdl++, D_106F628);
+    gdl = func_80094338(gdl, 0, 27, 22, 265, 23);
+    gdl = func_80094338(gdl, 0, 27, 96, 130, 16);
+    gdl = func_80094338(gdl, 1, 33, 176, 67, 14);
+    gdl = func_80094338(gdl, 0, 101, 176, 50, 14);
+    gdl = func_80094338(gdl, 1, 33, 192, 67, 14);
+    gdl = func_80094338(gdl, 1, 118, 192, 33, 14);
+
+    gSPDisplayList(gdl++, D_8061FB0);
+    gSPPerspNormalize(gdl++, D_802C7530);
+    gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPDisplayList(gdl++, D_106F488);
+    gSPDisplayList(gdl++, D_8061F70);
+    gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gSPDisplayList(gdl++, D_8061F80);
+    gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gSPDisplayList(gdl++, D_8061F90);
+    gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gSPDisplayList(gdl++, D_8061FA0);
+    gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gdl = func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+
+    gSPDisplayList(gdl++, D_8061EC0);
+    gDPSetPrimColor(gdl++, 0, 0, D_802C7534, 255, D_802C7534, 255);
+    gSPTextureRectangle(gdl++, (D_i8_802C74F0[D_i8_802C7040] + 8) << 2, 48 << 2,
+                        (D_i8_802C74F0[D_i8_802C7040] + 71) << 2, 88 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 2, 6, 67, 24, 0);
+    gdl = Printer_DrawString(gdl, 1, gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, 180, 203);
+    gdl = Printer_DrawString(gdl, 2, D_802C7548, 31, 98);
+
+    for (i = 0, key = D_i8_802C7054; i != 42; i++, key++) {
+        if (!(key->unk0 & 2)) {
+            continue;
+        }
+        if (D_801CE640 == 1) {
+            sel = D_802C753C * 7 + D_802C7538;
+            if (i == sel) {
+                continue;
+            }
+        }
+        if (key->unk0 & 8) {
+            x = key->unk4;
+            y = key->unk6;
+        } else {
+            x = key->unk4 + (i % 7) * 17 + 33;
+            y = key->unk6 + (i / 7) * 15 + 116;
+        }
+        if (key->unk0 & 4) {
+            gdl = func_801E3EE0(gdl, 0, key->unk18, x, y, 0);
+        } else {
+            gdl = Printer_DrawString(gdl, key->unk2, key->unkC, x, y);
+        }
+    }
+
+    gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    if (D_801CE640 == 1) {
+        sel = D_802C753C * 7 + D_802C7538;
+        key = &D_i8_802C7054[sel];
+        if (key->unk0 & 8) {
+            x = key->unk4;
+            y = key->unk6;
+        } else {
+            x = key->unk4 + (sel % 7) * 17 + 33;
+            y = key->unk6 + (sel / 7) * 15 + 116;
+        }
+        if (key->unk0 & 4) {
+            gdl = func_801E3EE0(gdl, 0, key->unk18, x, y, 0);
+        } else {
+            gdl = Printer_DrawString(gdl, key->unk2, key->unkC, x, y);
+        }
+    }
+    if (D_801CE640 == 1) {
+        gdl = Printer_DrawString(gdl, 2, D_i8_802C7508, D_802C7568 + 31, 98);
+    }
+    return gdl;
+}
 
 void func_i8_802C6ADC(void) {
     s32 i;
