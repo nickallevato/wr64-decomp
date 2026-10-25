@@ -388,7 +388,7 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 75211 of 181100, one instruction long: float register allocation and stack layout throughout (frame 0x2E0,
+// Score 75435 of 181100, one instruction long: float register allocation and stack layout throughout (frame 0x2E0,
 // not 0x2C0; the original keeps the camera's unk70/unk74/unk78, the squared dot product and the direction on
 // the stack, and saves four FP registers).
 Gfx* func_8008A0E0(Gfx* gdl) {
@@ -730,7 +730,7 @@ Gfx* func_8008A0E0(Gfx* gdl) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 2641 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
+// Score 2741 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
 // for its unk4 load, where the original shares the lui with the unk0 load; temps are renumbered from there on, and
 // scale sits 8 bytes higher on the stack.
 Gfx* func_8008BD2C(Gfx* gdl) {
@@ -1027,7 +1027,7 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 2745 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
+// Score 3190 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
 // move/addiu pairs here, where the original chains addiu from the previous command's pointer; the setup of the
 // texture-load words is also scheduled later.
 Gfx* func_8008DFD0(Gfx* gdl) {
@@ -1143,7 +1143,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 18577 of 127200, 17 instructions short: register allocation (the original keeps the camera direction on
+// Score 20256 of 127200, 17 instructions short: register allocation (the original keeps the camera direction on
 // the stack across sqrtf and five saved FP registers, frame 0xC8), and in the D_800D988C == 1 loop the original
 // reloads D_801C4160/4/8 after storing them where IDO here reuses the stored values.
 void func_8008E794(void) {
@@ -1696,7 +1696,7 @@ Gfx* func_80091CD8(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 30 of 8800: the code matches, only the static's address differs. The static (D_800DA914, 0x800DA914) has
+// Score 30 of 9800: the code matches, only the static's address differs. The static (D_800DA914, 0x800DA914) has
 // to be in this file's .data, which is still part of the 0x8F000 data blob. As an extern, IDO no longer sinks the
 // store below the gdl writes (score 2610).
 void* func_80091DBC(Gfx* gdl) {

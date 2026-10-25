@@ -49,7 +49,7 @@ void func_80088EA0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 225 / 13100 (330 in an earlier measurement). Same blocks and calls. The original takes the rand index
+// Score 330 of 13100 (an earlier note gave 225). Same blocks and calls. The original takes the rand index
 // (srl a0) through three copies (a1, v0, a0) before the lookup; this C uses two (a1, v1, a0) and is one
 // instruction shorter, so the rand/loop registers differ (the address immediates in the diff only move with the size).
 void func_80088EA8(void) {
@@ -86,7 +86,8 @@ void func_80088EA8(void) {
 // D_801BC940 entries whose unk4C is 1 in D_801C4118 (count D_801C4110).
 #ifdef NON_MATCHING
 // The two vertex loops are strength-reduced (a pointer += 0x10) where the original indexes with i << 4, and the
-// D_801C3C58 = &D_801C3C60[3] store goes through s1 instead of lui at; v0/v1 swap in the first loop. Score 1285.
+// D_801C3C58 = &D_801C3C60[3] store goes through s1 instead of lui at; v0/v1 swap in the first loop.
+// Score 1285 of 18900.
 void func_800890B4(void) {
     s32 i;
     s32 j;

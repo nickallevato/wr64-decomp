@@ -2,16 +2,16 @@
 #include "global.h"
 #include "rider.h"
 
-void func_i0_802C6878(void);
-void func_i0_802C6A1C(s32 arg0);
-Gfx* func_i0_802C6AE4(Gfx*);
+void TitleScreen_EnterMainMenu(void);
+void MainMenu_Leave(s32 arg0);
+Gfx* TitleScreen_DrawScroller(Gfx*);
 void GameState_EnterDemo(void);
 extern s32 D_801519D4;
 extern s32 D_80154344;
 extern s32 D_805AF88;
-extern s32 D_802C6F08;
-extern s32 D_802C6F0C;
-extern s32 D_802C6F10;
+extern s32 D_i0_802C6F08;
+extern s32 D_i0_802C6F0C;
+extern s32 D_i0_802C6F10;
 
 typedef struct {
     /* 0x00 */ s16 unk0; // -1, or the index of the menu it opens in D_i0_802C6E08
@@ -94,7 +94,7 @@ UnkStruct_i0_802C6E08 D_i0_802C6E08[6] = {
     { D_i0_802C6D18, 3, 1, 98, 78, 1 }, { D_i0_802C6D60, 3, 1, 98, 78, 1 }, { D_i0_802C6DA8, 4, 4, 98, 78, 0 },
 };
 
-Gfx* func_i0_802C5800(Gfx* arg0) {
+Gfx* TitleScreen_Draw(Gfx* arg0) {
 
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
@@ -120,7 +120,7 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
         arg0 = Printer_DrawString(arg0, 1, buf, 0x1C, 0x3C);
     }
     if (D_i0_802C6BEC != 0) {
-        arg0 = func_i0_802C6AE4(
+        arg0 = TitleScreen_DrawScroller(
             Printer_SetMode(arg0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
     }
     if (D_i0_802C6BC8 < 0x14) {
@@ -131,7 +131,7 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
     }
     if ((D_801CE65A->unk0 & 0xB000) || (D_800DAB0C != 0)) {
         D_800DAB0C = 0;
-        func_i0_802C6878();
+        TitleScreen_EnterMainMenu();
     }
     SysUtils_Rand();
     return arg0;
@@ -140,24 +140,24 @@ Gfx* func_i0_802C5800(Gfx* arg0) {
 void stub_func_i0_802C5800() {
 }
 
-Gfx* func_i0_802C6044(Gfx* gdl);
+Gfx* MainMenu_DrawRows(Gfx* gdl);
 void func_i0_802C63AC(void);
 extern Gfx D_805A6F8[];
 extern u8 D_803D610[];
 
-Gfx* func_i0_802C5A7C(Gfx* gdl) {
+Gfx* MainMenu_Draw(Gfx* gdl) {
     s32 i;
     s32 y;
 
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
-        D_802C6F08 = 1;
+        D_i0_802C6F08 = 1;
         if (D_801CB280 & 1) {
-            D_802C6F08++;
+            D_i0_802C6F08++;
             D_i0_802C6BD4[1] = 1;
         }
         if (D_801CB280 & 2) {
-            D_802C6F08++;
+            D_i0_802C6F08++;
             D_i0_802C6BD4[2] = 1;
         }
         if (D_801CB280 & 8) {
@@ -194,15 +194,15 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
             gSPDisplayList(gdl++, D_106F168);
             break;
         case 1:
-            gdl = func_i0_802C6044(gdl);
+            gdl = MainMenu_DrawRows(gdl);
             gSPDisplayList(gdl++, D_106F168);
-            for (i = 0; i < D_802C6F0C; i++) {
+            for (i = 0; i < D_i0_802C6F0C; i++) {
                 gDPFillRectangle(gdl++, 89, D_i0_802C6BD0 + i * 20 - 3, 231, D_i0_802C6BD0 + i * 20 + 14);
             }
             break;
     }
     if (D_i0_802C6BEC != 0) {
-        gdl = func_i0_802C6AE4(
+        gdl = TitleScreen_DrawScroller(
             Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
     }
     if (D_i0_802C6BC8 < 20) {
@@ -218,12 +218,12 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
             }
             if ((D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) && (D_i0_802C6BE8 == 20)) {
                 D_i0_802C6BE0 = 1;
-                D_802C6F14 = 0;
+                D_i0_802C6F14 = 0;
                 AudioGeneral_PlaySound(0x11, 0);
             } else {
-                D_802C6F14++;
-                if (D_802C6F14 >= 600) {
-                    func_i0_802C6A1C(7);
+                D_i0_802C6F14++;
+                if (D_i0_802C6F14 >= 600) {
+                    MainMenu_Leave(7);
                 }
             }
             break;
@@ -234,29 +234,29 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_i0_802C6044(Gfx* gdl) {
+Gfx* MainMenu_DrawRows(Gfx* gdl) {
     s32 pad[5]; // stack pad: the original frame is 0x88
-    UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_802C6EE0];
+    UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
     UnkStruct_i0_802C6C28* item;
     s32 x;
     u32 y; // FAKE (maybe): as s32, IDO hoists y - 2 out of the first loop
     s32 i;
 
-    D_802C6F0C = menu->count;
-    D_802C6F10 = menu->unk8;
+    D_i0_802C6F0C = menu->count;
+    D_i0_802C6F10 = menu->unk8;
     if (menu->unk14 != 0) {
-        D_802C6F10 = D_802C6F08;
+        D_i0_802C6F10 = D_i0_802C6F08;
     }
     x = menu->unkC;
     y = D_i0_802C6BD0 = menu->unk10;
     gSPDisplayList(gdl++, D_106F628);
-    for (i = 0; i < D_802C6F0C; i++) {
+    for (i = 0; i < D_i0_802C6F0C; i++) {
         gdl = func_80094338(gdl, 0, 90, y + i * 20 - 2, 140, 15);
     }
     gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-    for (i = 0, item = items; i < D_802C6F0C; i++, item++) {
-        if (i != D_802C6EE4) {
+    for (i = 0, item = items; i < D_i0_802C6F0C; i++, item++) {
+        if (i != D_i0_802C6EE4) {
             // FAKE: an empty statement here gives the original's register allocation
             do {
             } while (0);
@@ -268,8 +268,8 @@ Gfx* func_i0_802C6044(Gfx* gdl) {
         }
     }
     gdl = Printer_SetMode(gdl, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-    item = &items[D_802C6EE4];
-    return func_801E5554(func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + D_802C6EE4 * 20, 0));
+    item = &items[D_i0_802C6EE4];
+    return func_801E5554(func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + D_i0_802C6EE4 * 20, 0));
 }
 
 extern s32 D_801CB308[][3];
@@ -281,15 +281,15 @@ extern s32 D_801CB3D0[];
 extern s32 D_801CB3F0[2];
 extern s16 D_800DAA00;
 extern s16 D_800EAC14[][8];
-extern s32 D_802C6EE8[];
-extern s32 D_802C6EF8[];
+extern s32 D_i0_802C6EE8[];
+extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 1035 of 30800: register allocation only. The original computes the B test in t5 and
+// Score 1035 of 30700: register allocation only. The original computes the B test in t5 and
 // D_i0_802C6BCC * 4 once for both history stores; this C gets the B test in t9, recomputes the
 // index, and its temporaries are numbered one off from the switch on.
 void func_i0_802C63AC(void) {
-    UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_802C6EE0];
+    UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
     s32 idle = 1;
     s32 next;
@@ -299,18 +299,18 @@ void func_i0_802C63AC(void) {
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
         next = D_i0_802C6BCC; // FAKE: next as a temp moves the D_i0_802C6BCC load first
-        D_802C6EE8[next] = D_802C6EE4;
-        D_802C6EF8[D_i0_802C6BCC] = D_802C6EE0;
+        D_i0_802C6EE8[next] = D_i0_802C6EE4;
+        D_i0_802C6EF8[D_i0_802C6BCC] = D_i0_802C6EE0;
         idle = 0;
         if (D_i0_802C6BCC < 2) {
             D_i0_802C6BCC++;
         }
-        if (D_802C6EE0 == 0) {
-            D_800DA9D8 = D_802C6EE4;
+        if (D_i0_802C6EE0 == 0) {
+            D_800DA9D8 = D_i0_802C6EE4;
         }
-        item = &items[D_802C6EE4];
+        item = &items[D_i0_802C6EE4];
         if (item->unk0 == -1) {
-            item = &menu->items[D_802C6EE4];
+            item = &menu->items[D_i0_802C6EE4];
             D_801CE608.gameMode = item->gameMode;
             D_801CE608.player = item->player;
             D_801CE608.rider = item->rider;
@@ -377,23 +377,23 @@ void func_i0_802C63AC(void) {
                     break;
             }
             AudioGeneral_PlaySound(0x37, 0);
-            func_i0_802C6A1C(next);
+            MainMenu_Leave(next);
         } else {
-            D_802C6EE0 = item->unk0;
-            D_802C6EE4 = 0;
+            D_i0_802C6EE0 = item->unk0;
+            D_i0_802C6EE4 = 0;
             switch (item->unk16) {
                 case 1:
                     if (D_800DAA00 > 0) {
-                        D_802C6EE4 = 1;
+                        D_i0_802C6EE4 = 1;
                     }
                     break;
                 case 3:
                     if (D_i0_802C6BC0 != 0) {
-                        D_802C6EE0 = 5;
+                        D_i0_802C6EE0 = 5;
                     }
                     break;
             }
-            D_i0_802C6BD0 = D_i0_802C6E08[D_802C6EE0].unk10;
+            D_i0_802C6BD0 = D_i0_802C6E08[D_i0_802C6EE0].unk10;
             AudioGeneral_PlaySound(0x11, 0);
         }
     } else {
@@ -402,26 +402,26 @@ void func_i0_802C63AC(void) {
         next &= B_BUTTON;
         if (next) {
             idle = 0;
-            if (D_802C6EE0 != 0) {
+            if (D_i0_802C6EE0 != 0) {
                 if (D_i0_802C6BCC > 0) {
                     D_i0_802C6BCC--;
                 }
-                D_802C6EE0 = D_802C6EF8[D_i0_802C6BCC];
-                D_802C6EE4 = D_802C6EE8[D_i0_802C6BCC];
-                D_i0_802C6BD0 = D_i0_802C6E08[D_802C6EE0].unk10;
+                D_i0_802C6EE0 = D_i0_802C6EF8[D_i0_802C6BCC];
+                D_i0_802C6EE4 = D_i0_802C6EE8[D_i0_802C6BCC];
+                D_i0_802C6BD0 = D_i0_802C6E08[D_i0_802C6EE0].unk10;
                 AudioGeneral_PlaySound(0x16, 0);
             }
         } else if (D_801CE65A[0].unk0 & U_JPAD) {
-            D_802C6EE4--;
-            if (D_802C6EE4 < 0) {
-                D_802C6EE4 = D_802C6F10 - 1;
+            D_i0_802C6EE4--;
+            if (D_i0_802C6EE4 < 0) {
+                D_i0_802C6EE4 = D_i0_802C6F10 - 1;
             }
             D_801CE644 = 0;
             AudioGeneral_PlaySound(0x10, 0);
         } else if (D_801CE65A[0].unk0 & D_JPAD) {
-            D_802C6EE4++;
-            if (D_802C6EE4 >= D_802C6F10) {
-                D_802C6EE4 = 0;
+            D_i0_802C6EE4++;
+            if (D_i0_802C6EE4 >= D_i0_802C6F10) {
+                D_i0_802C6EE4 = 0;
             }
             D_801CE644 = 0;
             AudioGeneral_PlaySound(0x10, 0);
@@ -429,12 +429,12 @@ void func_i0_802C63AC(void) {
     }
     if (idle) {
         if ((D_801CE65A[0].unk0 == 0) && (D_801CE658[0].unk_00.unk_0 == 0)) {
-            D_802C6F14++;
+            D_i0_802C6F14++;
         } else {
-            D_802C6F14 = 0;
+            D_i0_802C6F14 = 0;
         }
-        if (D_802C6F14 >= 600) {
-            func_i0_802C6A1C(7);
+        if (D_i0_802C6F14 >= 600) {
+            MainMenu_Leave(7);
         }
     }
     SysUtils_Rand();
@@ -443,7 +443,7 @@ void func_i0_802C63AC(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i0/ovl_1B3EC0/func_i0_802C63AC.s")
 #endif
 
-void func_i0_802C6878(void) {
+void TitleScreen_EnterMainMenu(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 3;
@@ -453,8 +453,8 @@ void func_i0_802C6878(void) {
     D_801CE644 = 0;
     D_800DAB1C = 0;
     gVIsPerFrame = 3;
-    D_802C6EE4 = D_800DA9D8;
-    D_802C6EE0 = 0;
+    D_i0_802C6EE4 = D_800DA9D8;
+    D_i0_802C6EE0 = 0;
 
     Printer_ResetColorCycle();
     Popup_Spawn(0, 0);
@@ -462,12 +462,12 @@ void func_i0_802C6878(void) {
     Popup_Spawn(3, 1);
 
     D_i0_802C6BE0 = 0;
-    D_802C6F14 = 0;
+    D_i0_802C6F14 = 0;
 
     AudioGeneral_PlaySound(0x2D, 0);
 }
 
-Gfx* func_i0_802C6944(Gfx* arg0) {
+Gfx* MainMenu_DrawLeaving(Gfx* arg0) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
     }
@@ -475,7 +475,7 @@ Gfx* func_i0_802C6944(Gfx* arg0) {
     gSPDisplayList(arg0++, &D_106F168);
 
     if (D_80228A16 == 1) {
-        switch (D_801CE630) { /* irregular */
+        switch (D_801CE630) {
             case 0xA:
                 GameState_EnterRiderSelect();
                 break;
@@ -493,7 +493,7 @@ Gfx* func_i0_802C6944(Gfx* arg0) {
     return arg0;
 }
 
-void func_i0_802C6A1C(s32 arg0) {
+void MainMenu_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 4;
@@ -517,7 +517,7 @@ void func_i0_802C6A1C(s32 arg0) {
     }
 }
 
-Gfx* func_i0_802C6AE4(Gfx* gdl) {
+Gfx* TitleScreen_DrawScroller(Gfx* gdl) {
     s32 i;
     s32 gone = 0;
     UnkStruct_i0_802C6BF0* item;

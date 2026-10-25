@@ -105,8 +105,9 @@ One function per worktree; every step runs from the worktree root with `. .venv/
    progress count does not move).
 3. **Diff.** `./diff <func>` (watch mode: rebuilds on save). One-shot:
    `python3 tools/asm-differ/diff.py <func> --no-pager --max-size <size in bytes / 4>` (`--format json` gives
-   `current_score`; 0 = clean). Don't pass `-s`: it is `--stop-at-ret` and scores only up to the first `jr ra`,
-   so set-aside scores measured with it before milestone 4 may be too low for functions with an early return.
+   `current_score`; 0 = clean). Don't pass `-s`: it is `--stop-at-ret` and scores only up to the first `jr ra`.
+   Milestone 4 re-scored every set-aside without it (see "Milestone 4"); the notes in the source and the
+   scores quoted in this file are those.
    Check the function's rodata (floats, strings, jump tables) moved with it.
 4. **Permute,** only if stuck and within the cap (about 2 h per function, about 1 h of it permuter):
    `tools/decomp-permuter/import.py <c file> <asm file>`, then
@@ -172,7 +173,7 @@ two of the four are stand-ins: the two functions the recomp hooks call (`func_80
 | Function | File | Best score | Remaining difference | Time |
 |---|---|---|---|---|
 | `func_801E5554` | `src/codeseg/B3AA0.c` | 40 / 71200 | the popup cards. One register swap in case 4 (loop counter and IDO's strength-reduced texture-offset temp take `$t0`/`$t1` the wrong way round; it spans six instructions); frame and everything else match | about 1 h by hand and 50 min of permuter, then a 15 min retry and 10 min more permuter, nothing helped |
-| `func_801F4120` | `src/codeseg/BCFF0.c` | 58028 / 490800 | LAP, RANK and SPEED (0x4CB0 bytes, about 4,900 instructions). Same control flow and frame; register allocation and scheduling differ throughout. The `1.8f` is `D_80227A4C` in the original | about 40 min by hand and 10 min of permuter |
+| `func_801F4120` | `src/codeseg/BCFF0.c` | 58563 / 490800 | LAP, RANK and SPEED (0x4CB0 bytes, about 4,900 instructions). Same control flow and frame; register allocation and scheduling differ throughout. The `1.8f` is `D_80227A4C` in the original | about 40 min by hand and 10 min of permuter |
 
 `func_801E5554` is one register swap (six instructions) from done; `func_801F4120` is a long way off.
 
@@ -227,38 +228,38 @@ bytes (45.80%).** 117 functions matched, 25 set aside. `src/codeseg` is now 192 
 | `B3AA0.c` | 2: `Popup_UpdateCard1`, `Popup_UpdateCard2` | popup card types 1 and 2 | (same batch) |
 | `wr64_fade.c` | 1: `func_801E7908` | the fade overlay draw (a screen rectangle, or the wipe display lists) | (same batch) |
 
-### Set aside (C under `#ifdef NON_MATCHING`; best asm-differ score / the function's maximum)
+### Set aside (C under `#ifdef NON_MATCHING`; asm-differ score / the function's maximum, re-measured in milestone 4)
 
 | Function | File | Best | What differs |
 |---|---|---|---|
 | `func_801DB8F0` | A95D0 | 220 / 41400 | register allocation drifts by one temp in the second loop; the first sqrt result is in `fa1`, not `fa0` |
-| `func_801DC274` | A95D0 | 539 / 10000 | each `D_80228190` store gets its own `lui` where the original shares one; the step index is in `v0`, not `a1` |
-| `func_801DCD34` | A95D0 | 4582 / 35900 | IDO keeps `&D_802287DC` in a saved register; the original reloads it with `lui` |
-| `func_801DF744` | A95D0 | 6006 / 32100 | `obj` stays on the stack, not in `s0`; the frame is 8 bytes short |
-| `func_801DC60C` | A95D0 | 12429 / 45800 | register allocation; the original keeps `center` on the stack and `gSinTable`/`D_80228190` in `s7`/`fp` |
-| `func_801E1BA8` | AF8C0 | 610 | the four `D_802288E8[0..3] = 0` stores use the hoisted base in `v1`; the original uses one `lui at` and four `sb` |
+| `func_801DC274` | A95D0 | 739 / 10000 | each `D_80228190` store gets its own `lui` where the original shares one; the step index is in `v0`, not `a1` |
+| `func_801DCD34` | A95D0 | 4833 / 35900 | IDO keeps `&D_802287DC` in a saved register; the original reloads it with `lui` |
+| `func_801DF744` | A95D0 | 5965 / 32100 | `obj` stays on the stack, not in `s0`; the frame is 8 bytes short |
+| `func_801DC60C` | A95D0 | 13057 / 45800 | register allocation; the original keeps `center` on the stack and `gSinTable`/`D_80228190` in `s7`/`fp` |
+| `func_801E1BA8` | AF8C0 | 1460 | the four `D_802288E8[0..3] = 0` stores use the hoisted base in `v1`; the original uses one `lui at` and four `sb` |
 | `func_801EE4D0` | B97B0 | 239 | two products sit 4 bytes lower on the stack, and `arg4` loads one store later |
 | `func_801EE6F4` | B97B0 | 275 | only the `arg4` load, one store later (swaps two float registers) |
-| `func_801EE274` | B97B0 | 4439 | `ys`/`zxt` stay in registers (frame 0x60, not 0x68) |
-| `func_801EE040` | B97B0 | 5846 | `c` and the 1.0f get no callee-saved register (frame 0x68, not 0x70) |
+| `func_801EE274` | B97B0 | 4879 | `ys`/`zxt` stay in registers (frame 0x60, not 0x68) |
+| `func_801EE040` | B97B0 | 6045 | `c` and the 1.0f get no callee-saved register (frame 0x68, not 0x70) |
 | `func_801F2060` | BCFF0 | 300 | every temp register is one higher in the original from the first index product on |
-| `func_801F8DD0` | BCFF0 | 1255 | one extra early temp, loop constants in other registers, end-block store order |
-| `func_801FA3C0` | BCFF0 | 5600 | the original counts `j` in 0x14-byte steps against `gRiders * 20` (linear-function test replacement) |
-| `func_801F25E0` | BCFF0 | 9103 | same instructions; the frame is 0x18 smaller and `y` is not in `s0` |
-| `func_801EF504` | BCFF0 | 9735 | the literal at `0x80227A34` is an extern (see the lessons), so its address is hoisted into `s7` |
-| `func_801EED70` | BCFF0 | 9945 | global addresses kept in registers; frame 0x40 vs 0x28 |
-| `func_801F9EA0` | BCFF0 | 10188 | float registers; the original keeps the camera position and direction on the stack |
-| `func_801F0E7C` | BCFF0 | 10592 | the hoisted constants (300.0f, 8.0f) take the saved registers and `i` is spilled |
+| `func_801F8DD0` | BCFF0 | 1360 | one extra early temp, loop constants in other registers, end-block store order |
+| `func_801FA3C0` | BCFF0 | 6660 | the original counts `j` in 0x14-byte steps against `gRiders * 20` (linear-function test replacement) |
+| `func_801F25E0` | BCFF0 | 12816 | same instructions; the frame is 0x18 smaller and `y` is not in `s0` |
+| `func_801EF504` | BCFF0 | 10863 | the literal at `0x80227A34` is an extern (see the lessons), so its address is hoisted into `s7` |
+| `func_801EED70` | BCFF0 | 10726 | global addresses kept in registers; frame 0x40 vs 0x28 |
+| `func_801F9EA0` | BCFF0 | 10788 | float registers; the original keeps the camera position and direction on the stack |
+| `func_801F0E7C` | BCFF0 | 10992 | the hoisted constants (300.0f, 8.0f) take the saved registers and `i` is spilled |
 | `func_801E3EE0` | B2510 | 588 | `isBlock`/`segs` swap `v0`/`v1` and are spilled after the loop guard |
-| `func_801E3698` | B17D0 | 2848 | `gdl` in `s2`, not `s3`; frame 0xC0 vs 0xB8 |
-| `func_801E4FE8` | B3290 | 2885 | `&D_80228920` kept in a register for the load and the store |
-| `func_801E4C60` | B3290 | 11089 | float registers: `ux`/`uy`/`uz` stay in saved registers across `sqrtf` in the original |
+| `func_801E3698` | B17D0 | 3453 | `gdl` in `s2`, not `s3`; frame 0xC0 vs 0xB8 |
+| `func_801E4FE8` | B3290 | 3450 | `&D_80228920` kept in a register for the load and the store |
+| `func_801E4C60` | B3290 | 12434 | float registers: `ux`/`uy`/`uz` stay in saved registers across `sqrtf` in the original |
 | `func_801FAEB8` | C94E0 | 1287 | the float constants take other saved FP registers; the literal is a stand-in local (see the lessons) |
 | `func_801FBFB4` | C94E0 | 9598 | loop register allocation and constant hoisting; frame 0xD8 vs 0xE0 |
-| `func_801FB514` | C94E0 | 10384 | the original keeps two dead computations that IDO deletes here |
+| `func_801FB514` | C94E0 | 12094 | the original keeps two dead computations that IDO deletes here |
 
 Milestone 1's two set-asides were revisited and stay as they were: `func_801E5554` (40, one
-`t0`/`t1` swap in case 4) and `func_801F4120` (its note carries the score, 58028 / 490800).
+`t0`/`t1` swap in case 4) and `func_801F4120` (its note carries the score, 58563 / 490800).
 
 ### Names
 
@@ -329,10 +330,10 @@ keep their `func_`/`UnkA95D0_*` names.)
 - Move `D_80227A24`..`D_80227A58` into BCFF0/C94E0's rodata (unblocks `func_801EF504` and
   `func_801FAEB8`); re-split AF8C0/B17D0 at the right boundary (`D_80226330`).
 - Near misses worth a short retry: `func_801E5554` (40), `func_801DB8F0` (220), `func_801EE4D0` (239),
-  `func_801EE6F4` (275), `func_801F2060` (300), `func_801DC274` (539), `func_801E3EE0` (588),
-  `func_801E1BA8` (610). `func_801F4120` stays at 58028 / 490800.
+  `func_801EE6F4` (275), `func_801F2060` (300), `func_801DC274` (739), `func_801E3EE0` (588),
+  `func_801E1BA8` (1460). `func_801F4120` stays at 58563 / 490800.
 - Types that disagree between files, to settle in a shared header: `D_800DAB60` (`s16` in B97B0,
-  `s32[]` in code_4C750), `D_800EAC44`/`D_800EAC14` (2-D vs 1-D), `D_103B4D0` (`u32[]` vs `u8[]`),
+  `s32[]` in code_4C750; settled in milestone 4), `D_800EAC44`/`D_800EAC14` (2-D vs 1-D), `D_103B4D0` (`u32[]` vs `u8[]`),
   `D_7000000` (`u8[]` vs `Mtx*`), `func_801E9858`'s argument (`s8*` vs `u32`); `D_80228120` is used
   both as `f32[][2]` and `f32[24]`; `camera_unk_1.unk8` is declared `s32` but holds a float.
 - Local types and externs to hoist when a second file needs them: the `UnkA95D0_*` types,
@@ -390,25 +391,26 @@ names them yet.
 ### Matched and set aside, by batch
 
 Scores are asm-differ's current / maximum with only that function's C enabled
-(`--max-size` = the function's size; lower is closer). Function names are the addresses used when
+(`--max-size` = the function's size; lower is closer), as re-measured without `-s` in milestone 4; the lists
+keep the batches' order. Function names are the addresses used when
 the batch ran; the names commits below renamed many matched ones, and set-asides keep theirs (the
 `GLOBAL_ASM` path uses them).
 
 **code_C6C0.c** (31 entries): matched 13: `func_8006977C`, `80067BFC`, `800694B8`, `800683A0`,
 `80067C6C`, `80061708`, `80068538`, `80053C08`, `80069798`, `80067810`, `80061FEC`, `8006719C`,
 `800618F4` (rider part matrices and display lists, the stick rescale, the sphere push-apart, the
-orbit camera). Set aside 18 (scores re-measured alone, also in each note in the source): `80067E40` 1565 / 34400, `800629A8` 1690 / 29800, `80064C0C` 1805 /
-102700, `80061184` 3938, `80063C88` 5762, `8006390C` 6123, `800609EC` 6384, `80065C18` 6824,
-`800624CC` 7832, `800665B0` 9093, `80054130` 9443, `800534AC` 11744, `800687A4` 14274,
-`80051EC0` 19419, `80062E50` 37161, `8005B510` 53675, `80057B24` 82354, `8005DE24` 94453 (the last
+orbit camera). Set aside 18 (scores re-measured alone, also in each note in the source): `80067E40` 1680 / 34400, `800629A8` 2090 / 29800, `80064C0C` 1805 /
+102700, `80061184` 4338, `80063C88` 6362, `8006390C` 11133, `800609EC` 6603, `80065C18` 7624,
+`800624CC` 7979, `800665B0` 9308, `80054130` 9938, `800534AC` 14660, `800687A4` 14356,
+`80051EC0` 22584, `80062E50` 41018, `8005B510` 54770, `80057B24` 83692, `8005DE24` 101742 (the last
 two are the m2c structure kept for reading).
 
 **water_69D0.c** (19 entries): first pass matched 6 (`8004F1EC`, `8004EFB4`, `8004F520`,
 `80050F8C`, `8004CC7C`, `8004E614`), set aside 13. Second pass (`batch/water-2`) matched 4 more
 (`8004F790`, `8004C998`, `8004D018`, `80051238`; the file's `.data` moved to C for the function-scope
-statics) and brought four closer. Left, nine: `8004D30C` 24 / 19900, `8004DAF0` 487, `8004E0A4`
-2500, `8004D628` 2600, `8004EAA4` 8175, `8004F9E0` 12834, `80050B78` 17535, `8004C1D0` 21445,
-`80050204` 26108.
+statics) and brought four closer. Left, nine: `8004D30C` 24 / 19900, `8004DAF0` 532, `8004E0A4`
+2500, `8004D628` 2600, `8004EAA4` 8325, `8004F9E0` 13359, `80050B78` 18761, `8004C1D0` 22795,
+`80050204` 33384.
 
 **code_52CD0.c** (26 entries; four already had C under `NEEDS_RODATA`): rodata moved to C first
 (the recount above), then matched 17: `80099AD8`, `800ADC8C`, `8009934C`, `8009D96C`, `800ADF90`,
@@ -419,25 +421,25 @@ statics) and brought four closer. Left, nine: `8004D30C` 24 / 19900, `8004DAF0` 
 `800AC184` 10230, `800A68A4` 16348.
 
 **code_43DA0.c and code_4F850.c** (17 entries): matched 8: `80091CD8`, `800963CC`, `800961B8`,
-`80096694`, `8008E4B0`, `800916B4`, `8008D94C`, `8008FB74`. Set aside 9: `80091DBC` 30 / 8800
+`80096694`, `8008E4B0`, `800916B4`, `8008D94C`, `8008FB74`. Set aside 9: `80091DBC` 30 / 9800
 (needs this file's `.data` for a function-scope static; the boundary near `D_800DA920` is
-unclear), `80096048` 60, `unk_game_load` 913, `8008D454` 2180, `8008BD2C` 2641, `8008DFD0` 2745,
-`80096960` 13817, `8008E794` 18577, `8008A0E0` 75211.
+unclear), `80096048` 60, `unk_game_load` 913, `8008D454` 2180, `8008BD2C` 2741, `8008DFD0` 3190,
+`80096960` 13917, `8008E794` 20256, `8008A0E0` 75435.
 
 **The save file and small files** (16 entries across wr64_save.c, code_3A580.c, code_383C0.c,
 code_43A60.c, code_3AC00.c and code_5480.c): matched 4: `8007C494`, `8007BEA4`, `8007C604`,
 `8004BC98` (after moving code_5480's `.data` and `.bss` to C). Set aside 10: `8007F030` 245 /
 26200, `8007FD80` 530, `8007D2D4` 931, `800890B4` 1285, `8007D614` 4441, `8007B630` 4527,
-`8007B930` 4557, `8007FFA8` 7764, `8004B1B4` 8621, `8007DF4C` 23088. Two older set-asides were
-looked at and left: `80088EA8` (330 in the old note, 225 measured now, with a note; one register
-copy fewer than the original) and `80085510` 4170 / 27700 (upstream's decomp.me score of 105 is on another scale).
+`8007B930` 4557, `8007FFA8` 7464, `8004B1B4` 8621, `8007DF4C` 23088. Two older set-asides were
+looked at and left: `80088EA8` (330 in the old note, 225 measured then, 330 again without `-s`, with a note; one register
+copy fewer than the original) and `80085510` 4370 / 27700 (upstream's decomp.me score of 105 is on another scale).
 
 **The PR #92 port**: 42 functions, all matched, none set aside (below).
 
 **The large functions** (16 entries across code_2FB10.c, code_2C670.c, code_24B00.c and
 code_68A10.c): matched 4: `800AE7C4`, `80077F5C`, `80073E6C`, `800744EC`. Set aside 12:
-`800AFBD0` 666 / 84200, `800735EC` 1105, `80076378` 2603, `80079528` 3995, `800B2ABC` 8560,
-`80075310` 12903, `800B305C` 19964, `800783AC` 23154, `8007687C` 43091, `80071E70` 47402,
+`800AFBD0` 876 / 84200, `800735EC` 1105, `80076378` 3003, `80079528` 3995, `800B2ABC` 10560,
+`80075310` 13908, `800B305C` 19964, `800783AC` 24854, `8007687C` 43461, `80071E70` 52762,
 `800B08F8` 51543, `8006E674` 135881.
 
 In all, 66 set-aside bodies come from the milestone (68 in `src/game` with the two older ones); each
@@ -549,10 +551,10 @@ under "Open follow-ups" below.
 
 ### Open follow-ups
 
-- The five overlay draw functions called by raw address from `code_4C750.c` (still `func_i*`; nothing names them yet);
+- The five overlay draw functions called by raw address from `code_4C750.c` (named in milestone 4);
   the `UnkA95D0_*` script runners; the near set-asides: `func_8004D30C` (24), `func_80091DBC` (30,
   needs the file's `.data`), `func_800AB25C` (60), `func_80096048` (60), `func_8007F030` (245),
-  `func_8004DAF0` (487), `func_800AFBD0` (666), `func_80067E40` (1565).
+  `func_8004DAF0` (532), `func_800AFBD0` (876), `func_80067E40` (1680).
 - Types still describing the same object two ways: `RiderStruct` and `struct UnkStruct_801C2938`
   (and `struct_800762D0`); `UnkStruct_8004B0F8` and `UnkStruct_80192690`; `D_800DACD0` and
   `D_80227A60` (17 words, `s32` vs `Gfx*`); `D_801C26E8` (several local types, `CourseRecord.time` is
@@ -565,3 +567,172 @@ under "Open follow-ups" below.
   `BUOY_FADE` (code_24B00.c).
 - The `(0, x)` comma casts left by upstream in code_24B00.c, code_383C0.c and code_3AC00.c are
   unmarked fakes.
+
+## Milestone 4
+
+Goal: `src/overlays`, the per-course and per-screen code that loads on demand: 62 functions still in
+assembly across 17 overlay files at `e75eb6d`. Five batches ran on 2026-10-24 and 25 (roughly 17:20 to
+00:45), one worker at a time at the owner's request, each reviewed and merged by the coordinator:
+`cd77e28` (ovl_i1), `b7131d4` (ovl_i2, ovl_i0), `2d33d43` (ovl_i9, ovl_i8), `50004e2` (ovl_i5,
+ovl_i13), `f40b21d` (ovl_i3, i4, i6, i7, i10, i11, i12, i14, i15). Then `batch/m4-names` (this section's
+names, tidies and re-score).
+
+### Count, and the ruler change
+
+**`tools/progress.py`: 1170 / 1347 -> 1224 / 1348 (86.9% -> 90.8%); matched bytes 56.2% -> 64.5%.**
+`src/overlays` (the `ovl_i0`..`ovl_i15` `.text` sections in the linker map) went from 88 / 150 to 142 / 151.
+
+| After merge | Matched / total | Batch |
+|---|--:|---|
+| `cd77e28` | 1180 / 1347 | ovl_i1, the race overlay: +10, 1 set aside |
+| `b7131d4` | 1190 / 1347 | ovl_i2 rider select and ovl_i0 title/main menu: +10, 2 set aside |
+| `2d33d43` | 1200 / 1347 | ovl_i9 view records and ovl_i8 change names: +10, all matched |
+| `50004e2` | 1211 / 1347 | ovl_i5 race results and ovl_i13 save/load: +11, 1 set aside |
+| `f40b21d` | 1224 / 1348 | the nine small overlays: +12 and one new function, 5 set aside |
+
+The ruler change: splat had folded an unnamed empty function (`jr ra; nop` at 0x802C6E94 in ovl_i3) into
+`func_i3_802C6344`'s size. The last batch made it its own C function, `func_i3_802C6E94`, so the ELF
+has one more sized `F` symbol and the total is 1348. It counts as matched, so by the old ruler the
+milestone ends at 1223 / 1347: 53 functions matched, 9 set aside. Check the end of a large function's
+asm for a second `jr ra; nop` before trusting splat's size.
+
+### Matched and set aside, by batch
+
+Names are the ones `batch/m4-names` gave (the old `func_i<N>_<vram>` is the address). Set-asides keep
+their `func_` names (the `GLOBAL_ASM` path uses them); scores as in "Re-score" below.
+
+- **ovl_i1** (race states 0x28 to 0x2D and the demo): matched `func_i1_802C6B38` (2P timers),
+  `Race_StartScroller`, `Race_EnterState29`, `RaceStandings_Step`, `Race_Draw`, `Race_EnterState2A`,
+  `Race_UpdateState2A`, `Race_UpdateInRace`, `RaceStandings_Update`, `RaceStandings_DrawTable` (PR #92's
+  C for `RaceStandings_Step`, fixed). Set aside `func_i1_802C6BD8` (the Dolphin Park scroller's draw)
+  265 / 12500, register allocation only.
+- **ovl_i2, ovl_i0**: matched `RiderSelect_Init`, `TitleScreen_DrawScroller`, `RiderSelect_DrawPicture`,
+  `RiderSelect_DrawBackground`, `RiderSelect_OverlayUpdate`, `MainMenu_DrawRows`, `MainMenu_Draw`,
+  `RiderSelect_Draw1P`, `RiderSelect_Draw2P`, `RiderSelect_DrawPlayer`; ovl_i0's `.data` moved into C
+  (yaml `.data`) and ovl_i2's `.bss` defined in C. Set aside `func_i0_802C63AC` (main menu input)
+  1035 / 30700 and `func_i2_802C5E28` (rider select input) 590 / 59300 (one `beqz` + delay slot that
+  IDO makes `beqzl`).
+- **ovl_i9, ovl_i8**: all ten: `ChangeNames_ClearName`, `ChangeNames_PressKey`,
+  `ViewRecords_DrawCourseList`, `ViewRecords_OverlayUpdate`, `ChangeNames_Input`,
+  `ChangeNames_OverlayUpdate`, `ViewRecords_DrawPanels`, `ChangeNames_DrawScreen`, `ViewRecords_Input`,
+  `ViewRecords_DrawRecordsPanel`. `structs.h` carves `UnkStruct_801CE5F8.unkA80[8]` and `unk1280[8]`.
+- **ovl_i5, ovl_i13**: matched `NotQualified_DrawObjects`, `NotQualified_Draw`, `SaveLoad_DrawMessageBox`,
+  `RaceResults_CheckQualified`, `NotQualified_DrawPanels`, `NotQualified_Update`, `SaveLoad_Step8Popup`,
+  `NotQualified_UpdateAnimation`, `SaveLoad_OverlayUpdate`, `SaveLoad_DrawMessage`,
+  `RaceResults_DrawTable` (the last is ovl_i1's `RaceStandings_DrawTable` with small changes). Set aside
+  `func_i13_802C711C` (the save/load screen draw) 695 / 106000: the original keeps a row's y (186) in a
+  variable it does not fold.
+- **the small overlays**: matched `PostRaceMenu_Draw`, `func_i3_802C5800`, `OptionsMenu_DrawItems`,
+  `TimeTrialsResults_OverlayUpdate`, `PostRaceMenu_DrawMenu`, `EraseCourseRecords_Input`,
+  `AudioOptions_Draw`, `EraseCourseRecords_DrawScreen`, `ChangeConditions_Input`,
+  `TimeTrialsResults_DrawPanel`, `CourseSelect_DrawScreen`, `func_i3_802C6344` (+ the new empty
+  `func_i3_802C6E94`). Set aside `func_i10_802C6200` 359 / 51200 (stack layout only),
+  `func_i15_802C5800` 505 / 31400 (register allocation only), `func_i15_802C602C` 1717 / 76400,
+  `func_i4_802C6778` 1845 / 14700, `func_i3_802C5D54` 4465 / 38000.
+
+The nine overlay set-asides compile under gcc (the check pass) and are scored alone; each has a note.
+
+### Names, tidies and notes (`batch/m4-names`)
+
+Byte-neutral tidies, one commit each: `TexLabel` in `structs.h` for the `{ s16 x; s32 texture; }` label
+type seven overlays each defined; `UnkStruct_801CE5F8.unkC80` as `Mtx[8][3]` (three matrices per rider
+model, one per `unkA80`/`unk1280` slot; it absorbed the padding after it, offsets unchanged);
+`D_800DAB60` (`s16`) and `D_801CE72E` (`u16`, read with `lhu` everywhere) declared once in `variables.h`;
+ovl_i15 reads `gRiderRaceState[].unk338`, not a misplaced `RiderStruct` view `D_801C2C70[].lapCount`;
+`UnkStruct_func_i8_802C6E00` renamed `PlayerName` (the `gPlayerNames` element, which four other overlays
+used under an ovl_i8 name).
+
+Overlay `.bss`: the 95 symbols the overlays' C uses past each overlay's `BSS_START` were `D_802C....`;
+they are `D_i<N>_<vram>` now, each with a `symbol_addrs.txt` entry `//segment:ovl_i<N>` (the addresses
+overlap between overlays). ovl_i0's cursor row `D_i0_802C6EE4` is also read by main code
+(`Popup_UpdatePauseCursor` places its slot on the main menu's rows), which now uses the overlay's name.
+
+Function names, one commit per overlay, from `GAME_STATE_*` transitions, the draw and update switches
+in `code_4C750.c`, calls into named functions and the batches' facts (each commit body gives the
+evidence). The pattern per screen: `<Screen>_OverlayUpdate` (the function at 0x802C5800, which
+`code_4C750.c`'s update switch calls by address), `<Screen>_Draw` (the draw switch's entry, which also
+runs the input and, after the fade, enters the next screen), `<Screen>_Input`, `<Screen>_Leave` (sets
+the screen's "leaving" state and `D_801CE630` with a fade), and helpers. Screens: `TitleScreen_`,
+`MainMenu_` (ovl_i0), `Race_`, `RaceStandings_`, `Demo_` (ovl_i1), `RiderSelect_`, `CourseOverview_`,
+`CourseSelect_`, `RaceResults_`, `NotQualified_` (GAME_STATE_5A, entered when the championship points
+miss the race's threshold), `TimeTrialsResults_`, `OptionsMenu_`, `ChangeNames_`, `ViewRecords_`,
+`ChangeConditions_`, `AudioOptions_`, `EraseCourseRecords_`, `SaveLoad_`, `PostRaceMenu_`
+(GAME_STATE_50, entered after the results screens), `Ceremony_`. Not renamed: the set-asides,
+`func_i3_802C5800` (see below), and helpers with no evidence yet.
+
+`symbol_addrs.txt` gets every new name with its segment, except the addresses that main code calls as
+raw `func_802Cxxxx` symbols (`func_802C5A7C`, `func_802C5AE4`, ...: the draw switch's entries,
+`Race_Leave`, `RaceStandings_Update`, `NotQualified_UpdateAnimation`). With an entry, splat names those
+main-code references after the overlay's function, drops the raw symbol from `undefined_funcs_auto.ld`,
+and the link fails. Collisions count: `RiderSelect_Init` (ovl_i2) and `EraseCourseRecords_Input`
+(ovl_i12) sit at addresses main code calls for ovl_i1 and ovl_i13. Each skipped name is listed in a
+comment. `code_4C750.c` calls every overlay's 0x802C5800 entry under ovl_i3's name
+(`func_i3_802C5800`) and some draws under seg_1C3D00's (`func_1C3D00_802C5800`); comments say so now, and
+`func_i3_802C5800` keeps its name until that call is given a neutral symbol.
+
+Hack marks: the batches had marked every hack in the overlay files; one m2c comment was dropped.
+
+### Re-score
+
+Until milestone 4 the briefs and this file said `diff.py -s`, which is `--stop-at-ret`: it scores only up
+to the first `jr ra`. Every `#ifdef NON_MATCHING` set-aside under `src/` (104) was re-scored alone on
+na-workhorse: in a scratch worktree only that `#ifdef` becomes `#if 1`, a full `make`, then
+`diff.py <func> --no-pager --max-size <symbol size / 4> --format json`, and the file is restored.
+Measured at `f40b21d` and at this branch's tip: the same except `func_8007687C` (43646 -> 43461, from the
+`D_801CE72E` type). Against the notes: 50 scores were too low (the largest gaps:
+`func_8006390C` 6123 -> 11133, `func_80050204` 26108 -> 33384, `func_800AFBD0` 666 -> 876), one too high
+(`func_8007FFA8` 7764 -> 7464), three maxima differed, eight notes had no score. Every note now gives
+"Score N of M" (85 edited), and the numbers this file quotes in milestones 1 to 3 are corrected in place.
+
+### What we learned
+
+**Process**
+
+- **Gate a commit on check.sh's own status.** `check.sh ... | tail -2 && git commit` commits on `tail`'s
+  status; it happened once. Run it unpiped or test `${PIPESTATUS[0]}`.
+- **`tools/fork/remote-check.sh <name> <sha>...`** runs check.sh per commit on na-workhorse and keeps
+  full rebuilds off the local machine; batches 4 and 5 and this branch used it. Pass shas: a ref like
+  `HEAD` is resolved in the remote checkout (it checked the remote's own `HEAD` once here).
+- **A `symbol_addrs.txt` entry changes what splat calls every reference to that address,** including
+  main code's raw `func_802Cxxxx` and other overlays' data at the same vram. Rename, re-extract and
+  link before believing a rename is free; `check.sh` does not run `make extract`.
+- **Scoring needs only the one object rebuilt.** The 104 re-scores took a few minutes on na-workhorse
+  with `-j12`: switch one `#ifdef`, `make`, `diff.py`, restore. The remote's venv lacks `watchdog`, which
+  diff.py imports only for watch mode; an empty stub module on `PYTHONPATH` is enough.
+
+**IDO 5.3**
+
+- **Data defined in the file shares `lui at`.** With the symbol defined in the same C file (initialised
+  `.data`, or an uninitialised definition, which goes to the file's `.bss` in declaration order), IDO
+  emits consecutive stores as one `lui at` and `sw x, %lo(sym+off)(at)`; with an `extern` it reloads the
+  `lui` per store or keeps the base in a register. Two functions matched only after their overlay's
+  `.data`/`.bss` moved into C.
+- **Stack slot order follows declaration order.** Every declared local owns a slot from the top of the
+  locals area, used only if it spills, so a spilled variable's offset tells how many locals come before
+  it; unused frame space at the top needs a marked pad.
+- **Loop and index shapes**: IDO fully unrolls 4-iteration loops (four if-blocks over consecutive words
+  are often a loop), and some unrolled loops rotate their store order, which a do-while fixes; an index
+  local keeps a product together (`idx = row * 7 + col`); `i == x - 1` and `i + 1 == x` differ to
+  partial redundancy elimination; `((Mtx(*)[3]) p)[i]` (now `unkC80[i]`) where the original multiplies by
+  0xC0 once.
+- **Types steer moves**: `u32` globals are loaded into temporaries and moved into argument registers
+  where `s32` ones are not; an int `0` compare is not a `0.0f` one; `/ 4` stays `div.s`, `/ 4.0f`
+  becomes `* 0.25f`.
+
+### Open follow-ups
+
+- Give `code_4C750.c`'s calls to 0x802C5800 neutral symbols (one `void(void)` for the update switch,
+  one `Gfx*(Gfx*)` for the draw switch) instead of ovl_i3's and seg_1C3D00's names; then
+  `func_i3_802C5800` can be named.
+- The near overlay set-asides: `func_i1_802C6BD8` (265), `func_i10_802C6200` (359, stack only),
+  `func_i15_802C5800` (505), `func_i2_802C5E28` (590, one delay slot), `func_i13_802C711C` (695).
+- Still `.s`: ovl_i2's `.data` (its `D_i2_802C8BD8` runs into `.rodata`), ovl_i8's and ovl_i9's
+  `.data`, ovl_1C17E0's five `D_i5_802C7Axx`.
+- Record entry views that disagree: `UnkStruct_AF8C0_14` vs wr64_save.c's `UnkStruct_func_8007AF78_1`,
+  and `UnkStruct_AF8C0_10` vs B17D0.c's `CourseRecord` and wr64_save.c's `UnkStruct_800D8578`.
+- `Popup_UpdatePauseCursor` places its slot on ovl_i0's main menu rows, so its name may be wrong.
+- Data and helper names in the overlays (`D_i<N>_...`, `UnkStruct_i<N>_...` field names, the
+  unnamed helpers listed in each names commit).
+- Possible original bugs kept as the asm has them: `ViewRecords_OverlayUpdate` places both panel
+  coordinates from `unk0`; `ViewRecords_DrawRecordsPanel` draws kind 3's lap dashes at y + 302 and
+  passes an unused argument to `sprintf(buf, "-", ...)`.

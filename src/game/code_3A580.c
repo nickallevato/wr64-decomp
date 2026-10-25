@@ -19,7 +19,7 @@ f32 func_8004D30C(f32, f32);
 // vertices at GfxPool + 0x185E8 in both pools (eight per entry).
 #ifdef NON_MATCHING
 // D_800D9640[i] is strength-reduced (a pointer += 4) where the original indexes it; the temp registers in the vertex
-// loop are numbered two higher. Score 530.
+// loop are numbered two higher. Score 530 of 13800.
 void func_8007FD80(void) {
     s32 i;
     s32 j;
@@ -51,7 +51,7 @@ void func_8007FD80(void) {
 // on the water height (func_8004D30C), and six triangles.
 #ifdef NON_MATCHING
 // Same blocks and calls; the frame is 0x40 larger, the original keeps ax/az on the stack (sp+0x78/0x74), and the
-// float and saved registers differ throughout. Score 7764.
+// float and saved registers differ throughout. Score 7464 of 27500.
 Gfx* func_8007FFA8(Gfx* gdl) {
     UnkStruct_801C3B90* p;
     Vtx* v;

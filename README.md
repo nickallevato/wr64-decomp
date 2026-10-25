@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1170%20%2F%201347-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-86.9%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-56.2%25-4fc9b8?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1224%20%2F%201348-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-90.8%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-64.5%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -34,17 +34,21 @@ continues from there. See [Credits](#credits) and [How this fork is made](#how-t
 
 Counted by `tools/progress.py` on `main`. A function counts only when it is C and the ROM still matches.
 Size-0 symbols (overlay entry addresses and microcode end markers) are not counted as functions.
+Areas follow the linker map: each function belongs to the object whose `.text` holds it; `src/overlays` is
+the `ovl_i0`..`ovl_i15` sections, and "other" includes the loose segments that also load at 0x802C5800.
+The total became 1348 in milestone 4, when an empty function that splat had counted as part of its
+neighbour became its own symbol.
 
 | Area | What's in it | Matched | |
 |---|---|--:|---|
 | `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | `src/audio` | sequence and sound playback | 225 / 228 | `███████████████████▊` 98.7% |
+| `src/overlays` | courses and menu screens | 142 / 151 | `██████████████████▊░` 94.0% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 192 / 219 | `█████████████████▌░░` 87.7% |
 | `src/game` | race logic, riders, camera, water | 433 / 501 | `█████████████████▎░░` 86.4% |
-| other | handwritten assembly and loose segments | 40 / 47 | `█████████████████░░░` 85.1% |
 | `src/sys` | boot, threads, memory | 31 / 37 | `████████████████▊░░░` 83.8% |
-| `src/overlays` | courses and menu screens | 92 / 158 | `███████████▋░░░░░░░░` 58.2% |
-| **Total** | | **1170 / 1347** | **86.9%** |
+| other | handwritten assembly and loose segments | 44 / 55 | `████████████████░░░░` 80.0% |
+| **Total** | | **1224 / 1348** | **90.8%** |
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
 assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
@@ -55,7 +59,7 @@ builds with those attempts, so most of the game can already be read and changed 
 - [x] Toolchain and a proven byte-exact rebuild
 - [x] HUD, menus, text and popups (`src/codeseg`)
 - [ ] Race, riders, camera and water (`src/game`): **in progress**
-- [ ] Courses and menu screens (`src/overlays`)
+- [x] Courses and menu screens (`src/overlays`): all but nine set-asides
 - [ ] The last of the system, audio and loose-segment code
 - [ ] Names, structs and documentation everywhere: the "readable" half of the job
 

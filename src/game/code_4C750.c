@@ -40,9 +40,7 @@ extern s16 D_801CE628;
 extern s16 D_801CE62C;
 extern UnkStruct_801CE658 D_801CE658[];
 extern s32 D_801CE6AC;
-extern s16 D_801CE72E;
 extern struct UnkStruct_801CB6C8 D_801CB6C8[];
-extern s32 D_800DAB60[];
 extern s32 D_800DC4F0[];
 extern s32 D_800DC514[];
 extern s32 D_800DC698[];
@@ -60,7 +58,7 @@ extern s32 D_801CB334;
 
 s32 D_800DA940[] = { 1, 0, 0, 0 };
 
-UnkStruct_func_i8_802C6E00 D_800DA950[] = {
+PlayerName D_800DA950[] = {
     { "R.HAYAMI", 5, 5, 5 },
     { "D.MARINER", 5, 5, 5 },
     { "A.STEWART", 5, 5, 5 },
@@ -156,7 +154,7 @@ void func_80091F50(void) {
     gCurrentPauseMenuOption = -1;
     D_801CE628 = 0;
     D_801CE62C = 0;
-    D_802C6EE4 = 0;
+    D_i0_802C6EE4 = 0;
     D_801CE72E = one;
     D_801CB280 = 0;
 
@@ -221,6 +219,8 @@ void FadeTransition_Update(void);
 void Printer_StepColorCycle(void);
 void func_802C7090(void);
 void func_802C7608(void);
+// The update switch below calls 0x802C5800, the first function of whichever overlay is loaded (ovl_i1's
+// Race_OverlayUpdate, ovl_i2's RiderSelect_OverlayUpdate, ...), under ovl_i3's name.
 void func_i3_802C5800(void);
 extern s32 D_800D47E0;
 extern s8 D_801CB400;
@@ -590,8 +590,9 @@ Gfx* func_80092CF0(Gfx* dList) {
 
         case 0x2:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i0's TitleScreen_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x3:
@@ -675,8 +676,9 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x3C:
         case 0x3D:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i7's OptionsMenu_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x3E:
@@ -700,15 +702,17 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x48:
         case 0x49:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i11's AudioOptions_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x46:
         case 0x47:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(
-                dList); // These are likely pointing to the wrong overlay function right now, VERIFY
+            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
+            // here ovl_i12's EraseCourseRecords_Draw.
+            dList = func_1C3D00_802C5800(dList);
             break;
 
         case 0x40:
@@ -878,7 +882,7 @@ Gfx* func_800933C4(Gfx* arg0) {
 }
 
 void func_8009345C(void) {
-    UnkStruct_func_i8_802C6E00* var_v1;
+    PlayerName* var_v1;
     s32 var_a1;
     s32 var_a2;
     s32 id;

@@ -47,7 +47,7 @@ PauseOption sNonRacePauseOptions[NON_RACE_MODES_PAUSE_OPTIONS] = {
 };
 
 // from ovl_i1
-extern void func_i1_802C744C(s32 arg0);
+extern void Race_Leave(s32 arg0);
 
 extern UnkStruct_801CE658 D_801CE658[];
 extern s16 gCurrentPauseMenuOption;
@@ -170,7 +170,7 @@ Gfx* PauseMenu_Update(Gfx* gdl) {
                         D_801CE628 = 4;
                         retire = true;
                         D_800D817C = 1;
-                        func_i1_802C744C(2);
+                        Race_Leave(2);
                         break;
                     case PAUSE_MENU_ACTION_RESTART:
                         gCurrentPauseMenuOption = -1;
@@ -184,27 +184,27 @@ Gfx* PauseMenu_Update(Gfx* gdl) {
                     case PAUSE_MENU_ACTION_3:
                         D_801CE628 = 3;
                         D_800D817C = 1;
-                        func_i1_802C744C(0x28);
+                        Race_Leave(0x28);
                         break;
                     case PAUSE_MENU_ACTION_4:
                         D_801CE628 = 5;
                         D_800D817C = 1;
-                        func_i1_802C744C(0xA);
+                        Race_Leave(0xA);
                         break;
                     case PAUSE_MENU_ACTION_5:
                         D_801CE628 = 6;
                         D_800D817C = 1;
-                        func_i1_802C744C(0x14);
+                        Race_Leave(0x14);
                         break;
                     case PAUSE_MENU_ACTION_START_GAME_MODE:
                         D_801CE628 = 7;
                         D_800D817C = 1;
-                        func_i1_802C744C(0x1E);
+                        Race_Leave(0x1E);
                         break;
                     case PAUSE_MENU_ACTION_7:
                         D_801CE628 = 8;
                         D_800D817C = 1;
-                        func_i1_802C744C(0x1E);
+                        Race_Leave(0x1E);
                         break;
                 }
                 func_800C3E18();

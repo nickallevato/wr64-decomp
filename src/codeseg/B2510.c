@@ -1,7 +1,7 @@
 #include "common.h"
 
 #ifdef NON_MATCHING
-// Score 588: isBlock and segs swap v0/v1 and are stored to the stack after the loop guard (before it in the original).
+// Score 588 of 34300: isBlock and segs swap v0/v1 and are stored to the stack after the loop guard (before it in the original).
 extern TexEntry D_802263C0[];
 extern TexEntry D_802264F8[];
 extern TexEntry D_80226568[];

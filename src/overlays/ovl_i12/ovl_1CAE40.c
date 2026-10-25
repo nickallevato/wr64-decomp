@@ -16,7 +16,7 @@ s32 Save_EepromResetCourse(s32);
 s32 Save_EepromResetStunt(s32);
 void func_800C3E6C(s32);
 
-Gfx* func_i12_802C5800(Gfx* dList) {
+Gfx* EraseCourseRecords_Draw(Gfx* dList) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 0x46) {
@@ -26,10 +26,10 @@ Gfx* func_i12_802C5800(Gfx* dList) {
 
     D_800DAB2C = 0;
 
-    dList = func_i12_802C58A0(dList);
+    dList = EraseCourseRecords_DrawScreen(dList);
 
     if (gGameState == 0x46) {
-        func_i12_802C5F6C();
+        EraseCourseRecords_Input();
     } else if (D_80228A16 == 1) {
         GameState_EnterOptionsMenu();
     }
@@ -37,7 +37,7 @@ Gfx* func_i12_802C5800(Gfx* dList) {
     return dList;
 }
 
-Gfx* func_i12_802C58A0(Gfx* gdl) {
+Gfx* EraseCourseRecords_DrawScreen(Gfx* gdl) {
     s32 i;
     s32 mode;
 
@@ -115,7 +115,7 @@ Gfx* func_i12_802C58A0(Gfx* gdl) {
     return gdl;
 }
 
-void func_i12_802C5EE4(s32 arg0) {
+void EraseCourseRecords_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x47;
@@ -128,7 +128,7 @@ void func_i12_802C5EE4(s32 arg0) {
     FadeTransition_SetProps(1, 4, 0);
 }
 
-void func_i12_802C5F6C(void) {
+void EraseCourseRecords_Input(void) {
     s32 sound = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -136,7 +136,7 @@ void func_i12_802C5F6C(void) {
             case 0:
                 sound = 1;
                 if (D_i12_802C6460 == 2) {
-                    func_i12_802C5EE4(60);
+                    EraseCourseRecords_Leave(60);
                 } else if (D_i12_802C6460 == 0) {
                     D_i12_802C6464 = 1;
                     D_801CE640 = 1;
@@ -174,7 +174,7 @@ void func_i12_802C5F6C(void) {
         switch (D_801CE640) {
             case 0:
                 sound = 1;
-                func_i12_802C5EE4(60);
+                EraseCourseRecords_Leave(60);
                 break;
 
             case 1:

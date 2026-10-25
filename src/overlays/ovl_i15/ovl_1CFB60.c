@@ -2,21 +2,21 @@
 
 extern s32 D_800DAA08;
 extern const s16 D_800EABB0[];
-extern RiderStruct D_801C2C70[];
+extern RiderStruct gRiderRaceState[];
 extern s32 D_801CB350[][4];
 extern s32 D_i15_802C6D54[];
 extern s32 D_i15_802C6D68;
 extern s32 D_i15_802C6D6C;
 extern s32 D_i15_802C6D70[];
 extern UnkStruct_D_802C6E80 D_i15_802C6D8C;
-extern s32 D_802C6E7C;
-extern s32 D_802C6F20[];
-extern s32 D_802C6F44;
+extern s32 D_i15_802C6E7C;
+extern s32 D_i15_802C6F20[];
+extern s32 D_i15_802C6F44;
 extern const s16 D_800EAC14[][8];
 extern s32 D_801C2660[];
 extern s32 D_801C2690[];
 extern s32 D_801CB334;
-extern u16 D_802C6F40;
+extern u16 D_i15_802C6F40;
 extern s32 D_i15_802C6DD4;
 extern s32 D_i15_802C6DD8;
 extern s32 D_i15_802C6DDC;
@@ -44,9 +44,9 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 Gfx* func_80091DBC(Gfx*);
 Gfx* func_80093DBC(Gfx*, u16, u16, u16);
 Gfx* func_i15_802C602C(Gfx*);
-void func_i15_802C6C1C(void);
-void func_i15_802C5CE8(void);
-void func_i15_802C5EE4(s32);
+void Ceremony_Input(void);
+void Ceremony_Init(void);
+void Ceremony_AddEntry(s32);
 void func_800C489C(s32);
 
 #ifdef NON_MATCHING
@@ -58,8 +58,8 @@ void func_i15_802C5800(void) {
     s32 j;
     s32 course;
     s32 draw;
-    f32 temp_fv1; // FAKE (as in func_i5_802C5850): temp needed for match
-    f32 temp_fa0; // FAKE (as in func_i5_802C5850): temp needed for match
+    f32 temp_fv1; // FAKE (as in RaceResults_SetModelMatrices): temp needed for match
+    f32 temp_fa0; // FAKE (as in RaceResults_SetModelMatrices): temp needed for match
     UnkStruct_D_802C6E80* thing;
     MtxF sp17C;
     MtxF sp13C;
@@ -68,24 +68,24 @@ void func_i15_802C5800(void) {
     Mtx sp78;
 
     if ((D_801CE63C != 0) && (gGameState == 0x66)) {
-        func_i15_802C5CE8();
-        D_802C6E74 = D_802C6E78 = 0;
+        Ceremony_Init();
+        D_i15_802C6E74 = D_i15_802C6E78 = 0;
         for (i = 0; i < D_801CB334 + 1; i++) {
             course = D_800EAC14[gDifficulty][i];
             if (D_801C2660[course] != 0) {
-                D_802C6E74 = 1;
+                D_i15_802C6E74 = 1;
             }
             if (D_801C2690[course] != 0) {
-                D_802C6E78 = 1;
+                D_i15_802C6E78 = 1;
             }
         }
     }
 
     i = 0;
     if ((--D_i15_802C6D6C < 0) && (D_i15_802C6D68 != -1)) {
-        func_i15_802C5EE4(D_i15_802C6D68);
+        Ceremony_AddEntry(D_i15_802C6D68);
         D_i15_802C6D6C = 40;
-        if (D_i15_802C6D68 == D_802C6E7C) {
+        if (D_i15_802C6D68 == D_i15_802C6E7C) {
             D_i15_802C6D68 = 10;
             D_i15_802C6D6C = 110;
         } else if (D_i15_802C6D68 == 10) {
@@ -95,16 +95,16 @@ void func_i15_802C5800(void) {
         }
     }
 
-    func_800481E0(D_801CE5F8->unkA40, &D_802C6F40, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_800481E0(D_801CE5F8->unkA40, &D_i15_802C6F40, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
     func_80048A88(&spB8, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.04f);
     temp_fv1 = COS(0) * 500.0f;
     temp_fa0 = SIN(0) * 500.0f;
-    // FAKE: arg3 is an int 0 literal to match (li a3, 0), as in func_i5_802C5850
+    // FAKE: arg3 is an int 0 literal to match (li a3, 0), as in RaceResults_SetModelMatrices
     func_800484C8(&sp78, &sp13C, temp_fv1, 0, temp_fa0, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     SysUtils_MtxToMtxF(&spB8, &sp17C);
     SysUtils_MatrixAffineMultiply(&sp13C, &sp17C, &spFC);
 
-    thing = D_802C6E80;
+    thing = D_i15_802C6E80;
     do {
         if (thing->unk0 != 0) {
             draw = 0;
@@ -165,61 +165,61 @@ void func_i15_802C5800(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C5800.s")
 #endif
 
-void func_i15_802C5CE8(void) {
+void Ceremony_Init(void) {
     s32 i;
     s32 j;
 
     for (i = 0; i < 10; i++) {
-        D_802C6E80[i] = D_i15_802C6D8C;
+        D_i15_802C6E80[i] = D_i15_802C6D8C;
     }
-    D_802C6E7C = D_i15_802C6D54[gDifficulty];
-    if (D_801C2C70[gPlayer1Rider].lapCount == 3) {
-        D_802C6F44 = 6;
+    D_i15_802C6E7C = D_i15_802C6D54[gDifficulty];
+    if (gRiderRaceState[gPlayer1Rider].unk338 == 3) {
+        D_i15_802C6F44 = 6;
     } else if (gDifficulty == DIFFICULTY_EXPERT) {
-        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
-            D_802C6F44 = 3;
-        } else if (D_801C2C70[gPlayer1Rider].lapCount == 1) {
-            D_802C6F44 = 4;
+        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
+            D_i15_802C6F44 = 3;
+        } else if (gRiderRaceState[gPlayer1Rider].unk338 == 1) {
+            D_i15_802C6F44 = 4;
         } else {
-            D_802C6F44 = 5;
+            D_i15_802C6F44 = 5;
         }
     } else {
-        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
-            D_802C6F44 = 0;
-        } else if (D_801C2C70[gPlayer1Rider].lapCount == 1) {
-            D_802C6F44 = 1;
+        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
+            D_i15_802C6F44 = 0;
+        } else if (gRiderRaceState[gPlayer1Rider].unk338 == 1) {
+            D_i15_802C6F44 = 1;
         } else {
-            D_802C6F44 = 2;
+            D_i15_802C6F44 = 2;
         }
     }
-    D_i15_802C6D6C = D_i15_802C6D70[D_802C6F44];
+    D_i15_802C6D6C = D_i15_802C6D70[D_i15_802C6F44];
     if (gDifficulty == DIFFICULTY_NORMAL) {
         D_i15_802C6D68 = 1;
     } else {
         D_i15_802C6D68 = 0;
     }
-    for (i = 0; i < D_802C6E7C + 1; i++) {
+    for (i = 0; i < D_i15_802C6E7C + 1; i++) {
         for (j = 0; j < 4; j++) {
             if (D_800EABB0[j] == D_801CB350[i][0]) {
                 break;
             }
         }
-        D_802C6F20[i] = j;
+        D_i15_802C6F20[i] = j;
     }
     D_800DAA08 = 1;
 }
 
-void func_i15_802C5EE4(s32 arg0) {
+void Ceremony_AddEntry(s32 arg0) {
     UnkStruct_D_802C6E80* thing;
     s32 i;
 
-    for (i = 0, thing = &D_802C6E80[0]; i < 10; i++, thing++) {
+    for (i = 0, thing = &D_i15_802C6E80[0]; i < 10; i++, thing++) {
         if (thing->unk0 == 0) {
             break;
         }
     }
 
-    thing = &D_802C6E80[i];
+    thing = &D_i15_802C6E80[i];
 
     if (i != 10) {
         thing->unk0 = 1;
@@ -233,7 +233,7 @@ void func_i15_802C5EE4(s32 arg0) {
     }
 }
 
-Gfx* func_i15_802C5F50(Gfx* gdl) {
+Gfx* Ceremony_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 0x66) {
@@ -247,7 +247,7 @@ Gfx* func_i15_802C5F50(Gfx* gdl) {
     gdl = func_i15_802C602C(gdl);
 
     if (gGameState == 0x66) {
-        func_i15_802C6C1C();
+        Ceremony_Input();
     } else if (D_80228A16 == 1) {
         if (D_801CE630 == 2) {
             GameState_EnterTitleScreen();
@@ -275,14 +275,14 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
     s32 valueMode;
     s32 valueX;
     s32* place;
-    UnkStruct_func_i8_802C6E00* name;
+    PlayerName* name;
     UnkStruct_D_802C6E80* thing;
     char placeBuf[20];
     char valueBuf[12];
     s32 idx;
     s32 pad; // stack pad
 
-    for (i = 0, thing = D_802C6E80; i < 10; i++, thing++) {
+    for (i = 0, thing = D_i15_802C6E80; i < 10; i++, thing++) {
         if (thing->unk0 == 0) {
             continue;
         }
@@ -303,11 +303,11 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 if (gDifficulty == DIFFICULTY_NORMAL) {
                     race--;
                 }
-                if (D_802C6E7C == thing->unk4) {
+                if (D_i15_802C6E7C == thing->unk4) {
                     race = 8;
                 }
                 gdl = func_801E3EE0(gdl, 1, D_i15_802C6D9C[race], thing->unk8 + 24, thing->unkC + 4, 1);
-                idx = D_802C6F20[thing->unk4];
+                idx = D_i15_802C6F20[thing->unk4];
                 place = &D_i15_802C6DC0[idx];
                 gdl = func_801E3EE0(gdl, 1, *place, thing->unk8 + 39, thing->unkC + 16, 0);
                 // The last place texture (index 4) is a separate symbol in the asm.
@@ -337,7 +337,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 }
                 if (D_800DAB68 == 0) {
                     if (gDifficulty == DIFFICULTY_EXPERT) {
-                        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
+                        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
                             show = true;
                         } else {
                             show = false;
@@ -357,7 +357,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 gdl = func_801E3EE0(gdl, 1, 58, thing->unk8 + 207, thing->unkC + 30, 0);
                 if (D_800DAB68 == 0) {
                     if (gDifficulty == DIFFICULTY_EXPERT) {
-                        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
+                        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
                             show = true;
                         } else {
                             show = false;
@@ -418,16 +418,15 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 gDPPipeSync(gdl++);
                 gDPSetColorImage(gdl++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320,
                                  OS_K0_TO_PHYSICAL(gFrameBuffers[gFramebuffersIdx]));
-                gSPPerspNormalize(gdl++, D_802C6F40);
+                gSPPerspNormalize(gdl++, D_i15_802C6F40);
                 gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
                 gSPDisplayList(gdl++, D_106F488);
                 gDPPipeSync(gdl++);
                 gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
-                // Each rider model has three matrices in unkC80, indexed here as one 0xC0-byte element.
                 for (i = 0; i < 4; i++) {
                     gSPViewport(gdl++, &D_7001280[i]);
                     gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                    gdl = func_801E4FE8(gdl, D_800DA9DC[i], 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[i]);
+                    gdl = func_801E4FE8(gdl, D_800DA9DC[i], 0, 0, D_801CE5F8->unkC80[i]);
                 }
                 break;
         }
@@ -438,20 +437,20 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C602C.s")
 #endif
 
-void func_i15_802C6C1C(void) {
+void Ceremony_Input(void) {
     if (D_i15_802C6DF4) {
         D_i15_802C6DF8++;
         if ((D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) || (D_i15_802C6DF8 > 600)) {
-            if ((D_802C6E74 != 0) || (D_802C6E78 != 0)) {
-                func_i15_802C6CAC(100);
+            if ((D_i15_802C6E74 != 0) || (D_i15_802C6E78 != 0)) {
+                Ceremony_Leave(100);
             } else {
-                func_i15_802C6CAC(2);
+                Ceremony_Leave(2);
             }
         }
     }
 }
 
-void func_i15_802C6CAC(s32 arg0) {
+void Ceremony_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x67;

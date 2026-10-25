@@ -27,15 +27,15 @@ extern s32 D_i5_802C7AA0;
 extern s32 D_i5_802C7AC8;
 extern s32 D_i5_802C7ACC;
 extern s32 D_i5_802C7AD0;
-extern f32 D_802C7B10[8];
-extern s32 D_802C7B30;
-extern s32 D_802C7B34;
-extern UnkStruct_i5_802C7B38* D_802C7B38[2];
-extern s16* D_802C7B40[2][8];
-extern UnkStruct_i5_802C7B80* D_802C7B80[2];
-extern s32 D_802C7B88;
-extern s32 D_802C7B8C;
-extern s32 D_802C7B90;
+extern f32 D_i5_802C7B10[8];
+extern s32 D_i5_802C7B30;
+extern s32 D_i5_802C7B34;
+extern UnkStruct_i5_802C7B38* D_i5_802C7B38[2];
+extern s16* D_i5_802C7B40[2][8];
+extern UnkStruct_i5_802C7B80* D_i5_802C7B80[2];
+extern s32 D_i5_802C7B88;
+extern s32 D_i5_802C7B8C;
+extern s32 D_i5_802C7B90;
 extern Mtx D_8011F820;
 extern s32 D_801CB334;
 extern s32 D_801CB340[];
@@ -51,11 +51,11 @@ Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 void func_801EC830(void);
 void Water_StampPoint(f32, f32, s32);
 void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 x, f32 y, f32 z, f32 scale);
-Gfx* func_i5_802C7594(Gfx* gdl);
-Gfx* func_i5_802C7698(Gfx* gdl);
-void func_i5_802C781C(void);
+Gfx* NotQualified_DrawObjects(Gfx* gdl);
+Gfx* NotQualified_DrawPanels(Gfx* gdl);
+void NotQualified_Update(void);
 
-void func_i5_802C7090(void) {
+void NotQualified_UpdateAnimation(void) {
     s32 i;
     s32 j;
     s32 anim;
@@ -68,32 +68,32 @@ void func_i5_802C7090(void) {
     f32 z;
 
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_5A)) {
-        D_802C7B30 = D_801CB340[gPlayer1Rider];
-        D_802C7B34 = D_800EABBC[gDifficulty][D_801CB334];
+        D_i5_802C7B30 = D_801CB340[gPlayer1Rider];
+        D_i5_802C7B34 = D_800EABBC[gDifficulty][D_801CB334];
         for (i = 0; i < 2; i++) {
             if (i == 0) {
-                D_802C7B38[i] = (UnkStruct_i5_802C7B38*) SegmentedToVirtual((u32) D_80B0E28);
+                D_i5_802C7B38[i] = (UnkStruct_i5_802C7B38*) SegmentedToVirtual((u32) D_80B0E28);
             } else {
-                D_802C7B38[i] = (UnkStruct_i5_802C7B38*) SegmentedToVirtual((u32) D_80B1550);
+                D_i5_802C7B38[i] = (UnkStruct_i5_802C7B38*) SegmentedToVirtual((u32) D_80B1550);
             }
             for (j = 0; j < 8; j++) {
-                D_802C7B40[i][j] = (s16*) SegmentedToVirtual(D_802C7B38[i]->frames[j]);
+                D_i5_802C7B40[i][j] = (s16*) SegmentedToVirtual(D_i5_802C7B38[i]->frames[j]);
             }
-            D_802C7B80[i] = (UnkStruct_i5_802C7B80*) SegmentedToVirtual(D_802C7B38[i]->keys);
+            D_i5_802C7B80[i] = (UnkStruct_i5_802C7B80*) SegmentedToVirtual(D_i5_802C7B38[i]->keys);
         }
-        D_802C7B8C = D_802C7B90 = 0;
+        D_i5_802C7B8C = D_i5_802C7B90 = 0;
         for (j = 0; j < D_801CB334 + 1; j++) {
             course = D_800EAC14[gDifficulty][j];
             if (D_801C2660[course] != 0) {
-                D_802C7B8C = 1;
+                D_i5_802C7B8C = 1;
             }
             if (D_801C2690[course] != 0) {
-                D_802C7B90 = 1;
+                D_i5_802C7B90 = 1;
             }
         }
         j = 0;
         do { // a for loop unrolls with the stores rotated
-            D_802C7B10[j] = 0.0f;
+            D_i5_802C7B10[j] = 0.0f;
             j++;
         } while (j < 8);
     }
@@ -104,24 +104,24 @@ void func_i5_802C7090(void) {
         anim = 0;
     }
     for (j = 0; j < 8; j++) {
-        row = D_802C7B40[anim][j];
+        row = D_i5_802C7B40[anim][j];
         row += D_i5_802C7AA0;
         idx = *row;
-        key = D_802C7B80[anim];
+        key = D_i5_802C7B80[anim];
         key += idx;
         x = key->x / 10.0f;
         y = key->y / 10.0f;
         z = key->z / 10.0f;
         // `== 0` (int): with 0.0f IDO reuses the register of the `y >= 0.0f` constant
-        if ((y >= 0.0f) && (D_802C7B10[j] == 0) && (D_i5_802C7AA0 > 0)) {
-            D_802C7B10[j] = 1.0f;
+        if ((y >= 0.0f) && (D_i5_802C7B10[j] == 0) && (D_i5_802C7AA0 > 0)) {
+            D_i5_802C7B10[j] = 1.0f;
             Water_StampPoint(x, z, 50);
         }
         func_801E4C60(&D_801CE5F8->unk1380[j], key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, x, y, z, 0.05f);
     }
 }
 
-Gfx* func_i5_802C7484(Gfx* gdl) {
+Gfx* NotQualified_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
     }
@@ -130,21 +130,21 @@ Gfx* func_i5_802C7484(Gfx* gdl) {
     gdl = func_800949B8(gdl, gCourseID);
     gdl = func_8008FB74(gdl);
     if ((D_i5_802C7AC8 == 2) || (D_i5_802C7AC8 == 3) || (D_i5_802C7AC8 == 4)) {
-        gdl = func_i5_802C7594(gdl);
+        gdl = NotQualified_DrawObjects(gdl);
     }
     gSPMatrix(gdl++, &D_8011F820, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gdl = func_80094A44(gdl, gCourseID);
     gdl = Draw_WaterEffects(gdl);
-    gdl = func_i5_802C7698(gdl);
+    gdl = NotQualified_DrawPanels(gdl);
     if (gGameState == GAME_STATE_5A) {
-        func_i5_802C781C();
+        NotQualified_Update();
     } else if (D_80228A16 == 1) {
         GameState_EnterTitleScreen();
     }
     return gdl;
 }
 
-Gfx* func_i5_802C7594(Gfx* gdl) {
+Gfx* NotQualified_DrawObjects(Gfx* gdl) {
     s32 i;
 
     gSPDisplayList(gdl++, D_106F6C0);
@@ -155,19 +155,19 @@ Gfx* func_i5_802C7594(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_i5_802C7698(Gfx* gdl) {
+Gfx* NotQualified_DrawPanels(Gfx* gdl) {
     gSPDisplayList(gdl++, D_106F628);
     gdl = func_80094338(gdl, 0, D_i5_802C7ACC, 145, 208, 15);
     gdl = func_80094338(gdl, 0, D_i5_802C7AD0, 166, 208, 15);
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     gdl = func_801E3EE0(gdl, 1, 6, D_i5_802C7ACC + 10, 147, 0);
     gdl = func_801E3EE0(gdl, 1, 7, D_i5_802C7AD0 + 10, 168, 0);
-    gdl = Printer_DrawNumber(gdl, 2, D_802C7B34, D_i5_802C7ACC + 186, 147);
-    gdl = Printer_DrawNumber(gdl, 2, D_802C7B30, D_i5_802C7AD0 + 186, 168);
+    gdl = Printer_DrawNumber(gdl, 2, D_i5_802C7B34, D_i5_802C7ACC + 186, 147);
+    gdl = Printer_DrawNumber(gdl, 2, D_i5_802C7B30, D_i5_802C7AD0 + 186, 168);
     return gdl;
 }
 
-void func_i5_802C781C(void) {
+void NotQualified_Update(void) {
     s32 done;
 
     switch (D_i5_802C7AC8) {
@@ -185,7 +185,7 @@ void func_i5_802C781C(void) {
 
         case 2:
             D_i5_802C7AA0++;
-            if (D_i5_802C7AA0 == D_802C7B38[0]->frameCount) {
+            if (D_i5_802C7AA0 == D_i5_802C7B38[0]->frameCount) {
                 D_i5_802C7AA0--;
                 D_i5_802C7AC8 = 3;
             }
@@ -195,7 +195,7 @@ void func_i5_802C781C(void) {
             if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
                 D_i5_802C7AC8 = 4;
                 D_i5_802C7AA0 = 0;
-                D_802C7B88 = 0;
+                D_i5_802C7B88 = 0;
             }
             break;
 
@@ -207,15 +207,15 @@ void func_i5_802C781C(void) {
                 D_i5_802C7ACC = -208;
             }
             D_i5_802C7AA0++;
-            if (D_i5_802C7AA0 == D_802C7B38[1]->frameCount) {
+            if (D_i5_802C7AA0 == D_i5_802C7B38[1]->frameCount) {
                 done++;
                 D_i5_802C7AA0--;
             }
             if (done == 2) {
-                D_802C7B88++;
+                D_i5_802C7B88++;
             }
-            if (D_802C7B88 >= 4) {
-                if ((D_802C7B8C != 0) || (D_802C7B90 != 0)) {
+            if (D_i5_802C7B88 >= 4) {
+                if ((D_i5_802C7B8C != 0) || (D_i5_802C7B90 != 0)) {
                     func_801EC9C8();
                 } else {
                     func_801EC830();

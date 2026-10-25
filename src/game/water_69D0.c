@@ -85,7 +85,7 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// 21445/49800: float register allocation and stack layout (frame 0x108 here, 0xF0 in the original), as in func_80050B78
+// Score 22795 of 49800: float register allocation and stack layout (frame 0x108 here, 0xF0 in the original), as in func_80050B78
 void func_8004C1D0(s32 view, Vtx* vtx) {
     camera_unk_1* cam;
     s32 angle;
@@ -438,7 +438,7 @@ void Water_StampDiagonalSine(f32 x, f32 z, s32 amplitude, s32 period, s32 step) 
 }
 
 #ifdef NON_MATCHING
-// 24/19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
+// Score 24 of 19900: only the spill slots of du and dv differ (0x2C/0x18 here, 0x24/0x1C in the original).
 // CU and CV are macros so that IDO keeps them as common subexpressions: as named locals they add
 // stack slots
 #define CU (((s32) ((INV_SQRT3 * z) + x) % 24576) >> 6)
@@ -472,7 +472,7 @@ f32 func_8004D30C(f32 x, f32 z) {
 #endif
 
 #ifdef NON_MATCHING
-// 2600/30600: register allocation (saved and temp register numbering). Same operations as func_8004E0A4
+// Score 2600 of 30600: register allocation (saved and temp register numbering). Same operations as func_8004E0A4
 void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     f32 max;
     f32 inv;
@@ -558,7 +558,7 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     (pt)->unk14 = (d * dz * k) + (body->unk14 * vz2);
 
 #ifdef NON_MATCHING
-// 487/36500: in the pair blocks the original keeps the second point's vz in $fs1 (so it saves $fs0
+// Score 532 of 36500: in the pair blocks the original keeps the second point's vz in $fs1 (so it saves $fs0
 // and $fs1, and ra and the k spill sit 8 bytes higher); here it gets $f0 and d moves to $f2. The
 // `.0f` (not `0.0f`) in the test keeps the two zeros apart, as in the original
 void func_8004DAF0(void* arg0) {
@@ -633,7 +633,7 @@ void func_8004DAF0(void* arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// 2500/29700: register allocation; the original keeps arg0 in $t3 (reloaded from the stack after sqrtf) and copies fu/fv into $s6/$s7 from temps
+// Score 2500 of 29700: register allocation; the original keeps arg0 in $t3 (reloaded from the stack after sqrtf) and copies fu/fv into $s6/$s7 from temps
 void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     f32 max;
     f32 inv;
@@ -785,7 +785,7 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// 8175/32400: registers, and the original reloads a cell velocity after storing the cell height (here it reuses the register), so the stepping blocks are a few instructions shorter here
+// Score 8325 of 32400: registers, and the original reloads a cell velocity after storing the cell height (here it reuses the register), so the stepping blocks are a few instructions shorter here
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -1084,7 +1084,7 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// 12834/52100: registers from the start (saved registers numbered differently) and the frame (0x40 here, 0x50 in the original, which spills the two wrap counts to 0x40/0x44 across sqrtf)
+// Score 13359 of 52100: registers from the start (saved registers numbered differently) and the frame (0x40 here, 0x50 in the original, which spills the two wrap counts to 0x40/0x44 across sqrtf)
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     s32* src;
@@ -1222,7 +1222,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// 26108/60500: registers and stack (frame 0x90 here, 0x78 in the original) throughout; the row loops follow the original control flow
+// Score 33384 of 60500: registers and stack (frame 0x90 here, 0x78 in the original) throughout; the row loops follow the original control flow
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80192420* w;
     UnkStruct_80160A98* e;
@@ -1372,7 +1372,7 @@ void func_80050204(s32 view, Vtx* arena) {
  */
 
 #ifdef NON_MATCHING
-// 17535/26100: float register allocation; the original keeps more of the corner products in stack slots (frame 0xC0, here 0xD0) and uses five saved FP registers, here six
+// Score 18761 of 26100: float register allocation; the original keeps more of the corner products in stack slots (frame 0xC0, here 0xD0) and uses five saved FP registers, here six
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     s32 angle;
     f32 d;

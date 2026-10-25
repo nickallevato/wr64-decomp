@@ -134,7 +134,7 @@ void func_801E355C(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 2848: saved-register assignment differs (gdl in s2, not s3) and the frame is 0xC0, not 0xB8.
+// Score 3453 of 52700: saved-register assignment differs (gdl in s2, not s3) and the frame is 0xC0, not 0xB8.
 typedef struct CourseRecord {
     /* 0x0 */ s32 time;
     /* 0x4 */ s32 rider;
@@ -198,12 +198,12 @@ Gfx* func_801E3698(Gfx* gdl) {
     for (i = 0; i < 3; i++) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, gStuntRecords[gCourseID][i].rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, gStuntRecords[gCourseID][i].rider, 0, 0, D_801CE5F8->unkC80[i]);
     }
     if (D_801C2928 == 0) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, D_801CE5F8->unkC80[i]);
     }
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     gdl = func_801E3EE0(gdl, 2, D_800DAA34[gCourseID], D_80226350[gCourseID] + D_802288F8 + 56, 33, 0);

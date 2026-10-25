@@ -290,6 +290,7 @@ void Initials_Update(void) {
 }
 
 #ifdef NON_MATCHING
+// Score 1460 of 18500.
 // The four initials stores in the D_800DAB6C branch use the hoisted &gInitialsEntered in $v1;
 // the original addresses them from $at (lui once, four sb). Everything else matches.
 void func_801E1BA8(void) {

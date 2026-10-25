@@ -1309,7 +1309,7 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// 135881: same passes, commands, loops and calls; register allocation and scheduling differ
+// Score 135881 of 358000: same passes, commands, loops and calls; register allocation and scheduling differ
 // throughout, and this C is about 76 instructions longer (most of it in the visibility loops).
 void func_8006E674(Gfx** gdl) {
     camera_unk_1* cam;

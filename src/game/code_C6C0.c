@@ -510,7 +510,6 @@ extern f32 D_800D95F0[];
 extern f32 D_800D9600[];
 extern f32 D_800D9610[];
 extern f32 D_800D9620[];
-extern s16 D_800DAB60;
 extern s16 D_800D4928;
 extern u16 D_800D4964;
 extern s16 D_800D496C;
@@ -626,7 +625,7 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #ifdef NON_MATCHING
-// Score 19419 of 36800: far off: the original keeps the 18 differences in stack homes (frame 0x88) with a different
+// Score 22584 of 36800: far off: the original keeps the 18 differences in stack homes (frame 0x88) with a different
 // register assignment. Control flow matches: the plane tests short-circuit in the same order, then the 12 points are
 // reset from D_800D4840 in the rider's basis.
 void func_80051EC0(s32 arg0) {
@@ -959,7 +958,7 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 11744 of 16800: float register allocation differs: the original keeps arg9/arg13 (later px/py/pz) in fs0-fs2
+// Score 14660 of 16800: float register allocation differs: the original keeps arg9/arg13 (later px/py/pz) in fs0-fs2
 // and has a 0x70 frame; this version spills more (frame 0x88). Control flow and arithmetic order match.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
@@ -1299,7 +1298,7 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
 }
 
 #ifdef NON_MATCHING
-// Score 9443 of 82500: close in structure: float register allocation differs (the original also keeps the double
+// Score 9938 of 82500: close in structure: float register allocation differs (the original also keeps the double
 // 19.000002 in $f30 across the loop) and the frame is 8 bytes larger. Control flow matches.
 s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     UnkStruct_80192690* rider;
@@ -2066,7 +2065,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 82354 of 246800: far off (frame, registers, 0x68 bytes longer); this is the m2c structure with named
+// Score 83692 of 246800: far off (frame, registers, 0x68 bytes longer); this is the m2c structure with named
 // skeleton entries and rider parts, kept for reading. Control flow follows the original: the lean side (unk16B8),
 // the per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame counters
 // and the water-level checks that pick the D_802238DC entry.
@@ -3247,7 +3246,7 @@ void func_8005A280(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 53675 of 154100: far off (frame and registers); this is the m2c structure with named skeleton entries and
+// Score 54770 of 154100: far off (frame and registers); this is the m2c structure with named skeleton entries and
 // rider parts, kept for reading. Control flow follows the original: the two arm cases, the 3-pass loop, the reach
 // clamps.
 void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
@@ -4253,7 +4252,7 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 94453 of 280200: far off in registers and scheduling (0x138 bytes shorter); kept for reading. Control flow
+// Score 101742 of 280200: far off in registers and scheduling (0x138 bytes shorter); kept for reading. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the unk1608 /
 // unk16E0 timers and the unkC54 cases that pick the next func_80053EAC state, the func_8005CD24 frame step and
 // blend, then the per-entry update by state word, the link passes (D_800D4A08/D_800D4A0C times) and the copy of the
@@ -5261,7 +5260,7 @@ void func_8005DE24(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6384 of 48600: register allocation differs: the original uses $s8 and a 0xD8 frame (this version 0xC8),
+// Score 6603 of 48600: register allocation differs: the original uses $s8 and a 0xD8 frame (this version 0xC8),
 // keeps the chain base pointer in $s1 and reads cur->pos through an index register. Control flow matches.
 void func_800609EC(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
@@ -5395,7 +5394,7 @@ void func_800609EC(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 3938 of 30400: register allocation differs: the original reads unkB56/unkB5E/unkB5F through a pointer kept
+// Score 4338 of 30400: register allocation differs: the original reads unkB56/unkB5E/unkB5F through a pointer kept
 // in $a1 (saved across SysUtils_Round); IDO folds this version's pointer into arg0. Control flow matches.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
@@ -5794,7 +5793,7 @@ void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
 }
 
 #ifdef NON_MATCHING
-// Score 7832 of 27500: float register allocation differs (unk6C/unk70 swap $f16/$f18 from the cross product on, and
+// Score 7979 of 27500: float register allocation differs (unk6C/unk70 swap $f16/$f18 from the cross product on, and
 // the 1/len and 0.5 temps swap $f2/$f12); the frame is 8 bytes larger. Control flow and operation order match.
 void func_800624CC(UnkStruct_80192690* arg0) {
     f32 len;
@@ -5893,7 +5892,7 @@ void func_80062918(Vec3f* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1690 of 29800: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of reusing the copy
+// Score 2090 of 29800: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of reusing the copy
 // in $f18, and schedules the unk16CE load later, so this version is 0x10 bytes shorter. Before t the code matches;
 // after it, this version keeps t in $f16 (the original: $f0) and the float registers of the unk16CE blocks shift
 // with it. Control flow matches.
@@ -5963,7 +5962,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 37161 of 68700: far off: the original clears the state with long chained assignments in an order not yet
+// Score 41018 of 68700: far off: the original clears the state with long chained assignments in an order not yet
 // reproduced, and the register allocation differs. Control flow follows the original.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
@@ -6154,7 +6153,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6123 of 22300: the original's unkA48 loop is unrolled by 2 (first entry peeled); IDO does not unroll this
+// Score 11133 of 22300: the original's unkA48 loop is unrolled by 2 (first entry peeled); IDO does not unroll this
 // pointer loop, and unrolls the indexed forms by 4. Before the loop only the stack slot of `first` differs (sp20,
 // original sp24).
 void func_8006390C(s32 arg0, void* arg1) {
@@ -6216,7 +6215,7 @@ void func_8006390C(s32 arg0, void* arg1) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5762 of 99300: close in structure: register allocation and a few constant loads differ (1.0f, D_800D4AC0,
+// Score 6362 of 99300: close in structure: register allocation and a few constant loads differ (1.0f, D_800D4AC0,
 // 0.9f), so the original is 0x18 bytes longer. Control flow matches, including the switch on unk1598.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
@@ -6833,7 +6832,7 @@ void func_80064C0C(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6824 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
+// Score 7624 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
 // the C14..C34 block, the zero constants); control flow follows the original.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
@@ -7045,7 +7044,7 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 9093 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 and the
+// Score 9308 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 and the
 // nearest rider in saved registers); control flow follows the original.
 void func_800665B0(void) {
     UnkStruct_80192690* player;
@@ -7380,6 +7379,7 @@ void Riders_BuildPartsLists(void) {
 }
 
 #ifdef NON_MATCHING
+// Score 1680 of 34400.
 // After the rider loop the original keeps the constant 1 in $s2 and stores D_800D496C through
 // an address in $v1; this version uses $v1 = 1 and a %lo store. The rest matches.
 void func_80067E40(void) {
@@ -7542,7 +7542,7 @@ Gfx* func_80068538(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 14274 of 73400: register allocation and scheduling differ throughout (the original keeps more of the GBI
+// Score 14356 of 73400: register allocation and scheduling differ throughout (the original keeps more of the GBI
 // words in registers); control flow and the display lists follow the original.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \

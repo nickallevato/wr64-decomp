@@ -324,3 +324,280 @@ ChangeNames_StringWidth = 0x802C6EB8; //segment:ovl_i8
 CourseSelect_Input = 0x802C6C2C; //segment:ovl_i4
 CourseSelect_DifficultyInput = 0x802C70C0; //segment:ovl_i4
 RaceResults_Update = 0x802C6CC4; //segment:ovl_i5
+
+// overlays: each overlay's .bss, tagged with its overlay like its other symbols (D_i<N>_<vram>);
+// the addresses overlap between overlays, so each entry names its segment.
+D_i0_802C6EE0 = 0x802C6EE0; //segment:ovl_i0
+D_i0_802C6EE4 = 0x802C6EE4; //segment:ovl_i0
+D_i0_802C6EE8 = 0x802C6EE8; //segment:ovl_i0
+D_i0_802C6EF8 = 0x802C6EF8; //segment:ovl_i0
+D_i0_802C6F08 = 0x802C6F08; //segment:ovl_i0
+D_i0_802C6F0C = 0x802C6F0C; //segment:ovl_i0
+D_i0_802C6F10 = 0x802C6F10; //segment:ovl_i0
+D_i0_802C6F14 = 0x802C6F14; //segment:ovl_i0
+D_i1_802C96A0 = 0x802C96A0; //segment:ovl_i1
+D_i1_802C96A4 = 0x802C96A4; //segment:ovl_i1
+D_i1_802C96A8 = 0x802C96A8; //segment:ovl_i1
+D_i1_802C96CC = 0x802C96CC; //segment:ovl_i1
+D_i1_802C96D0 = 0x802C96D0; //segment:ovl_i1
+D_i1_802C96D4 = 0x802C96D4; //segment:ovl_i1
+D_i1_802C96D8 = 0x802C96D8; //segment:ovl_i1
+D_i2_802C8C50 = 0x802C8C50; //segment:ovl_i2
+D_i2_802C8C58 = 0x802C8C58; //segment:ovl_i2
+D_i2_802C8C5C = 0x802C8C5C; //segment:ovl_i2
+D_i2_802C8C60 = 0x802C8C60; //segment:ovl_i2
+D_i2_802C8C68 = 0x802C8C68; //segment:ovl_i2
+D_i2_802C8C6A = 0x802C8C6A; //segment:ovl_i2
+D_i2_802C8C70 = 0x802C8C70; //segment:ovl_i2
+D_i3_802C7020 = 0x802C7020; //segment:ovl_i3
+D_i3_802C7024 = 0x802C7024; //segment:ovl_i3
+D_i3_802C7028 = 0x802C7028; //segment:ovl_i3
+D_i3_802C702C = 0x802C702C; //segment:ovl_i3
+D_i4_802C76A4 = 0x802C76A4; //segment:ovl_i4
+D_i4_802C76A8 = 0x802C76A8; //segment:ovl_i4
+D_i4_802C76AC = 0x802C76AC; //segment:ovl_i4
+D_i4_802C76B0 = 0x802C76B0; //segment:ovl_i4
+D_i4_802C76B4 = 0x802C76B4; //segment:ovl_i4
+D_i4_802C76B8 = 0x802C76B8; //segment:ovl_i4
+D_i4_802C76BC = 0x802C76BC; //segment:ovl_i4
+D_i4_802C76C0 = 0x802C76C0; //segment:ovl_i4
+D_i4_802C76C4 = 0x802C76C4; //segment:ovl_i4
+D_i4_802C76C8 = 0x802C76C8; //segment:ovl_i4
+D_i4_802C76CC = 0x802C76CC; //segment:ovl_i4
+D_i4_802C76D0 = 0x802C76D0; //segment:ovl_i4
+D_i5_802C7B00 = 0x802C7B00; //segment:ovl_i5
+D_i5_802C7B04 = 0x802C7B04; //segment:ovl_i5
+D_i5_802C7B06 = 0x802C7B06; //segment:ovl_i5
+D_i5_802C7B08 = 0x802C7B08; //segment:ovl_i5
+D_i5_802C7B0C = 0x802C7B0C; //segment:ovl_i5
+D_i5_802C7B10 = 0x802C7B10; //segment:ovl_i5
+D_i5_802C7B30 = 0x802C7B30; //segment:ovl_i5
+D_i5_802C7B34 = 0x802C7B34; //segment:ovl_i5
+D_i5_802C7B38 = 0x802C7B38; //segment:ovl_i5
+D_i5_802C7B40 = 0x802C7B40; //segment:ovl_i5
+D_i5_802C7B80 = 0x802C7B80; //segment:ovl_i5
+D_i5_802C7B88 = 0x802C7B88; //segment:ovl_i5
+D_i5_802C7B8C = 0x802C7B8C; //segment:ovl_i5
+D_i5_802C7B90 = 0x802C7B90; //segment:ovl_i5
+D_i6_802C6D30 = 0x802C6D30; //segment:ovl_i6
+D_i6_802C6D34 = 0x802C6D34; //segment:ovl_i6
+D_i6_802C6D38 = 0x802C6D38; //segment:ovl_i6
+D_i6_802C6D3C = 0x802C6D3C; //segment:ovl_i6
+D_i6_802C6D40 = 0x802C6D40; //segment:ovl_i6
+D_i8_802C7530 = 0x802C7530; //segment:ovl_i8
+D_i8_802C7534 = 0x802C7534; //segment:ovl_i8
+D_i8_802C7538 = 0x802C7538; //segment:ovl_i8
+D_i8_802C753C = 0x802C753C; //segment:ovl_i8
+D_i8_802C7540 = 0x802C7540; //segment:ovl_i8
+D_i8_802C7548 = 0x802C7548; //segment:ovl_i8
+D_i8_802C7558 = 0x802C7558; //segment:ovl_i8
+D_i8_802C7564 = 0x802C7564; //segment:ovl_i8
+D_i8_802C7568 = 0x802C7568; //segment:ovl_i8
+D_i8_802C756C = 0x802C756C; //segment:ovl_i8
+D_i9_802C8280 = 0x802C8280; //segment:ovl_i9
+D_i10_802C6B30 = 0x802C6B30; //segment:ovl_i10
+D_i10_802C6B34 = 0x802C6B34; //segment:ovl_i10
+D_i10_802C6B38 = 0x802C6B38; //segment:ovl_i10
+D_i10_802C6B40 = 0x802C6B40; //segment:ovl_i10
+D_i13_802C8E90 = 0x802C8E90; //segment:ovl_i13
+D_i13_802C8E94 = 0x802C8E94; //segment:ovl_i13
+D_i13_802C8E98 = 0x802C8E98; //segment:ovl_i13
+D_i13_802C8E9C = 0x802C8E9C; //segment:ovl_i13
+D_i13_802C8EA0 = 0x802C8EA0; //segment:ovl_i13
+D_i13_802C8EA4 = 0x802C8EA4; //segment:ovl_i13
+D_i13_802C8EA8 = 0x802C8EA8; //segment:ovl_i13
+D_i13_802C8EAC = 0x802C8EAC; //segment:ovl_i13
+D_i13_802C8EB0 = 0x802C8EB0; //segment:ovl_i13
+D_i13_802C8EB4 = 0x802C8EB4; //segment:ovl_i13
+D_i13_802C8EB8 = 0x802C8EB8; //segment:ovl_i13
+D_i13_802C8EBC = 0x802C8EBC; //segment:ovl_i13
+D_i14_802C61E0 = 0x802C61E0; //segment:ovl_i14
+D_i14_802C61E4 = 0x802C61E4; //segment:ovl_i14
+D_i14_802C61E8 = 0x802C61E8; //segment:ovl_i14
+D_i14_802C61EC = 0x802C61EC; //segment:ovl_i14
+D_i15_802C6E74 = 0x802C6E74; //segment:ovl_i15
+D_i15_802C6E78 = 0x802C6E78; //segment:ovl_i15
+D_i15_802C6E7C = 0x802C6E7C; //segment:ovl_i15
+D_i15_802C6E80 = 0x802C6E80; //segment:ovl_i15
+D_i15_802C6F20 = 0x802C6F20; //segment:ovl_i15
+D_i15_802C6F40 = 0x802C6F40; //segment:ovl_i15
+D_i15_802C6F44 = 0x802C6F44; //segment:ovl_i15
+
+// ovl_i0, the title screen (GAME_STATE_TITLE_SCREEN) and the main menu (GAME_STATE_MAIN_MENU, 4)
+TitleScreen_Draw = 0x802C5800; //segment:ovl_i0
+TitleScreen_DrawScroller = 0x802C6AE4; //segment:ovl_i0
+TitleScreen_EnterMainMenu = 0x802C6878; //segment:ovl_i0
+MainMenu_DrawRows = 0x802C6044; //segment:ovl_i0
+MainMenu_Leave = 0x802C6A1C; //segment:ovl_i0
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   MainMenu_Draw 0x802C5A7C
+//   MainMenu_DrawLeaving 0x802C6944
+
+// ovl_i1, the race (game states 0x28 to 0x2D) and the demo (GAME_STATE_DEMO, 8)
+Race_OverlayUpdate = 0x802C5800; //segment:ovl_i1
+Race_FirstFrame = 0x802C587C; //segment:ovl_i1
+Race_UpdateScroller = 0x802C5900; //segment:ovl_i1
+Race_StartScroller = 0x802C59E8; //segment:ovl_i1
+Race_UpdateInRace = 0x802C5DF4; //segment:ovl_i1
+Race_UpdateState29 = 0x802C63B4; //segment:ovl_i1
+Race_UpdateState2A = 0x802C6550; //segment:ovl_i1
+Race_UpdateState2C = 0x802C6B00; //segment:ovl_i1
+Race_EnterState29 = 0x802C6DCC; //segment:ovl_i1
+Race_EnterState2A = 0x802C6FE0; //segment:ovl_i1
+Race_EnterState2C = 0x802C7394; //segment:ovl_i1
+Race_EnterStandings = 0x802C7570; //segment:ovl_i1
+RaceStandings_DrawTable = 0x802C7E48; //segment:ovl_i1
+RaceStandings_Step = 0x802C8E70; //segment:ovl_i1
+Demo_Leave = 0x802C9380; //segment:ovl_i1
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   Race_Draw 0x802C5AE4
+//   Race_Leave 0x802C744C
+//   RaceStandings_Update 0x802C7608
+//   RaceStandings_Draw 0x802C7D00
+//   Demo_Draw 0x802C913C
+
+// ovl_i2, rider select (GAME_STATE_RIDER_SELECT, GAME_STATE_B)
+RiderSelect_OverlayUpdate = 0x802C5800; //segment:ovl_i2
+RiderSelect_DecrementStat = 0x802C676C; //segment:ovl_i2
+RiderSelect_IncrementStat = 0x802C67E4; //segment:ovl_i2
+RiderSelect_Confirm = 0x802C6864; //segment:ovl_i2
+RiderSelect_Draw1P = 0x802C6ADC; //segment:ovl_i2
+RiderSelect_DrawPlayer = 0x802C70EC; //segment:ovl_i2
+RiderSelect_Draw2P = 0x802C7C50; //segment:ovl_i2
+RiderSelect_Leave = 0x802C84EC; //segment:ovl_i2
+RiderSelect_DrawPicture = 0x802C86E4; //segment:ovl_i2
+RiderSelect_DrawBackground = 0x802C88DC; //segment:ovl_i2
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   RiderSelect_Init 0x802C5AE4
+//   RiderSelect_Draw 0x802C5B4C
+
+// ovl_i3, the course overview (GAME_SATE_COURSE_OVERVIEW, GAME_SATE_1F)
+CourseOverview_SetCamera = 0x802C5AF0; //segment:ovl_i3
+CourseOverview_Leave = 0x802C6E9C; //segment:ovl_i3
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   CourseOverview_Draw 0x802C5B40
+
+// ovl_i4, course select (GAME_STATE_COURSE_SELECT, GAME_STATE_15)
+CourseSelect_OverlayUpdate = 0x802C5800; //segment:ovl_i4
+CourseSelect_Init = 0x802C58F8; //segment:ovl_i4
+CourseSelect_DrawScreen = 0x802C5CDC; //segment:ovl_i4
+CourseSelect_UpdateInput = 0x802C6BAC; //segment:ovl_i4
+CourseSelect_Step3Input = 0x802C7344; //segment:ovl_i4
+CourseSelect_Leave = 0x802C7474; //segment:ovl_i4
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   CourseSelect_Draw 0x802C5B78
+
+// ovl_i5, race results (GAME_STATE_RACE_RESULTS, 0x35) and GAME_STATE_5A (championship not qualified)
+RaceResults_OverlayUpdate = 0x802C5800; //segment:ovl_i5
+RaceResults_SetModelMatrices = 0x802C5850; //segment:ovl_i5
+RaceResults_CheckQualified = 0x802C5A98; //segment:ovl_i5
+RaceResults_DrawTable = 0x802C5DC0; //segment:ovl_i5
+RaceResults_Leave = 0x802C6F84; //segment:ovl_i5
+NotQualified_DrawObjects = 0x802C7594; //segment:ovl_i5
+NotQualified_DrawPanels = 0x802C7698; //segment:ovl_i5
+NotQualified_Update = 0x802C781C; //segment:ovl_i5
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   RaceResults_Draw 0x802C5C1C
+//   NotQualified_UpdateAnimation 0x802C7090
+//   NotQualified_Draw 0x802C7484
+
+// ovl_i6, time trials results (GAME_STATE_TIME_TRIALS_RESULTS, GAME_STATE_33)
+TimeTrialsResults_OverlayUpdate = 0x802C5800; //segment:ovl_i6
+TimeTrialsResults_DrawPanel = 0x802C5C2C; //segment:ovl_i6
+TimeTrialsResults_Update = 0x802C6B34; //segment:ovl_i6
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   TimeTrialsResults_Draw 0x802C5B74
+
+// ovl_i7, the options menu (GAME_STATE_OPTIONS_MENU, 0x3D)
+OptionsMenu_Draw = 0x802C5800; //segment:ovl_i7
+OptionsMenu_DrawItems = 0x802C5A18; //segment:ovl_i7
+OptionsMenu_Leave = 0x802C5C94; //segment:ovl_i7
+
+// ovl_i8, change names (GAME_STATE_OPTIONS_CHANGE_NAMES, 0x3F)
+ChangeNames_OverlayUpdate = 0x802C5800; //segment:ovl_i8
+ChangeNames_Input = 0x802C5EB8; //segment:ovl_i8
+ChangeNames_DrawScreen = 0x802C63E4; //segment:ovl_i8
+ChangeNames_PressKey = 0x802C6ADC; //segment:ovl_i8
+ChangeNames_ClearName = 0x802C6D58; //segment:ovl_i8
+ChangeNames_Leave = 0x802C6F4C; //segment:ovl_i8
+ChangeNames_CopyBytes = 0x802C6FD4; //segment:ovl_i8
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   ChangeNames_Draw 0x802C5D3C
+
+// ovl_i9, view records (GAME_STATE_OPTIONS_VIEW_RECORDS, 0x43)
+ViewRecords_OverlayUpdate = 0x802C5800; //segment:ovl_i9
+ViewRecords_Input = 0x802C5E5C; //segment:ovl_i9
+ViewRecords_DrawPanels = 0x802C6750; //segment:ovl_i9
+ViewRecords_DrawCourseList = 0x802C6CC8; //segment:ovl_i9
+ViewRecords_SetPanel = 0x802C7194; //segment:ovl_i9
+ViewRecords_DrawRecordsPanel = 0x802C71AC; //segment:ovl_i9
+ViewRecords_Leave = 0x802C802C; //segment:ovl_i9
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   ViewRecords_Draw 0x802C5D24
+
+// ovl_i10, change conditions (GAME_STATE_OPTIONS_CHANGE_CONDITIONS, 0x45)
+ChangeConditions_OverlayUpdate = 0x802C5800; //segment:ovl_i10
+ChangeConditions_Input = 0x802C5A10; //segment:ovl_i10
+ChangeConditions_Leave = 0x802C6A00; //segment:ovl_i10
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   ChangeConditions_Draw 0x802C5968
+
+// ovl_i11, audio options (GAME_STATE_OPTIONS_AUDIO, GAME_STATE_49)
+AudioOptions_Draw = 0x802C5800; //segment:ovl_i11
+AudioOptions_Input = 0x802C5D48; //segment:ovl_i11
+AudioOptions_Apply = 0x802C5F7C; //segment:ovl_i11
+AudioOptions_Leave = 0x802C6098; //segment:ovl_i11
+
+// ovl_i12, erase course records (GAME_STATE_OPTIONS_ERASE_COURSE_RECORDS, 0x47)
+EraseCourseRecords_Draw = 0x802C5800; //segment:ovl_i12
+EraseCourseRecords_DrawScreen = 0x802C58A0; //segment:ovl_i12
+EraseCourseRecords_Leave = 0x802C5EE4; //segment:ovl_i12
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   EraseCourseRecords_Input 0x802C5F6C
+
+// ovl_i13, save and load (GAME_STATE_OPTIONS_SAVE_AND_LOAD, 0x41)
+SaveLoad_OverlayUpdate = 0x802C5800; //segment:ovl_i13
+SaveLoad_Step0 = 0x802C61E0; //segment:ovl_i13
+SaveLoad_Step1 = 0x802C62EC; //segment:ovl_i13
+SaveLoad_Step3 = 0x802C64AC; //segment:ovl_i13
+SaveLoad_Step4 = 0x802C65D4; //segment:ovl_i13
+SaveLoad_Step8Popup = 0x802C6700; //segment:ovl_i13
+SaveLoad_Step5 = 0x802C69CC; //segment:ovl_i13
+SaveLoad_Step6 = 0x802C6ABC; //segment:ovl_i13
+SaveLoad_Step7 = 0x802C6BC4; //segment:ovl_i13
+SaveLoad_UpdateMessageBox = 0x802C7060; //segment:ovl_i13
+SaveLoad_DrawMessageBox = 0x802C832C; //segment:ovl_i13
+SaveLoad_DrawMessage = 0x802C8484; //segment:ovl_i13
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   SaveLoad_Draw 0x802C5F6C
+
+// ovl_i14, the menu after a race (GAME_STATE_50, GAME_STATE_51)
+PostRaceMenu_OverlayUpdate = 0x802C5800; //segment:ovl_i14
+PostRaceMenu_Init = 0x802C5840; //segment:ovl_i14
+PostRaceMenu_DrawMenu = 0x802C5B70; //segment:ovl_i14
+PostRaceMenu_Leave = 0x802C5E5C; //segment:ovl_i14
+PostRaceMenu_Input = 0x802C5F60; //segment:ovl_i14
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   PostRaceMenu_Draw 0x802C5924
+
+// ovl_i15, the ceremony (GAME_STATE_CEREMONY, GAME_STATE_67)
+Ceremony_Init = 0x802C5CE8; //segment:ovl_i15
+Ceremony_AddEntry = 0x802C5EE4; //segment:ovl_i15
+Ceremony_Input = 0x802C6C1C; //segment:ovl_i15
+Ceremony_Leave = 0x802C6CAC; //segment:ovl_i15
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   Ceremony_Draw 0x802C5F50

@@ -6,22 +6,17 @@ void GameState_EnterChangeConditions(void);
 void GameState_EnterAudio(void);
 void GameState_EnterEraseCourseRecords(void);
 void GameState_EnterSaveAndLoad(void);
-Gfx* func_i7_802C5A18(Gfx*);
-void func_i7_802C5C94(s32);
+Gfx* OptionsMenu_DrawItems(Gfx*);
+void OptionsMenu_Leave(s32);
 extern s32 gCurrentOptionsMenuItem;
 extern s32 D_i7_802C5D20[];
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i7_802C5D3C; // size = 0x8
-
-extern UnkStruct_i7_802C5D3C D_i7_802C5D3C[];
+extern TexLabel D_i7_802C5D3C[];
 extern Mtx D_7000000[];
 extern Mtx D_2000A40[];
 extern Gfx D_106F550[];
 
-Gfx* func_i7_802C5800(Gfx* arg0) {
+Gfx* OptionsMenu_Draw(Gfx* arg0) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 0x3C) {
@@ -32,13 +27,13 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
         }
     }
     D_800DAB2C = 0;
-    arg0 = func_i7_802C5A18(arg0);
+    arg0 = OptionsMenu_DrawItems(arg0);
     if (gGameState == 0x3C) {
         if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
-            func_i7_802C5C94(D_i7_802C5D20[gCurrentOptionsMenuItem]);
+            OptionsMenu_Leave(D_i7_802C5D20[gCurrentOptionsMenuItem]);
             AudioGeneral_PlaySound(0x11, 0);
         } else if (D_801CE65A->unk0 & CONT_B) {
-            func_i7_802C5C94(2);
+            OptionsMenu_Leave(2);
             AudioGeneral_PlaySound(0x16, 0);
         } else if (D_801CE65A->unk0 & CONT_UP) {
             if ((--gCurrentOptionsMenuItem) < 0) {
@@ -79,9 +74,9 @@ Gfx* func_i7_802C5800(Gfx* arg0) {
     return arg0;
 }
 
-Gfx* func_i7_802C5A18(Gfx* gdl) {
+Gfx* OptionsMenu_DrawItems(Gfx* gdl) {
     s32 i;
-    UnkStruct_i7_802C5D3C* item;
+    TexLabel* item;
 
     gSPMatrix(gdl++, D_7000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -107,7 +102,7 @@ Gfx* func_i7_802C5A18(Gfx* gdl) {
     return func_801E3EE0(gdl, 1, item->texture, item->x + 109, gCurrentOptionsMenuItem * 19 + 76, 0);
 }
 
-void func_i7_802C5C94(s32 arg0) {
+void OptionsMenu_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x3D;

@@ -11,16 +11,16 @@ struct SelectionState {
 };
 
 // .bss
-u16 D_802C8C50;
-struct SelectionState D_802C8C58;
-s32 D_802C8C60[2];
-s16 D_802C8C68;
-s16 D_802C8C6A;
-s16 D_802C8C70[4];
+u16 D_i2_802C8C50;
+struct SelectionState D_i2_802C8C58;
+s32 D_i2_802C8C60[2];
+s16 D_i2_802C8C68;
+s16 D_i2_802C8C6A;
+s16 D_i2_802C8C70[4];
 
-void func_i2_802C5AE4(void);
+void RiderSelect_Init(void);
 
-void func_i2_802C5800(void) {
+void RiderSelect_OverlayUpdate(void) {
     s32 i;
     s32 j;
     s32 found;
@@ -34,9 +34,9 @@ void func_i2_802C5800(void) {
     s32 angle;
 
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_RIDER_SELECT)) {
-        func_i2_802C5AE4();
+        RiderSelect_Init();
     }
-    func_800481E0(D_801CE5F8->unkA40, &D_802C8C50, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_800481E0(D_801CE5F8->unkA40, &D_i2_802C8C50, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
     func_80048A88(&spE0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.07f);
     for (i = 0; i < 4; i++) {
         for (j = 0; j < D_801CE608.player; j++) {
@@ -45,7 +45,7 @@ void func_i2_802C5800(void) {
                 found = 1;
             }
             if (found) {
-                angle = D_802C8C60[j] % 4096;
+                angle = D_i2_802C8C60[j] % 4096;
                 x = COS(angle) * 500.0f;
                 z = SIN(angle) * 500.0f;
             } else {
@@ -62,48 +62,48 @@ void func_i2_802C5800(void) {
         SysUtils_MtxFToMtx(&sp124, &D_801CE5F8->unkA80[i]);
     }
     for (i = 0; i < D_801CE608.player; i++) {
-        D_802C8C60[i] += 0x30;
-        if (D_802C8C60[i] >= 0x1000) {
-            D_802C8C60[i] -= 0x1000;
+        D_i2_802C8C60[i] += 0x30;
+        if (D_i2_802C8C60[i] >= 0x1000) {
+            D_i2_802C8C60[i] -= 0x1000;
         }
     }
 }
 
-void func_i2_802C5AE4(void) {
+void RiderSelect_Init(void) {
     s32 i;
 
     for (i = 0; i < 2; i++) {
-        D_802C8C58.ready[i] = 0;
-        D_802C8C60[i] = 0;
+        D_i2_802C8C58.ready[i] = 0;
+        D_i2_802C8C60[i] = 0;
         D_801CE6F4[i] = i;
     }
     // A do-while: the same for loop unrolls in another store order.
     i = 0;
     do {
-        D_802C8C70[i] = 0;
+        D_i2_802C8C70[i] = 0;
     } while (++i < 4);
-    D_802C8C68 = 0;
-    D_802C8C6A = 0;
+    D_i2_802C8C68 = 0;
+    D_i2_802C8C6A = 0;
 }
 
 void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
 void func_i2_802C5E28(void);
-Gfx* func_i2_802C6ADC(Gfx*);
-Gfx* func_i2_802C7C50(Gfx*);
-Gfx* func_i2_802C88DC(Gfx*);
-void func_i2_802C84EC(s32 arg0);
+Gfx* RiderSelect_Draw1P(Gfx*);
+Gfx* RiderSelect_Draw2P(Gfx*);
+Gfx* RiderSelect_DrawBackground(Gfx*);
+void RiderSelect_Leave(s32 arg0);
 extern Gfx* D_106F808;
 extern Gfx D_106FAF0[];
 extern Vtx* D_2000A40;
 extern Mtx* D_7000000;
 extern s16 D_801CE60C;
-extern s32 D_802C8C5C;
+extern s32 D_i2_802C8C5C;
 extern Gfx D_80BE4A8[];
 extern Gfx D_80BE500[];
 extern s32 D_i2_802C8BC0;
 
-Gfx* func_i2_802C5B4C(Gfx* gdl) {
+Gfx* RiderSelect_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == GAME_STATE_RIDER_SELECT) {
@@ -117,7 +117,7 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
     gSPDisplayList(gdl++, &D_106FAF0);
 
-    gdl = func_i2_802C88DC(gdl);
+    gdl = RiderSelect_DrawBackground(gdl);
     gSPMatrix(gdl++, &D_7000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, &D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(gdl++, &D_106F808);
@@ -125,11 +125,11 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
     if (D_801CE60C == 1) {
         gdl = func_8009328C(gdl);
     } else {
-        if (D_802C8C58.ready[0] == 0) {
+        if (D_i2_802C8C58.ready[0] == 0) {
             D_800DAB2C = 0;
             gdl = func_800933C4(gdl);
         }
-        if (D_802C8C5C == 0) {
+        if (D_i2_802C8C5C == 0) {
             D_800DAB2C = 1;
             gdl = func_800933C4(gdl);
         }
@@ -140,14 +140,14 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
 
     if (D_801CE60C == 1) {
-        gdl = func_i2_802C6ADC(gdl);
+        gdl = RiderSelect_Draw1P(gdl);
         gSPDisplayList(gdl++, &D_80BE500);
     } else {
-        gdl = func_i2_802C7C50(gdl);
-        if (D_802C8C58.ready[0] == 0) {
+        gdl = RiderSelect_Draw2P(gdl);
+        if (D_i2_802C8C58.ready[0] == 0) {
             gSPDisplayList(gdl++, &D_80BE4A8);
         }
-        if (D_802C8C58.ready[1] == 0) {
+        if (D_i2_802C8C58.ready[1] == 0) {
             gSPDisplayList(gdl++, &D_80BE500);
         }
     }
@@ -173,16 +173,15 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
     return gdl;
 }
 
-s32 func_i2_802C676C(s32 arg0, s32 arg1);
-s32 func_i2_802C67E4(s32 arg0, s32 arg1);
-void func_i2_802C6864(s32 arg0);
+s32 RiderSelect_DecrementStat(s32 arg0, s32 arg1);
+s32 RiderSelect_IncrementStat(s32 arg0, s32 arg1);
+void RiderSelect_Confirm(s32 arg0);
 extern s32 D_i2_802C8BB0[];
 extern s32 D_i2_802C8BB8[];
 extern s16 D_80228A32;
-extern s16 D_800DAB60;
 
 #ifdef NON_MATCHING
-// Score 590 of 59400: the "held" check before the repeat counter is scheduled as
+// Score 590 of 59300: the "held" check before the repeat counter is scheduled as
 // li -3 / beqzl instead of beqz with li -3 in the delay slot, which makes the function one
 // instruction longer and shifts everything after it; the rest matches.
 void func_i2_802C5E28(void) {
@@ -204,16 +203,16 @@ void func_i2_802C5E28(void) {
         }
         if ((D_801CE658[ctrl].unk_00.unk_2 & 0xB000) && (D_i2_802C8BC0 != 0)) {
             sound = 1;
-            switch (D_802C8C58.ready[i]) {
+            switch (D_i2_802C8C58.ready[i]) {
                 case 0:
-                    D_802C8C58.ready[i] = 1;
+                    D_i2_802C8C58.ready[i] = 1;
                     if ((D_800DAB64 != 0) && (D_801CE658[ctrl].unk_00.unk_2 & 0x2000)) {
                         D_801CE6F4[i] = 1;
                     }
                     if (D_801CE6F4[i] != 0) {
-                        D_802C8C70[D_800DA9C0[i]] |= 2;
+                        D_i2_802C8C70[D_800DA9C0[i]] |= 2;
                     } else {
-                        D_802C8C70[D_800DA9C0[i]] |= 1;
+                        D_i2_802C8C70[D_800DA9C0[i]] |= 1;
                     }
                     break;
                 case 1:
@@ -222,34 +221,34 @@ void func_i2_802C5E28(void) {
                             D_801CB32C = 0;
                         }
                         if ((D_801CE608.gameMode == 0) || (D_801CE608.gameMode == 11)) {
-                            func_i2_802C6864(i);
+                            RiderSelect_Confirm(i);
                             sound = 2;
                         } else {
-                            D_802C8C58.ready[i] = 5;
+                            D_i2_802C8C58.ready[i] = 5;
                         }
                     } else {
                         if (i == 0) {
                             D_801CB32C = 1;
                         }
-                        D_802C8C58.ready[i] = 2;
+                        D_i2_802C8C58.ready[i] = 2;
                     }
                     break;
                 case 2:
-                    D_802C8C58.ready[i] = 3;
+                    D_i2_802C8C58.ready[i] = 3;
                     break;
                 case 3:
-                    D_802C8C58.ready[i] = 4;
+                    D_i2_802C8C58.ready[i] = 4;
                     break;
                 case 4:
                     if ((D_801CE608.gameMode == 0) || (D_801CE608.gameMode == 11)) {
-                        func_i2_802C6864(i);
+                        RiderSelect_Confirm(i);
                         sound = 2;
                     } else {
-                        D_802C8C58.ready[i] = 5;
+                        D_i2_802C8C58.ready[i] = 5;
                     }
                     break;
                 case 5:
-                    func_i2_802C6864(i);
+                    RiderSelect_Confirm(i);
                     break;
             }
             if (sound != 0) {
@@ -263,33 +262,33 @@ void func_i2_802C5E28(void) {
             }
         } else if (D_801CE658[ctrl].unk_00.unk_2 & 0x4000) {
             sound = 1;
-            switch (D_802C8C58.ready[i]) {
+            switch (D_i2_802C8C58.ready[i]) {
                 case 0:
-                    func_i2_802C84EC(2);
+                    RiderSelect_Leave(2);
                     break;
                 case 1:
-                    D_802C8C58.ready[i] = 0;
+                    D_i2_802C8C58.ready[i] = 0;
                     if (D_801CE6F4[i] != 0) {
-                        D_802C8C70[D_800DA9C0[i]] &= ~2;
+                        D_i2_802C8C70[D_800DA9C0[i]] &= ~2;
                     } else {
-                        D_802C8C70[D_800DA9C0[i]] &= ~1;
+                        D_i2_802C8C70[D_800DA9C0[i]] &= ~1;
                     }
                     break;
                 case 5:
                     if (D_800DA9C8[i] == 0) {
-                        D_802C8C58.ready[i] = 1;
+                        D_i2_802C8C58.ready[i] = 1;
                     } else {
-                        D_802C8C58.ready[i] = 4;
+                        D_i2_802C8C58.ready[i] = 4;
                     }
                     break;
                 case 2:
-                    D_802C8C58.ready[i] = 1;
+                    D_i2_802C8C58.ready[i] = 1;
                     break;
                 case 3:
-                    D_802C8C58.ready[i] = 2;
+                    D_i2_802C8C58.ready[i] = 2;
                     break;
                 case 4:
-                    D_802C8C58.ready[i] = 3;
+                    D_i2_802C8C58.ready[i] = 3;
                     break;
                 default:
                     sound = 0;
@@ -302,18 +301,15 @@ void func_i2_802C5E28(void) {
             allowMove = 1;
             if (D_801CE658[ctrl].unk_00.unk_2 & 0xF) {
                 allowMove = D_i2_802C8BD8[D_800DA9C0[i]];
-                switch (D_802C8C58.ready[i]) {
+                switch (D_i2_802C8C58.ready[i]) {
                     case 2:
-                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] =
-                            D_800DA950[allowMove].unk_B[0];
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] = D_800DA950[allowMove].unk_B[0];
                         break;
                     case 3:
-                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] =
-                            D_800DA950[allowMove].unk_B[1];
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] = D_800DA950[allowMove].unk_B[1];
                         break;
                     case 4:
-                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] =
-                            D_800DA950[allowMove].unk_B[2];
+                        ((PlayerName(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] = D_800DA950[allowMove].unk_B[2];
                         break;
                 }
             } else {
@@ -321,7 +317,7 @@ void func_i2_802C5E28(void) {
                     allowMove = 0;
                 }
                 locked = 0;
-                state = D_802C8C58.ready[i];
+                state = D_i2_802C8C58.ready[i];
                 if (state == 0) {
                     if (allowMove) {
                         if (D_801CE658[ctrl].unk_00.unk_0 & 0x800) {
@@ -330,9 +326,9 @@ void func_i2_802C5E28(void) {
                         } else {
                             D_801CE6F4[i] = i;
                         }
-                    } else if (D_802C8C70[D_800DA9C0[i]] == 0) {
+                    } else if (D_i2_802C8C70[D_800DA9C0[i]] == 0) {
                         D_801CE6F4[i] = i;
-                    } else if (D_802C8C70[D_800DA9C0[i]] & 1) {
+                    } else if (D_i2_802C8C70[D_800DA9C0[i]] & 1) {
                         D_801CE6F4[i] = 1;
                     } else {
                         D_801CE6F4[i] = 0;
@@ -357,7 +353,7 @@ void func_i2_802C5E28(void) {
                                 if (D_800DA9C0[i] < 0) {
                                     D_800DA9C0[i] = 3;
                                 }
-                                D_802C8C60[i] = 0x200;
+                                D_i2_802C8C60[i] = 0x200;
                             }
                             break;
                         case 1:
@@ -368,15 +364,15 @@ void func_i2_802C5E28(void) {
                             break;
                         case 2:
                             D_i2_802C8BB0[i] = 1;
-                            sound = func_i2_802C676C(i, 0);
+                            sound = RiderSelect_DecrementStat(i, 0);
                             break;
                         case 3:
                             D_i2_802C8BB0[i] = 1;
-                            sound = func_i2_802C676C(i, 1);
+                            sound = RiderSelect_DecrementStat(i, 1);
                             break;
                         case 4:
                             D_i2_802C8BB0[i] = 1;
-                            sound = func_i2_802C676C(i, 2);
+                            sound = RiderSelect_DecrementStat(i, 2);
                             break;
                         default:
                             sound = 0;
@@ -396,7 +392,7 @@ void func_i2_802C5E28(void) {
                                 if (D_800DA9C0[i] == 4) {
                                     D_800DA9C0[i] = 0;
                                 }
-                                D_802C8C60[i] = 0x200;
+                                D_i2_802C8C60[i] = 0x200;
                             }
                             break;
                         case 1:
@@ -407,15 +403,15 @@ void func_i2_802C5E28(void) {
                             break;
                         case 2:
                             D_i2_802C8BB0[i] = 1;
-                            sound = func_i2_802C67E4(i, 0);
+                            sound = RiderSelect_IncrementStat(i, 0);
                             break;
                         case 3:
                             D_i2_802C8BB0[i] = 1;
-                            sound = func_i2_802C67E4(i, 1);
+                            sound = RiderSelect_IncrementStat(i, 1);
                             break;
                         case 4:
                             D_i2_802C8BB0[i] = 1;
-                            sound = func_i2_802C67E4(i, 2);
+                            sound = RiderSelect_IncrementStat(i, 2);
                             break;
                         default:
                             sound = 0;
@@ -432,15 +428,15 @@ void func_i2_802C5E28(void) {
                     if (D_i2_802C8BB8[i] >= 4) {
                         D_i2_802C8BB8[i] = 0;
                         if (D_801CE658[ctrl].unk_00.unk_0 & 0x200) {
-                            switch (D_802C8C58.ready[i]) {
+                            switch (D_i2_802C8C58.ready[i]) {
                                 case 2:
-                                    sound = func_i2_802C676C(i, 0);
+                                    sound = RiderSelect_DecrementStat(i, 0);
                                     break;
                                 case 3:
-                                    sound = func_i2_802C676C(i, 1);
+                                    sound = RiderSelect_DecrementStat(i, 1);
                                     break;
                                 case 4:
-                                    sound = func_i2_802C676C(i, 2);
+                                    sound = RiderSelect_DecrementStat(i, 2);
                                     break;
                                 default:
                                     sound = 0;
@@ -450,15 +446,15 @@ void func_i2_802C5E28(void) {
                                 AudioGeneral_PlaySound(0x10, 0);
                             }
                         } else if (D_801CE658[ctrl].unk_00.unk_0 & 0x100) {
-                            switch (D_802C8C58.ready[i]) {
+                            switch (D_i2_802C8C58.ready[i]) {
                                 case 2:
-                                    sound = func_i2_802C67E4(i, 0);
+                                    sound = RiderSelect_IncrementStat(i, 0);
                                     break;
                                 case 3:
-                                    sound = func_i2_802C67E4(i, 1);
+                                    sound = RiderSelect_IncrementStat(i, 1);
                                     break;
                                 case 4:
-                                    sound = func_i2_802C67E4(i, 2);
+                                    sound = RiderSelect_IncrementStat(i, 2);
                                     break;
                                 default:
                                     sound = 0;
@@ -472,7 +468,7 @@ void func_i2_802C5E28(void) {
                 }
             }
         }
-        if (D_802C8C58.ready[i] == 0) {
+        if (D_i2_802C8C58.ready[i] == 0) {
             D_80192690[rider].unkB68 = D_i2_802C8BD8[D_800DA9C0[i]];
             D_80192690[rider].unkB6C = D_800DA950[D_i2_802C8BD8[D_800DA9C0[i]]].unk_B[0];
             D_80192690[rider].unkB70 = D_800DA950[D_i2_802C8BD8[D_800DA9C0[i]]].unk_B[1];
@@ -485,8 +481,8 @@ void func_i2_802C5E28(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5E28.s")
 #endif
 
-s32 func_i2_802C676C(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
+s32 RiderSelect_DecrementStat(s32 arg0, s32 arg1) {
+    PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -498,8 +494,8 @@ s32 func_i2_802C676C(s32 arg0, s32 arg1) {
     return ret;
 }
 
-s32 func_i2_802C67E4(s32 arg0, s32 arg1) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
+s32 RiderSelect_IncrementStat(s32 arg0, s32 arg1) {
+    PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
     s32 idx = D_i2_802C8BD8[D_800DA9C0[arg0]];
     s32 ret = 1;
 
@@ -511,7 +507,7 @@ s32 func_i2_802C67E4(s32 arg0, s32 arg1) {
     return ret;
 }
 
-void func_i2_802C6864(s32 arg0) {
+void RiderSelect_Confirm(s32 arg0) {
     s32 ready = 0;
     s32 i;
     s32 j;
@@ -521,8 +517,8 @@ void func_i2_802C6864(s32 arg0) {
     if (D_801CE608.player == 1) {
         ready = 1;
     } else {
-        D_802C8C58.ready[arg0] = 6;
-        if (D_802C8C58.ready[0] == 6 && D_802C8C58.ready[1] == 6) {
+        D_i2_802C8C58.ready[arg0] = 6;
+        if (D_i2_802C8C58.ready[0] == 6 && D_i2_802C8C58.ready[1] == 6) {
             ready = 1;
         }
     }
@@ -572,12 +568,12 @@ void func_i2_802C6864(s32 arg0) {
                 arg = 0x14;
                 break;
         }
-        func_i2_802C84EC(arg);
+        RiderSelect_Leave(arg);
     }
 }
 
-Gfx* func_i2_802C70EC(Gfx* gdl, s32 player);
-Gfx* func_i2_802C86E4(Gfx* gdl, s32 x, s32 y);
+Gfx* RiderSelect_DrawPlayer(Gfx* gdl, s32 player);
+Gfx* RiderSelect_DrawPicture(Gfx* gdl, s32 x, s32 y);
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 extern Gfx D_106F488[];
 extern Mtx D_7000A40[];
@@ -591,7 +587,7 @@ extern Gfx D_80BE488[];
 extern Gfx D_80BE498[];
 extern s16 D_i2_802C8BD0[];
 
-Gfx* func_i2_802C6ADC(Gfx* gdl) {
+Gfx* RiderSelect_Draw1P(Gfx* gdl) {
     u32 shade;
 
     gSPDisplayList(gdl++, D_80BE248);
@@ -600,56 +596,56 @@ Gfx* func_i2_802C6ADC(Gfx* gdl) {
     gdl = func_80094338(gdl, 0, 28, 96, 130, 13);
     gdl = func_80094338(gdl, 0, 32, 110, 59, 13);
     gdl = func_80094338(gdl, 0, 95, 110, 59, 13);
-    gdl = func_i2_802C86E4(gdl, 19, 104);
-    if (D_802C8C58.ready[0] != 5) {
+    gdl = RiderSelect_DrawPicture(gdl, 19, 104);
+    if (D_i2_802C8C58.ready[0] != 5) {
         gSPDisplayList(gdl++, D_80BE2B8);
     }
     gDPPipeSync(gdl++);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    if (D_802C8C6A == 0) {
-        shade = (D_802C8C68 * 255.0f) / 4;
+    if (D_i2_802C8C6A == 0) {
+        shade = (D_i2_802C8C68 * 255.0f) / 4;
     } else {
-        shade = ((4 - (f32) D_802C8C68) * 255.0f) / 4;
+        shade = ((4 - (f32) D_i2_802C8C68) * 255.0f) / 4;
     }
-    D_802C8C68++;
-    if (D_802C8C68 >= 4) {
-        D_802C8C68 = 0;
-        D_802C8C6A ^= 1;
+    D_i2_802C8C68++;
+    if (D_i2_802C8C68 >= 4) {
+        D_i2_802C8C68 = 0;
+        D_i2_802C8C6A ^= 1;
     }
     gDPSetPrimColor(gdl++, 0, 0, shade, 255, shade, 255);
     gDPLoadTextureTile(gdl++, D_80B6590, G_IM_FMT_IA, G_IM_SIZ_8b, 64, 36, 0, 0, 63, 35, 0, G_TX_CLAMP, G_TX_CLAMP, 0,
                        0, 0, 0);
     gSPTextureRectangle(gdl++, (D_i2_802C8BD0[D_800DA9C0[0]] + 8) << 2, 55 << 2,
                         (D_i2_802C8BD0[D_800DA9C0[0]] + 72) << 2, 91 << 2, 0, 0, 0, 1 << 10, 1 << 10);
-    gdl = func_i2_802C70EC(gdl, 0);
-    gSPPerspNormalize(gdl++, D_802C8C50);
+    gdl = RiderSelect_DrawPlayer(gdl, 0);
+    gSPPerspNormalize(gdl++, D_i2_802C8C50);
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gdl++, D_106F488);
     gSPDisplayList(gdl++, D_80BE468);
     gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, D_801CE5F8->unkC80[0]);
     gSPDisplayList(gdl++, D_80BE478);
     gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, D_801CE5F8->unkC80[1]);
     gSPDisplayList(gdl++, D_80BE488);
     gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, D_801CE5F8->unkC80[2]);
     gSPDisplayList(gdl++, D_80BE498);
     gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    return func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+    return func_801E4FE8(gdl, 1, 0, 0, D_801CE5F8->unkC80[3]);
 }
 
 extern u16 D_80B6518[];
 extern u8 D_80BBFA8[];
 
-Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
+Gfx* RiderSelect_DrawPlayer(Gfx* gdl, s32 player) {
     s32 showBars;
     s32 showMode;
     s32 showName;
     s32 stateGe2;
-    s32 stateLive; // D_802C8C58 entry 1..5
-    UnkStruct_func_i8_802C6E00* entry;
+    s32 stateLive; // D_i2_802C8C58 entry 1..5
+    PlayerName* entry;
     s32 x;
     s32 nameX;
 
@@ -658,37 +654,37 @@ Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
     } else {
         x = 153;
     }
-    if ((D_800DA9C8[player] == 0) || (D_802C8C58.ready[player] == 0)) {
+    if ((D_800DA9C8[player] == 0) || (D_i2_802C8C58.ready[player] == 0)) {
         entry = &D_800DA950[D_i2_802C8BD8[D_800DA9C0[player]]];
     } else {
-        entry = &((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[player][D_i2_802C8BD8[D_800DA9C0[player]]];
+        entry = &((PlayerName(*)[4]) gPlayerNames)[player][D_i2_802C8BD8[D_800DA9C0[player]]];
     }
     showBars = 0;
     showMode = 0;
     showName = 0;
     stateGe2 = 0;
     stateLive = 0;
-    if (D_802C8C58.ready[player] >= 2) {
+    if (D_i2_802C8C58.ready[player] >= 2) {
         stateGe2 = 1;
     }
-    if ((D_802C8C58.ready[player] > 0) && (D_802C8C58.ready[player] != 6)) {
+    if ((D_i2_802C8C58.ready[player] > 0) && (D_i2_802C8C58.ready[player] != 6)) {
         stateLive = 1;
     }
     if (D_801CE60C == 1) {
-        if (D_802C8C58.ready[player] != 5) {
+        if (D_i2_802C8C58.ready[player] != 5) {
             showBars = 1;
         }
         showMode = 1;
         showName = 1;
         nameX = x + 161;
     } else {
-        if ((D_802C8C58.ready[player] > 0) && (D_802C8C58.ready[player] < 5)) {
+        if ((D_i2_802C8C58.ready[player] > 0) && (D_i2_802C8C58.ready[player] < 5)) {
             showBars = 1;
         }
-        if (D_802C8C58.ready[player] > 0) {
+        if (D_i2_802C8C58.ready[player] > 0) {
             showMode = 1;
         }
-        if (D_802C8C58.ready[player] == 0) {
+        if (D_i2_802C8C58.ready[player] == 0) {
             showName = 1;
         }
         nameX = x + 27;
@@ -713,17 +709,17 @@ Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
         gdl = func_801E3EE0(gdl, 4, 13, 222, 37, 0);
     }
     if (showBars) {
-        if ((D_802C8C58.ready[player] != 2) || !stateGe2) {
+        if ((D_i2_802C8C58.ready[player] != 2) || !stateGe2) {
             gdl = func_801E3EE0(gdl, 4, 9, x + 13, 128, 0);
         }
         gdl = func_801E3EE0(gdl, 0, 6, x + 13, 138, 0);
         gdl = func_801E3EE0(gdl, 0, 7, x + 98, 138, 0);
-        if ((D_802C8C58.ready[player] != 3) || !stateGe2) {
+        if ((D_i2_802C8C58.ready[player] != 3) || !stateGe2) {
             gdl = func_801E3EE0(gdl, 4, 11, x + 13, 156, 0);
         }
         gdl = func_801E3EE0(gdl, 0, 9, x + 13, 167, 0);
         gdl = func_801E3EE0(gdl, 0, 10, x + 89, 167, 0);
-        if ((D_802C8C58.ready[player] != 4) || !stateGe2) {
+        if ((D_i2_802C8C58.ready[player] != 4) || !stateGe2) {
             gdl = func_801E3EE0(gdl, 4, 10, x + 13, 185, 0);
         }
         gdl = func_801E3EE0(gdl, 0, 12, x + 13, 196, 0);
@@ -745,8 +741,8 @@ Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
             gdl = func_801E3EE0(gdl, 0, 38, x + 84, 112, 0);
         }
     }
-    if (D_802C8C58.ready[player] >= 5) {
-        gdl = Printer_SetMode(gdl, (D_802C8C58.ready[player] == 5) ? 6 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF,
+    if (D_i2_802C8C58.ready[player] >= 5) {
+        gdl = Printer_SetMode(gdl, (D_i2_802C8C58.ready[player] == 5) ? 6 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF,
                               0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
         gDPLoadTextureTile(gdl++, D_80BBFA8, G_IM_FMT_IA, G_IM_SIZ_8b, 88, 10, 0, 0, 87, 9, 0, G_TX_CLAMP, G_TX_CLAMP,
                            0, 0, 0, 0);
@@ -754,13 +750,13 @@ Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
     }
     gdl = Printer_SetMode(gdl, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     if (showBars) {
-        if ((D_802C8C58.ready[player] == 2) && stateGe2) {
+        if ((D_i2_802C8C58.ready[player] == 2) && stateGe2) {
             gdl = func_801E3EE0(gdl, 4, 9, x + 13, 128, 0);
         }
-        if ((D_802C8C58.ready[player] == 3) && stateGe2) {
+        if ((D_i2_802C8C58.ready[player] == 3) && stateGe2) {
             gdl = func_801E3EE0(gdl, 4, 11, x + 13, 156, 0);
         }
-        if ((D_802C8C58.ready[player] == 4) && stateGe2) {
+        if ((D_i2_802C8C58.ready[player] == 4) && stateGe2) {
             gdl = func_801E3EE0(gdl, 4, 10, x + 13, 185, 0);
         }
     }
@@ -779,47 +775,47 @@ extern u8 D_80B6E98[];
 extern Gfx D_80BE358[];
 extern Gfx D_80BE3C8[];
 
-Gfx* func_i2_802C7C50(Gfx* gdl) {
+Gfx* RiderSelect_Draw2P(Gfx* gdl) {
     u32 shade;
     s32 width;
 
     gSPDisplayList(gdl++, D_80BE358);
     gSPDisplayList(gdl++, D_106F628);
     gdl = func_80094338(gdl, 0, 28, 22, 264, 30);
-    if (D_802C8C58.ready[0] != 0) {
+    if (D_i2_802C8C58.ready[0] != 0) {
         gdl = func_80094338(gdl, 0, 28, 96, 130, 13);
         gdl = func_80094338(gdl, 0, 32, 110, 59, 13);
         gdl = func_80094338(gdl, 0, 95, 110, 59, 13);
     }
-    if (D_802C8C58.ready[1] != 0) {
+    if (D_i2_802C8C58.ready[1] != 0) {
         gdl = func_80094338(gdl, 0, 161, 96, 130, 13);
         gdl = func_80094338(gdl, 0, 165, 110, 59, 13);
         gdl = func_80094338(gdl, 0, 228, 110, 59, 13);
     }
-    if (D_802C8C58.ready[0] != 0) {
-        gdl = func_i2_802C86E4(gdl, 19, 104);
+    if (D_i2_802C8C58.ready[0] != 0) {
+        gdl = RiderSelect_DrawPicture(gdl, 19, 104);
     }
-    if (D_802C8C58.ready[1] != 0) {
-        gdl = func_i2_802C86E4(gdl, 153, 104);
+    if (D_i2_802C8C58.ready[1] != 0) {
+        gdl = RiderSelect_DrawPicture(gdl, 153, 104);
     }
-    if ((D_802C8C58.ready[0] != 0) && (D_802C8C58.ready[0] < 5)) {
+    if ((D_i2_802C8C58.ready[0] != 0) && (D_i2_802C8C58.ready[0] < 5)) {
         gSPDisplayList(gdl++, D_80BE2B8);
     }
-    if ((D_802C8C58.ready[1] != 0) && (D_802C8C58.ready[1] < 5)) {
+    if ((D_i2_802C8C58.ready[1] != 0) && (D_i2_802C8C58.ready[1] < 5)) {
         gSPDisplayList(gdl++, D_80BE3C8);
     }
     gDPPipeSync(gdl++);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetCombineMode(gdl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    if (D_802C8C6A == 0) {
-        shade = (D_802C8C68 * 255.0f) / 4;
+    if (D_i2_802C8C6A == 0) {
+        shade = (D_i2_802C8C68 * 255.0f) / 4;
     } else {
-        shade = ((4 - (f32) D_802C8C68) * 255.0f) / 4;
+        shade = ((4 - (f32) D_i2_802C8C68) * 255.0f) / 4;
     }
-    D_802C8C68++;
-    if (D_802C8C68 >= 4) {
-        D_802C8C68 = 0;
-        D_802C8C6A ^= 1;
+    D_i2_802C8C68++;
+    if (D_i2_802C8C68 >= 4) {
+        D_i2_802C8C68 = 0;
+        D_i2_802C8C6A ^= 1;
     }
     if (D_800DA9C0[0] == D_800DA9C0[1]) {
         width = 32;
@@ -836,28 +832,28 @@ Gfx* func_i2_802C7C50(Gfx* gdl) {
                        0, 0, 0);
     gSPTextureRectangle(gdl++, (D_i2_802C8BD0[D_800DA9C0[0]] + 8) << 2, 55 << 2,
                         (D_i2_802C8BD0[D_800DA9C0[0]] + width + 8) << 2, 91 << 2, 0, 0, 0, 1 << 10, 1 << 10);
-    gdl = func_i2_802C70EC(gdl, 0);
-    gdl = func_i2_802C70EC(gdl, 1);
-    gSPPerspNormalize(gdl++, D_802C8C50);
+    gdl = RiderSelect_DrawPlayer(gdl, 0);
+    gdl = RiderSelect_DrawPlayer(gdl, 1);
+    gSPPerspNormalize(gdl++, D_i2_802C8C50);
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gdl++, D_106F488);
     gSPDisplayList(gdl++, D_80BE468);
     gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, D_801CE5F8->unkC80[0]);
     gSPDisplayList(gdl++, D_80BE478);
     gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, D_801CE5F8->unkC80[1]);
     gSPDisplayList(gdl++, D_80BE488);
     gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, D_801CE5F8->unkC80[2]);
     gSPDisplayList(gdl++, D_80BE498);
     gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    return func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+    return func_801E4FE8(gdl, 1, 0, 0, D_801CE5F8->unkC80[3]);
 }
 
-void func_i2_802C84EC(s32 arg0) {
-    UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
-    UnkStruct_func_i8_802C6E00* entry;
+void RiderSelect_Leave(s32 arg0) {
+    PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
+    PlayerName* entry;
     s32 player;
     s32 i;
 
@@ -895,7 +891,7 @@ void func_i2_802C84EC(s32 arg0) {
     }
 }
 
-Gfx* func_i2_802C86E4(Gfx* gdl, s32 x, s32 y) {
+Gfx* RiderSelect_DrawPicture(Gfx* gdl, s32 x, s32 y) {
     s32 offset;
     s32 i;
     s32 height;
@@ -914,7 +910,7 @@ Gfx* func_i2_802C86E4(Gfx* gdl, s32 x, s32 y) {
     return gdl;
 }
 
-Gfx* func_i2_802C88DC(Gfx* gdl) {
+Gfx* RiderSelect_DrawBackground(Gfx* gdl) {
     s32 pad[15]; // stack pad: the original frame is 0x78
     s32 row;
     s32 offset;

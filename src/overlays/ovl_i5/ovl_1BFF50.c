@@ -8,11 +8,11 @@ extern RiderStruct gRiderRaceState[];
 extern s32 D_i5_802C7A2C[];
 extern s16 D_i5_802C7A00;
 extern Vp D_i5_802C7A08;
-extern s32 D_802C7B00;
-extern s16 D_802C7B04;
-extern u16 D_802C7B06;
-extern s32 D_802C7B08;
-extern s32 D_802C7B0C;
+extern s32 D_i5_802C7B00;
+extern s16 D_i5_802C7B04;
+extern u16 D_i5_802C7B06;
+extern s32 D_i5_802C7B08;
+extern s32 D_i5_802C7B0C;
 extern s32 D_i5_802C7A18[];
 extern s32 D_801C2650;
 extern s32 D_801CB350[][4];
@@ -28,9 +28,9 @@ extern Vp D_7001280[];
 s32 Save_EepromWriteHeader(void);
 void func_800C3E4C(void);
 void func_801EC944(void);
-Gfx* func_i5_802C5DC0(Gfx*);
+Gfx* RaceResults_DrawTable(Gfx*);
 void RaceResults_Update(void);
-void func_i5_802C6F84(s32 arg0);
+void RaceResults_Leave(s32 arg0);
 void GameState_EnterCeremony(void);
 void GameState_EnterCourseOverview(void);
 Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
@@ -38,15 +38,15 @@ Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
-void func_i5_802C5800(void) {
+void RaceResults_OverlayUpdate(void) {
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_RACE_RESULTS)) {
         func_80094ACC();
-        func_i5_802C5A98();
+        RaceResults_CheckQualified();
     }
-    func_i5_802C5850();
+    RaceResults_SetModelMatrices();
 }
 
-void func_i5_802C5850(void) {
+void RaceResults_SetModelMatrices(void) {
     s32 i;
     f32 temp_fv1; // FAKE: temp needed for match
     f32 temp_fa0; // FAKE: temp needed for match
@@ -56,8 +56,8 @@ void func_i5_802C5850(void) {
     Mtx spB0;
     Mtx sp70;
 
-    D_802C7B04 = 0x28 - D_i5_802C7A00;
-    func_800481E0(D_801CE5F8->unkA40, &D_802C7B06, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    D_i5_802C7B04 = 0x28 - D_i5_802C7A00;
+    func_800481E0(D_801CE5F8->unkA40, &D_i5_802C7B06, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
     func_80048A88(&spB0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.04f);
     temp_fv1 = COS(0) * 500.0f;
     temp_fa0 = SIN(0) * 500.0f;
@@ -70,7 +70,7 @@ void func_i5_802C5850(void) {
         SysUtils_MtxFToMtx(&spF4, &D_801CE5F8->unkA80[i]);
         D_801CE5F8->unk1280[i] = D_i5_802C7A08;
         if (i & 1) {
-            D_801CE5F8->unk1280[i].vp.vtrans[0] = (D_802C7B04 + 0x42) << 2;
+            D_801CE5F8->unk1280[i].vp.vtrans[0] = (D_i5_802C7B04 + 0x42) << 2;
         } else {
             D_801CE5F8->unk1280[i].vp.vtrans[0] = (D_i5_802C7A00 + 0x42) << 2;
         }
@@ -78,7 +78,7 @@ void func_i5_802C5850(void) {
     }
 }
 
-void func_i5_802C5A98(void) {
+void RaceResults_CheckQualified(void) {
     s32 last = D_i5_802C7A2C[gDifficulty];
     s32 need = D_800EABBC[gDifficulty][D_801CB334];
 
@@ -94,20 +94,20 @@ void func_i5_802C5A98(void) {
                     D_801CB280 |= 8;
                 }
             }
-            D_802C7B08 = 0x66;
-            D_802C7B00 = 2;
+            D_i5_802C7B08 = 0x66;
+            D_i5_802C7B00 = 2;
         } else {
-            D_802C7B08 = 0x1E;
-            D_802C7B00 = 1;
+            D_i5_802C7B08 = 0x1E;
+            D_i5_802C7B00 = 1;
         }
     } else {
-        D_802C7B08 = 0x5A;
-        D_802C7B00 = 0;
+        D_i5_802C7B08 = 0x5A;
+        D_i5_802C7B00 = 0;
     }
-    func_800C21F4(3, (D_802C7B00 != 0) ? 0 : 1);
+    func_800C21F4(3, (D_i5_802C7B00 != 0) ? 0 : 1);
 }
 
-Gfx* func_i5_802C5C1C(Gfx* gdl) {
+Gfx* RaceResults_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == GAME_STATE_RACE_RESULTS) {
@@ -121,7 +121,7 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     gdl = func_800949B8(gdl, gCourseID);
     gdl = func_8008FB74(gdl);
     gdl = Draw_WaterEffects(gdl);
-    gdl = func_i5_802C5DC0(gdl);
+    gdl = RaceResults_DrawTable(gdl);
 
     if (gGameState == GAME_STATE_RACE_RESULTS) {
         RaceResults_Update();
@@ -151,7 +151,7 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_i5_802C5DC0(Gfx* gdl) {
+Gfx* RaceResults_DrawTable(Gfx* gdl) {
     s32 i;
     s32 mode;
     s32 showPoints;
@@ -171,7 +171,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
     s32 rider;
     s32 panelMode;
     s32 pad; // stack pad
-    UnkStruct_func_i8_802C6E00* name;
+    PlayerName* name;
     char placeBuf[12];
     char valueBuf[12];
 
@@ -201,11 +201,11 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
 
     gSPDisplayList(gdl++, D_106F628);
     gdl = func_80094338(gdl, panelMode, D_i5_802C7A00 + titleX + 8, 25, titleW, 24);
-    gdl = func_80094338(gdl, panelMode, D_802C7B04 + 8, 52, 265, 16);
+    gdl = func_80094338(gdl, panelMode, D_i5_802C7B04 + 8, 52, 265, 16);
     gdl = func_80094338(gdl, panelMode, D_i5_802C7A00 + 8, 199, 265, 16);
     for (i = 0; i < 4; i++) {
         if (i & 1) {
-            x = D_802C7B04;
+            x = D_i5_802C7B04;
         } else {
             x = D_i5_802C7A00;
         }
@@ -221,14 +221,14 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
         gdl = func_801E3EE0(gdl, 2, 21, D_i5_802C7A00 + 41, 28, 0);
         gdl = func_801E3EE0(gdl, 1, 6, D_i5_802C7A00 + 24, 202, 0);
     }
-    gdl = func_801E3EE0(gdl, 1, 31, D_802C7B04 + 13, 55, 0);
-    gdl = func_801E3EE0(gdl, 1, 32, D_802C7B04 + 109, 55, 0);
-    gdl = func_801E3EE0(gdl, 1, 58, D_802C7B04 + 215, 55, 0);
+    gdl = func_801E3EE0(gdl, 1, 31, D_i5_802C7B04 + 13, 55, 0);
+    gdl = func_801E3EE0(gdl, 1, 32, D_i5_802C7B04 + 109, 55, 0);
+    gdl = func_801E3EE0(gdl, 1, 58, D_i5_802C7B04 + 215, 55, 0);
 
     gdl = func_801E7E74(gdl, 0, 0, 0, 255);
     for (i = 0; i < 4; i++) {
         if (i & 1) {
-            x = D_802C7B04;
+            x = D_i5_802C7B04;
         } else {
             x = D_i5_802C7A00;
         }
@@ -241,7 +241,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
     rank = count = tieRank = 1;
     for (i = 0; i < 4; i++) {
         if (i & 1) {
-            x = D_802C7B04;
+            x = D_i5_802C7B04;
         } else {
             x = D_i5_802C7A00;
         }
@@ -305,7 +305,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
                 valueMode = 0;
             } else if (gPlayer1Rider != D_800DA9DC[i]) {
                 valueMode = 0;
-            } else if (D_802C7B00 != 0) {
+            } else if (D_i5_802C7B00 != 0) {
                 valueMode = 6;
             } else {
                 do { // FAKE: an empty block; it keeps the final loop's index in memory, as in the original
@@ -359,7 +359,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
     }
 
     if (showPoints == 0) {
-        if (D_802C7B00 != 0) {
+        if (D_i5_802C7B00 != 0) {
             mode = 0;
         } else {
             mode = 4;
@@ -369,7 +369,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
     } else {
         if (D_801CE640 < 6) {
             mode = 0;
-        } else if (D_802C7B00 != 0) {
+        } else if (D_i5_802C7B00 != 0) {
             mode = 6;
         } else {
             mode = 4;
@@ -378,7 +378,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
         gdl = Printer_DrawNumber(gdl, 2, D_800EABBC[gDifficulty][D_801CB334], D_i5_802C7A00 + 242, 201);
     }
 
-    gSPPerspNormalize(gdl++, D_802C7B06);
+    gSPPerspNormalize(gdl++, D_i5_802C7B06);
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gdl++, D_106F488);
     for (i = 0; i < 4; i++) {
@@ -389,7 +389,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
         } else {
             rider = D_800DA9B0[D_801CE718[i]];
         }
-        gdl = func_801E4FE8(gdl, rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, rider, 0, 0, D_801CE5F8->unkC80[i]);
     }
     return gdl;
 }
@@ -440,18 +440,18 @@ void RaceResults_Update(void) {
             if (D_i5_802C7A00 > 0x14) {
                 D_801CE640 = 5;
                 D_i5_802C7A00 = 0x14;
-                D_802C7B0C = 0;
+                D_i5_802C7B0C = 0;
             }
             break;
 
         case 5:
-            if (D_802C7B0C < 0x10) {
-                D_802C7B0C++;
+            if (D_i5_802C7B0C < 0x10) {
+                D_i5_802C7B0C++;
             }
-            if ((D_802C7B0C == 6) && (D_802C7B00 == 1)) {
+            if ((D_i5_802C7B0C == 6) && (D_i5_802C7B00 == 1)) {
                 func_800C3E4C();
             }
-            if (D_802C7B0C >= 6) {
+            if (D_i5_802C7B0C >= 6) {
                 if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
                     D_801CE640 = 6;
                     D_801CE644 = 0;
@@ -463,8 +463,8 @@ void RaceResults_Update(void) {
         case 6:
             D_801CE644++;
             if (D_801CE644 >= 0x1E) {
-                if (D_802C7B08 != 0x5A) {
-                    func_i5_802C6F84(D_802C7B08);
+                if (D_i5_802C7B08 != 0x5A) {
+                    RaceResults_Leave(D_i5_802C7B08);
                 } else {
                     D_801CE640 = 7;
                     playSound = true;
@@ -487,7 +487,7 @@ void RaceResults_Update(void) {
     }
 }
 
-void func_i5_802C6F84(s32 arg0) {
+void RaceResults_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x35;

@@ -34,7 +34,7 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1287: the float constants (1.0f, 3.0f, the literal) take different saved FP registers, and the int 3 is not hoisted into s0; the literal is a FAKE local (its rodata is in the F6010 data blob).
+// Score 1287 of 37200: the float constants (1.0f, 3.0f, the literal) take different saved FP registers, and the int 3 is not hoisted into s0; the literal is a FAKE local (its rodata is in the F6010 data blob).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern char D_802279F8[];
@@ -171,7 +171,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 10384: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered.
+// Score 12094 of 68000: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -341,7 +341,7 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 9598: the loop's register allocation and constant hoisting differ throughout; frame 0xD8, not 0xE0.
+// Score 9598 of 25000: the loop's register allocation and constant hoisting differ throughout; frame 0xD8, not 0xE0.
 extern Gfx D_10146B0[];
 extern f32 D_80227A58;
 extern u32 D_804C008[];

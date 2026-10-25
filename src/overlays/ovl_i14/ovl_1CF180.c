@@ -4,32 +4,27 @@ extern s32 D_801C2650;
 extern s32 D_801C2654;
 extern s32 D_801CB334;
 
-typedef struct {
-    /* 0x0 */ s16 x;
-    /* 0x4 */ s32 texture;
-} UnkStruct_i14_802C60F4; // size = 0x8
+extern TexLabel D_i14_802C60F4[];
+extern TexLabel D_i14_802C6114[];
 
-extern UnkStruct_i14_802C60F4 D_i14_802C60F4[];
-extern UnkStruct_i14_802C60F4 D_i14_802C6114[];
-
-void func_i14_802C5840(void);
-Gfx* func_i14_802C5B70(Gfx*);
-void func_i14_802C5F60(void);
+void PostRaceMenu_Init(void);
+Gfx* PostRaceMenu_DrawMenu(Gfx*);
+void PostRaceMenu_Input(void);
 s32 Save_EepromWriteCourse(s32);
 s32 Save_EepromWriteRecord5(s32);
 s32 Save_EepromWriteStunt(s32);
 void GameState_EnterCourseOverview(void);
 
-void func_i14_802C5800(void) {
+void PostRaceMenu_OverlayUpdate(void) {
     if ((D_801CE63C != 0) && (gGameState == 0x50)) {
-        func_i14_802C5840();
+        PostRaceMenu_Init();
     }
 }
 
-void func_i14_802C5840(void) {
+void PostRaceMenu_Init(void) {
     s32 flag = 0;
 
-    D_802C61EC = 4;
+    D_i14_802C61EC = 4;
 
     if (D_801CE608.gameMode == 4) {
         if (gPrevGameState == 0x43) {
@@ -40,23 +35,23 @@ void func_i14_802C5840(void) {
     }
 
     if (D_801CE608.gameMode == 4) {
-        D_802C61EC = 2;
+        D_i14_802C61EC = 2;
     }
 
     if (flag != 0) {
-        D_802C61E0 = 1;
-        D_802C61E4 = D_802C61E8 = 0x4C;
+        D_i14_802C61E0 = 1;
+        D_i14_802C61E4 = D_i14_802C61E8 = 0x4C;
         return;
     }
 
-    D_802C61E0 = 0;
-    D_802C61E4 = 0x140;
-    D_802C61E8 = -0xA9;
+    D_i14_802C61E0 = 0;
+    D_i14_802C61E4 = 0x140;
+    D_i14_802C61E8 = -0xA9;
 
     AudioGeneral_PlaySound(0x31, 0);
 }
 
-Gfx* func_i14_802C5924(Gfx* dList) {
+Gfx* PostRaceMenu_Draw(Gfx* dList) {
     s32 flag;
 
     if (D_801CE63C != 0) {
@@ -79,10 +74,10 @@ Gfx* func_i14_802C5924(Gfx* dList) {
     }
 
     D_800DAB2C = 0;
-    dList = func_i14_802C5B70(Draw_WaterEffects(func_800949B8(func_8008FB74(dList), gCourseID)));
+    dList = PostRaceMenu_DrawMenu(Draw_WaterEffects(func_800949B8(func_8008FB74(dList), gCourseID)));
 
     if (gGameState == 0x50) {
-        func_i14_802C5F60();
+        PostRaceMenu_Input();
     } else if (D_80228A16 == 1) {
         if (D_801CE608.gameMode == 0) {
             if ((D_801C2650 != 0) || (D_801C2654 != 0)) {
@@ -125,18 +120,18 @@ Gfx* func_i14_802C5924(Gfx* dList) {
     return dList;
 }
 
-Gfx* func_i14_802C5B70(Gfx* gdl) {
+Gfx* PostRaceMenu_DrawMenu(Gfx* gdl) {
     s32 i;
     s32 x;
-    UnkStruct_i14_802C60F4* item;
+    TexLabel* item;
 
     gSPDisplayList(gdl++, D_106F628);
 
-    for (i = 0; i < D_802C61EC; i++) {
+    for (i = 0; i < D_i14_802C61EC; i++) {
         if (i & 1) {
-            x = D_802C61E4;
+            x = D_i14_802C61E4;
         } else {
-            x = D_802C61E8;
+            x = D_i14_802C61E8;
         }
         gdl = func_80094338(gdl, 0, x + 8, i * 18 + 97, 169, 16);
     }
@@ -148,13 +143,13 @@ Gfx* func_i14_802C5B70(Gfx* gdl) {
     } else {
         item = D_i14_802C60F4;
     }
-    for (i = 0; i < D_802C61EC; i++, item++) {
+    for (i = 0; i < D_i14_802C61EC; i++, item++) {
         if (i != D_i14_802C60F0) {
             if (i & 1) {
-                x = D_802C61E4;
+                x = D_i14_802C61E4;
                 if (1) {} // FAKE: the original's s3/s4/s5 order for the three globals
             } else {
-                x = D_802C61E8;
+                x = D_i14_802C61E8;
             }
             gdl = func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
         }
@@ -162,9 +157,9 @@ Gfx* func_i14_802C5B70(Gfx* gdl) {
 
     i = D_i14_802C60F0;
     if (i & 1) {
-        x = D_802C61E4;
+        x = D_i14_802C61E4;
     } else {
-        x = D_802C61E8;
+        x = D_i14_802C61E8;
     }
     if (D_801CE608.gameMode == 4) {
         item = &D_i14_802C6114[i];
@@ -175,7 +170,7 @@ Gfx* func_i14_802C5B70(Gfx* gdl) {
     return func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
 }
 
-void func_i14_802C5E5C(s32 arg0) {
+void PostRaceMenu_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x51;
@@ -206,14 +201,14 @@ void func_i14_802C5E5C(s32 arg0) {
     }
 }
 
-void func_i14_802C5F60(void) {
-    if (D_802C61E0 == 0) {
-        D_802C61E4 -= 0x14;
-        if (D_802C61E4 < 0x4C) {
-            D_802C61E0 = 1;
-            D_802C61E4 = 0x4C;
+void PostRaceMenu_Input(void) {
+    if (D_i14_802C61E0 == 0) {
+        D_i14_802C61E4 -= 0x14;
+        if (D_i14_802C61E4 < 0x4C) {
+            D_i14_802C61E0 = 1;
+            D_i14_802C61E4 = 0x4C;
         }
-        D_802C61E8 = 0x98 - D_802C61E4;
+        D_i14_802C61E8 = 0x98 - D_i14_802C61E4;
         return;
     }
 
@@ -224,9 +219,9 @@ void func_i14_802C5F60(void) {
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
         if (D_801CE608.gameMode == 4) {
-            func_i14_802C5E5C(D_i14_802C6134[D_i14_802C60F0]);
+            PostRaceMenu_Leave(D_i14_802C6134[D_i14_802C60F0]);
         } else {
-            func_i14_802C5E5C(D_i14_802C6124[D_i14_802C60F0]);
+            PostRaceMenu_Leave(D_i14_802C6124[D_i14_802C60F0]);
         }
         AudioGeneral_PlaySound(0x11, 0);
         return;
@@ -234,14 +229,14 @@ void func_i14_802C5F60(void) {
 
     if (D_801CE65A[0].unk0 & U_JPAD) {
         if (--D_i14_802C60F0 < 0) {
-            D_i14_802C60F0 = D_802C61EC - 1;
+            D_i14_802C60F0 = D_i14_802C61EC - 1;
         }
         AudioGeneral_PlaySound(0x10, 0);
         return;
     }
 
     if (D_801CE65A[0].unk0 & D_JPAD) {
-        if (++D_i14_802C60F0 >= D_802C61EC) {
+        if (++D_i14_802C60F0 >= D_i14_802C61EC) {
             D_i14_802C60F0 = 0;
         }
         AudioGeneral_PlaySound(0x10, 0);

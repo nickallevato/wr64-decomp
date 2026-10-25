@@ -470,6 +470,13 @@ typedef struct TexEntry {
     /* 0x4 */ u32 width;
 } TexEntry; /* size = 0x8 */
 
+// A label drawn with func_801E3EE0: an x offset and a texture index (menu rows, tabs and titles of
+// the overlay screens: ovl_i3, i4, i7, i10, i11, i13, i14).
+typedef struct TexLabel {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} TexLabel; // size = 0x8
+
 typedef struct UnkStruct_802C96A8 {
     /* 0x00 */ s32 unk_0;
     /* 0x04 */ s32 unk_4;
@@ -693,10 +700,12 @@ typedef struct ControllerBase {
     /* 0x9 */ s8 unk_9;
 } ControllerBase; // size 0xA
 
-typedef struct UnkStruct_func_i8_802C6E00 {
+// An entry of gPlayerNames: the name (10 characters and a NUL) and the custom stats edited on the
+// rider select screen (unk_B[0..2], 0..11).
+typedef struct PlayerName {
     /* 0x0 */ s8 unk_0[0xB];
     /* 0xB */ s8 unk_B[0x3];
-} UnkStruct_func_i8_802C6E00;
+} PlayerName;
 
 typedef struct UnkStruct_8004B0F8_1 {
     f32 unk0;
@@ -1349,9 +1358,7 @@ typedef struct UnkStruct_801CE5F8_s {
     char pad7C0[0x280];
     Mtx unkA40[1];
     Mtx unkA80[8];
-    Mtx unkC80[9]; /* three per rider model on the records screen */
-    char padEC0[0x380];
-    char pad2[0x40];
+    Mtx unkC80[8][3]; /* three per rider model, one model per unkA80/unk1280 slot */
     Vp unk1280[8];
     Mtx unk1300[1];
     Mtx unk1340[1];
