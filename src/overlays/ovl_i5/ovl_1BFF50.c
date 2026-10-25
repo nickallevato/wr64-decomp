@@ -2,6 +2,10 @@
 
 extern s32 D_801CB288[];
 extern s32 D_801CB334;
+extern s32 D_801CB340[];
+extern const s16 D_800EABBC[][8];
+extern RiderStruct gRiderRaceState[];
+extern s32 D_i5_802C7A2C[];
 extern s16 D_i5_802C7A00;
 extern Vp D_i5_802C7A08;
 extern s32 D_802C7B00;
@@ -59,7 +63,34 @@ void func_i5_802C5850(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5A98.s")
+void func_i5_802C5A98(void) {
+    s32 last = D_i5_802C7A2C[gDifficulty];
+    s32 need = D_800EABBC[gDifficulty][D_801CB334];
+
+    if (D_801CB340[gPlayer1Rider] >= need) {
+        if (D_801CB334 >= last) {
+            if (gDifficulty == DIFFICULTY_NORMAL) {
+                D_801CB280 |= 1;
+            } else if (gDifficulty == DIFFICULTY_HARD) {
+                D_801CB280 |= 2;
+            } else if (gDifficulty == DIFFICULTY_EXPERT) {
+                D_801CB280 |= 4;
+                if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
+                    D_801CB280 |= 8;
+                }
+            }
+            D_802C7B08 = 0x66;
+            D_802C7B00 = 2;
+        } else {
+            D_802C7B08 = 0x1E;
+            D_802C7B00 = 1;
+        }
+    } else {
+        D_802C7B08 = 0x5A;
+        D_802C7B00 = 0;
+    }
+    func_800C21F4(3, (D_802C7B00 != 0) ? 0 : 1);
+}
 
 Gfx* func_i5_802C5C1C(Gfx* gdl) {
     if (D_801CE63C != 0) {
