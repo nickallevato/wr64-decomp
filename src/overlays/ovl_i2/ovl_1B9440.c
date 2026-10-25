@@ -3,6 +3,7 @@
 extern s32 D_800DA9C8[];
 
 extern s32 D_i2_802C8BD8[];
+extern u16 D_80B0008[];
 
 struct SelectionState {
     s32 ready[2];
@@ -261,7 +262,24 @@ void func_i2_802C84EC(s32 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C86E4.s")
+Gfx* func_i2_802C86E4(Gfx* gdl, s32 x, s32 y) {
+    s32 offset;
+    s32 i;
+    s32 height;
+
+    for (offset = 0, i = 0; i < 105; i += 15, offset += 0x79E) {
+        if (i != 90) {
+            height = 15;
+        } else {
+            height = 2;
+        }
+        gDPLoadTextureTile(gdl++, D_80B0008 + offset, G_IM_FMT_RGBA, G_IM_SIZ_16b, 130, height, 0, 0, 129, height - 1,
+                           0, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+        gSPTextureRectangle(gdl++, (x + 8) << 2, (y + i + 20) << 2, (x + 138) << 2, (y + i + height + 20) << 2, 0, 0, 0,
+                            1 << 10, 1 << 10);
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C88DC.s")
 
