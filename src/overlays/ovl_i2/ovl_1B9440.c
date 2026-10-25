@@ -18,7 +18,22 @@ s16 D_802C8C70[4];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5800.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5AE4.s")
+void func_i2_802C5AE4(void) {
+    s32 i;
+
+    for (i = 0; i < 2; i++) {
+        D_802C8C58.ready[i] = 0;
+        D_802C8C60[i] = 0;
+        D_801CE6F4[i] = i;
+    }
+    // A do-while: the same for loop unrolls in another store order.
+    i = 0;
+    do {
+        D_802C8C70[i] = 0;
+    } while (++i < 4);
+    D_802C8C68 = 0;
+    D_802C8C6A = 0;
+}
 
 void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
