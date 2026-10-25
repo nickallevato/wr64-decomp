@@ -34,6 +34,12 @@ extern s32 D_802C8EB4;
 extern s32 D_802C8EB8;
 extern s32 D_802C8EBC;
 
+extern u8 D_8065078[];
+extern u8 D_8067048[];
+extern u8 D_8068E50[];
+extern u8 D_806AA78[];
+extern u8 D_806C880[];
+
 s32 Save_EepromReset(void);
 s32 func_8007D2D4(s32);
 s32 func_8007D614(s32);
@@ -739,7 +745,79 @@ Gfx* func_i13_802C832C(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C8484.s")
+Gfx* func_i13_802C8484(Gfx* gdl, s32 arg1) {
+    s32 i;
+
+    if (arg1 == 0) {
+        gdl = Printer_SetMode(gdl, 4, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    } else {
+        gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    }
+
+    switch (D_802C8E9C) {
+        case 0:
+            for (i = 0; i < 2; i++) {
+                gDPLoadTextureTile(gdl++, &D_806AA78[i * 256 * 15], G_IM_FMT_IA, G_IM_SIZ_8b, 256, 15, 0, 0, 255, 14, 0,
+                                   G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                gSPTextureRectangle(gdl++, 32 << 2, (73 + i * 15) << 2, 288 << 2, (88 + i * 15) << 2, 0, 0, 0, 1 << 10,
+                                    1 << 10);
+            }
+            break;
+
+        case 1:
+            gdl = func_801E3EE0(gdl, 3, 7, 72, 80, 2);
+            break;
+
+        case 3:
+            gdl = func_801E3EE0(gdl, 3, 9, 68, 80, 2);
+            break;
+
+        case 2:
+            for (i = 0; i < 2; i++) {
+                gDPLoadTextureTile(gdl++, &D_806C880[i * 192 * 15], G_IM_FMT_IA, G_IM_SIZ_8b, 192, 15, 0, 0, 191, 14, 0,
+                                   G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                gSPTextureRectangle(gdl++, 67 << 2, (73 + i * 15) << 2, 259 << 2, (88 + i * 15) << 2, 0, 0, 0, 1 << 10,
+                                    1 << 10);
+            }
+            break;
+
+        case 4:
+            for (i = 0; i < 2; i++) {
+                gDPLoadTextureTile(gdl++, &D_8068E50[i * 240 * 15], G_IM_FMT_IA, G_IM_SIZ_8b, 240, 15, 0, 0, 239, 14, 0,
+                                   G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                gSPTextureRectangle(gdl++, 46 << 2, (73 + i * 15) << 2, 286 << 2, (88 + i * 15) << 2, 0, 0, 0, 1 << 10,
+                                    1 << 10);
+            }
+            break;
+
+        case 5:
+            for (i = 0; i < 2; i++) {
+                gDPLoadTextureTile(gdl++, &D_8067048[i * 256 * 15], G_IM_FMT_IA, G_IM_SIZ_8b, 256, 15, 0, 0, 255, 14, 0,
+                                   G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                gSPTextureRectangle(gdl++, 33 << 2, (73 + i * 15) << 2, 289 << 2, (88 + i * 15) << 2, 0, 0, 0, 1 << 10,
+                                    1 << 10);
+            }
+            break;
+
+        case 6:
+            for (i = 0; i < 2; i++) {
+                gDPLoadTextureTile(gdl++, &D_8065078[i * 224 * 15], G_IM_FMT_IA, G_IM_SIZ_8b, 224, 15, 0, 0, 223, 14, 0,
+                                   G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                gSPTextureRectangle(gdl++, 53 << 2, (73 + i * 15) << 2, 277 << 2, (88 + i * 15) << 2, 0, 0, 0, 1 << 10,
+                                    1 << 10);
+            }
+            break;
+
+        case 7:
+            gdl = func_801E3EE0(gdl, 3, 15, 119, 80, 2);
+            break;
+
+        case 8:
+            gdl = func_801E3EE0(gdl, 3, 16, 120, 80, 2);
+            break;
+    }
+    return gdl;
+}
 
 void SaveLoad_Leave(void) {
     gPrevGameState = gGameState;
