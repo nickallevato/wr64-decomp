@@ -4,6 +4,14 @@ extern s32 D_801C2650;
 extern s32 D_801C2654;
 extern s32 D_801CB334;
 
+typedef struct {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} UnkStruct_i14_802C60F4; // size = 0x8
+
+extern UnkStruct_i14_802C60F4 D_i14_802C60F4[];
+extern UnkStruct_i14_802C60F4 D_i14_802C6114[];
+
 void func_i14_802C5840(void);
 Gfx* func_i14_802C5B70(Gfx*);
 void func_i14_802C5F60(void);
@@ -117,7 +125,55 @@ Gfx* func_i14_802C5924(Gfx* dList) {
     return dList;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i14/ovl_1CF180/func_i14_802C5B70.s")
+Gfx* func_i14_802C5B70(Gfx* gdl) {
+    s32 i;
+    s32 x;
+    UnkStruct_i14_802C60F4* item;
+
+    gSPDisplayList(gdl++, D_106F628);
+
+    for (i = 0; i < D_802C61EC; i++) {
+        if (i & 1) {
+            x = D_802C61E4;
+        } else {
+            x = D_802C61E8;
+        }
+        gdl = func_80094338(gdl, 0, x + 8, i * 18 + 97, 169, 16);
+    }
+
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+
+    if (D_801CE608.gameMode == 4) {
+        item = D_i14_802C6114;
+    } else {
+        item = D_i14_802C60F4;
+    }
+    for (i = 0; i < D_802C61EC; i++, item++) {
+        if (i != D_i14_802C60F0) {
+            if (i & 1) {
+                x = D_802C61E4;
+                if (1) {} // FAKE: the original's s3/s4/s5 order for the three globals
+            } else {
+                x = D_802C61E8;
+            }
+            gdl = func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
+        }
+    }
+
+    i = D_i14_802C60F0;
+    if (i & 1) {
+        x = D_802C61E4;
+    } else {
+        x = D_802C61E8;
+    }
+    if (D_801CE608.gameMode == 4) {
+        item = &D_i14_802C6114[i];
+    } else {
+        item = &D_i14_802C60F4[i];
+    }
+    gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    return func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
+}
 
 void func_i14_802C5E5C(s32 arg0) {
     gPrevGameState = gGameState;
