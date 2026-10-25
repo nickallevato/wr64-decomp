@@ -389,7 +389,7 @@ Gfx* func_i5_802C5DC0(Gfx* gdl) {
         } else {
             rider = D_800DA9B0[D_801CE718[i]];
         }
-        gdl = func_801E4FE8(gdl, rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        gdl = func_801E4FE8(gdl, rider, 0, 0, D_801CE5F8->unkC80[i]);
     }
     return gdl;
 }

@@ -423,11 +423,10 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 gSPDisplayList(gdl++, D_106F488);
                 gDPPipeSync(gdl++);
                 gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
-                // Each rider model has three matrices in unkC80, indexed here as one 0xC0-byte element.
                 for (i = 0; i < 4; i++) {
                     gSPViewport(gdl++, &D_7001280[i]);
                     gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                    gdl = func_801E4FE8(gdl, D_800DA9DC[i], 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[i]);
+                    gdl = func_801E4FE8(gdl, D_800DA9DC[i], 0, 0, D_801CE5F8->unkC80[i]);
                 }
                 break;
         }

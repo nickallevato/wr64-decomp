@@ -1260,7 +1260,7 @@ Gfx* func_i1_802C7E48(Gfx* dList) {
         } else if (rider == 3) {
             rider = 5;
         }
-        dList = func_801E4FE8(dList, rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+        dList = func_801E4FE8(dList, rider, 0, 0, D_801CE5F8->unkC80[i]);
     }
     return dList;
 }

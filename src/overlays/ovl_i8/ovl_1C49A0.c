@@ -328,16 +328,16 @@ Gfx* func_i8_802C63E4(Gfx* gdl) {
     gSPDisplayList(gdl++, D_106F488);
     gSPDisplayList(gdl++, D_8061F70);
     gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, D_801CE5F8->unkC80[0]);
     gSPDisplayList(gdl++, D_8061F80);
     gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, D_801CE5F8->unkC80[1]);
     gSPDisplayList(gdl++, D_8061F90);
     gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, D_801CE5F8->unkC80[2]);
     gSPDisplayList(gdl++, D_8061FA0);
     gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+    gdl = func_801E4FE8(gdl, 1, 0, 0, D_801CE5F8->unkC80[3]);
 
     gSPDisplayList(gdl++, D_8061EC0);
     gDPSetPrimColor(gdl++, 0, 0, D_802C7534, 255, D_802C7534, 255);

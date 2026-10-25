@@ -628,16 +628,16 @@ Gfx* func_i2_802C6ADC(Gfx* gdl) {
     gSPDisplayList(gdl++, D_106F488);
     gSPDisplayList(gdl++, D_80BE468);
     gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, D_801CE5F8->unkC80[0]);
     gSPDisplayList(gdl++, D_80BE478);
     gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, D_801CE5F8->unkC80[1]);
     gSPDisplayList(gdl++, D_80BE488);
     gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, D_801CE5F8->unkC80[2]);
     gSPDisplayList(gdl++, D_80BE498);
     gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    return func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+    return func_801E4FE8(gdl, 1, 0, 0, D_801CE5F8->unkC80[3]);
 }
 
 extern u16 D_80B6518[];
@@ -843,16 +843,16 @@ Gfx* func_i2_802C7C50(Gfx* gdl) {
     gSPDisplayList(gdl++, D_106F488);
     gSPDisplayList(gdl++, D_80BE468);
     gSPMatrix(gdl++, &D_7000A80[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+    gdl = func_801E4FE8(gdl, 0, 0, 0, D_801CE5F8->unkC80[0]);
     gSPDisplayList(gdl++, D_80BE478);
     gSPMatrix(gdl++, &D_7000A80[1], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+    gdl = func_801E4FE8(gdl, 2, 0, 0, D_801CE5F8->unkC80[1]);
     gSPDisplayList(gdl++, D_80BE488);
     gSPMatrix(gdl++, &D_7000A80[2], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+    gdl = func_801E4FE8(gdl, 3, 0, 0, D_801CE5F8->unkC80[2]);
     gSPDisplayList(gdl++, D_80BE498);
     gSPMatrix(gdl++, &D_7000A80[3], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    return func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+    return func_801E4FE8(gdl, 1, 0, 0, D_801CE5F8->unkC80[3]);
 }
 
 void func_i2_802C84EC(s32 arg0) {

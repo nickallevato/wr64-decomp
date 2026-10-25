@@ -783,16 +783,16 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
         gSPDisplayList(gdl++, D_106F488);
         gSPDisplayList(gdl++, D_806FDD0);
         gSPMatrix(gdl++, D_7000A80, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, 0, 0, 0, &D_801CE5F8->unkC80[0]);
+        gdl = func_801E4FE8(gdl, 0, 0, 0, D_801CE5F8->unkC80[0]);
         gSPDisplayList(gdl++, D_806FDE0);
         gSPMatrix(gdl++, D_7000AC0, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, 2, 0, 0, &D_801CE5F8->unkC80[3]);
+        gdl = func_801E4FE8(gdl, 2, 0, 0, D_801CE5F8->unkC80[1]);
         gSPDisplayList(gdl++, D_806FDF0);
         gSPMatrix(gdl++, D_7000B00, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, 3, 0, 0, &D_801CE5F8->unkC80[6]);
+        gdl = func_801E4FE8(gdl, 3, 0, 0, D_801CE5F8->unkC80[2]);
         gSPDisplayList(gdl++, D_806FE00);
         gSPMatrix(gdl++, D_7000B40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
+        gdl = func_801E4FE8(gdl, 1, 0, 0, D_801CE5F8->unkC80[3]);
     }
 
     gSPDisplayList(gdl++, D_806FAB0);

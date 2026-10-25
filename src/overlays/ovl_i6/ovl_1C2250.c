@@ -146,8 +146,6 @@ Gfx* func_i6_802C5C2C(Gfx* gdl) {
     gDPPipeSync(gdl++);
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 310, 218);
     gSPPerspNormalize(gdl++, D_802C6D40);
-    // Each rider model has three matrices in unkC80, indexed here as one 0xC0-byte element (the asm multiplies
-    // by 0xC0 once), as in func_i9_802C71AC.
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gdl++, D_106F488);
     for (i = 0; i < 3; i++) {
@@ -160,23 +158,23 @@ Gfx* func_i6_802C5C2C(Gfx* gdl) {
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         if (D_800DAB68 != 0) {
             if (i == 0) {
-                gdl = func_801E4FE8(gdl, rec->unk4, 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[i]);
+                gdl = func_801E4FE8(gdl, rec->unk4, 0, 0, D_801CE5F8->unkC80[i]);
             }
         } else {
-            gdl = func_801E4FE8(gdl, rec->unk4, 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[i]);
+            gdl = func_801E4FE8(gdl, rec->unk4, 0, 0, D_801CE5F8->unkC80[i]);
         }
     }
     if (D_801C2650 == 0) {
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[i]);
+        gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, D_801CE5F8->unkC80[i]);
         i++;
     }
     if (D_800DAB68 == 0) {
         rec = &gBestLaps[gCourseID];
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, rec->unk4, 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[i]);
+        gdl = func_801E4FE8(gdl, rec->unk4, 0, 0, D_801CE5F8->unkC80[i]);
     }
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);

@@ -574,8 +574,7 @@ Gfx* func_i9_802C71AC(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y) {
     } else {
         count = 3;
     }
-    // Viewport and matrix by their segment 7 address (the pool D_801CE5F8 is segment 7); each rider model has three
-    // matrices in unkC80, indexed here as one 0xC0-byte element (the asm multiplies by 0xC0 once).
+    // Viewport and matrix by their segment 7 address (the pool D_801CE5F8 is segment 7).
     for (i = 0; i < count; i++) {
         if (kind == 1) {
             rider = gBestTimes[course][i].unk4;
@@ -587,13 +586,13 @@ Gfx* func_i9_802C71AC(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y) {
         gSPViewport(gdl++, &((UnkStruct_801CE5F8*) D_7000000)->unk1280[base + i]);
         gSPMatrix(gdl++, &((UnkStruct_801CE5F8*) D_7000000)->unkA80[base + i],
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, rider, 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[base + i]);
+        gdl = func_801E4FE8(gdl, rider, 0, 0, D_801CE5F8->unkC80[base + i]);
     }
     if (kind == 1) {
         gSPViewport(gdl++, &((UnkStruct_801CE5F8*) D_7000000)->unk1280[base + i]);
         gSPMatrix(gdl++, &((UnkStruct_801CE5F8*) D_7000000)->unkA80[base + i],
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, gBestLaps[course].unk4, 0, 0, ((Mtx(*)[3]) D_801CE5F8->unkC80)[base + i]);
+        gdl = func_801E4FE8(gdl, gBestLaps[course].unk4, 0, 0, D_801CE5F8->unkC80[base + i]);
     }
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);

@@ -1356,9 +1356,7 @@ typedef struct UnkStruct_801CE5F8_s {
     char pad7C0[0x280];
     Mtx unkA40[1];
     Mtx unkA80[8];
-    Mtx unkC80[9]; /* three per rider model on the records screen */
-    char padEC0[0x380];
-    char pad2[0x40];
+    Mtx unkC80[8][3]; /* three per rider model, one model per unkA80/unk1280 slot */
     Vp unk1280[8];
     Mtx unk1300[1];
     Mtx unk1340[1];
