@@ -457,3 +457,19 @@ Demo_Leave = 0x802C9380; //segment:ovl_i1
 //   RaceStandings_Update 0x802C7608
 //   RaceStandings_Draw 0x802C7D00
 //   Demo_Draw 0x802C913C
+
+// ovl_i2, rider select (GAME_STATE_RIDER_SELECT, GAME_STATE_B)
+RiderSelect_OverlayUpdate = 0x802C5800; //segment:ovl_i2
+RiderSelect_DecrementStat = 0x802C676C; //segment:ovl_i2
+RiderSelect_IncrementStat = 0x802C67E4; //segment:ovl_i2
+RiderSelect_Confirm = 0x802C6864; //segment:ovl_i2
+RiderSelect_Draw1P = 0x802C6ADC; //segment:ovl_i2
+RiderSelect_DrawPlayer = 0x802C70EC; //segment:ovl_i2
+RiderSelect_Draw2P = 0x802C7C50; //segment:ovl_i2
+RiderSelect_Leave = 0x802C84EC; //segment:ovl_i2
+RiderSelect_DrawPicture = 0x802C86E4; //segment:ovl_i2
+RiderSelect_DrawBackground = 0x802C88DC; //segment:ovl_i2
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   RiderSelect_Init 0x802C5AE4
+//   RiderSelect_Draw 0x802C5B4C
