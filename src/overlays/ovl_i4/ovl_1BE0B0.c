@@ -330,13 +330,15 @@ Gfx* func_i4_802C5CDC(Gfx* dList) {
 }
 
 #ifdef NON_MATCHING
-// Score 5050 of 14700. The commands and their order match; IDO here keeps the second 0xB6000000 (clear geometry
-// mode) word in a register, runs out of registers and spills five display-list pointers to a 0x70 stack frame,
-// where the original needs no frame.
+// Score 1845 of 14700: scheduling and register numbering of a few command stores (the perspective normalisation,
+// viewport and environment colour words, the ends of the two model lists). Written plainly IDO keeps a second
+// 0xB6000000 word in a register and spills to a 0x70 frame (5050); the block break and the `geometry` variable
+// (found by the permuter) remove that.
 Gfx* func_i4_802C6778(Gfx* dList) {
     s32 course = D_800DAAD8[D_800DA9D0];
     u32* models;
     s32 offset;
+    s32 geometry;
 
     if (D_i4_802C7534 == 0) {
         models = D_800DB5F8[course];
@@ -354,15 +356,17 @@ Gfx* func_i4_802C6778(Gfx* dList) {
     gSPDisplayList(dList++, D_106F748);
     gDPSetEnvColor(dList++, 255, 255, 255, 255);
     gDPSetScissor(dList++, G_SC_NON_INTERLACE, 150, 53, 292, 159);
+    geometry = G_LIGHTING;
     offset = course * 0x8000 + 0x10000;
     gSPDisplayList(dList++, D_800DB5B0[course][0] + offset);
-    gSPClearGeometryMode(dList++, G_LIGHTING);
+    if (1) {} // FAKE: without this block break IDO spills display-list pointers to the stack
+    gSPClearGeometryMode(dList++, geometry);
     gSPDisplayList(dList++, models[0] + offset);
-    gSPSetGeometryMode(dList++, G_LIGHTING);
+    gSPSetGeometryMode(dList++, geometry);
     gDPPipeSync(dList++);
     gDPSetRenderMode(dList++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
     gSPDisplayList(dList++, D_800DB5B0[course][1] + offset);
-    gSPClearGeometryMode(dList++, G_LIGHTING);
+    gSPClearGeometryMode(dList++, geometry);
     gSPDisplayList(dList++, models[1] + offset);
     gDPPipeSync(dList++);
     gDPSetScissor(dList++, G_SC_NON_INTERLACE, 0, 0, 319, 239);
