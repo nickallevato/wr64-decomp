@@ -21,6 +21,21 @@ extern s32 D_801CE708[4];
 extern s32 D_802C7020;
 extern s32 D_i3_802C6F8C;
 extern s32 D_i3_802C6FE4[];
+extern s32 D_i3_802C6F64;
+extern s32 D_i3_802C6F68;
+extern s32 D_i3_802C6F6C;
+extern s32 D_i3_802C6F70;
+extern s32 D_i3_802C6F74;
+extern s32 D_i3_802C6F78;
+extern s32 D_i3_802C6F7C;
+
+typedef struct {
+    /* 0x0 */ s16 x;
+    /* 0x4 */ s32 texture;
+} UnkStruct_i3_802C6FB4; // size = 0x8
+
+extern UnkStruct_i3_802C6FB4 D_i3_802C6FB4[];
+extern UnkStruct_i3_802C6FB4 D_i3_802C6FCC;
 
 void func_i3_802C5AE8(void);
 void func_i3_802C5AF0(void);
@@ -171,7 +186,94 @@ Gfx* func_i3_802C5B40(Gfx* arg0) {
     return arg0;
 }
 
+#ifdef NON_MATCHING
+// Score 4465 of 38000. The control flow and arithmetic match, but the original keeps the addresses of
+// D_i3_802C6F78 and D_i3_802C6F7C in registers (base-register stores in every case) where IDO here stores
+// through `lui at`, so the C is 0x20 bytes shorter and the overlay's data after it moves.
+Gfx* func_i3_802C5D54(Gfx* gdl) {
+    UnkStruct_i3_802C6FB4* label;
+
+    switch (D_i3_802C6F64) {
+        case 0:
+            if (++D_i3_802C6F68 >= 5) {
+                D_i3_802C6F64 = 1;
+                D_i3_802C6F74 = 0;
+                D_i3_802C6F68 = 0;
+            }
+            D_i3_802C6F7C = D_i3_802C6F70 = D_i3_802C6F6C = D_i3_802C6F78 = 0;
+            break;
+
+        case 1:
+            if (++D_i3_802C6F68 >= 20) {
+                D_i3_802C6F74++;
+            }
+            if (D_i3_802C6F68 >= 10) {
+                D_i3_802C6F6C = 255;
+                D_i3_802C6F70 = 170;
+            } else {
+                D_i3_802C6F6C = D_i3_802C6F68 * 255 / 10;
+                D_i3_802C6F70 = D_i3_802C6F68 * 170 / 10;
+            }
+            if (D_i3_802C6F74 >= 10) {
+                D_i3_802C6F78 = 255;
+                D_i3_802C6F7C = 170;
+            } else {
+                D_i3_802C6F78 = D_i3_802C6F74 * 255 / 10;
+                D_i3_802C6F7C = D_i3_802C6F74 * 170 / 10;
+            }
+            if ((D_i3_802C6F68 >= 10) && (D_i3_802C6F74 >= 10)) {
+                D_i3_802C6F64 = 2;
+                D_i3_802C6F6C = D_i3_802C6F78 = 255;
+                D_i3_802C6F7C = D_i3_802C6F70 = 170;
+                D_i3_802C6F68 = 0;
+                D_i3_802C6F74 = 0;
+            }
+            break;
+
+        case 2:
+            if (++D_i3_802C6F68 >= 25) {
+                D_i3_802C6F64 = 3;
+                D_i3_802C6F74 = 0;
+                D_i3_802C6F68 = 0;
+            }
+            D_i3_802C6F6C = D_i3_802C6F78 = 255;
+            D_i3_802C6F7C = D_i3_802C6F70 = 170;
+            break;
+
+        case 3:
+            if (++D_i3_802C6F68 >= 10) {
+                D_i3_802C6F64 = 0;
+                D_i3_802C6F68 = 0;
+                D_i3_802C6F6C = 0;
+                D_i3_802C6F70 = 0;
+                D_802C7028 = 1;
+            } else {
+                D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
+                D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
+            }
+            D_i3_802C6F78 = D_i3_802C6F6C;
+            D_i3_802C6F7C = D_i3_802C6F70;
+            break;
+    }
+
+    gSPDisplayList(gdl++, D_106F628);
+    gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, D_i3_802C6F70);
+    gdl = func_80094338(gdl, 2, 32, 75, 256, 32);
+    gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, D_i3_802C6F7C);
+    gdl = func_80094338(gdl, 0, 32, 133, 256, 32);
+    gdl = Printer_SetMode(gdl, 10, D_i3_802C6F6C, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 2, 34, 72, 81, 0);
+    gdl = Printer_SetMode(gdl, 10, D_i3_802C6F78, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    if (D_800DAB68 != 0) {
+        label = &D_i3_802C6FCC;
+    } else {
+        label = &D_i3_802C6FB4[gDifficulty];
+    }
+    return func_801E3EE0(gdl, 2, label->texture, label->x + 50, 139, 0);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i3/ovl_1BC890/func_i3_802C5D54.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i3/ovl_1BC890/func_i3_802C6344.s")
 
