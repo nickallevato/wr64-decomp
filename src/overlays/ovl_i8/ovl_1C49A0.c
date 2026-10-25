@@ -53,7 +53,19 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C6ADC.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C6D58.s")
+void func_i8_802C6D58(void) {
+    s32 i;
+    s8* p;
+
+    D_802C7564 = 0;
+    i = 0;
+    p = D_802C7548;
+    while (i < 11) {
+        *p = 0;
+        i++;
+        p++;
+    }
+}
 
 void ChangeNames_DeleteChar(void) {
     s8* src;
