@@ -565,3 +565,20 @@ EraseCourseRecords_Leave = 0x802C5EE4; //segment:ovl_i12
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   EraseCourseRecords_Input 0x802C5F6C
+
+// ovl_i13, save and load (GAME_STATE_OPTIONS_SAVE_AND_LOAD, 0x41)
+SaveLoad_OverlayUpdate = 0x802C5800; //segment:ovl_i13
+SaveLoad_Step0 = 0x802C61E0; //segment:ovl_i13
+SaveLoad_Step1 = 0x802C62EC; //segment:ovl_i13
+SaveLoad_Step3 = 0x802C64AC; //segment:ovl_i13
+SaveLoad_Step4 = 0x802C65D4; //segment:ovl_i13
+SaveLoad_Step8Popup = 0x802C6700; //segment:ovl_i13
+SaveLoad_Step5 = 0x802C69CC; //segment:ovl_i13
+SaveLoad_Step6 = 0x802C6ABC; //segment:ovl_i13
+SaveLoad_Step7 = 0x802C6BC4; //segment:ovl_i13
+SaveLoad_UpdateMessageBox = 0x802C7060; //segment:ovl_i13
+SaveLoad_DrawMessageBox = 0x802C832C; //segment:ovl_i13
+SaveLoad_DrawMessage = 0x802C8484; //segment:ovl_i13
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   SaveLoad_Draw 0x802C5F6C

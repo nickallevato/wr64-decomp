@@ -23,7 +23,7 @@ extern s32 D_i13_802C8DCC;
 extern s32 D_i13_802C8DD0;
 extern s32 D_i13_802C8DD4;
 extern s32 D_i13_802C8DE0[];
-// Message box position; u32: func_i13_802C832C only matches with them unsigned (copied into a1/a2 by moves)
+// Message box position; u32: SaveLoad_DrawMessageBox only matches with them unsigned (copied into a1/a2 by moves)
 extern u32 D_i13_802C8E90;
 extern u32 D_i13_802C8E94;
 extern s32 D_i13_802C8E9C;
@@ -73,13 +73,13 @@ s32 func_8007D614(s32);
 void func_800C3010(u32);
 void func_800C3E6C(s32);
 void SaveLoad_Update(void);
-s32 func_i13_802C6700(void);
-void func_i13_802C7060(void);
+s32 SaveLoad_Step8Popup(void);
+void SaveLoad_UpdateMessageBox(void);
 Gfx* func_i13_802C711C(Gfx*);
 void SaveLoad_OpenResultMessage(s32 arg0);
 void SaveLoad_OpenPromptMessage(s32 arg0);
-Gfx* func_i13_802C832C(Gfx*);
-Gfx* func_i13_802C8484(Gfx* gdl, s32 arg1);
+Gfx* SaveLoad_DrawMessageBox(Gfx*);
+Gfx* SaveLoad_DrawMessage(Gfx* gdl, s32 arg1);
 Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 Gfx* func_80093AFC(Gfx*);
@@ -90,7 +90,7 @@ s32 Save_PfsCheckFree(void);
 s32 Save_PfsDeleteFile(void);
 s32 Save_PfsFindFile(void);
 
-void func_i13_802C5800(void) {
+void SaveLoad_OverlayUpdate(void) {
     s32 i;
     f32 x;
     f32 z;
@@ -164,7 +164,7 @@ void func_i13_802C5800(void) {
     }
 }
 
-Gfx* func_i13_802C5F6C(Gfx* gdl) {
+Gfx* SaveLoad_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == GAME_STATE_OPTIONS_SAVE_AND_LOAD) {
@@ -179,13 +179,13 @@ Gfx* func_i13_802C5F6C(Gfx* gdl) {
         SaveLoad_OpenResultMessage(D_i13_802C8D74);
         D_i13_802C8D74 = 0;
     }
-    gdl = func_i13_802C832C(gdl);
+    gdl = SaveLoad_DrawMessageBox(gdl);
 
     if (gGameState == GAME_STATE_OPTIONS_SAVE_AND_LOAD) {
         if (D_i13_802C8D78 == 0) {
             SaveLoad_Update();
         } else {
-            func_i13_802C7060();
+            SaveLoad_UpdateMessageBox();
         }
     } else if (D_80228A16 == 1) {
         GameState_EnterOptionsMenu();
@@ -200,29 +200,29 @@ void SaveLoad_Update(void) {
 
     switch (D_801CE640) {
         case 0:
-            var_v1 = func_i13_802C61E0();
+            var_v1 = SaveLoad_Step0();
             break;
         case 1:
         case 2:
-            var_v1 = func_i13_802C62EC();
+            var_v1 = SaveLoad_Step1();
             break;
         case 3:
-            var_v1 = func_i13_802C64AC();
+            var_v1 = SaveLoad_Step3();
             break;
         case 4:
-            var_v1 = func_i13_802C65D4();
+            var_v1 = SaveLoad_Step4();
             break;
         case 8:
-            var_v1 = func_i13_802C6700();
+            var_v1 = SaveLoad_Step8Popup();
             break;
         case 5:
-            var_v1 = func_i13_802C69CC();
+            var_v1 = SaveLoad_Step5();
             break;
         case 6:
-            var_v1 = func_i13_802C6ABC();
+            var_v1 = SaveLoad_Step6();
             break;
         case 7:
-            var_v1 = func_i13_802C6BC4();
+            var_v1 = SaveLoad_Step7();
             break;
         case 11:
             var_v1 = SaveLoad_PakTransfer();
@@ -248,7 +248,7 @@ void SaveLoad_Update(void) {
     }
 }
 
-s32 func_i13_802C61E0(void) {
+s32 SaveLoad_Step0(void) {
     s32 var_v1 = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -279,7 +279,7 @@ s32 func_i13_802C61E0(void) {
     return var_v1;
 }
 
-s32 func_i13_802C62EC(void) {
+s32 SaveLoad_Step1(void) {
     s32 var_a1 = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -325,7 +325,7 @@ s32 func_i13_802C62EC(void) {
     return var_a1;
 }
 
-s32 func_i13_802C64AC(void) {
+s32 SaveLoad_Step3(void) {
     s32 var_v1 = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -359,7 +359,7 @@ s32 func_i13_802C64AC(void) {
     return var_v1;
 }
 
-s32 func_i13_802C65D4(void) {
+s32 SaveLoad_Step4(void) {
     s32 var_v1 = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -394,7 +394,7 @@ s32 func_i13_802C65D4(void) {
     return var_v1;
 }
 
-s32 func_i13_802C6700(void) {
+s32 SaveLoad_Step8Popup(void) {
     s32 var_a2 = 0;
     f32 pos;
     f32 size;
@@ -453,7 +453,7 @@ s32 func_i13_802C6700(void) {
     return var_a2;
 }
 
-s32 func_i13_802C69CC(void) {
+s32 SaveLoad_Step5(void) {
     s32 var_v1 = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -482,7 +482,7 @@ s32 func_i13_802C69CC(void) {
     return var_v1;
 }
 
-s32 func_i13_802C6ABC(void) {
+s32 SaveLoad_Step6(void) {
     s32 var_v1 = 0;
 
     D_i13_802C8D80 = 0;
@@ -514,7 +514,7 @@ s32 func_i13_802C6ABC(void) {
     return var_v1;
 }
 
-s32 func_i13_802C6BC4(void) {
+s32 SaveLoad_Step7(void) {
     s32 var_v1 = 0;
 
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
@@ -659,7 +659,7 @@ s32 SaveLoad_EraseOrReset(void) {
     return 0;
 }
 
-void func_i13_802C7060(void) {
+void SaveLoad_UpdateMessageBox(void) {
     switch (D_i13_802C8D78) {
         case 1:
             if (D_i13_802C8E98 >= 5) {
@@ -943,7 +943,7 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
         case 6:
             gdl = func_801E7E74(gdl, 0, 0, 0, 255);
             gdl = func_801E7FD8(gdl, D_i13_802C8E90, D_i13_802C8E94, D_i13_802C8E90 + 0x108, D_i13_802C8E94 + 0x28);
-            gdl = func_i13_802C8484(gdl, 1);
+            gdl = SaveLoad_DrawMessage(gdl, 1);
             if (D_i13_802C8D84 == 5) {
                 D_i13_802C8E98++;
                 if (D_i13_802C8E98 >= 2) {
@@ -1020,7 +1020,7 @@ void SaveLoad_OpenPromptMessage(s32 arg0) {
     }
 }
 
-Gfx* func_i13_802C832C(Gfx* gdl) {
+Gfx* SaveLoad_DrawMessageBox(Gfx* gdl) {
     s32 height;
 
     switch (D_i13_802C8D78) {
@@ -1042,13 +1042,13 @@ Gfx* func_i13_802C832C(Gfx* gdl) {
         case 5:
             gdl = func_801E7E74(gdl, 0, 0, 0, 255);
             gdl = func_801E7FD8(gdl, D_i13_802C8E90, D_i13_802C8E94, D_i13_802C8E90 + 0x108, D_i13_802C8E94 + 0x28);
-            gdl = func_i13_802C8484(gdl, 0);
+            gdl = SaveLoad_DrawMessage(gdl, 0);
             break;
     }
     return gdl;
 }
 
-Gfx* func_i13_802C8484(Gfx* gdl, s32 arg1) {
+Gfx* SaveLoad_DrawMessage(Gfx* gdl, s32 arg1) {
     s32 i;
 
     if (arg1 == 0) {
