@@ -531,8 +531,9 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
 // removes the velocity into the triangle, records the strongest push and its normal in arg0, and moves arg1's first
 // twelve points out by the depth.
 #ifdef NON_MATCHING
-// Same blocks; float registers differ: the original keeps 0.0f/16.0f in f28/f30 and the point's velocity in f22-f26,
-// and saves one more FP register pair. Score 245 of 26200.
+// Score 115 of 26200: only the float registers of the triangle normal and the point's velocity are swapped (the
+// original has the normal in f16-f20 and the velocity in f22-f26). dx/dy/dz are reused for the push, which puts them in
+// the original's f0/f2/f12.
 void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
     UnkStruct_801C3B84* tri;
     UnkStruct_8004B0F8_1* pt;
@@ -548,9 +549,6 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
     f32 d;
     f32 depth;
     f32 push;
-    f32 px;
-    f32 py;
-    f32 pz;
 
     for (pt = &arg1->unk30[arg1->unk28]; (u32) pt >= (u32) arg1->unk30; pt--) {
         x = (s32) pt->unk0 - D_801C3B44;
@@ -600,14 +598,14 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
             pt->unkC += push * tri->unkC;
             pt->unk10 += push * tri->unk10;
             pt->unk14 += push * tri->unk14;
-            px = tri->unkC * depth;
-            py = tri->unk10 * depth;
-            if (!dy) {} // FAKE: found by the permuter, moves the float registers closer
-            pz = tri->unk14 * depth;
+            dx = tri->unkC * depth;
+            dy = tri->unk10 * depth;
+            if (!dx) {} // FAKE: found by trying every spot; moves the float registers closer
+            dz = tri->unk14 * depth;
             for (q = arg1->unk30; (u32) q < (u32) &arg1->unk30[12]; q++) {
-                q->unk0 += px;
-                q->unk4 += py;
-                q->unk8 += pz;
+                q->unk0 += dx;
+                q->unk4 += dy;
+                q->unk8 += dz;
             }
         }
     }
