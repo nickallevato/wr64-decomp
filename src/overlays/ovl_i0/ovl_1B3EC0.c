@@ -48,8 +48,7 @@ s32 D_i0_802C6BE0 = 0;
 s32 D_i0_802C6BE4 = 0;
 s32 D_i0_802C6BE8 = 0;
 s32 D_i0_802C6BEC = 0;
-UnkStruct_i0_802C6BF0 D_i0_802C6BF0 = { 311, 392, 30 };
-UnkStruct_i0_802C6BF0 D_i0_802C6BFC = { 703, 424, 31 };
+UnkStruct_i0_802C6BF0 D_i0_802C6BF0[2] = { { 311, 392, 30 }, { 703, 424, 31 } };
 // Nothing refers to these by name.
 s16 D_i0_802C6C08[16] = { 0, 0, 2, 2, 2, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8, 0 };
 
@@ -219,5 +218,22 @@ void func_i0_802C6A1C(s32 arg0) {
     }
 }
 
-// Matched but needs data migration
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i0/ovl_1B3EC0/func_i0_802C6AE4.s")
+Gfx* func_i0_802C6AE4(Gfx* gdl) {
+    s32 i;
+    s32 gone = 0;
+    UnkStruct_i0_802C6BF0* item;
+
+    for (i = 0, item = D_i0_802C6BF0; i < 2; i++, item++) {
+        item->x -= 2;
+        if (item->x >= 8 - item->width) {
+            gdl = func_801E3EE0(gdl, 3, item->id, item->x, 196, 6);
+        } else {
+            gone++;
+        }
+    }
+    if (gone == 2) {
+        D_i0_802C6BF0[0].x = 311;
+        D_i0_802C6BF0[1].x = 703;
+    }
+    return gdl;
+}
