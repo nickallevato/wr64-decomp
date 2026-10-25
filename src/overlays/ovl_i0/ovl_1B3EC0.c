@@ -7,10 +7,91 @@ Gfx* func_i0_802C6AE4(Gfx*);
 void GameState_EnterDemo(void);
 extern s32 D_801519D4;
 extern s32 D_80154344;
-extern s32 D_i0_802C6BC4;
-extern s32 D_i0_802C6BC8;
-extern s32 D_i0_802C6BEC;
 extern s32 D_805AF88;
+
+typedef struct {
+    /* 0x00 */ s16 unk0; // -1, or the index of the menu it opens in D_i0_802C6E08
+    /* 0x02 */ s16 unk2;
+    /* 0x04 */ s32 gameMode;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s16 player;
+    /* 0x12 */ s16 rider;
+    /* 0x14 */ s16 difficulty;
+    /* 0x16 */ s16 unk16;
+} UnkStruct_i0_802C6C28; // size = 0x18
+
+typedef struct {
+    /* 0x00 */ UnkStruct_i0_802C6C28* items;
+    /* 0x04 */ s32 count;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} UnkStruct_i0_802C6E08; // size = 0x18
+
+typedef struct {
+    /* 0x0 */ s32 x;
+    /* 0x4 */ s32 width;
+    /* 0x8 */ s32 id;
+} UnkStruct_i0_802C6BF0; // size = 0xC
+
+s32 D_i0_802C6BC0 = 0;
+s32 D_i0_802C6BC4 = 0;
+s32 D_i0_802C6BC8 = 0;
+s32 D_i0_802C6BCC = 0;
+s32 D_i0_802C6BD0 = 78;
+s32 D_i0_802C6BD4 = 1;
+s32 D_i0_802C6BD8 = 0;
+s32 D_i0_802C6BDC = 0;
+s32 D_i0_802C6BE0 = 0;
+s32 D_i0_802C6BE4 = 0;
+s32 D_i0_802C6BE8 = 0;
+s32 D_i0_802C6BEC = 0;
+UnkStruct_i0_802C6BF0 D_i0_802C6BF0 = { 311, 392, 30 };
+UnkStruct_i0_802C6BF0 D_i0_802C6BFC = { 703, 424, 31 };
+// Nothing refers to these by name.
+s16 D_i0_802C6C08[16] = { 0, 0, 2, 2, 2, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8, 0 };
+
+UnkStruct_i0_802C6C28 D_i0_802C6C28[5] = {
+    { 1, 0, -1, 18, 14, 0, 0, 0, 3 },     { -1, 0, 0, 19, 23, 1, 1, 0, 0 }, { -1, 0, 11, 59, 22, 1, 1, 2, 0 },
+    { -1, 0, 1, 20, 43, 2, 2, 0, 0 },     { -1, 0, 5, 21, 34, 1, 1, 0, 0 },
+};
+
+UnkStruct_i0_802C6C28 D_i0_802C6CA0[3] = {
+    { 2, 0, 4, 22, 35, 0, 0, 0, 1 },
+    { -1, 0, 4, 23, 43, 1, 4, 1, 0 },
+    { -1, 0, 4, 24, 35, 1, 4, 2, 0 },
+};
+
+UnkStruct_i0_802C6C28 D_i0_802C6CE8[2] = {
+    { -1, 0, 4, 70, 29, 1, 1, 0, 0 },
+    { -1, 0, 4, 69, 4, 1, 4, 0, 2 },
+};
+
+UnkStruct_i0_802C6C28 D_i0_802C6D18[3] = {
+    { -1, 0, 0, 22, 35, 1, 1, 0, 0 },
+    { -1, 0, 0, 23, 43, 1, 1, 1, 0 },
+    { -1, 0, 0, 24, 35, 1, 1, 2, 0 },
+};
+
+UnkStruct_i0_802C6C28 D_i0_802C6D60[3] = {
+    { -1, 0, 1, 22, 35, 2, 2, 0, 0 },
+    { -1, 0, 1, 23, 43, 2, 2, 1, 0 },
+    { -1, 0, 1, 24, 35, 2, 2, 2, 0 },
+};
+
+UnkStruct_i0_802C6C28 D_i0_802C6DA8[4] = {
+    { 2, 0, 4, 22, 35, 0, 0, 0, 0 },
+    { -1, 0, 4, 23, 43, 1, 4, 1, 0 },
+    { -1, 0, 4, 24, 35, 1, 4, 2, 0 },
+    { -1, 0, 4, 89, 33, 1, 4, 2, 4 },
+};
+
+UnkStruct_i0_802C6E08 D_i0_802C6E08[6] = {
+    { D_i0_802C6C28, 5, 5, 98, 78, 0 }, { D_i0_802C6CA0, 3, 1, 98, 78, 1 }, { D_i0_802C6CE8, 2, 2, 98, 78, 0 },
+    { D_i0_802C6D18, 3, 1, 98, 78, 1 }, { D_i0_802C6D60, 3, 1, 98, 78, 1 }, { D_i0_802C6DA8, 4, 4, 98, 78, 0 },
+};
 
 Gfx* func_i0_802C5800(Gfx* arg0) {
 

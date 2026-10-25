@@ -429,7 +429,8 @@ segments:
     symbol_name_format: i0_$VRAM
     subsegments:
     - [0x1B3EC0, c, ovl_1B3EC0]
-    - [0x1B5280, data, ovl_1B3EC0]
+    # .data in C (ovl_1B3EC0.c): func_i0_802C6AE4 only matches with D_i0_802C6BF0 defined in the file
+    - [0x1B5280, .data, ovl_1B3EC0]
     - [0x1B5560, .rodata, ovl_1B3EC0]
 
     # Loaded when the game enters in a race
