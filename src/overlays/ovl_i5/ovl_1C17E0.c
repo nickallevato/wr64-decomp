@@ -3,15 +3,22 @@
 extern Gfx D_106F6C0[];
 extern Mtx D_7001380[];
 extern Gfx* D_i5_802C7AA8[];
+extern s32 D_i5_802C7AA0;
 extern s32 D_i5_802C7AC8;
 extern s32 D_i5_802C7ACC;
 extern s32 D_i5_802C7AD0;
 extern s32 D_802C7B30;
 extern s32 D_802C7B34;
+extern s16* D_802C7B38;
+extern s16* D_802C7B3C;
+extern s32 D_802C7B88;
+extern s32 D_802C7B8C;
+extern s32 D_802C7B90;
 extern Mtx D_8011F820;
 
 Gfx* func_80094A44(Gfx*, s32);
 Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
+void func_801EC830(void);
 Gfx* func_i5_802C7594(Gfx* gdl);
 Gfx* func_i5_802C7698(Gfx* gdl);
 void func_i5_802C781C(void);
@@ -64,7 +71,64 @@ Gfx* func_i5_802C7698(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1C17E0/func_i5_802C781C.s")
+void func_i5_802C781C(void) {
+    s32 done;
+
+    switch (D_i5_802C7AC8) {
+        case 0:
+            D_i5_802C7ACC -= 30;
+            if (D_i5_802C7ACC < 56) {
+                D_i5_802C7AC8 = 1;
+                D_i5_802C7ACC = 56;
+            }
+            break;
+
+        case 1:
+            D_i5_802C7AC8 = 2;
+            break;
+
+        case 2:
+            D_i5_802C7AA0++;
+            if (D_i5_802C7AA0 == *D_802C7B38) {
+                D_i5_802C7AA0--;
+                D_i5_802C7AC8 = 3;
+            }
+            break;
+
+        case 3:
+            if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
+                D_i5_802C7AC8 = 4;
+                D_i5_802C7AA0 = 0;
+                D_802C7B88 = 0;
+            }
+            break;
+
+        case 4:
+            done = 0;
+            D_i5_802C7ACC -= 30;
+            if (D_i5_802C7ACC < -208) {
+                done = 1;
+                D_i5_802C7ACC = -208;
+            }
+            D_i5_802C7AA0++;
+            if (D_i5_802C7AA0 == *D_802C7B3C) {
+                done++;
+                D_i5_802C7AA0--;
+            }
+            if (done == 2) {
+                D_802C7B88++;
+            }
+            if (D_802C7B88 >= 4) {
+                if ((D_802C7B8C != 0) || (D_802C7B90 != 0)) {
+                    func_801EC9C8();
+                } else {
+                    func_801EC830();
+                }
+            }
+            break;
+    }
+    D_i5_802C7AD0 = 112 - D_i5_802C7ACC;
+}
 
 void func_i5_802C79F4(void) {
 }
