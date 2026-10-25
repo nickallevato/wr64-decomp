@@ -105,7 +105,7 @@ extern s32 D_801C3A04;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// 12903: same blocks, loops and calls. The original stores gMapHalfSize with lui at in the
+// Score 13908 of 97200: same blocks, loops and calls. The original stores gMapHalfSize with lui at in the
 // extent loops and materialises 0.0f twice there; elsewhere register allocation and
 // scheduling differ, and this C is 10 instructions shorter.
 void func_80075310(void) {
@@ -529,7 +529,7 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// 2603: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
+// Score 3003 of 32100: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
 // stack as in the original; the frame is 0x98, not 0x88, and the registers differ.
 void func_80076378(s32 arg0) {
     s32 prev;
@@ -662,7 +662,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// 43091: same blocks and calls, 4 instructions shorter; register allocation and scheduling differ
+// Score 43461 of 146400: same blocks and calls, 4 instructions shorter; register allocation and scheduling differ
 // throughout.
 void func_8007687C(s32 arg0) {
     s32 isHuman;
@@ -1285,7 +1285,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// 23154: same blocks, switches and calls. Register allocation differs from the start (the
+// Score 24854 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
 // original keeps more values on the stack; frame 0xB0, here 0x78), and this C is shorter.
 void func_800783AC(s32 arg0) {
     s32 trick;
@@ -1700,7 +1700,7 @@ void Hud_UpdateOffCourseCountdown(void);
 #define RIDER_CP_TIME(rider, lap, cp) ((rider)->checkpointTimes[(lap) - 2][cp])
 
 #ifdef NON_MATCHING
-// 3995: same blocks and calls. In the 2P gap loop the original reads gPlayer2Rider / gPlayer1Rider
+// Score 3995 of 103300: same blocks and calls. In the 2P gap loop the original reads gPlayer2Rider / gPlayer1Rider
 // again after the rider's stores and indexes with multu; elsewhere only register numbers and
 // the scheduling of the D_801C3A08 stores differ.
 void func_80079528(void) {

@@ -417,7 +417,7 @@ extern s32 gBestCheckpointTimes[][9];
 // Unpacks the EEPROM image into the records (courses 1-8 and the gStuntRecords table), the four names and the options.
 #ifdef NON_MATCHING
 // Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
-// loop and spills the gBestLaps pointer. Score 4527.
+// loop and spills the gBestLaps pointer. Score 4527 of 19200.
 void func_8007B630(void) {
     s32 i;
     s32 j;
@@ -466,7 +466,7 @@ void func_8007B630(void) {
 // Packs the records, the names and the options (Save_PackOptions) into the EEPROM image; the inverse of func_8007B630.
 #ifdef NON_MATCHING
 // Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
-// loop and spills the gBestLaps pointer. Score 4557.
+// loop and spills the gBestLaps pointer. Score 4557 of 17400.
 void func_8007B930(void) {
     s32 i;
     s32 j;
@@ -1117,7 +1117,7 @@ typedef struct SaveBlock {
 // mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
 // merged records (Save_MergePakImage). The result is written to the EEPROM.
 #ifdef NON_MATCHING
-// The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 931.
+// The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 931 of 20800.
 extern u8 D_801AEA78[];
 
 s32 func_8007D2D4(s32 mode) {
@@ -1214,7 +1214,7 @@ s32 func_8007D2D4(s32 mode) {
 // starts from the defaults (Save_BuildDefaultImage).
 #ifdef NON_MATCHING
 // Same calls and jump tables; the original places the code that follows the file switch right after its case 0
-// (the new-file case jumps back into it), so blocks are ordered differently and registers differ. Score 4441.
+// (the new-file case jumps back into it), so blocks are ordered differently and registers differ. Score 4441 of 33100.
 s32 func_8007D614(s32 mode) {
     s32 n;
     s32 ret;

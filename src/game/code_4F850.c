@@ -982,7 +982,7 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 13817 of 134600, 2 instructions short: register allocation from the start of the function; the original
+// Score 13917 of 134600, 2 instructions short: register allocation from the start of the function; the original
 // stores to D_801CE740[i].unk2 in cases 0 and 2 through lui/%lo of each element (here through one base register),
 // and keeps count/models/rider in other stack slots.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).

@@ -169,7 +169,7 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
 // Same loops and calls; register allocation differs (the original keeps the point pointer in s1 throughout, 12 in s5
-// from the start, and other float registers), and its frame is 0x10 smaller. Score 8621.
+// from the start, and other float registers), and its frame is 0x10 smaller. Score 8621 of 30700.
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     UnkStruct_8004B0F8_1* pt;
     UnkStruct_8004B0F8_unk34* link;

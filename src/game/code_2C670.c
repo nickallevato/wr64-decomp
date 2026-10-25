@@ -279,7 +279,7 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// 47402: same lists, switches and stores; register allocation and scheduling differ throughout,
+// Score 52762 of 150300: same lists, switches and stores; register allocation and scheduling differ throughout,
 // and this C is shorter (the frame is 0x90, not 0xA0).
 void func_80071E70(void) {
     s32 i;
@@ -895,7 +895,7 @@ extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
 #ifdef NON_MATCHING
-// 1105: same loops, calls and stores. The original has a 0xB0 frame (here 0x98), keeps 0.0f in
+// Score 1105 of 54400: same loops, calls and stores. The original has a 0xB0 frame (here 0x98), keeps 0.0f in
 // fs3 instead of fs2, compares unk98 with the operands the other way round, and schedules the
 // link walks of the third loop differently.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {

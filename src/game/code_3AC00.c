@@ -1288,7 +1288,7 @@ void func_80085408(void) {
  * Score: 105 (99.62&)
  */
 // Regalloc :(
-// Score 4170 of 27700 (asm-differ with only this function's C enabled; upstream's 105 above is decomp.me's scale).
+// Score 4370 of 27700 (asm-differ with only this function's C enabled; upstream's 105 above is decomp.me's scale).
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;

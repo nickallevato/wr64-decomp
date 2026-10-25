@@ -630,7 +630,7 @@ extern struct camera_unk_1* D_801D7970;
 void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 
 #ifdef NON_MATCHING
-// 666: same loops, calls and stores. Only the last loop differs: the original loads
+// Score 876 of 84200: same loops, calls and stores. Only the last loop differs: the original loads
 // D_800E6D80 before unk1C38, numbers its registers differently and has one extra dead
 // li t0, 0xDF in front of it.
 void func_800AFBD0(s32 arg0) {
@@ -856,7 +856,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// 51543: same blocks, loops and calls, a few instructions longer; register allocation and
+// Score 51543 of 216100: same blocks, loops and calls, a few instructions longer; register allocation and
 // scheduling differ throughout.
 void func_800B08F8(s32 arg0) {
     s32 isHuman;
@@ -1438,7 +1438,7 @@ void func_800AFBD0(s32);
 void func_800B08F8(s32);
 
 #ifdef NON_MATCHING
-// 8560: same blocks and calls. Here &gCameraPerspective and 0x10C stay in saved registers
+// Score 10560 of 36000: same blocks and calls. Here &gCameraPerspective and 0x10C stay in saved registers
 // (multu), where the original rebuilds each camera address with shifts and keeps the
 // D_800E6D60..D_800E6D80 addresses in s2-s7 instead; the frame is 0x80, not 0x78.
 void func_800B2ABC(void) {
@@ -1539,7 +1539,7 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// 19964: same blocks, display-list commands and loops; register allocation and scheduling
+// Score 19964 of 124000: same blocks, display-list commands and loops; register allocation and scheduling
 // differ (the original keeps more command words in saved registers).
 void func_800B305C(Gfx** gdl) {
     s32 i;

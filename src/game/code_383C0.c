@@ -147,7 +147,7 @@ void func_8007DBC0(void) {
 // (func_8006243C gets the push).
 #ifdef NON_MATCHING
 // Same blocks and calls; register allocation differs: the original saves f20-f30, spills the push (sp+0x48..0x50) and
-// is 0x84 bytes shorter. Score 23088.
+// is 0x84 bytes shorter. Score 23088 of 60700.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
     UnkStruct_8004B0F8_1* p4 = arg4;
     UnkStruct_8004B0F8_1* p5 = arg5;
@@ -532,7 +532,7 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
 // twelve points out by the depth.
 #ifdef NON_MATCHING
 // Same blocks; float registers differ: the original keeps 0.0f/16.0f in f28/f30 and the point's velocity in f22-f26,
-// and saves one more FP register pair. Score 245.
+// and saves one more FP register pair. Score 245 of 26200.
 void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
     UnkStruct_801C3B84* tri;
     UnkStruct_8004B0F8_1* pt;
