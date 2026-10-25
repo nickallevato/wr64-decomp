@@ -1,5 +1,12 @@
 #include "common.h"
 
+/* An animation in segment 8 (D_80B0E28, D_80B1550): eight objects' key indices per frame */
+typedef struct {
+    /* 0x00 */ s16 frameCount;
+    /* 0x04 */ u32 keys;      // segmented, UnkStruct_i5_802C7B80[]
+    /* 0x08 */ u32 frames[8]; // segmented, s16[frameCount] per object
+} UnkStruct_i5_802C7B38;      // size = 0x28
+
 extern Gfx D_106F6C0[];
 extern Mtx D_7001380[];
 extern Gfx* D_i5_802C7AA8[];
@@ -9,8 +16,7 @@ extern s32 D_i5_802C7ACC;
 extern s32 D_i5_802C7AD0;
 extern s32 D_802C7B30;
 extern s32 D_802C7B34;
-extern s16* D_802C7B38;
-extern s16* D_802C7B3C;
+extern UnkStruct_i5_802C7B38* D_802C7B38[2];
 extern s32 D_802C7B88;
 extern s32 D_802C7B8C;
 extern s32 D_802C7B90;
@@ -89,7 +95,7 @@ void func_i5_802C781C(void) {
 
         case 2:
             D_i5_802C7AA0++;
-            if (D_i5_802C7AA0 == *D_802C7B38) {
+            if (D_i5_802C7AA0 == D_802C7B38[0]->frameCount) {
                 D_i5_802C7AA0--;
                 D_i5_802C7AC8 = 3;
             }
@@ -111,7 +117,7 @@ void func_i5_802C781C(void) {
                 D_i5_802C7ACC = -208;
             }
             D_i5_802C7AA0++;
-            if (D_i5_802C7AA0 == *D_802C7B3C) {
+            if (D_i5_802C7AA0 == D_802C7B38[1]->frameCount) {
                 done++;
                 D_i5_802C7AA0--;
             }
