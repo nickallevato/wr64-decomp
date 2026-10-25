@@ -1251,8 +1251,6 @@ void func_801EE698(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
-#ifdef NON_MATCHING
-// Score 275 of 11500: arg4 is loaded one store later than in the original, which swaps two float registers.
 void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     f32 sx = SIN(ANGLE_TO_CUSTOM_UNITS(arg1));
     f32 sy = SIN(ANGLE_TO_CUSTOM_UNITS(arg2));
@@ -1265,13 +1263,13 @@ void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     temp = sx * sy;
     arg0[0][0] = (temp * sz) + (cy * cz);
     arg0[1][0] = (temp * cz) - (cy * sz);
+    temp = sx * cy;
     arg0[2][0] = cx * sy;
-    arg0[0][1] = cx * sz;
     arg0[3][0] = arg4;
+    arg0[0][1] = cx * sz;
     arg0[1][1] = cx * cz;
     arg0[2][1] = -sx;
     arg0[3][1] = arg5;
-    temp = sx * cy;
     arg0[0][2] = (temp * sz) - (sy * cz);
     arg0[1][2] = (temp * cz) + (sy * sz);
     arg0[2][2] = cx * cy;
@@ -1281,9 +1279,6 @@ void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     arg0[2][3] = 0.0f;
     arg0[3][3] = 1.0f;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE6F4.s")
-#endif
 
 void func_801EE8C0(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     MtxF mtx;
