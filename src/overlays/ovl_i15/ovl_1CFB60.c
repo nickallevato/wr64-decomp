@@ -2,7 +2,7 @@
 
 extern s32 D_800DAA08;
 extern const s16 D_800EABB0[];
-extern RiderStruct D_801C2C70[];
+extern RiderStruct gRiderRaceState[];
 extern s32 D_801CB350[][4];
 extern s32 D_i15_802C6D54[];
 extern s32 D_i15_802C6D68;
@@ -173,20 +173,20 @@ void func_i15_802C5CE8(void) {
         D_802C6E80[i] = D_i15_802C6D8C;
     }
     D_802C6E7C = D_i15_802C6D54[gDifficulty];
-    if (D_801C2C70[gPlayer1Rider].lapCount == 3) {
+    if (gRiderRaceState[gPlayer1Rider].unk338 == 3) {
         D_802C6F44 = 6;
     } else if (gDifficulty == DIFFICULTY_EXPERT) {
-        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
+        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
             D_802C6F44 = 3;
-        } else if (D_801C2C70[gPlayer1Rider].lapCount == 1) {
+        } else if (gRiderRaceState[gPlayer1Rider].unk338 == 1) {
             D_802C6F44 = 4;
         } else {
             D_802C6F44 = 5;
         }
     } else {
-        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
+        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
             D_802C6F44 = 0;
-        } else if (D_801C2C70[gPlayer1Rider].lapCount == 1) {
+        } else if (gRiderRaceState[gPlayer1Rider].unk338 == 1) {
             D_802C6F44 = 1;
         } else {
             D_802C6F44 = 2;
@@ -337,7 +337,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 }
                 if (D_800DAB68 == 0) {
                     if (gDifficulty == DIFFICULTY_EXPERT) {
-                        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
+                        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
                             show = true;
                         } else {
                             show = false;
@@ -357,7 +357,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 gdl = func_801E3EE0(gdl, 1, 58, thing->unk8 + 207, thing->unkC + 30, 0);
                 if (D_800DAB68 == 0) {
                     if (gDifficulty == DIFFICULTY_EXPERT) {
-                        if (D_801C2C70[gPlayer1Rider].lapCount == 0) {
+                        if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
                             show = true;
                         } else {
                             show = false;
