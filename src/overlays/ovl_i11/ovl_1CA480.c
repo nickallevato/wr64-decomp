@@ -13,11 +13,11 @@ extern Gfx D_106F550[];
 void Save_EepromWriteHeader(void);
 
 void func_800C3050(s32);
-void func_i11_802C5D48(void);
-void func_i11_802C5F7C(void);
-void func_i11_802C6098(s32);
+void AudioOptions_Input(void);
+void AudioOptions_Apply(void);
+void AudioOptions_Leave(s32);
 
-Gfx* func_i11_802C5800(Gfx* gdl) {
+Gfx* AudioOptions_Draw(Gfx* gdl) {
     s32 i;
     s32* value;
     // Only set for rows 0 and 1; the original keeps it in a register across the loop.
@@ -99,7 +99,7 @@ Gfx* func_i11_802C5800(Gfx* gdl) {
     gdl = func_801E3EE0(gdl, 1, 63, 144, 166, 0);
 
     if (gGameState == 0x48) {
-        func_i11_802C5D48();
+        AudioOptions_Input();
     } else if (D_80228A16 == 1) {
         GameState_EnterOptionsMenu();
         Save_EepromWriteHeader();
@@ -107,7 +107,7 @@ Gfx* func_i11_802C5800(Gfx* gdl) {
     return gdl;
 }
 
-void func_i11_802C5D48(void) {
+void AudioOptions_Input(void) {
     s32* limits;
     // Intentionally uninitialised: the original reads this stack slot unset when the
     // selection is 0 or 1. Initialising it to 0 adds a store and breaks the match.
@@ -119,13 +119,13 @@ void func_i11_802C5D48(void) {
             func_800C3050(D_800DA9EC[D_i11_802C6150]);
         } else if (D_i11_802C6150 == 3) {
             var_v0 = 1;
-            func_i11_802C6098(60);
+            AudioOptions_Leave(60);
         }
         if (var_v0 != 0) {
             AudioGeneral_PlaySound(0x11, 0);
         }
     } else if (D_801CE658[2].unk_00.unk_2 & B_BUTTON) {
-        func_i11_802C6098(60);
+        AudioOptions_Leave(60);
         AudioGeneral_PlaySound(0x16, 0);
     } else if (D_801CE658[0].unk_00.unk_2 & U_JPAD) {
         D_i11_802C6150--;
@@ -145,7 +145,7 @@ void func_i11_802C5D48(void) {
             if (--D_800DA9EC[D_i11_802C6150] < limits[0]) {
                 D_800DA9EC[D_i11_802C6150] = limits[1];
             }
-            func_i11_802C5F7C();
+            AudioOptions_Apply();
         }
         AudioGeneral_PlaySound(0x10, 0);
     } else if (D_801CE658[0].unk_00.unk_2 & R_JPAD) {
@@ -154,13 +154,13 @@ void func_i11_802C5D48(void) {
             if (++D_800DA9EC[D_i11_802C6150] > limits[1]) {
                 D_800DA9EC[D_i11_802C6150] = limits[0];
             }
-            func_i11_802C5F7C();
+            AudioOptions_Apply();
         }
         AudioGeneral_PlaySound(0x10, 0);
     }
 }
 
-void func_i11_802C5F7C(void) {
+void AudioOptions_Apply(void) {
     if (D_i11_802C6150 == 0) {
         if (D_800DA9EC[D_i11_802C6150] == 0) {
             func_800C2FDC(0);
@@ -185,7 +185,7 @@ void func_i11_802C5F7C(void) {
     }
 }
 
-void func_i11_802C6098(s32 arg0) {
+void AudioOptions_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 73;

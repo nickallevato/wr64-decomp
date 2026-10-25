@@ -551,3 +551,9 @@ ChangeConditions_Leave = 0x802C6A00; //segment:ovl_i10
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   ChangeConditions_Draw 0x802C5968
+
+// ovl_i11, audio options (GAME_STATE_OPTIONS_AUDIO, GAME_STATE_49)
+AudioOptions_Draw = 0x802C5800; //segment:ovl_i11
+AudioOptions_Input = 0x802C5D48; //segment:ovl_i11
+AudioOptions_Apply = 0x802C5F7C; //segment:ovl_i11
+AudioOptions_Leave = 0x802C6098; //segment:ovl_i11
