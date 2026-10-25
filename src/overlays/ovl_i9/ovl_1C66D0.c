@@ -9,6 +9,7 @@ typedef struct {
 } UnkStruct_i9_802C80E4; // size = 0x10
 
 extern s32 D_800DAA10[];
+extern s32 D_800DAA08;
 extern u8 D_7000000[];
 extern u8 D_2000A40[];
 extern Gfx D_106F550[];
@@ -32,9 +33,12 @@ extern s32 D_i9_802C81A4;
 extern s32 D_i9_802C81B4;
 extern u16 D_802C8280;
 
+void func_i9_802C5E5C(void);
 Gfx* func_i9_802C6750(Gfx* gdl);
 Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x);
 Gfx* func_i9_802C71AC(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+void func_i9_802C7194(UnkStruct_i9_802C80E4* panel, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void func_i9_802C802C(s32 arg0);
 
 void func_i9_802C5800(void) {
     s32 k;
@@ -180,7 +184,202 @@ Gfx* func_i9_802C5D24(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i9/ovl_1C66D0/func_i9_802C5E5C.s")
+void func_i9_802C5E5C(void) {
+    s32 sound = false;
+    s32 course;
+    s32 first;
+
+    if (D_801CE65A->unk0 & (CONT_A | CONT_G | CONT_START)) {
+        if (D_i9_802C80E4[0].unk8 == 10) {
+            switch (D_i9_802C80C0) {
+                case 0:
+                    sound = true;
+                    if (D_i9_802C80C4 == 0) {
+                        D_i9_802C80C8 = 1;
+                        D_i9_802C80C0 = 1;
+                    } else if (D_i9_802C80C4 == 1) {
+                        D_i9_802C80C8 = 0;
+                        D_i9_802C80C0 = 1;
+                    } else {
+                        func_i9_802C802C(60);
+                    }
+                    break;
+                case 1:
+                    sound = true;
+                    D_i9_802C80DC = 2;
+                    course = D_800DAAD8[D_i9_802C80C8];
+                    func_i9_802C7194(&D_i9_802C80E4[1], 320, 0, course, (D_i9_802C80C4 == 0) ? 1 : 2);
+                    D_i9_802C80E0 = 2;
+                    func_i9_802C7194(&D_i9_802C8104[1], 320, 0, course, 0);
+                    AudioGeneral_PlaySound(0x2A, 0);
+                    break;
+            }
+        } else if (D_i9_802C81A4 != 0) {
+            sound = true;
+            if (D_800DAA08 != 0) {
+                func_i9_802C802C(2);
+            } else {
+                func_i9_802C802C(80);
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x11, 0);
+        }
+    } else if ((D_801CE65A->unk0 & CONT_B) && D_i9_802C81A4 == 0) {
+        if (D_i9_802C80E4[0].unk8 == 10) {
+            switch (D_i9_802C80C0) {
+                case 0:
+                    func_i9_802C802C(60);
+                    break;
+                case 1:
+                    D_i9_802C80C0 = 0;
+                    break;
+            }
+        } else {
+            if (D_i9_802C80E4[0].unkC == 1 || D_i9_802C80E4[0].unkC == 3) {
+                D_i9_802C80C4 = 0;
+            } else {
+                D_i9_802C80C4 = 1;
+            }
+            D_i9_802C80DC = 1;
+            func_i9_802C7194(&D_i9_802C80E4[1], -320, 0, 10, 0);
+            D_i9_802C80E0 = 1;
+            func_i9_802C7194(&D_i9_802C8104[1], -320, 0, 10, 0);
+            AudioGeneral_PlaySound(0x2A, 0);
+        }
+        AudioGeneral_PlaySound(0x16, 0);
+    } else if (D_801CE65A->unk0 & CONT_UP) {
+        if (D_i9_802C80E4[0].unk8 == 10) {
+            if (D_i9_802C80C0 == 1) {
+                sound = true;
+                D_i9_802C80C8--;
+                if (D_i9_802C80C8 < ((D_i9_802C80C4 == 0) ? 1 : 0)) {
+                    D_i9_802C80C8 = 8;
+                }
+            }
+        } else {
+            first = (D_i9_802C80C4 == 0) ? 1 : 0; // FAKE: unused; found by the permuter, it fixes the t1/t2 allocation
+            D_i9_802C80C8--;
+            if (D_i9_802C80E4[0].unkC == 2) {
+                if (D_i9_802C80C8 < 0) {
+                    D_i9_802C80C8 = 8;
+                }
+            } else if (D_i9_802C80C8 <= 0) {
+                D_i9_802C80C8 = 8;
+            }
+            course = D_800DAAD8[D_i9_802C80C8];
+            D_i9_802C80DC = 4;
+            func_i9_802C7194(&D_i9_802C80E4[1], 0, -240, course, D_i9_802C80E4[0].unkC);
+            D_i9_802C80E0 = 4;
+            func_i9_802C7194(&D_i9_802C8104[1], 0, -240, course, 0);
+            AudioGeneral_PlaySound(0x2A, 0);
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if (D_801CE65A->unk0 & CONT_DOWN) {
+        if (D_i9_802C80E4[0].unk8 == 10) {
+            if (D_i9_802C80C0 == 1) {
+                sound = true;
+                D_i9_802C80C8++;
+                first = (D_i9_802C80C4 == 0) ? 1 : 0;
+                if (D_i9_802C80C8 >= 9) {
+                    D_i9_802C80C8 = first;
+                }
+            }
+        } else {
+            D_i9_802C80C8++;
+            if (D_i9_802C80C8 >= 9) {
+                if (D_i9_802C80E4[0].unkC == 2) {
+                    D_i9_802C80C8 = 0;
+                } else {
+                    D_i9_802C80C8 = 1;
+                }
+            }
+            course = D_800DAAD8[D_i9_802C80C8];
+            D_i9_802C80DC = 3;
+            func_i9_802C7194(&D_i9_802C80E4[1], 0, 240, course, D_i9_802C80E4[0].unkC);
+            D_i9_802C80E0 = 3;
+            func_i9_802C7194(&D_i9_802C8104[1], 0, 240, course, 0);
+            AudioGeneral_PlaySound(0x2A, 0);
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if ((D_801CE65A->unk0 & CONT_LEFT) && D_i9_802C81A4 == 0) {
+        if (D_i9_802C80E4[0].unk8 != 0) {
+            if (D_i9_802C80E4[0].unk8 == 10) {
+                sound = true;
+                switch (D_i9_802C80C0) {
+                    case 0:
+                        D_i9_802C80C4--;
+                        if (D_i9_802C80C4 < 0) {
+                            D_i9_802C80C4 = 2;
+                        }
+                        break;
+                    case 1:
+                        if (D_i9_802C80C4 != 0 || D_i9_802C80C8 != 5) {
+                            if (D_i9_802C80C8 != 4) {
+                                D_i9_802C80C8 -= 5;
+                                if (D_i9_802C80C8 < 0) {
+                                    D_i9_802C80C8 += 10;
+                                }
+                            }
+                        }
+                        break;
+                }
+            } else if (D_i9_802C80E4[0].unkC == 2) {
+                D_i9_802C80DC = 1;
+                func_i9_802C7194(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8],
+                                 (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
+                AudioGeneral_PlaySound(0x2A, 0);
+            } else if (D_i9_802C80E4[0].unkC == 1 && D_i9_802C81B4 != 0) {
+                D_i9_802C80DC = 1;
+                func_i9_802C7194(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8], 3);
+                AudioGeneral_PlaySound(0x2A, 0);
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    } else if ((D_801CE65A->unk0 & CONT_RIGHT) && D_i9_802C81A4 == 0) {
+        if (D_i9_802C80E4[0].unk8 != 0) {
+            if (D_i9_802C80E4[0].unk8 == 10) {
+                sound = true;
+                switch (D_i9_802C80C0) {
+                    case 0:
+                        D_i9_802C80C4++;
+                        if (D_i9_802C80C4 == 3) {
+                            D_i9_802C80C4 = 0;
+                        }
+                        break;
+                    case 1:
+                        if (D_i9_802C80C4 != 0 || D_i9_802C80C8 != 5) {
+                            if (D_i9_802C80C8 != 4) {
+                                D_i9_802C80C8 += 5;
+                                if (D_i9_802C80C8 >= 9) {
+                                    D_i9_802C80C8 -= 10;
+                                }
+                            }
+                        }
+                        break;
+                }
+            } else if (D_i9_802C80E4[0].unkC == 1) {
+                D_i9_802C80DC = 2;
+                func_i9_802C7194(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8],
+                                 (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
+                AudioGeneral_PlaySound(0x2A, 0);
+            } else if (D_i9_802C80E4[0].unkC == 3) {
+                D_i9_802C80DC = 2;
+                func_i9_802C7194(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8], 1);
+                AudioGeneral_PlaySound(0x2A, 0);
+            }
+        }
+        if (sound) {
+            AudioGeneral_PlaySound(0x10, 0);
+        }
+    }
+}
 
 // The first arrow's dtdy 0xFC00 makes gSPScisTextureRectangle expand yl*dtdy to (y + 21) << 2*0xFC00, a shift
 // IDO folds to none (the original's code); gcc's check pass warns about it.
