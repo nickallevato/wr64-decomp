@@ -1,14 +1,141 @@
 #include "global.h"
 
+/* Two panels, drawn at unk0 + D_i9_802C80CC, unk4 + D_i9_802C80D0 */
+typedef struct {
+    /* 0x0 */ s32 unk0;
+    /* 0x4 */ s32 unk4;
+    /* 0x8 */ s32 unk8;
+    /* 0xC */ s32 unkC;
+} UnkStruct_i9_802C80E4; // size = 0x10
+
 extern s32 D_800DAA10[];
 extern s32 D_i9_802C80C0;
 extern s32 D_i9_802C80C4;
 extern s32 D_i9_802C80C8;
+extern s32 D_i9_802C80CC;
+extern s32 D_i9_802C80D0;
+extern s32 D_i9_802C80D4;
+extern s32 D_i9_802C80D8;
+extern s32 D_i9_802C80E0;
+extern UnkStruct_i9_802C80E4 D_i9_802C80E4[2];
+extern UnkStruct_i9_802C80E4 D_i9_802C8104[2];
+extern Vp D_i9_802C8128;
 extern s32 D_i9_802C8138[];
 extern s32 D_i9_802C8144[];
 extern s32 D_i9_802C8150[];
+extern s32 D_i9_802C81A4;
+extern s32 D_i9_802C81B4;
+extern u16 D_802C8280;
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i9/ovl_1C66D0/func_i9_802C5800.s")
+void func_i9_802C5800(void) {
+    s32 k;
+    s32 j;
+    s32 n;
+    s32 x;
+    s32 y;
+    s32 count;
+    s32 vertical;
+    s32 done;
+    MtxF sp178;
+    MtxF sp138;
+    MtxF spF8;
+    Mtx spB8;
+    Mtx sp78;
+
+    if (D_801CE63C != 0 && gGameState == GAME_STATE_OPTIONS_VIEW_RECORDS) {
+        if (D_801CB280 & 8) {
+            D_i9_802C81B4 = 1;
+        }
+        if (gPrevGameState == GAME_STATE_65) {
+            D_i9_802C81A4 = 1;
+            D_i9_802C80C0 = 1;
+            D_i9_802C80C4 = 0;
+            D_i9_802C80C8 = 1;
+            D_i9_802C80E4[0].unk0 = 0;
+            D_i9_802C80E4[0].unk4 = 0;
+            D_i9_802C80E4[0].unk8 = 1;
+            D_i9_802C80E4[0].unkC = 1;
+            D_i9_802C80E4[1].unk0 = 320;
+            D_i9_802C80E4[1].unk4 = 0;
+            D_i9_802C80E4[1].unk8 = 1;
+            D_i9_802C80E4[1].unkC = 1;
+            if (D_800DAB68 != 0) {
+                D_i9_802C80E4[0].unkC = 3;
+                D_i9_802C80E4[1].unkC = 3;
+            }
+            D_i9_802C8104[0].unk0 = 0;
+            D_i9_802C8104[0].unk4 = 0;
+            D_i9_802C8104[0].unk8 = 1;
+            D_i9_802C8104[0].unkC = 1;
+            D_i9_802C8104[1].unk0 = 320;
+            D_i9_802C8104[1].unk4 = 0;
+            D_i9_802C8104[1].unk8 = 1;
+            D_i9_802C8104[1].unkC = 0;
+        }
+    }
+
+    count = 1;
+    if (D_i9_802C80DC != 0) {
+        count = 2;
+        if (D_i9_802C80DC == 1) {
+            vertical = 0;
+            D_i9_802C80CC += 30;
+        } else if (D_i9_802C80DC == 2) {
+            vertical = 0;
+            D_i9_802C80CC -= 30;
+        } else if (D_i9_802C80DC == 3) {
+            vertical = 1;
+            D_i9_802C80D0 -= 30;
+        } else {
+            vertical = 1;
+            D_i9_802C80D0 += 30;
+        }
+        done = 0;
+        if (vertical == 0) {
+            if (D_i9_802C80CC < -319 || D_i9_802C80CC >= 320) {
+                done = 1;
+            }
+        } else if (D_i9_802C80D0 < -239 || D_i9_802C80D0 >= 240) {
+            done = 1;
+        }
+        if (done) {
+            D_i9_802C80D0 = 0;
+            D_i9_802C80CC = 0;
+            D_i9_802C80DC = 0;
+            D_i9_802C80E4[0].unk8 = D_i9_802C80E4[1].unk8;
+            D_i9_802C80E4[0].unkC = D_i9_802C80E4[1].unkC;
+        }
+        if (D_i9_802C80E0 != 0) {
+            D_i9_802C80D4 = D_i9_802C80CC;
+            D_i9_802C80D8 = D_i9_802C80D0;
+            D_i9_802C80E0 = D_i9_802C80DC;
+            D_i9_802C8104[0].unk8 = D_i9_802C80E4[0].unk8;
+            D_i9_802C8104[1].unk8 = D_i9_802C80E4[1].unk8;
+        }
+    }
+
+    func_800481E0(D_801CE5F8->unkA40, &D_802C8280, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_80048A88(&spB8, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.025f);
+    func_800484C8(&sp78, &sp138, 500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SysUtils_MtxToMtxF(&spB8, &sp178);
+    SysUtils_MatrixAffineMultiply(&sp138, &sp178, &spF8);
+
+    for (j = 0; j < count; j++) {
+        n = j * 4;
+        x = D_i9_802C80E4[j].unk0 + D_i9_802C80CC;
+        y = D_i9_802C80E4[j].unk0 + D_i9_802C80D0; // unk0, not unk4: the asm loads one word for both
+        for (k = 0; k < 3; k++) {
+            SysUtils_MtxFToMtx(&spF8, &D_801CE5F8->unkA80[n + k]);
+            D_801CE5F8->unk1280[n + k] = D_i9_802C8128;
+            D_801CE5F8->unk1280[n + k].vp.vtrans[0] = (x + 76) << 2;
+            D_801CE5F8->unk1280[n + k].vp.vtrans[1] = (y + 138 + k * 18) << 2;
+        }
+        SysUtils_MtxFToMtx(&spF8, &D_801CE5F8->unkA80[n + k]);
+        D_801CE5F8->unk1280[n + k] = D_i9_802C8128;
+        D_801CE5F8->unk1280[n + k].vp.vtrans[0] = (x + 76) << 2;
+        D_801CE5F8->unk1280[n + k].vp.vtrans[1] = (y + 206) << 2;
+    }
+}
 
 Gfx* func_i9_802C5D24(Gfx* gdl) {
     if (D_801CE63C != 0) {

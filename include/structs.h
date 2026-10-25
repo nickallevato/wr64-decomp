@@ -1348,13 +1348,11 @@ typedef struct UnkStruct_801CE5F8_s {
     Vtx unk40[120]; /* the text printer's quad vertices (Printer_DrawQuad), from gPrinterNextQuadVtx (clamped to 0x74 + 4) */
     char pad7C0[0x280];
     Mtx unkA40[1];
-    Mtx unkA80[1];
-    char padAC0[0x1C0];
+    Mtx unkA80[8];
     Mtx unkC80[9]; /* three per rider model on the records screen */
     char padEC0[0x380];
     char pad2[0x40];
-    Vp unk1280[3];
-    char pad12B0[0x50];
+    Vp unk1280[8];
     Mtx unk1300[1];
     Mtx unk1340[1];
     Mtx unk1380[16];
