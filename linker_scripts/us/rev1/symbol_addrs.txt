@@ -582,3 +582,13 @@ SaveLoad_DrawMessage = 0x802C8484; //segment:ovl_i13
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   SaveLoad_Draw 0x802C5F6C
+
+// ovl_i14, the menu after a race (GAME_STATE_50, GAME_STATE_51)
+PostRaceMenu_OverlayUpdate = 0x802C5800; //segment:ovl_i14
+PostRaceMenu_Init = 0x802C5840; //segment:ovl_i14
+PostRaceMenu_DrawMenu = 0x802C5B70; //segment:ovl_i14
+PostRaceMenu_Leave = 0x802C5E5C; //segment:ovl_i14
+PostRaceMenu_Input = 0x802C5F60; //segment:ovl_i14
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   PostRaceMenu_Draw 0x802C5924

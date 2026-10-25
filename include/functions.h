@@ -157,7 +157,7 @@ s32 Strlen2(s8*);
 void func_800C2FDC(s32);
 void func_800C3034(void);
 void func_800C3044(void);
-void func_i14_802C5E5C(s32);
+void PostRaceMenu_Leave(s32);
 void func_800C30F8(void);
 Gfx* func_1C3780_802C58F4(Gfx*);
 void func_1C3780_802C5BD8(void);
