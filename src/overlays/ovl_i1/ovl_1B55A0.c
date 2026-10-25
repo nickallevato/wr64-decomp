@@ -34,6 +34,17 @@ extern const s16 D_800EABB0[];
 extern const s16 D_800EABBC[][8];
 extern u16 D_801CE72E;
 extern s32 D_80228AA8;
+extern s32 D_802C96D4;
+extern u16 D_802C96D8;
+extern u8 D_i1_802C952B;
+extern s32 D_i1_802C9544[];
+extern s32 D_800DA9DC[];
+extern s32 D_801CE718[];
+extern u8 gPrinterWidthsFont0[];
+extern Gfx D_106F488[];
+extern Mtx D_7000A40[];
+extern Mtx D_7000A80[];
+extern Vp D_7001280[];
 extern s32 D_i1_802C9444[][3];
 extern TexEntry D_80226890[];
 
@@ -44,6 +55,10 @@ s32 Save_EepromWriteHeader(void);
 Gfx* func_80093AFC(Gfx*);
 void func_801EC830(void);
 void func_800C37D4(s32);
+Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
+Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
+Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 void func_800BFE70(u8* arg0);
 void func_i1_802C6DCC(void);
 void func_i1_802C6FE0(void);
@@ -850,7 +865,267 @@ Gfx* func_i1_802C7D00(Gfx* dList) {
     return dList;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/ovl_1B55A0/func_i1_802C7E48.s")
+Gfx* func_i1_802C7E48(Gfx* dList) {
+    s32 i;
+    s32 mode;
+    s32 showPoints;
+    s32 x;
+    s32 titleX;
+    s32 titleW;
+    s32 headerX;
+    s32 pad1; // stack pad: two unused words keep the original's slots
+    s32 value;
+    s32 pad2; // stack pad
+    s32 timeMode;
+    s32 valueMode;
+    s32 placeX;
+    s32 rank;
+    s32 tieRank;
+    s32 count;
+    s32 j;
+    s32 start;
+    s32 rider;
+    s32 valueX;
+    UnkStruct_func_i8_802C6E00* name;
+    char placeBuf[12];
+    char valueBuf[12];
+
+    switch (D_i1_802C9520) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            titleX = 36;
+            showPoints = 0;
+            titleW = 191;
+            break;
+
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            showPoints = 1;
+            titleX = 13;
+            titleW = 244;
+            break;
+    }
+
+    if (showPoints == 0) {
+        mode = 0;
+    } else {
+        mode = 2;
+    }
+
+    gSPDisplayList(dList++, D_106F628);
+    if (showPoints == 0) {
+        dList = func_80094338(dList, mode, D_i1_802C9524 + titleX + 8, 25, titleW, 24);
+        dList = func_80094338(dList, mode, D_802C96D4 + 8, 52, 265, 16);
+        dList = func_80094338(dList, mode, D_i1_802C9524 + 8, 199, 265, 16);
+        for (i = 0; i < 4; i++) {
+            if (i & 1) {
+                x = D_802C96D4;
+            } else {
+                x = D_i1_802C9524;
+            }
+            dList = func_80094338(dList, mode, x + 8, 71 + i * 32, 265, 28);
+        }
+    } else {
+        gDPSetPrimColor(dList++, 0, 0, 255, 255, 255, D_i1_802C952C);
+        dList = func_80094338(dList, mode, titleX + 28, 25, titleW, 24);
+        dList = func_80094338(dList, mode, 28, 52, 265, 16);
+        dList = func_80094338(dList, mode, 28, 199, 265, 16);
+        for (i = 0; i < 4; i++) {
+            dList = func_80094338(dList, mode, D_i1_802C9534[i] + 8, 71 + i * 32, 265, 28);
+        }
+    }
+
+    placeX = 0;
+    if (showPoints == 0) {
+        dList = Printer_SetMode(dList, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        dList = func_801E3EE0(dList, 2, 20, D_i1_802C9524 + 53, 28, 0);
+        dList = func_801E3EE0(dList, 1, 79, D_i1_802C9524 + 24, 202, 0);
+    } else {
+        dList = Printer_SetMode(dList, 10, D_i1_802C952B, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        dList = func_801E3EE0(dList, 2, 21, 61, 28, 0);
+        dList = func_801E3EE0(dList, 1, 6, 44, 202, 0);
+    }
+
+    if (showPoints == 0) {
+        headerX = D_802C96D4;
+    } else {
+        headerX = 20;
+    }
+    dList = func_801E3EE0(dList, 1, 31, headerX + 13, 55, 0);
+    dList = func_801E3EE0(dList, 1, 32, headerX + 109, 55, 0);
+    dList = func_801E3EE0(dList, 1, 58, headerX + 215, 55, 0);
+
+    dList = func_801E7E74(dList, 0, 0, 0, 255);
+    for (i = 0; i < 4; i++) {
+        if (showPoints == 0) {
+            if (i & 1) {
+                x = D_802C96D4;
+            } else {
+                x = D_i1_802C9524;
+            }
+        } else {
+            x = D_i1_802C9534[i];
+        }
+        dList = func_801E7FD8(dList, x + 42, 74 + i * 32, x + 86, 95 + i * 32);
+    }
+
+    gDPPipeSync(dList++);
+    gDPSetScissor(dList++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
+
+    rank = count = tieRank = 1;
+    for (i = 0; i < 4; i++) {
+        if (showPoints == 0) {
+            if (i & 1) {
+                x = D_802C96D4;
+            } else {
+                x = D_i1_802C9524;
+            }
+        } else {
+            x = D_i1_802C9534[i];
+        }
+
+        if (showPoints == 0) {
+            if (i != 0) {
+                count++;
+                if (D_801CB350[D_801CB334][D_801CE718[i]] != D_801CB350[D_801CB334][D_801CE718[i - 1]]) {
+                    tieRank = count;
+                    rank = count;
+                } else {
+                    rank = tieRank;
+                }
+            }
+            if (gRiderRaceState[D_801CE718[i]].finishState != 0) {
+                placeX = 6;
+                sprintf(placeBuf, "%s", "R");
+            } else {
+                sprintf(placeBuf, "%d", count);
+            }
+            name = &gPlayerNames[D_800DA9B0[D_801CE718[i]]];
+            value = D_801CB350[D_801CB334][D_801CE718[i]];
+            if (gPlayer1Rider != D_801CE718[i]) {
+                mode = 0;
+                timeMode = 0;
+                valueMode = 0;
+            } else {
+                mode = 6;
+                valueMode = 6;
+                if (D_801C2650 != 1) {
+                    timeMode = 6;
+                } else {
+                    timeMode = 4;
+                }
+            }
+        } else {
+            if (i != 0) {
+                count++;
+                if (D_801CB340[D_800DA9DC[i]] != D_801CB340[D_800DA9DC[i - 1]]) {
+                    tieRank = count;
+                    rank = count;
+                } else {
+                    rank = tieRank;
+                }
+            }
+            sprintf(placeBuf, "%d", rank);
+            name = &gPlayerNames[D_800DA9B0[D_800DA9DC[i]]];
+            value = D_801CB340[D_800DA9DC[i]];
+            if (gPlayer1Rider != D_800DA9DC[i]) {
+                mode = 0;
+                timeMode = 0;
+            } else {
+                mode = 6;
+                if (D_801C2650 != 1) {
+                    timeMode = 6;
+                } else {
+                    timeMode = 7;
+                }
+            }
+            if (gPlayer1Rider != D_800DA9DC[i]) {
+                valueMode = 0;
+            } else {
+                valueMode = 6;
+            }
+        }
+
+        sprintf(valueBuf, "%d", value);
+        if ((value / 10) % 10 != 0) {
+            valueX = 228 - gPrinterWidthsFont0[(value / 10) % 10];
+        } else {
+            valueX = 228;
+        }
+        dList = Printer_Print(dList, 0, placeBuf, x + placeX + 13, 75 + i * 32, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                              0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        dList = Printer_Print(dList, 2, name->unk_0, x + 92, 75 + i * 32, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                              0xFF, 0xFF, 0xFF);
+        dList = Printer_Print(dList, 0, valueBuf, x + valueX + 8, 75 + i * 32, valueMode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                              0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+
+        if (showPoints == 0) {
+            if (gRiderRaceState[D_801CE718[i]].finishState != 0) {
+                dList = Printer_SetMode(dList, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                        0xFF);
+                dList = func_801E3EE0(dList, 0, 27, x + 92, 88 + i * 32, 0);
+            } else {
+                dList = Printer_PrintTime(dList, 1, gRiderRaceState[D_801CE718[i]].raceTime, x + 92, 88 + i * 32, timeMode, 0xFF,
+                                          0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+            }
+        } else {
+            dList = Printer_SetMode(dList, valueMode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+            dList = func_801E3EE0(dList, 0, 24, x + 92, 88 + i * 32, 0);
+            if (gDifficulty == DIFFICULTY_NORMAL) {
+                start = 1;
+            } else {
+                start = 0;
+            }
+            for (j = start; j <= D_801CB334; j++) {
+                value = D_801CB350[j][D_800DA9DC[i]];
+                if (j != D_801CB334) {
+                    sprintf(valueBuf, "%d-", value);
+                } else {
+                    sprintf(valueBuf, "%d", value);
+                }
+                dList = Printer_Print(dList, 1, valueBuf, 132 + x + (j - start) * 12, 88 + i * 32, valueMode, 0xFF, 0xFF, 0xFF,
+                                      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+            }
+        }
+    }
+
+    if (showPoints == 0) {
+        dList = Printer_SetMode(dList, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        dList = func_801E3EE0(dList, 1, D_i1_802C9544[D_801CE704], D_i1_802C9524 + 160, 202, 0);
+    } else {
+        if (D_i1_802C9558 == 0) {
+            mode = 10;
+        } else {
+            mode = 6;
+        }
+        dList = Printer_SetMode(dList, mode, D_i1_802C952B, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        dList = Printer_DrawNumber(dList, 2, D_800EABBC[gDifficulty][D_801CB334], 262, 201);
+    }
+
+    gSPPerspNormalize(dList++, D_802C96D8);
+    gSPMatrix(dList++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPDisplayList(dList++, D_106F488);
+    for (i = 0; i < 4; i++) {
+        gSPViewport(dList++, &D_7001280[i]);
+        gSPMatrix(dList++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        if (showPoints == 1) {
+            rider = D_800DA9DC[i];
+        } else {
+            rider = D_801CE718[i];
+        }
+        if (rider == 2) {
+            rider = 3;
+        } else if (rider == 3) {
+            rider = 5;
+        }
+        dList = func_801E4FE8(dList, rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+    }
+    return dList;
+}
 
 void func_i1_802C8E70(void) {
     s32 i;
