@@ -14,9 +14,9 @@ extern Mtx D_7000000[];
 extern Mtx D_2000A40[];
 extern Gfx D_106F550[];
 
-void func_i10_802C6A00(s32);
+void ChangeConditions_Leave(s32);
 
-void func_i10_802C5800(void) {
+void ChangeConditions_OverlayUpdate(void) {
     s32 i;
 
     if (D_801CE63C != 0) {
@@ -65,7 +65,7 @@ void func_i10_802C5800(void) {
     }
 }
 
-Gfx* func_i10_802C5968(Gfx* gfxP) {
+Gfx* ChangeConditions_Draw(Gfx* gfxP) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 68) {
@@ -78,7 +78,7 @@ Gfx* func_i10_802C5968(Gfx* gfxP) {
     gfxP = func_i10_802C6200(gfxP);
 
     if (gGameState == 68) {
-        func_i10_802C5A10();
+        ChangeConditions_Input();
     } else if (D_80228A16 == 1) {
         func_8007C50C();
         GameState_EnterOptionsMenu();
@@ -87,7 +87,7 @@ Gfx* func_i10_802C5968(Gfx* gfxP) {
     return gfxP;
 }
 
-void func_i10_802C5A10(void) {
+void ChangeConditions_Input(void) {
     s32* limits;
     s32* value;
     s32 sound = 0;
@@ -102,7 +102,7 @@ void func_i10_802C5A10(void) {
                 sound = 1;
                 sel = D_i10_802C6B34 * 3 + D_i10_802C6B30;
                 if (sel == 4) {
-                    func_i10_802C6A00(60);
+                    ChangeConditions_Leave(60);
                 } else if (sel == 3) {
                     for (i = 0; i < 3; i++) {
                         for (j = 0; j < 3; j++) {
@@ -139,7 +139,7 @@ void func_i10_802C5A10(void) {
         switch (D_801CE640) {
             case 0:
                 sound = 1;
-                func_i10_802C6A00(60);
+                ChangeConditions_Leave(60);
                 break;
 
             case 1:
@@ -473,7 +473,7 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i10/ovl_1C9150/func_i10_802C6200.s")
 #endif
 
-void func_i10_802C6A00(s32 arg0) {
+void ChangeConditions_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x45;

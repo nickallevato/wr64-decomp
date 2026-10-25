@@ -188,7 +188,7 @@ void func_80099AD8(s32, void*, f32, f32, f32);
 void func_800BFD34(void);
 void func_800BFD68(void);
 int func_8007C50C(void);
-void func_i10_802C5A10(void);
+void ChangeConditions_Input(void);
 void func_800C1F60(s32);
 void func_800BFD9C(u8*);
 //void func_8009B57C(Vec3f*);

@@ -543,3 +543,11 @@ ViewRecords_Leave = 0x802C802C; //segment:ovl_i9
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   ViewRecords_Draw 0x802C5D24
+
+// ovl_i10, change conditions (GAME_STATE_OPTIONS_CHANGE_CONDITIONS, 0x45)
+ChangeConditions_OverlayUpdate = 0x802C5800; //segment:ovl_i10
+ChangeConditions_Input = 0x802C5A10; //segment:ovl_i10
+ChangeConditions_Leave = 0x802C6A00; //segment:ovl_i10
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   ChangeConditions_Draw 0x802C5968
