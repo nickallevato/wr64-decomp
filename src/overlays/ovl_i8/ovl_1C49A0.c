@@ -1,12 +1,17 @@
 #include "global.h"
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i8/ovl_1C49A0/func_i8_802C5800.s")
-
 extern u8 D_7000000[];
 extern u8 D_2000A40[];
 extern Gfx D_106F550[];
 extern Gfx D_8062290[];
 extern u8 gPrinterWidthsFont2[]; /* glyph widths, font 2 */
+extern s32 D_i8_802C7044;
+extern s32 D_i8_802C7048;
+extern s32 D_i8_802C7050;
+extern u16 D_802C7530;
+extern u32 D_802C7534;
+extern s32 D_802C7568;
+extern f32 D_i8_802C750C;
 
 void Save_EepromWriteNames();
 void func_i8_802C5EB8();
@@ -30,6 +35,73 @@ extern UnkStruct_i8_802C7054 D_i8_802C7054[];
 extern s32 D_802C7538;
 extern s32 D_802C753C;
 extern s8 D_802C7558[];
+
+void func_i8_802C5800(void) {
+    s32 i;
+    s32 angle;
+    s32 glyph;
+    f32 x;
+    f32 z;
+    MtxF sp184;
+    MtxF sp144;
+    MtxF sp104;
+    Mtx spC0;
+    Mtx sp80;
+
+    if (D_801CE63C != 0 && gGameState == GAME_STATE_OPTIONS_CHANGE_NAMES) {
+        D_801CE640 = 0;
+    }
+    if (D_801CE640 == 0) {
+        func_i8_802C6FD4(gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, D_802C7548, 11);
+        D_80192690[gPlayer1Rider].unkB68 = D_i8_802C74F8[D_i8_802C7040];
+        D_80192690[gPlayer1Rider].unkB6C = D_800DA950[D_i8_802C74F8[D_i8_802C7040]].unk_B[0];
+        D_80192690[gPlayer1Rider].unkB70 = D_800DA950[D_i8_802C74F8[D_i8_802C7040]].unk_B[1];
+        D_80192690[gPlayer1Rider].unkB74 = D_800DA950[D_i8_802C74F8[D_i8_802C7040]].unk_B[2];
+    }
+
+    if (D_i8_802C7044 == 0) {
+        D_802C7534 = (D_i8_802C7048 * 255.0f) / 4;
+    } else {
+        D_802C7534 = ((4 - (f32) D_i8_802C7048) * 255.0f) / 4;
+    }
+    D_i8_802C7048++;
+    if (D_i8_802C7048 >= 4) {
+        D_i8_802C7048 = 0;
+        D_i8_802C7044 ^= 1;
+    }
+
+    D_802C7568 = 0;
+    for (i = 0; i < D_802C7564; i++) {
+        glyph = Printer_GetGlyph(2, D_802C7548[i]);
+        if (glyph == 0xFF) {
+            glyph = 12; // the width
+        } else {
+            glyph = gPrinterWidthsFont2[glyph];
+        }
+        D_802C7568 += glyph;
+    }
+
+    func_800481E0(D_801CE5F8->unkA40, &D_802C7530, 33.0f, 1.0f, 16.0f, 4096.0f, 0.0f, 0.0f);
+    func_80048A88(&spC0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, D_i8_802C750C);
+    for (i = 0; i < 4; i++) {
+        if (i == D_i8_802C7040) {
+            angle = D_i8_802C7050 % 4096;
+            x = COS(angle) * 500.0f;
+            z = SIN(angle) * 500.0f;
+        } else {
+            x = COS(0x200) * 500.0f;
+            z = SIN(0x200) * 500.0f;
+        }
+        func_800484C8(&sp80, &sp144, x, 500.0f, z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+        SysUtils_MtxToMtxF(&spC0, &sp184);
+        SysUtils_MatrixAffineMultiply(&sp144, &sp184, &sp104);
+        SysUtils_MtxFToMtx(&sp104, &D_801CE5F8->unkA80[i]);
+    }
+    D_i8_802C7050 += 0x30;
+    if (D_i8_802C7050 >= 0x1000) {
+        D_i8_802C7050 -= 0x1000;
+    }
+}
 
 Gfx* func_i8_802C5D3C(Gfx* gdl) {
     Gfx* p;
