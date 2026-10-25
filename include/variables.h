@@ -154,7 +154,7 @@ extern void* D_800DAAB4[];
 extern s32 D_i4_802C760C[];
 extern u8 D_80198310;
 extern u8 D_80198350;
-extern u8 D_802C76AC;
+extern u16 D_802C76AC;
 extern s32 D_i3_802C6FE0;
 extern u8 D_802C7024;
 extern s16 D_801CE62A;

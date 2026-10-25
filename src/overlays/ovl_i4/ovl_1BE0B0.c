@@ -21,6 +21,13 @@ extern s32 D_802C76C4;
 extern s32 D_802C76C8;
 extern s32 D_802C76CC;
 extern s32 D_802C76D0;
+extern Gfx D_80A6E00[];
+extern Mtx D_7000A40[];
+extern Vp D_106F738;
+extern Gfx D_106F748[];
+extern u32 D_800DB5B0[][2];
+extern u32 D_800DB5F8[][2];
+extern u32 D_800DB6D0[][2];
 
 void func_i4_802C7344(void);
 
@@ -165,7 +172,48 @@ Gfx* func_i4_802C5B78(Gfx* dList) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C5CDC.s")
 
+#ifdef NON_MATCHING
+// Score 5050 of 14700. The commands and their order match; IDO here keeps the second 0xB6000000 (clear geometry
+// mode) word in a register, runs out of registers and spills five display-list pointers to a 0x70 stack frame,
+// where the original needs no frame.
+Gfx* func_i4_802C6778(Gfx* dList) {
+    s32 course = D_800DAAD8[D_800DA9D0];
+    u32* models;
+    s32 offset;
+
+    if (D_i4_802C7534 == 0) {
+        models = D_800DB5F8[course];
+    } else {
+        models = D_800DB6D0[course];
+    }
+
+    gSPDisplayList(dList++, D_80A6E00);
+    gDPPipeSync(dList++);
+    gDPSetColorImage(dList++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, OS_K0_TO_PHYSICAL(gFrameBuffers[gFramebuffersIdx]));
+    gSPPerspNormalize(dList++, D_802C76AC);
+    gSPMatrix(dList++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(dList++, D_801CE5F8->unkA80, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPViewport(dList++, &D_106F738);
+    gSPDisplayList(dList++, D_106F748);
+    gDPSetEnvColor(dList++, 255, 255, 255, 255);
+    gDPSetScissor(dList++, G_SC_NON_INTERLACE, 150, 53, 292, 159);
+    offset = course * 0x8000 + 0x10000;
+    gSPDisplayList(dList++, D_800DB5B0[course][0] + offset);
+    gSPClearGeometryMode(dList++, G_LIGHTING);
+    gSPDisplayList(dList++, models[0] + offset);
+    gSPSetGeometryMode(dList++, G_LIGHTING);
+    gDPPipeSync(dList++);
+    gDPSetRenderMode(dList++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+    gSPDisplayList(dList++, D_800DB5B0[course][1] + offset);
+    gSPClearGeometryMode(dList++, G_LIGHTING);
+    gSPDisplayList(dList++, models[1] + offset);
+    gDPPipeSync(dList++);
+    gDPSetScissor(dList++, G_SC_NON_INTERLACE, 0, 0, 319, 239);
+    return dList;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C6778.s")
+#endif
 
 Gfx* func_i4_802C69C4(Gfx* dList, s32 x, s32 y) {
     s32 offset;
