@@ -44,9 +44,9 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 Gfx* func_80091DBC(Gfx*);
 Gfx* func_80093DBC(Gfx*, u16, u16, u16);
 Gfx* func_i15_802C602C(Gfx*);
-void func_i15_802C6C1C(void);
-void func_i15_802C5CE8(void);
-void func_i15_802C5EE4(s32);
+void Ceremony_Input(void);
+void Ceremony_Init(void);
+void Ceremony_AddEntry(s32);
 void func_800C489C(s32);
 
 #ifdef NON_MATCHING
@@ -68,7 +68,7 @@ void func_i15_802C5800(void) {
     Mtx sp78;
 
     if ((D_801CE63C != 0) && (gGameState == 0x66)) {
-        func_i15_802C5CE8();
+        Ceremony_Init();
         D_i15_802C6E74 = D_i15_802C6E78 = 0;
         for (i = 0; i < D_801CB334 + 1; i++) {
             course = D_800EAC14[gDifficulty][i];
@@ -83,7 +83,7 @@ void func_i15_802C5800(void) {
 
     i = 0;
     if ((--D_i15_802C6D6C < 0) && (D_i15_802C6D68 != -1)) {
-        func_i15_802C5EE4(D_i15_802C6D68);
+        Ceremony_AddEntry(D_i15_802C6D68);
         D_i15_802C6D6C = 40;
         if (D_i15_802C6D68 == D_i15_802C6E7C) {
             D_i15_802C6D68 = 10;
@@ -165,7 +165,7 @@ void func_i15_802C5800(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C5800.s")
 #endif
 
-void func_i15_802C5CE8(void) {
+void Ceremony_Init(void) {
     s32 i;
     s32 j;
 
@@ -209,7 +209,7 @@ void func_i15_802C5CE8(void) {
     D_800DAA08 = 1;
 }
 
-void func_i15_802C5EE4(s32 arg0) {
+void Ceremony_AddEntry(s32 arg0) {
     UnkStruct_D_802C6E80* thing;
     s32 i;
 
@@ -233,7 +233,7 @@ void func_i15_802C5EE4(s32 arg0) {
     }
 }
 
-Gfx* func_i15_802C5F50(Gfx* gdl) {
+Gfx* Ceremony_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 0x66) {
@@ -247,7 +247,7 @@ Gfx* func_i15_802C5F50(Gfx* gdl) {
     gdl = func_i15_802C602C(gdl);
 
     if (gGameState == 0x66) {
-        func_i15_802C6C1C();
+        Ceremony_Input();
     } else if (D_80228A16 == 1) {
         if (D_801CE630 == 2) {
             GameState_EnterTitleScreen();
@@ -437,20 +437,20 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C602C.s")
 #endif
 
-void func_i15_802C6C1C(void) {
+void Ceremony_Input(void) {
     if (D_i15_802C6DF4) {
         D_i15_802C6DF8++;
         if ((D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) || (D_i15_802C6DF8 > 600)) {
             if ((D_i15_802C6E74 != 0) || (D_i15_802C6E78 != 0)) {
-                func_i15_802C6CAC(100);
+                Ceremony_Leave(100);
             } else {
-                func_i15_802C6CAC(2);
+                Ceremony_Leave(2);
             }
         }
     }
 }
 
-void func_i15_802C6CAC(s32 arg0) {
+void Ceremony_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x67;

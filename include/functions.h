@@ -183,7 +183,7 @@ void Printer_CycleColorMode9(void);
 Gfx* Printer_DrawGlyph(Gfx*, s32, u32, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, f32);
 void func_801EC9C8(void);
 void func_801ED004(void);
-void func_i15_802C6CAC(s32);
+void Ceremony_Leave(s32);
 void func_80099AD8(s32, void*, f32, f32, f32);
 void func_800BFD34(void);
 void func_800BFD68(void);
