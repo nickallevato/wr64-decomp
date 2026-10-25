@@ -582,6 +582,8 @@ names, tidies and re-score).
 
 **`tools/progress.py`: 1170 / 1347 -> 1224 / 1348 (86.9% -> 90.8%); matched bytes 56.2% -> 64.5%.**
 `src/overlays` (the `ovl_i0`..`ovl_i15` `.text` sections in the linker map) went from 88 / 150 to 142 / 151.
+(The plan and the old README gave the base as 92 / 158 overlays and 40 / 47 other, from a split that
+can't be reproduced; by `.text` section the base is 88 / 150 overlays and 44 / 55 other.)
 
 | After merge | Matched / total | Batch |
 |---|--:|---|
@@ -639,7 +641,8 @@ Byte-neutral tidies, one commit each: `TexLabel` in `structs.h` for the `{ s16 x
 type seven overlays each defined; `UnkStruct_801CE5F8.unkC80` as `Mtx[8][3]` (three matrices per rider
 model, one per `unkA80`/`unk1280` slot; it absorbed the padding after it, offsets unchanged);
 `D_800DAB60` (`s16`) and `D_801CE72E` (`u16`, read with `lhu` everywhere) declared once in `variables.h`;
-ovl_i15 reads `gRiderRaceState[].unk338`, not a misplaced `RiderStruct` view `D_801C2C70[].lapCount`;
+ovl_i15 and ovl_i3 (93060d6) use `gRiderRaceState[].unk338`, not a misplaced `RiderStruct` view
+`D_801C2C70[].lapCount` (main code's `code_24B00.c` still writes it through that view);
 `UnkStruct_func_i8_802C6E00` renamed `PlayerName` (the `gPlayerNames` element, which four other overlays
 used under an ovl_i8 name).
 
