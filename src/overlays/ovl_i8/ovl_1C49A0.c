@@ -25,12 +25,15 @@ s32 ChangeNames_StringWidth(s8* str, s32 arg1);
 
 /* One key of the name-entry grid (7 keys a row). */
 typedef struct {
-    /* 0x00 */ u8 unk0;
+    /* 0x00 */ u8 unk0; /* 1: the cursor can stop on it; 2: drawn; 4: drawn as texture unk18; 8: unk4/unk6 absolute */
     /* 0x01 */ u8 unk1; /* 0, 3: insert unkC (3: a space); 1: clear; 2: delete; 4, 5: cursor left, right;
                            6: load the name from D_800DA950; 7: store the name */
-    /* 0x02 */ u8 unk2[0xA];
-    /* 0x0C */ s8 unkC;
-    /* 0x0D */ u8 unkD[0xF];
+    /* 0x02 */ u16 unk2; /* font of unkC */
+    /* 0x04 */ s16 unk4;
+    /* 0x06 */ s16 unk6;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s8 unkC[0xC]; /* its label; the first character is the one inserted */
+    /* 0x18 */ s32 unk18;
 } UnkStruct_i8_802C7054; // size = 0x1C
 
 extern UnkStruct_i8_802C7054 D_i8_802C7054[];
@@ -316,7 +319,7 @@ void func_i8_802C6ADC(void) {
                 if (key->unk1 == 3) {
                     *p = ' ';
                 } else {
-                    *p = key->unkC;
+                    *p = key->unkC[0];
                 }
                 if (ChangeNames_StringWidth(D_802C7548, 2) >= 124) {
                     func_i8_802C6FD4(D_802C7558, D_802C7548, 11);
