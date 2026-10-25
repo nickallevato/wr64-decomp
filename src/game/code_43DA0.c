@@ -134,17 +134,18 @@ extern s8 D_800D988C;
 extern s32 D_800D9898[6];
 extern s32 D_800D98B0[6];
 extern s32 D_800D9914;
-extern f32 D_800DA8B0;
+f32 D_800DA8B0 = 0;
 extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_80192460[];
 extern RiderStruct gRiderRaceState[];
 extern s32 D_80223934;
-extern UnkStruct_800DA8B4 D_800DA8B4;
-extern Vp D_800DA8C0;
-extern Vp D_800DA8D0;
-extern Vp D_800DA8E0;
-extern Vp D_800DA8F0;
-extern Vp D_800DA900;
+UnkStruct_800DA8B4 D_800DA8B4 = { { 1, 0x13, 0x23 } };
+Vp D_800DA8C0 = { { { 0x280, 0x1E0, 0x1FF, 0 }, { 0x280, 0x1E0, 0x1FF, 0 } } };
+Vp D_800DA8D0 = { { { 0x280, 0x1E0, 0x1FF, 0 }, { 0x280, 0x108, 0x1FF, 0 } } };
+Vp D_800DA8E0 = { { { 0x280, 0x1E0, 0x1FF, 0 }, { 0x280, 0x2C0, 0x1FF, 0 } } };
+Vp D_800DA8F0 = { { { 0x280, 0x1E0, 0x1FF, 0 }, { 0x388, 0x270, 0x1FF, 0 } } };
+Vp D_800DA900 = { { { 0x280, 0x1E0, 0x1FF, 0 }, { 0x170, 0x270, 0x1FF, 0 } } };
+u8 D_800DA910 = 0x1E; // not referenced by any code; the word at 0x800DA910 is 0x1E000000
 extern s8 D_800D9888;
 extern s32 D_801C1FD0;
 extern s16 D_801CE60C;
@@ -188,7 +189,6 @@ extern u8 D_8004400[];
 extern u8 D_8004C00[];
 extern s32 D_800D9944[];
 extern s8 D_800D9918[][3];
-extern s32 D_800DA914;
 extern s32 D_8035C800[];
 extern s32 D_8035D200[];
 extern s32 D_8035DC00[];
@@ -1695,10 +1695,6 @@ Gfx* func_80091CD8(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 30 of 9800: the code matches, only the static's address differs. The static (D_800DA914, 0x800DA914) has
-// to be in this file's .data, which is still part of the 0x8F000 data blob. As an extern, IDO no longer sinks the
-// store below the gdl writes (score 2610).
 void* func_80091DBC(Gfx* gdl) {
     static s32 D_800DA914 = { 0 };
 
@@ -1725,6 +1721,3 @@ void* func_80091DBC(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_80091DBC.s")
-#endif
