@@ -14,11 +14,11 @@ extern s32 D_i8_802C7568;
 extern f32 D_i8_802C750C;
 
 void Save_EepromWriteNames();
-void func_i8_802C5EB8();
-Gfx* func_i8_802C63E4(Gfx* gdl);
-void func_i8_802C6ADC(void);
-void func_i8_802C6D58(void);
-void func_i8_802C6F4C(void);
+void ChangeNames_Input();
+Gfx* ChangeNames_DrawScreen(Gfx* gdl);
+void ChangeNames_PressKey(void);
+void ChangeNames_ClearName(void);
+void ChangeNames_Leave(void);
 void ChangeNames_DeleteChar(void);
 void ChangeNames_StoreName(void);
 void ChangeNames_LoadName(void* arg0);
@@ -58,7 +58,7 @@ extern Mtx D_7000A80[];
 
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
-void func_i8_802C5800(void) {
+void ChangeNames_OverlayUpdate(void) {
     s32 i;
     s32 angle;
     s32 glyph;
@@ -74,7 +74,7 @@ void func_i8_802C5800(void) {
         D_801CE640 = 0;
     }
     if (D_801CE640 == 0) {
-        func_i8_802C6FD4(gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, D_i8_802C7548, 11);
+        ChangeNames_CopyBytes(gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, D_i8_802C7548, 11);
         D_80192690[gPlayer1Rider].unkB68 = D_i8_802C74F8[D_i8_802C7040];
         D_80192690[gPlayer1Rider].unkB6C = D_800DA950[D_i8_802C74F8[D_i8_802C7040]].unk_B[0];
         D_80192690[gPlayer1Rider].unkB70 = D_800DA950[D_i8_802C74F8[D_i8_802C7040]].unk_B[1];
@@ -125,7 +125,7 @@ void func_i8_802C5800(void) {
     }
 }
 
-Gfx* func_i8_802C5D3C(Gfx* gdl) {
+Gfx* ChangeNames_Draw(Gfx* gdl) {
     Gfx* p;
     Gfx* q;
 
@@ -148,12 +148,12 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
     gDPPipeSync(p++);
     gDPSetScissor(p++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
 
-    q = func_i8_802C63E4(p);
+    q = ChangeNames_DrawScreen(p);
     gSPDisplayList(q++, D_8062290);
     gdl = q;
 
     if (gGameState == 0x3E) {
-        func_i8_802C5EB8();
+        ChangeNames_Input();
     } else if (D_80228A16 == 1) {
         Save_EepromWriteNames();
         GameState_EnterOptionsMenu();
@@ -161,7 +161,7 @@ Gfx* func_i8_802C5D3C(Gfx* gdl) {
     return gdl;
 }
 
-void func_i8_802C5EB8(void) {
+void ChangeNames_Input(void) {
     s32 pad[2]; // stack pad: the frame is 0x28
     s32 sound = false;
     s32 idx;
@@ -172,18 +172,18 @@ void func_i8_802C5EB8(void) {
                 D_801CE640 = 1;
                 D_i8_802C753C = D_i8_802C7538 = 0;
                 sound = true;
-                func_i8_802C6D58();
+                ChangeNames_ClearName();
                 break;
             case 1:
                 sound = true;
                 D_i8_802C756C = 0;
                 if (D_801CE65A->unk0 & (CONT_A | CONT_G)) {
-                    func_i8_802C6ADC();
+                    ChangeNames_PressKey();
                 } else if (D_801CE65A->unk0 & CONT_START) {
                     ChangeNames_StoreName();
                 }
                 if (D_i8_802C756C != 0) {
-                    func_i8_802C6F4C();
+                    ChangeNames_Leave();
                 }
                 break;
         }
@@ -194,7 +194,7 @@ void func_i8_802C5EB8(void) {
         switch (D_801CE640) {
             case 0:
                 sound = true;
-                func_i8_802C6F4C();
+                ChangeNames_Leave();
                 break;
             case 1:
                 sound = true;
@@ -306,7 +306,7 @@ void func_i8_802C5EB8(void) {
     }
 }
 
-Gfx* func_i8_802C63E4(Gfx* gdl) {
+Gfx* ChangeNames_DrawScreen(Gfx* gdl) {
     UnkStruct_i8_802C7054* key;
     s32 i;
     s32 x;
@@ -395,7 +395,7 @@ Gfx* func_i8_802C63E4(Gfx* gdl) {
     return gdl;
 }
 
-void func_i8_802C6ADC(void) {
+void ChangeNames_PressKey(void) {
     s32 i;
     s32 ok;
     s32 idx = D_i8_802C753C * 7 + D_i8_802C7538;
@@ -413,7 +413,7 @@ void func_i8_802C6ADC(void) {
                 ok = 0;
             }
             if (ok) {
-                func_i8_802C6FD4(D_i8_802C7548, D_i8_802C7558, 11);
+                ChangeNames_CopyBytes(D_i8_802C7548, D_i8_802C7558, 11);
                 for (i = D_i8_802C7564 + 1; i < 11; i++) {
                     D_i8_802C7548[i] = D_i8_802C7558[i - 1];
                 }
@@ -424,14 +424,14 @@ void func_i8_802C6ADC(void) {
                     *p = key->unkC[0];
                 }
                 if (ChangeNames_StringWidth(D_i8_802C7548, 2) >= 124) {
-                    func_i8_802C6FD4(D_i8_802C7558, D_i8_802C7548, 11);
+                    ChangeNames_CopyBytes(D_i8_802C7558, D_i8_802C7548, 11);
                 } else if (D_i8_802C7558[D_i8_802C7564] == 0) {
                     D_i8_802C7564++;
                 }
             }
             break;
         case 1:
-            func_i8_802C6D58();
+            ChangeNames_ClearName();
             break;
         case 2:
             ChangeNames_DeleteChar();
@@ -455,7 +455,7 @@ void func_i8_802C6ADC(void) {
     }
 }
 
-void func_i8_802C6D58(void) {
+void ChangeNames_ClearName(void) {
     s32 i;
     s8* p;
 
@@ -488,13 +488,13 @@ void ChangeNames_DeleteChar(void) {
 
 void ChangeNames_StoreName(void) {
     if (D_i8_802C7548[0] != 0) {
-        func_i8_802C6FD4(D_i8_802C7548, (s8*) &gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, 11);
+        ChangeNames_CopyBytes(D_i8_802C7548, (s8*) &gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, 11);
     }
     D_i8_802C756C = 1;
 }
 
 void ChangeNames_LoadName(void* arg0) {
-    func_i8_802C6FD4(arg0, D_i8_802C7548, 0xB);
+    ChangeNames_CopyBytes(arg0, D_i8_802C7548, 0xB);
     D_i8_802C7564 = Strlen2(D_i8_802C7548);
     if (D_i8_802C7564 >= 9) {
         D_i8_802C7564 = 9;
@@ -518,7 +518,7 @@ s32 ChangeNames_StringWidth(s8* str, s32 arg1) {
     return width;
 }
 
-void func_i8_802C6F4C(void) {
+void ChangeNames_Leave(void) {
     gPrevGameState = gGameState;
     D_801CE630 = 0;
     gGameState = 0x3F;
@@ -531,7 +531,7 @@ void func_i8_802C6F4C(void) {
     FadeTransition_SetProps(1, 4, 0);
 }
 
-void func_i8_802C6FD4(s8* src, s8* dest, s32 count) {
+void ChangeNames_CopyBytes(s8* src, s8* dest, s32 count) {
     s32 i;
 
     for (i = 0; i < count; i++) {

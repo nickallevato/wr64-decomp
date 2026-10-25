@@ -519,3 +519,15 @@ TimeTrialsResults_Update = 0x802C6B34; //segment:ovl_i6
 OptionsMenu_Draw = 0x802C5800; //segment:ovl_i7
 OptionsMenu_DrawItems = 0x802C5A18; //segment:ovl_i7
 OptionsMenu_Leave = 0x802C5C94; //segment:ovl_i7
+
+// ovl_i8, change names (GAME_STATE_OPTIONS_CHANGE_NAMES, 0x3F)
+ChangeNames_OverlayUpdate = 0x802C5800; //segment:ovl_i8
+ChangeNames_Input = 0x802C5EB8; //segment:ovl_i8
+ChangeNames_DrawScreen = 0x802C63E4; //segment:ovl_i8
+ChangeNames_PressKey = 0x802C6ADC; //segment:ovl_i8
+ChangeNames_ClearName = 0x802C6D58; //segment:ovl_i8
+ChangeNames_Leave = 0x802C6F4C; //segment:ovl_i8
+ChangeNames_CopyBytes = 0x802C6FD4; //segment:ovl_i8
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   ChangeNames_Draw 0x802C5D3C
