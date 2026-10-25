@@ -4,6 +4,7 @@ extern s32 D_800DA9C8[];
 
 extern s32 D_i2_802C8BD8[];
 extern u16 D_80B0008[];
+extern u16 D_80B77A0[];
 
 struct SelectionState {
     s32 ready[2];
@@ -281,6 +282,30 @@ Gfx* func_i2_802C86E4(Gfx* gdl, s32 x, s32 y) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C88DC.s")
+Gfx* func_i2_802C88DC(Gfx* gdl) {
+    s32 pad[15]; // stack pad: the original frame is 0x78
+    s32 row;
+    s32 offset;
+    s32 height;
+    s32 i;
+    s32 j;
+
+    for (row = 0, offset = 0; row < 100; row += 5, offset += 96 * 5) {
+        if (row == 95) {
+            height = 1;
+        } else {
+            height = 5;
+        }
+        gDPLoadTextureBlock(gdl++, D_80B77A0 + offset, G_IM_FMT_RGBA, G_IM_SIZ_16b, 96, height, 0, G_TX_CLAMP,
+                            G_TX_CLAMP, 0, 0, 0, 0);
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 4; j++) {
+                gSPScisTextureRectangle(gdl++, (j * 96) << 2, (i * 96 + row) << 2, ((j + 1) * 96) << 2,
+                                        (i * 96 + row + height) << 2, 0, 0, 0, 1 << 10, 1 << 10);
+            }
+        }
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/D_i2_802C8BE0.s")
