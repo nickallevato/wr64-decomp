@@ -88,7 +88,7 @@ void func_i2_802C5AE4(void) {
 
 void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
-void* func_i2_802C5E28();
+void func_i2_802C5E28(void);
 Gfx* func_i2_802C6ADC(Gfx*);
 Gfx* func_i2_802C7C50(Gfx*);
 Gfx* func_i2_802C88DC(Gfx*);
@@ -173,7 +173,317 @@ Gfx* func_i2_802C5B4C(Gfx* gdl) {
     return gdl;
 }
 
+s32 func_i2_802C676C(s32 arg0, s32 arg1);
+s32 func_i2_802C67E4(s32 arg0, s32 arg1);
+void func_i2_802C6864(s32 arg0);
+extern s32 D_i2_802C8BB0[];
+extern s32 D_i2_802C8BB8[];
+extern s16 D_80228A32;
+extern s16 D_800DAB60;
+
+#ifdef NON_MATCHING
+// Score 590 of 59400: the "held" check before the repeat counter is scheduled as
+// li -3 / beqzl instead of beqz with li -3 in the delay slot, which makes the function one
+// instruction longer and shifts everything after it; the rest matches.
+void func_i2_802C5E28(void) {
+    s32 i;
+    s32 ctrl;
+    u32 allowMove; // FAKE (maybe): u32 gives li 1, not move from s3; also holds the rider index (one temp)
+    s32 rider;
+    s32 locked;
+    s32 sound;
+    s32 state;
+
+    for (i = 0; i < D_801CE60C; i++) {
+        if (i == 0) {
+            ctrl = 0;
+            rider = gPlayer1Rider;
+        } else {
+            ctrl = 1;
+            rider = gPlayer2Rider;
+        }
+        if ((D_801CE658[ctrl].unk_00.unk_2 & 0xB000) && (D_i2_802C8BC0 != 0)) {
+            sound = 1;
+            switch (D_802C8C58.ready[i]) {
+                case 0:
+                    D_802C8C58.ready[i] = 1;
+                    if ((D_800DAB64 != 0) && (D_801CE658[ctrl].unk_00.unk_2 & 0x2000)) {
+                        D_801CE6F4[i] = 1;
+                    }
+                    if (D_801CE6F4[i] != 0) {
+                        D_802C8C70[D_800DA9C0[i]] |= 2;
+                    } else {
+                        D_802C8C70[D_800DA9C0[i]] |= 1;
+                    }
+                    break;
+                case 1:
+                    if (D_800DA9C8[i] == 0) {
+                        if (i == 0) {
+                            D_801CB32C = 0;
+                        }
+                        if ((D_801CE608.gameMode == 0) || (D_801CE608.gameMode == 11)) {
+                            func_i2_802C6864(i);
+                            sound = 2;
+                        } else {
+                            D_802C8C58.ready[i] = 5;
+                        }
+                    } else {
+                        if (i == 0) {
+                            D_801CB32C = 1;
+                        }
+                        D_802C8C58.ready[i] = 2;
+                    }
+                    break;
+                case 2:
+                    D_802C8C58.ready[i] = 3;
+                    break;
+                case 3:
+                    D_802C8C58.ready[i] = 4;
+                    break;
+                case 4:
+                    if ((D_801CE608.gameMode == 0) || (D_801CE608.gameMode == 11)) {
+                        func_i2_802C6864(i);
+                        sound = 2;
+                    } else {
+                        D_802C8C58.ready[i] = 5;
+                    }
+                    break;
+                case 5:
+                    func_i2_802C6864(i);
+                    break;
+            }
+            if (sound != 0) {
+                if (D_80228A32 == 1) {
+                    AudioGeneral_PlaySound(0x2A, 0);
+                } else if (sound == 1) {
+                    AudioGeneral_PlaySound(0x11, 0);
+                } else {
+                    AudioGeneral_PlaySound(0x37, 0);
+                }
+            }
+        } else if (D_801CE658[ctrl].unk_00.unk_2 & 0x4000) {
+            sound = 1;
+            switch (D_802C8C58.ready[i]) {
+                case 0:
+                    func_i2_802C84EC(2);
+                    break;
+                case 1:
+                    D_802C8C58.ready[i] = 0;
+                    if (D_801CE6F4[i] != 0) {
+                        D_802C8C70[D_800DA9C0[i]] &= ~2;
+                    } else {
+                        D_802C8C70[D_800DA9C0[i]] &= ~1;
+                    }
+                    break;
+                case 5:
+                    if (D_800DA9C8[i] == 0) {
+                        D_802C8C58.ready[i] = 1;
+                    } else {
+                        D_802C8C58.ready[i] = 4;
+                    }
+                    break;
+                case 2:
+                    D_802C8C58.ready[i] = 1;
+                    break;
+                case 3:
+                    D_802C8C58.ready[i] = 2;
+                    break;
+                case 4:
+                    D_802C8C58.ready[i] = 3;
+                    break;
+                default:
+                    sound = 0;
+                    break;
+            }
+            if (sound != 0) {
+                AudioGeneral_PlaySound(0x16, 0);
+            }
+        } else {
+            allowMove = 1;
+            if (D_801CE658[ctrl].unk_00.unk_2 & 0xF) {
+                allowMove = D_i2_802C8BD8[D_800DA9C0[i]];
+                switch (D_802C8C58.ready[i]) {
+                    case 2:
+                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[0] =
+                            D_800DA950[allowMove].unk_B[0];
+                        break;
+                    case 3:
+                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[1] =
+                            D_800DA950[allowMove].unk_B[1];
+                        break;
+                    case 4:
+                        ((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[i][allowMove].unk_B[2] =
+                            D_800DA950[allowMove].unk_B[2];
+                        break;
+                }
+            } else {
+                if ((gPlayers != ONE_PLAYER) && (D_800DA9C0[0] == D_800DA9C0[1])) {
+                    allowMove = 0;
+                }
+                locked = 0;
+                state = D_802C8C58.ready[i];
+                if (state == 0) {
+                    if (allowMove) {
+                        if (D_801CE658[ctrl].unk_00.unk_0 & 0x800) {
+                            locked = 1;
+                            D_801CE6F4[i] = i ^ 1;
+                        } else {
+                            D_801CE6F4[i] = i;
+                        }
+                    } else if (D_802C8C70[D_800DA9C0[i]] == 0) {
+                        D_801CE6F4[i] = i;
+                    } else if (D_802C8C70[D_800DA9C0[i]] & 1) {
+                        D_801CE6F4[i] = 1;
+                    } else {
+                        D_801CE6F4[i] = 0;
+                    }
+                    if ((D_800DAB60 != 0) && (D_801CE60C == 1)) {
+                        if (D_801CE658[ctrl].unk_00.unk_0 & 0x400) {
+                            D_800DAB64 = 1;
+                        } else {
+                            D_800DAB64 = 0;
+                        }
+                    }
+                }
+                D_i2_802C8BB0[i] = 0;
+                if (D_801CE658[ctrl].unk_00.unk_2 & 0x200) {
+                    sound = 1;
+                    switch (state) {
+                        case 0:
+                            if (locked) {
+                                sound = 0;
+                            } else {
+                                D_800DA9C0[i]--;
+                                if (D_800DA9C0[i] < 0) {
+                                    D_800DA9C0[i] = 3;
+                                }
+                                D_802C8C60[i] = 0x200;
+                            }
+                            break;
+                        case 1:
+                            D_800DA9C8[i]--;
+                            if (D_800DA9C8[i] < 0) {
+                                D_800DA9C8[i] = 1;
+                            }
+                            break;
+                        case 2:
+                            D_i2_802C8BB0[i] = 1;
+                            sound = func_i2_802C676C(i, 0);
+                            break;
+                        case 3:
+                            D_i2_802C8BB0[i] = 1;
+                            sound = func_i2_802C676C(i, 1);
+                            break;
+                        case 4:
+                            D_i2_802C8BB0[i] = 1;
+                            sound = func_i2_802C676C(i, 2);
+                            break;
+                        default:
+                            sound = 0;
+                            break;
+                    }
+                    if (sound != 0) {
+                        AudioGeneral_PlaySound(0x10, 0);
+                    }
+                } else if (D_801CE658[ctrl].unk_00.unk_2 & 0x100) {
+                    sound = 1;
+                    switch (state) {
+                        case 0:
+                            if (locked) {
+                                sound = 0;
+                            } else {
+                                D_800DA9C0[i]++;
+                                if (D_800DA9C0[i] == 4) {
+                                    D_800DA9C0[i] = 0;
+                                }
+                                D_802C8C60[i] = 0x200;
+                            }
+                            break;
+                        case 1:
+                            D_800DA9C8[i]++;
+                            if (D_800DA9C8[i] == 2) {
+                                D_800DA9C8[i] = 0;
+                            }
+                            break;
+                        case 2:
+                            D_i2_802C8BB0[i] = 1;
+                            sound = func_i2_802C67E4(i, 0);
+                            break;
+                        case 3:
+                            D_i2_802C8BB0[i] = 1;
+                            sound = func_i2_802C67E4(i, 1);
+                            break;
+                        case 4:
+                            D_i2_802C8BB0[i] = 1;
+                            sound = func_i2_802C67E4(i, 2);
+                            break;
+                        default:
+                            sound = 0;
+                            break;
+                    }
+                    if (sound != 0) {
+                        AudioGeneral_PlaySound(0x10, 0);
+                    }
+                }
+                if (D_i2_802C8BB0[i] != 0) {
+                    D_i2_802C8BB8[i] = -3;
+                } else {
+                    D_i2_802C8BB8[i]++;
+                    if (D_i2_802C8BB8[i] >= 4) {
+                        D_i2_802C8BB8[i] = 0;
+                        if (D_801CE658[ctrl].unk_00.unk_0 & 0x200) {
+                            switch (D_802C8C58.ready[i]) {
+                                case 2:
+                                    sound = func_i2_802C676C(i, 0);
+                                    break;
+                                case 3:
+                                    sound = func_i2_802C676C(i, 1);
+                                    break;
+                                case 4:
+                                    sound = func_i2_802C676C(i, 2);
+                                    break;
+                                default:
+                                    sound = 0;
+                                    break;
+                            }
+                            if (sound != 0) {
+                                AudioGeneral_PlaySound(0x10, 0);
+                            }
+                        } else if (D_801CE658[ctrl].unk_00.unk_0 & 0x100) {
+                            switch (D_802C8C58.ready[i]) {
+                                case 2:
+                                    sound = func_i2_802C67E4(i, 0);
+                                    break;
+                                case 3:
+                                    sound = func_i2_802C67E4(i, 1);
+                                    break;
+                                case 4:
+                                    sound = func_i2_802C67E4(i, 2);
+                                    break;
+                                default:
+                                    sound = 0;
+                                    break;
+                            }
+                            if (sound != 0) {
+                                AudioGeneral_PlaySound(0x10, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (D_802C8C58.ready[i] == 0) {
+            D_80192690[rider].unkB68 = D_i2_802C8BD8[D_800DA9C0[i]];
+            D_80192690[rider].unkB6C = D_800DA950[D_i2_802C8BD8[D_800DA9C0[i]]].unk_B[0];
+            D_80192690[rider].unkB70 = D_800DA950[D_i2_802C8BD8[D_800DA9C0[i]]].unk_B[1];
+            D_80192690[rider].unkB74 = D_800DA950[D_i2_802C8BD8[D_800DA9C0[i]]].unk_B[2];
+        }
+    }
+    SysUtils_Rand();
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5E28.s")
+#endif
 
 s32 func_i2_802C676C(s32 arg0, s32 arg1) {
     UnkStruct_func_i8_802C6E00(*tbl)[4] = (UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames;
