@@ -309,11 +309,11 @@ Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x) {
     return gdl;
 }
 
-void func_i9_802C7194(s32* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    arg0[0] = arg1;
-    arg0[1] = arg2;
-    arg0[2] = arg3;
-    arg0[3] = arg4;
+void func_i9_802C7194(UnkStruct_i9_802C80E4* panel, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    panel->unk0 = arg1;
+    panel->unk4 = arg2;
+    panel->unk8 = arg3;
+    panel->unkC = arg4;
 }
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i9/ovl_1C66D0/func_i9_802C71AC.s")
