@@ -11,6 +11,7 @@ extern s32 D_80154344;
 extern s32 D_805AF88;
 extern s32 D_802C6F08;
 extern s32 D_802C6F0C;
+extern s32 D_802C6F10;
 
 typedef struct {
     /* 0x00 */ s16 unk0; // -1, or the index of the menu it opens in D_i0_802C6E08
@@ -233,7 +234,43 @@ Gfx* func_i0_802C5A7C(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i0/ovl_1B3EC0/func_i0_802C6044.s")
+Gfx* func_i0_802C6044(Gfx* gdl) {
+    s32 pad[5]; // stack pad: the original frame is 0x88
+    UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_802C6EE0];
+    UnkStruct_i0_802C6C28* items = menu->items;
+    UnkStruct_i0_802C6C28* item;
+    s32 x;
+    u32 y; // FAKE (maybe): as s32, IDO hoists y - 2 out of the first loop
+    s32 i;
+
+    D_802C6F0C = menu->count;
+    D_802C6F10 = menu->unk8;
+    if (menu->unk14 != 0) {
+        D_802C6F10 = D_802C6F08;
+    }
+    x = menu->unkC;
+    y = D_i0_802C6BD0 = menu->unk10;
+    gSPDisplayList(gdl++, D_106F628);
+    for (i = 0; i < D_802C6F0C; i++) {
+        gdl = func_80094338(gdl, 0, 90, y + i * 20 - 2, 140, 15);
+    }
+    gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    for (i = 0, item = items; i < D_802C6F0C; i++, item++) {
+        if (i != D_802C6EE4) {
+            // FAKE: an empty statement here gives the original's register allocation
+            do {
+            } while (0);
+            if (menu->unk14 != 0) {
+                gdl = Printer_SetMode(gdl, D_i0_802C6BD4[i] ? 0 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                      0xFF, 0xFF, 0xFF, 0xFF);
+            }
+            gdl = func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + i * 20, 0);
+        }
+    }
+    gdl = Printer_SetMode(gdl, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    item = &items[D_802C6EE4];
+    return func_801E5554(func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + D_802C6EE4 * 20, 0));
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i0/ovl_1B3EC0/func_i0_802C63AC.s")
 
