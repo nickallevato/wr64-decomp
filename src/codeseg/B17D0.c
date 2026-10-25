@@ -134,7 +134,7 @@ void func_801E355C(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 2848: saved-register assignment differs (gdl in s2, not s3) and the frame is 0xC0, not 0xB8.
+// Score 3453 of 52700: saved-register assignment differs (gdl in s2, not s3) and the frame is 0xC0, not 0xB8.
 typedef struct CourseRecord {
     /* 0x0 */ s32 time;
     /* 0x4 */ s32 rider;

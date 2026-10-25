@@ -1096,7 +1096,8 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
 }
 
 #ifdef NON_MATCHING
-// Score 5846: c and the 1.0f constant get no callee-saved register (frame 0x68, not 0x70), so the products spill.
+// Score 6045 of 12200: c and the 1.0f constant get no callee-saved register (frame 0x68, not 0x70), so the products
+// spill.
 void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
     f32 len;
     f32 xx;
@@ -1150,7 +1151,7 @@ void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
 }
 
 #ifdef NON_MATCHING
-// Score 4439: ys and zxt stay in registers (the original keeps them on the stack), frame 0x60, not 0x68.
+// Score 4879 of 12600: ys and zxt stay in registers (the original keeps them on the stack), frame 0x60, not 0x68.
 void func_801EE274(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z, f32 arg5, f32 arg6, f32 arg7) {
     f32 len;
     f32 xx;
@@ -1208,7 +1209,7 @@ void func_801EE46C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
 }
 
 #ifdef NON_MATCHING
-// Score 239: sxsy and cxsy sit 4 bytes lower on the stack, and arg4 is loaded one store later.
+// Score 239 of 11400: sxsy and cxsy sit 4 bytes lower on the stack, and arg4 is loaded one store later.
 void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     f32 sx;
     f32 sy;
@@ -1258,7 +1259,7 @@ void func_801EE698(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
 }
 
 #ifdef NON_MATCHING
-// Score 275: arg4 is loaded one store later than in the original, which swaps two float registers.
+// Score 275 of 11500: arg4 is loaded one store later than in the original, which swaps two float registers.
 void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     f32 sx = SIN(ANGLE_TO_CUSTOM_UNITS(arg1));
     f32 sy = SIN(ANGLE_TO_CUSTOM_UNITS(arg2));

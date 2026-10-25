@@ -31,6 +31,7 @@ void Popup_UpdateAll(void) {
 }
 
 #ifdef NON_MATCHING
+// Score 40 of 71200.
 // Regalloc only: case 4's loop counter and its texture-offset induction temp swap $t0/$t1 (6 instructions).
 extern Gfx D_106F030[];
 extern Gfx D_106F0A8[];

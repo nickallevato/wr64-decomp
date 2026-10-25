@@ -440,6 +440,7 @@ void func_801DB430(struct UnkStruct_801DB0E4_arg0* arg0, struct UnkStruct_801DB0
 }
 
 #ifdef NON_MATCHING
+// Score 220 of 41400.
 // Close: register allocation drifts by one temp in the second loop, and the first sqrt result sits in fa1, not fa0.
 void func_801DB8F0(UnkA95D0_Runner* runner) {
     s32 j;
@@ -580,6 +581,7 @@ void func_801DC0AC(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
+// Score 739 of 10000.
 // Close: the D_80228190 stores take one lui each where the original shares them, and the index lands in v0, not a1.
 void func_801DC274(UnkA95D0_Runner* runner) {
     UnkStruct_801DB0E4_arg0* e = D_80228190;
@@ -653,6 +655,7 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
+// Score 13057 of 45800.
 // Register allocation differs: the original keeps center on the stack and gSinTable and D_80228190 in s7/fp.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Payload1* center;
@@ -752,6 +755,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 #endif
 
 #ifdef NON_MATCHING
+// Score 4833 of 35900.
 // IDO keeps the D_802287DC address in a saved register here; the original loads it with a lui each time.
 extern f32 D_802287B0[3];
 extern f32 D_802287C0[3];
@@ -1587,6 +1591,7 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
+// Score 5965 of 32100.
 // obj stays on the stack instead of in s0, so the frame is 8 bytes short and registers differ throughout.
 void func_801DF744(UnkA95D0_Obj* obj) {
     f32 d[2];

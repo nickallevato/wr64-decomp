@@ -1,7 +1,7 @@
 #include "common.h"
 
 #ifdef NON_MATCHING
-// Score 11089: float register allocation; the original keeps ux, uy, uz in saved registers across the sqrtf calls and spills the cross product through the stack.
+// Score 12434 of 22600: float register allocation; the original keeps ux, uy, uz in saved registers across the sqrtf calls and spills the cross product through the stack.
 void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 arg7, f32 arg8, f32 arg9,
                    f32 arg10) {
     f32 scale;
@@ -71,7 +71,7 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
 #endif
 
 #ifdef NON_MATCHING
-// Score 2885: &D_80228920 is kept in a register for the load and the store (the original reloads arg2 and uses at), which shifts the temps.
+// Score 3450 of 28700: &D_80228920 is kept in a register for the load and the store (the original reloads arg2 and uses at), which shifts the temps.
 typedef struct AnimKey {
     /* 0x0 */ s16 x;
     /* 0x2 */ s16 y;

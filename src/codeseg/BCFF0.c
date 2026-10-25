@@ -164,7 +164,7 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 9945: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
+// Score 10726 of 40500: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -349,7 +349,7 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 9735: the float literal at 0x80227A34 is an extern here (its rodata is in the F6010 data blob), so its address is hoisted into s7 and i moves to s8; node selection and the show flag also schedule differently.
+// Score 10863 of 69300: the float literal at 0x80227A34 is an extern here (its rodata is in the F6010 data blob), so its address is hoisted into s7 and i moves to s8; node selection and the show flag also schedule differently.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -813,7 +813,7 @@ void Hud_DrawStartLights(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10592: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
+// Score 10992 of 39800: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
 extern f32 D_80227A44;
 extern f32 D_80227A48;
 extern s32 gHudMarkerColorFrame;
@@ -1164,7 +1164,7 @@ void Hud_UpdateOffCourseCountdown(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 300: temp registers are off by one from the first index product on (the original has one more temp early).
+// Score 300 of 20800: temp registers are off by one from the first index product on (the original has one more temp early).
 extern char D_802279D0[];
 extern char D_802279D8[];
 extern char D_802279DC[];
@@ -1284,7 +1284,7 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 9103: same instructions, but the frame is 0x18 smaller and y is not kept in s0, so registers and stack offsets differ; the original has more locals.
+// Score 12816 of 174400: same instructions, but the frame is 0x18 smaller and y is not kept in s0, so registers and stack offsets differ; the original has more locals.
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1480,7 +1480,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 
 #ifdef NON_MATCHING
 // Same control flow and stack frame; register allocation and scheduling differ throughout
-// (asm-differ score 58028 of 490800), and the 1.8f below is D_80227A4C in the original.
+// (asm-differ score 58563 of 490800), and the 1.8f below is D_80227A4C in the original.
 // Draw the race HUD: lap splits and total time, the TIME, LAP, RANK and SPEED readouts, the missed-buoy
 // marks, the boost meter, the stunt score and the best times.
 void func_801F4120(Gfx** gdlp) {
@@ -2060,7 +2060,7 @@ void func_801F4120(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 1255: one temp more early on and the loop constants (8, 1) land in other registers; the final D_80228DFC/D_80228DF8 block schedules its stores differently.
+// Score 1360 of 46800: one temp more early on and the loop constants (8, 1) land in other registers; the final D_80228DFC/D_80228DF8 block schedules its stores differently.
 extern s32 D_801C1FD4;
 extern s32 D_80228DD8[4];
 extern s32 D_80228DE8[4];
@@ -2330,7 +2330,7 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10188: float register allocation; the original keeps the camera position and direction on the stack (no saved FP register left).
+// Score 10788 of 32800: float register allocation; the original keeps the camera position and direction on the stack (no saved FP register left).
 extern s32 D_80223934;
 extern f32 D_80227A50;
 extern f32 gSinTable[0x1000];
@@ -2437,7 +2437,7 @@ void func_801F9EA0(void) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5600: the rider loops count j by 1, not in 0x14-byte steps against gRiders * 20 as the original does, which shifts registers.
+// Score 6660 of 61800: the rider loops count j by 1, not in 0x14-byte steps against gRiders * 20 as the original does, which shifts registers.
 extern Gfx D_10147C8[];
 extern Gfx D_10149F8[];
 extern u8 D_10448D0[];
