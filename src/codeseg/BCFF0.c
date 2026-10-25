@@ -1164,7 +1164,8 @@ void Hud_UpdateOffCourseCountdown(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 300 of 20800: temp registers are off by one from the first index product on (the original has one more temp early).
+// Score 85 of 20800: the temp registers now agree, but gPlayer1Rider is loaded into a temp (t8) for both index products
+// where the original keeps it in v0. The pointer to it is a FAKE found by the permuter: it takes the extra early temp.
 extern char D_802279D0[];
 extern char D_802279D8[];
 extern char D_802279DC[];
@@ -1183,12 +1184,14 @@ void func_801F2060(Gfx** gdlp) {
     s32 x;
     s32 t; // unused; with x it fills the 0x30 bytes of locals above gdl
     Gfx* gdl;
+    s32* new_var; // FAKE: pointer to gPlayer1Rider, see the note above
 
+    new_var = &gPlayer1Rider;
     gdl = *gdlp;
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
             p = &D_80192690[gPlayer1Rider];
-            rider = &gRiderRaceState[gPlayer1Rider];
+            rider = &gRiderRaceState[*new_var];
         } else {
             p = &D_80192690[gPlayer2Rider];
             rider = &gRiderRaceState[gPlayer2Rider];
