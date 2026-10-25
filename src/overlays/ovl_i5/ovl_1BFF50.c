@@ -13,6 +13,17 @@ extern s16 D_802C7B04;
 extern u16 D_802C7B06;
 extern s32 D_802C7B08;
 extern s32 D_802C7B0C;
+extern s32 D_i5_802C7A18[];
+extern s32 D_801C2650;
+extern s32 D_801CB350[][4];
+extern s32 D_801CE704; // D_801CE6FC + 8 in the asm; its symbol is in linker_scripts/us/rev1/resolve.txt
+extern s32 D_800DA9DC[];
+extern s32 D_801CE718[];
+extern u8 gPrinterWidthsFont0[];
+extern Gfx D_106F488[];
+extern Mtx D_7000A40[];
+extern Mtx D_7000A80[];
+extern Vp D_7001280[];
 
 s32 Save_EepromWriteHeader(void);
 void func_800C3E4C(void);
@@ -22,6 +33,10 @@ void RaceResults_Update(void);
 void func_i5_802C6F84(s32 arg0);
 void GameState_EnterCeremony(void);
 void GameState_EnterCourseOverview(void);
+Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
+Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
+Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
 void func_i5_802C5800(void) {
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_RACE_RESULTS)) {
@@ -136,7 +151,248 @@ Gfx* func_i5_802C5C1C(Gfx* gdl) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i5/ovl_1BFF50/func_i5_802C5DC0.s")
+Gfx* func_i5_802C5DC0(Gfx* gdl) {
+    s32 i;
+    s32 mode;
+    s32 showPoints;
+    s32 x;
+    s32 titleX;
+    s32 titleW;
+    s32 count;
+    s32 tieRank;
+    s32 rank;
+    s32 timeMode;
+    s32 valueMode;
+    s32 value;
+    s32 valueX;
+    s32 placeX;
+    s32 j;
+    s32 start;
+    s32 rider;
+    s32 panelMode;
+    s32 pad; // stack pad
+    UnkStruct_func_i8_802C6E00* name;
+    char placeBuf[12];
+    char valueBuf[12];
+
+    switch (D_801CE640) {
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+            showPoints = 1;
+            titleX = 13;
+            titleW = 244;
+            break;
+
+        default:
+            showPoints = 0;
+            titleX = 36;
+            titleW = 191;
+            break;
+    }
+
+    if (showPoints == 0) {
+        panelMode = 0;
+    } else {
+        panelMode = 2;
+    }
+
+    gSPDisplayList(gdl++, D_106F628);
+    gdl = func_80094338(gdl, panelMode, D_i5_802C7A00 + titleX + 8, 25, titleW, 24);
+    gdl = func_80094338(gdl, panelMode, D_802C7B04 + 8, 52, 265, 16);
+    gdl = func_80094338(gdl, panelMode, D_i5_802C7A00 + 8, 199, 265, 16);
+    for (i = 0; i < 4; i++) {
+        if (i & 1) {
+            x = D_802C7B04;
+        } else {
+            x = D_i5_802C7A00;
+        }
+        gdl = func_80094338(gdl, panelMode, x + 8, 71 + i * 32, 265, 28);
+    }
+
+    placeX = 0;
+    gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    if (showPoints == 0) {
+        gdl = func_801E3EE0(gdl, 2, 20, D_i5_802C7A00 + 53, 28, 0);
+        gdl = func_801E3EE0(gdl, 1, 79, D_i5_802C7A00 + 24, 202, 0);
+    } else {
+        gdl = func_801E3EE0(gdl, 2, 21, D_i5_802C7A00 + 41, 28, 0);
+        gdl = func_801E3EE0(gdl, 1, 6, D_i5_802C7A00 + 24, 202, 0);
+    }
+    gdl = func_801E3EE0(gdl, 1, 31, D_802C7B04 + 13, 55, 0);
+    gdl = func_801E3EE0(gdl, 1, 32, D_802C7B04 + 109, 55, 0);
+    gdl = func_801E3EE0(gdl, 1, 58, D_802C7B04 + 215, 55, 0);
+
+    gdl = func_801E7E74(gdl, 0, 0, 0, 255);
+    for (i = 0; i < 4; i++) {
+        if (i & 1) {
+            x = D_802C7B04;
+        } else {
+            x = D_i5_802C7A00;
+        }
+        gdl = func_801E7FD8(gdl, x + 42, 74 + i * 32, x + 86, 95 + i * 32);
+    }
+
+    gDPPipeSync(gdl++);
+    gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 310, 218);
+
+    rank = count = tieRank = 1;
+    for (i = 0; i < 4; i++) {
+        if (i & 1) {
+            x = D_802C7B04;
+        } else {
+            x = D_i5_802C7A00;
+        }
+
+        if (showPoints == 0) {
+            if (i != 0) {
+                count++;
+                if (D_801CB350[D_801CB334][D_801CE718[i]] != D_801CB350[D_801CB334][D_801CE718[i - 1]]) {
+                    tieRank = count;
+                    rank = count;
+                } else {
+                    rank = tieRank;
+                }
+            }
+            if (gRiderRaceState[D_801CE718[i]].finishState != 0) {
+                placeX = 6;
+                sprintf(placeBuf, "%s", "R");
+            } else {
+                sprintf(placeBuf, "%d", count);
+            }
+            name = &gPlayerNames[D_800DA9B0[D_801CE718[i]]];
+            value = D_801CB350[D_801CB334][D_801CE718[i]];
+            if (gPlayer1Rider != D_801CE718[i]) {
+                mode = 0;
+                timeMode = 0;
+                valueMode = 0;
+            } else {
+                mode = 6;
+                valueMode = 6;
+                if (D_801C2650 != 1) {
+                    timeMode = 6;
+                } else {
+                    timeMode = 4;
+                }
+            }
+        } else {
+            if (i != 0) {
+                count++;
+                if (D_801CB340[D_800DA9DC[i]] != D_801CB340[D_800DA9DC[i - 1]]) {
+                    tieRank = count;
+                    rank = count;
+                } else {
+                    rank = tieRank;
+                }
+            }
+            sprintf(placeBuf, "%d", rank);
+            name = &gPlayerNames[D_800DA9B0[D_800DA9DC[i]]];
+            value = D_801CB340[D_800DA9DC[i]];
+            if (gPlayer1Rider != D_800DA9DC[i]) {
+                mode = 0;
+                timeMode = 0;
+            } else {
+                mode = 6;
+                if (D_801C2650 != 1) {
+                    timeMode = 6;
+                } else {
+                    timeMode = 7;
+                }
+            }
+            if (D_801CE640 < 6) {
+                valueMode = 0;
+            } else if (gPlayer1Rider != D_800DA9DC[i]) {
+                valueMode = 0;
+            } else if (D_802C7B00 != 0) {
+                valueMode = 6;
+            } else {
+                do { // FAKE: an empty block; it keeps the final loop's index in memory, as in the original
+                } while (0);
+                valueMode = 4;
+            }
+        }
+
+        sprintf(valueBuf, "%d", value);
+        if ((value / 10) % 10 != 0) {
+            valueX = 228 - gPrinterWidthsFont0[(value / 10) % 10];
+        } else {
+            valueX = 228;
+        }
+        gdl = Printer_Print(gdl, 0, placeBuf, x + placeX + 13, 75 + i * 32, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        gdl = Printer_Print(gdl, 2, name->unk_0, x + 92, 75 + i * 32, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                            0xFF, 0xFF, 0xFF, 0xFF);
+        gdl = Printer_Print(gdl, 0, valueBuf, x + valueX + 8, 75 + i * 32, valueMode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+
+        if (showPoints == 0) {
+            if (gRiderRaceState[D_801CE718[i]].finishState != 0) {
+                gdl =
+                    Printer_SetMode(gdl, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+                gdl = func_801E3EE0(gdl, 0, 27, x + 92, 88 + i * 32, 0);
+            } else {
+                gdl = Printer_PrintTime(gdl, 1, gRiderRaceState[D_801CE718[i]].raceTime, x + 92, 88 + i * 32, timeMode,
+                                        0xFF, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+            }
+        } else {
+            gdl =
+                Printer_SetMode(gdl, valueMode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+            gdl = func_801E3EE0(gdl, 0, 24, x + 92, 88 + i * 32, 0);
+            if (gDifficulty == DIFFICULTY_NORMAL) {
+                start = 1;
+            } else {
+                start = 0;
+            }
+            for (j = start; j <= D_801CB334; j++) {
+                value = D_801CB350[j][D_800DA9DC[i]];
+                if (j != D_801CB334) {
+                    sprintf(valueBuf, "%d-", value);
+                } else {
+                    sprintf(valueBuf, "%d", value);
+                }
+                gdl = Printer_Print(gdl, 1, valueBuf, 132 + x + (j - start) * 12, 88 + i * 32, valueMode, 0xFF, 0xFF,
+                                    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+            }
+        }
+    }
+
+    if (showPoints == 0) {
+        if (D_802C7B00 != 0) {
+            mode = 0;
+        } else {
+            mode = 4;
+        }
+        gdl = Printer_SetMode(gdl, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        gdl = func_801E3EE0(gdl, 1, D_i5_802C7A18[D_801CE704], D_i5_802C7A00 + 160, 202, 0);
+    } else {
+        if (D_801CE640 < 6) {
+            mode = 0;
+        } else if (D_802C7B00 != 0) {
+            mode = 6;
+        } else {
+            mode = 4;
+        }
+        gdl = Printer_SetMode(gdl, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        gdl = Printer_DrawNumber(gdl, 2, D_800EABBC[gDifficulty][D_801CB334], D_i5_802C7A00 + 242, 201);
+    }
+
+    gSPPerspNormalize(gdl++, D_802C7B06);
+    gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPDisplayList(gdl++, D_106F488);
+    for (i = 0; i < 4; i++) {
+        gSPViewport(gdl++, &D_7001280[i]);
+        gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        if (showPoints == 1) {
+            rider = D_800DA9B0[D_800DA9DC[i]];
+        } else {
+            rider = D_800DA9B0[D_801CE718[i]];
+        }
+        gdl = func_801E4FE8(gdl, rider, 0, 0, &D_801CE5F8->unkC80[i * 3]);
+    }
+    return gdl;
+}
 
 void RaceResults_Update(void) {
     s32 playSound = false;
