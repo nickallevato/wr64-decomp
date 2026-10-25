@@ -531,3 +531,15 @@ ChangeNames_CopyBytes = 0x802C6FD4; //segment:ovl_i8
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   ChangeNames_Draw 0x802C5D3C
+
+// ovl_i9, view records (GAME_STATE_OPTIONS_VIEW_RECORDS, 0x43)
+ViewRecords_OverlayUpdate = 0x802C5800; //segment:ovl_i9
+ViewRecords_Input = 0x802C5E5C; //segment:ovl_i9
+ViewRecords_DrawPanels = 0x802C6750; //segment:ovl_i9
+ViewRecords_DrawCourseList = 0x802C6CC8; //segment:ovl_i9
+ViewRecords_SetPanel = 0x802C7194; //segment:ovl_i9
+ViewRecords_DrawRecordsPanel = 0x802C71AC; //segment:ovl_i9
+ViewRecords_Leave = 0x802C802C; //segment:ovl_i9
+// Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
+// here would make splat rename those references:
+//   ViewRecords_Draw 0x802C5D24

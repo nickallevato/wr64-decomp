@@ -42,17 +42,17 @@ extern s32 D_i9_802C81A4;
 extern s32 D_i9_802C81B4;
 extern u16 D_i9_802C8280;
 
-void func_i9_802C5E5C(void);
-Gfx* func_i9_802C6750(Gfx* gdl);
-Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x);
-Gfx* func_i9_802C71AC(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y);
-void func_i9_802C7194(UnkStruct_i9_802C80E4* panel, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-void func_i9_802C802C(s32 arg0);
+void ViewRecords_Input(void);
+Gfx* ViewRecords_DrawPanels(Gfx* gdl);
+Gfx* ViewRecords_DrawCourseList(Gfx* gdl, s32 x);
+Gfx* ViewRecords_DrawRecordsPanel(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y);
+void ViewRecords_SetPanel(UnkStruct_i9_802C80E4* panel, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void ViewRecords_Leave(s32 arg0);
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 Gfx* func_801E7E74(Gfx* dList, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 
-void func_i9_802C5800(void) {
+void ViewRecords_OverlayUpdate(void) {
     s32 k;
     s32 j;
     s32 n;
@@ -162,7 +162,7 @@ void func_i9_802C5800(void) {
     }
 }
 
-Gfx* func_i9_802C5D24(Gfx* gdl) {
+Gfx* ViewRecords_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == 0x42) {
@@ -174,11 +174,11 @@ Gfx* func_i9_802C5D24(Gfx* gdl) {
 
     gDPPipeSync(gdl++);
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
-    gdl = func_i9_802C6750(gdl);
+    gdl = ViewRecords_DrawPanels(gdl);
 
     if (gGameState == 0x42) {
         if (D_i9_802C80DC == 0) {
-            func_i9_802C5E5C();
+            ViewRecords_Input();
         }
     } else if (D_80228A16 == 1) {
         switch (D_801CE630) {
@@ -196,7 +196,7 @@ Gfx* func_i9_802C5D24(Gfx* gdl) {
     return gdl;
 }
 
-void func_i9_802C5E5C(void) {
+void ViewRecords_Input(void) {
     s32 sound = false;
     s32 course;
     s32 first;
@@ -213,25 +213,25 @@ void func_i9_802C5E5C(void) {
                         D_i9_802C80C8 = 0;
                         D_i9_802C80C0 = 1;
                     } else {
-                        func_i9_802C802C(60);
+                        ViewRecords_Leave(60);
                     }
                     break;
                 case 1:
                     sound = true;
                     D_i9_802C80DC = 2;
                     course = D_800DAAD8[D_i9_802C80C8];
-                    func_i9_802C7194(&D_i9_802C80E4[1], 320, 0, course, (D_i9_802C80C4 == 0) ? 1 : 2);
+                    ViewRecords_SetPanel(&D_i9_802C80E4[1], 320, 0, course, (D_i9_802C80C4 == 0) ? 1 : 2);
                     D_i9_802C80E0 = 2;
-                    func_i9_802C7194(&D_i9_802C8104[1], 320, 0, course, 0);
+                    ViewRecords_SetPanel(&D_i9_802C8104[1], 320, 0, course, 0);
                     AudioGeneral_PlaySound(0x2A, 0);
                     break;
             }
         } else if (D_i9_802C81A4 != 0) {
             sound = true;
             if (D_800DAA08 != 0) {
-                func_i9_802C802C(2);
+                ViewRecords_Leave(2);
             } else {
-                func_i9_802C802C(80);
+                ViewRecords_Leave(80);
             }
         }
         if (sound) {
@@ -241,7 +241,7 @@ void func_i9_802C5E5C(void) {
         if (D_i9_802C80E4[0].unk8 == 10) {
             switch (D_i9_802C80C0) {
                 case 0:
-                    func_i9_802C802C(60);
+                    ViewRecords_Leave(60);
                     break;
                 case 1:
                     D_i9_802C80C0 = 0;
@@ -254,9 +254,9 @@ void func_i9_802C5E5C(void) {
                 D_i9_802C80C4 = 1;
             }
             D_i9_802C80DC = 1;
-            func_i9_802C7194(&D_i9_802C80E4[1], -320, 0, 10, 0);
+            ViewRecords_SetPanel(&D_i9_802C80E4[1], -320, 0, 10, 0);
             D_i9_802C80E0 = 1;
-            func_i9_802C7194(&D_i9_802C8104[1], -320, 0, 10, 0);
+            ViewRecords_SetPanel(&D_i9_802C8104[1], -320, 0, 10, 0);
             AudioGeneral_PlaySound(0x2A, 0);
         }
         AudioGeneral_PlaySound(0x16, 0);
@@ -281,9 +281,9 @@ void func_i9_802C5E5C(void) {
             }
             course = D_800DAAD8[D_i9_802C80C8];
             D_i9_802C80DC = 4;
-            func_i9_802C7194(&D_i9_802C80E4[1], 0, -240, course, D_i9_802C80E4[0].unkC);
+            ViewRecords_SetPanel(&D_i9_802C80E4[1], 0, -240, course, D_i9_802C80E4[0].unkC);
             D_i9_802C80E0 = 4;
-            func_i9_802C7194(&D_i9_802C8104[1], 0, -240, course, 0);
+            ViewRecords_SetPanel(&D_i9_802C8104[1], 0, -240, course, 0);
             AudioGeneral_PlaySound(0x2A, 0);
         }
         if (sound) {
@@ -310,9 +310,9 @@ void func_i9_802C5E5C(void) {
             }
             course = D_800DAAD8[D_i9_802C80C8];
             D_i9_802C80DC = 3;
-            func_i9_802C7194(&D_i9_802C80E4[1], 0, 240, course, D_i9_802C80E4[0].unkC);
+            ViewRecords_SetPanel(&D_i9_802C80E4[1], 0, 240, course, D_i9_802C80E4[0].unkC);
             D_i9_802C80E0 = 3;
-            func_i9_802C7194(&D_i9_802C8104[1], 0, 240, course, 0);
+            ViewRecords_SetPanel(&D_i9_802C8104[1], 0, 240, course, 0);
             AudioGeneral_PlaySound(0x2A, 0);
         }
         if (sound) {
@@ -342,12 +342,12 @@ void func_i9_802C5E5C(void) {
                 }
             } else if (D_i9_802C80E4[0].unkC == 2) {
                 D_i9_802C80DC = 1;
-                func_i9_802C7194(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8],
+                ViewRecords_SetPanel(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8],
                                  (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
                 AudioGeneral_PlaySound(0x2A, 0);
             } else if (D_i9_802C80E4[0].unkC == 1 && D_i9_802C81B4 != 0) {
                 D_i9_802C80DC = 1;
-                func_i9_802C7194(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8], 3);
+                ViewRecords_SetPanel(&D_i9_802C80E4[1], -320, 0, D_800DAAD8[D_i9_802C80C8], 3);
                 AudioGeneral_PlaySound(0x2A, 0);
             }
         }
@@ -378,12 +378,12 @@ void func_i9_802C5E5C(void) {
                 }
             } else if (D_i9_802C80E4[0].unkC == 1) {
                 D_i9_802C80DC = 2;
-                func_i9_802C7194(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8],
+                ViewRecords_SetPanel(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8],
                                  (D_i9_802C80E4[0].unkC == 1) ? 2 : 1);
                 AudioGeneral_PlaySound(0x2A, 0);
             } else if (D_i9_802C80E4[0].unkC == 3) {
                 D_i9_802C80DC = 2;
-                func_i9_802C7194(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8], 1);
+                ViewRecords_SetPanel(&D_i9_802C80E4[1], 320, 0, D_800DAAD8[D_i9_802C80C8], 1);
                 AudioGeneral_PlaySound(0x2A, 0);
             }
         }
@@ -399,7 +399,7 @@ void func_i9_802C5E5C(void) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #endif
-Gfx* func_i9_802C6750(Gfx* gdl) {
+Gfx* ViewRecords_DrawPanels(Gfx* gdl) {
     s32 j;
     s32 count;
     s32 x;
@@ -448,7 +448,7 @@ Gfx* func_i9_802C6750(Gfx* gdl) {
         y = D_i9_802C80E4[j].unk4 + D_i9_802C80D0;
         switch (D_i9_802C80E4[j].unk8) {
             case 10:
-                gdl = func_i9_802C6CC8(gdl, x);
+                gdl = ViewRecords_DrawCourseList(gdl, x);
                 break;
             case 0:
             case 1:
@@ -459,7 +459,7 @@ Gfx* func_i9_802C6750(Gfx* gdl) {
             case 6:
             case 7:
             case 8:
-                gdl = func_i9_802C71AC(gdl, j, D_i9_802C80E4[j].unk8, D_i9_802C80E4[j].unkC, x, y);
+                gdl = ViewRecords_DrawRecordsPanel(gdl, j, D_i9_802C80E4[j].unk8, D_i9_802C80E4[j].unkC, x, y);
                 break;
         }
     }
@@ -469,7 +469,7 @@ Gfx* func_i9_802C6750(Gfx* gdl) {
 #pragma GCC diagnostic pop
 #endif
 
-Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x) {
+Gfx* ViewRecords_DrawCourseList(Gfx* gdl, s32 x) {
     s32 i;
     s32 mode;
 
@@ -520,14 +520,14 @@ Gfx* func_i9_802C6CC8(Gfx* gdl, s32 x) {
     return gdl;
 }
 
-void func_i9_802C7194(UnkStruct_i9_802C80E4* panel, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void ViewRecords_SetPanel(UnkStruct_i9_802C80E4* panel, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     panel->unk0 = arg1;
     panel->unk4 = arg2;
     panel->unk8 = arg3;
     panel->unkC = arg4;
 }
 
-Gfx* func_i9_802C71AC(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y) {
+Gfx* ViewRecords_DrawRecordsPanel(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y) {
     UnkStruct_AF8C0_14* rec;
     UnkStruct_AF8C0_10* stunt;
     s32 i;
@@ -733,7 +733,7 @@ Gfx* func_i9_802C71AC(Gfx* gdl, s32 panel, s32 course, s32 kind, s32 x, s32 y) {
     return gdl;
 }
 
-void func_i9_802C802C(s32 arg0) {
+void ViewRecords_Leave(s32 arg0) {
     gPrevGameState = gGameState;
     D_801CE630 = arg0;
     gGameState = 0x43;
