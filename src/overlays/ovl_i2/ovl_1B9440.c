@@ -330,7 +330,140 @@ Gfx* func_i2_802C6ADC(Gfx* gdl) {
     return func_801E4FE8(gdl, 1, 0, 0, &D_801CE5F8->unkC80[9]);
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C70EC.s")
+extern u16 D_80B6518[];
+extern u8 D_80BBFA8[];
+
+Gfx* func_i2_802C70EC(Gfx* gdl, s32 player) {
+    s32 showBars;
+    s32 showMode;
+    s32 showName;
+    s32 stateGe2;
+    s32 stateLive; // D_802C8C58 entry 1..5
+    UnkStruct_func_i8_802C6E00* entry;
+    s32 x;
+    s32 nameX;
+
+    if (player == 0) {
+        x = 19;
+    } else {
+        x = 153;
+    }
+    if ((D_800DA9C8[player] == 0) || (D_802C8C58.ready[player] == 0)) {
+        entry = &D_800DA950[D_i2_802C8BD8[D_800DA9C0[player]]];
+    } else {
+        entry = &((UnkStruct_func_i8_802C6E00(*)[4]) gPlayerNames)[player][D_i2_802C8BD8[D_800DA9C0[player]]];
+    }
+    showBars = 0;
+    showMode = 0;
+    showName = 0;
+    stateGe2 = 0;
+    stateLive = 0;
+    if (D_802C8C58.ready[player] >= 2) {
+        stateGe2 = 1;
+    }
+    if ((D_802C8C58.ready[player] > 0) && (D_802C8C58.ready[player] != 6)) {
+        stateLive = 1;
+    }
+    if (D_801CE60C == 1) {
+        if (D_802C8C58.ready[player] != 5) {
+            showBars = 1;
+        }
+        showMode = 1;
+        showName = 1;
+        nameX = x + 161;
+    } else {
+        if ((D_802C8C58.ready[player] > 0) && (D_802C8C58.ready[player] < 5)) {
+            showBars = 1;
+        }
+        if (D_802C8C58.ready[player] > 0) {
+            showMode = 1;
+        }
+        if (D_802C8C58.ready[player] == 0) {
+            showName = 1;
+        }
+        nameX = x + 27;
+    }
+    if (showBars) {
+        gDPPipeSync(gdl++);
+        gDPSetRenderMode(gdl++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+        gDPLoadTextureTile(gdl++, D_80B6518, G_IM_FMT_RGBA, G_IM_SIZ_16b, 9, 6, 0, 0, 8, 5, 0, G_TX_CLAMP, G_TX_CLAMP,
+                           0, 0, 0, 0);
+        gSPTextureRectangle(gdl++, (entry->unk_B[0] * 10 + x + 14) << 2, 147 << 2, (entry->unk_B[0] * 10 + x + 23) << 2,
+                            153 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+        gSPTextureRectangle(gdl++, (entry->unk_B[1] * 10 + x + 14) << 2, 176 << 2, (entry->unk_B[1] * 10 + x + 23) << 2,
+                            182 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+        gSPTextureRectangle(gdl++, (entry->unk_B[2] * 10 + x + 14) << 2, 205 << 2, (entry->unk_B[2] * 10 + x + 23) << 2,
+                            211 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+    }
+    gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    if (player == 0) {
+        gdl = func_801E3EE0(gdl, 2, 3, 38, 28, 0);
+        gdl = func_801E3EE0(gdl, 4, 12, 222, 26, 0);
+        gdl = func_801E3EE0(gdl, 4, 13, 222, 37, 0);
+    }
+    if (showBars) {
+        if ((D_802C8C58.ready[player] != 2) || !stateGe2) {
+            gdl = func_801E3EE0(gdl, 4, 9, x + 13, 128, 0);
+        }
+        gdl = func_801E3EE0(gdl, 0, 6, x + 13, 138, 0);
+        gdl = func_801E3EE0(gdl, 0, 7, x + 98, 138, 0);
+        if ((D_802C8C58.ready[player] != 3) || !stateGe2) {
+            gdl = func_801E3EE0(gdl, 4, 11, x + 13, 156, 0);
+        }
+        gdl = func_801E3EE0(gdl, 0, 9, x + 13, 167, 0);
+        gdl = func_801E3EE0(gdl, 0, 10, x + 89, 167, 0);
+        if ((D_802C8C58.ready[player] != 4) || !stateGe2) {
+            gdl = func_801E3EE0(gdl, 4, 10, x + 13, 185, 0);
+        }
+        gdl = func_801E3EE0(gdl, 0, 12, x + 13, 196, 0);
+        gdl = func_801E3EE0(gdl, 0, 11, x + 103, 196, 0);
+    }
+    if (showName) {
+        if (player == 0) {
+            gdl = Printer_DrawString(gdl, 1, gPlayerNames[D_i2_802C8BD8[D_800DA9C0[player]]].unk_0, nameX, 203);
+        } else {
+            gdl = Printer_DrawString(gdl, 1, D_800DA950[D_i2_802C8BD8[D_800DA9C0[player]]].unk_0, nameX, 203);
+        }
+    }
+    if (showMode) {
+        gdl = func_801E3EE0(gdl, 0, 37, x + 12, 98, 0);
+        if ((D_800DA9C8[player] != 0) || !stateLive) {
+            gdl = func_801E3EE0(gdl, 0, 3, x + 21, 112, 0);
+        }
+        if ((D_800DA9C8[player] != 1) || !stateLive) {
+            gdl = func_801E3EE0(gdl, 0, 38, x + 84, 112, 0);
+        }
+    }
+    if (D_802C8C58.ready[player] >= 5) {
+        gdl = Printer_SetMode(gdl, (D_802C8C58.ready[player] == 5) ? 6 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF,
+                              0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        gDPLoadTextureTile(gdl++, D_80BBFA8, G_IM_FMT_IA, G_IM_SIZ_8b, 88, 10, 0, 0, 87, 9, 0, G_TX_CLAMP, G_TX_CLAMP,
+                           0, 0, 0, 0);
+        gSPTextureRectangle(gdl++, (x + 29) << 2, 162 << 2, (x + 117) << 2, 172 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+    }
+    gdl = Printer_SetMode(gdl, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    if (showBars) {
+        if ((D_802C8C58.ready[player] == 2) && stateGe2) {
+            gdl = func_801E3EE0(gdl, 4, 9, x + 13, 128, 0);
+        }
+        if ((D_802C8C58.ready[player] == 3) && stateGe2) {
+            gdl = func_801E3EE0(gdl, 4, 11, x + 13, 156, 0);
+        }
+        if ((D_802C8C58.ready[player] == 4) && stateGe2) {
+            gdl = func_801E3EE0(gdl, 4, 10, x + 13, 185, 0);
+        }
+    }
+    if (showMode) {
+        if ((D_800DA9C8[player] == 0) && stateLive) {
+            gdl = func_801E3EE0(gdl, 0, 3, x + 21, 112, 0);
+        }
+        if ((D_800DA9C8[player] == 1) && stateLive) {
+            gdl = func_801E3EE0(gdl, 0, 38, x + 84, 112, 0);
+        }
+    }
+    return gdl;
+}
 
 extern u8 D_80B6E98[];
 extern Gfx D_80BE358[];
