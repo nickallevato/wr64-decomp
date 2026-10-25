@@ -247,6 +247,9 @@ segments:
       - [0x8EE80, .data, game/water_69D0]
       - [0x8EFE0, .data, game/code_BD30]
       - [0x8F000, data]
+      # code_43DA0's .data from D_800DA8B0 on (0x800DA8B0..0x800DA917, padded to 0x800DA920 by the object): the file's own tail; its earlier .data is still in the blob above
+      - [0x950B0, .data, game/code_43DA0]
+      - [0x95120, data]
       - [0x95140, .data, game/code_4C750]
       - [0x95310, data]
       - [0x9F6D0, .data, ovl_table]
