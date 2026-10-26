@@ -3168,8 +3168,6 @@ void func_800AAAC8(s32 arg0) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 60 of 39700: two float registers swap in each of the case 1/2 position blocks (the 200.0f constant and the SIN value).
 void func_800AB25C(s32 arg0) {
     s32 angle;
     f32 dist;
@@ -3180,9 +3178,10 @@ void func_800AB25C(s32 arg0) {
             switch (arg0) {
                 case 1:
                     angle = ((D_801D0758 - 20.0f) / 360.0f) * 4096.0f;
-                    dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
+                    dist = 400.0f;
+                    dist += 200.0f * SIN(D_800E62C4 * 2);
                     D_801D0754 = D_801CF060[D_801CF060[arg0].unk7C].unkC + (COS(angle) * dist);
-                    D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
+                    D_801D075C = D_801CF060[D_801CF060[arg0].unk7C].unk14 + (SIN(angle) * dist);
                     if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
                         (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 50)) {
                         D_801CF060[arg0].unk50 = 15;
@@ -3196,9 +3195,10 @@ void func_800AB25C(s32 arg0) {
                     break;
                 case 2:
                     angle = ((D_801D0758 + 20.0f) / 360.0f) * 4096.0f;
-                    dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
+                    dist = 400.0f;
+                    dist += 200.0f * SIN(D_800E62C4 * 2);
                     D_801D0754 = D_801CF060[D_801CF060[arg0].unk7C].unkC + (COS(angle) * dist);
-                    D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
+                    D_801D075C = D_801CF060[D_801CF060[arg0].unk7C].unk14 + (SIN(angle) * dist);
                     if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
                         (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 55)) {
                         D_801CF060[arg0].unk50 = 15;
@@ -3251,9 +3251,6 @@ void func_800AB25C(s32 arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800AB25C.s")
-#endif
 
 void func_800AB890(s32 arg0) {
     s32 temp_v1;
