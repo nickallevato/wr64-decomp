@@ -5,14 +5,7 @@ taught. Read it before matching anything. This file holds the standing rules for
 
 ## Worker models
 
-- **Matching workers: Sonnet 5.5 at high effort.** It is the default for byte-matching batches. In milestone
-  5 it matched 9 of the first 13 set-asides it tried, including ones earlier workers had left for whole
-  milestones (`func_801E5554`, one register swap away since milestone 1).
-- **Opus for the leftovers.** When a Sonnet worker leaves a function set aside near a match, hand that one
-  function to opus. It matched `func_80096048` in under 3 minutes.
-- **No OpenRouter models.** Nemotron, DeepSeek v4.1 flash and DeepSeek v4 pro all failed `func_8004D30C`
-  (2026-10-25). They tried no real variants, built tooling instead, and probed outside their sandbox. Sonnet
-  matched it in about 4 minutes.
+- **Matching workers: Opus.** Every byte-matching batch goes to an Opus worker.
 - **One worker at a time,** unless the owner asks for more. Two in parallel need disjoint files and must not
   both run the permuter on na-workhorse.
 - The coordinator reviews every batch itself: reads the diff, re-scores two set-asides with
