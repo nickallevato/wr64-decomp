@@ -530,9 +530,6 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
 // Pushes each of arg1's points out of the collision triangles of its grid cell (the lookup of func_8007F448):
 // removes the velocity into the triangle, records the strongest push and its normal in arg0, and moves arg1's first
 // twelve points out by the depth.
-#ifdef NON_MATCHING
-// Score 55 of 26200: only two float registers differ (the normal's x is in f14 and the depth in f16; the original has
-// them the other way round). dx/dy/dz are reused for the push, which puts them in the original's f0/f2/f12.
 void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
     UnkStruct_801C3B84* tri;
     UnkStruct_8004B0F8_1* pt;
@@ -581,6 +578,7 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
                 continue;
             }
             depth = (tri->unkC * dx) + (dy * tri->unk10) + (dz * tri->unk14);
+            if (tri->unkC > 0.0f) {} // FAKE: found by trying every spot; moves the float registers closer
             if (depth < 0.0f || depth > 16.0f) {
                 continue;
             }
@@ -598,7 +596,7 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
             pt->unkC += push * tri->unkC;
             pt->unk10 += push * tri->unk10;
             pt->unk14 += push * tri->unk14;
-            dx = tri->unkC * depth;
+            dx = tri->unkC * depth; // dx/dy/dz are reused for the push offsets (register allocation)
             dy = tri->unk10 * depth;
             if (!dx) {} // FAKE: found by trying every spot; moves the float registers closer
             dz = tri->unk14 * depth;
@@ -610,9 +608,6 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_383C0/func_8007F030.s")
-#endif
 
 f32 func_8007F448(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg5) {
     UnkStruct_801C3B84* temp_a0;
