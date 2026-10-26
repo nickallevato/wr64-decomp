@@ -572,32 +572,36 @@ void func_801DC0AC(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 739 of 10000.
-// Close: the D_80228190 stores take one lui each where the original shares them, and the index lands in v0, not a1.
+// Score 265 of 10000: the four D_80228190-> stores go through a base register (v0) where the original shares
+// one lui at, the index lands in v0, not a1, and the frame is 8 bytes larger. Storing those four through
+// D_80228190 instead of e is a FAKE that gives the original's store order. Tried in a scratch build: with
+// D_80228190 defined in this file (it needs codeseg's .bss split) and e-> for all stores, the stores match;
+// with the index also kept in a second parameter (`s32 index`, as UnkA95D0_Runner.func's type has) and no
+// index local, every instruction matches.
 void func_801DC274(UnkA95D0_Runner* runner) {
     UnkStruct_801DB0E4_arg0* e = D_80228190;
-    f32 vec[3];
     s32 i;
     f32 mag;
-    s32 index = runner->step - D_80223A30;
+    f32 vec[3];
+    s32 index;
 
-
+    index = runner->step - D_80223A30;
     if (index != 2) {
         return;
     }
     D_802287A8 = 1;
     if (runner->frame == 1) {
         func_800AB92C();
-        e->unk0 = 6;
-        e->unk4 = 2;
+        D_80228190->unk0 = 6; // FAKE
+        D_80228190->unk4 = 2; // FAKE
         e->unk8 = 0;
         e->unk30 = 0.1f;
         e->unkC[0] = -300.0f;
         e->unkC[1] = 0.0f;
         e->unkC[2] = -540.0f;
         e->unk24[0] = 0.0f;
-        e->unk24[1] = 1.0f;
-        e->unk24[2] = 0.0f;
+        D_80228190->unk24[1] = 1.0f; // FAKE
+        D_80228190->unk24[2] = 0.0f; // FAKE
     }
     e->unk8++;
     vec[0] = -3.0f;
