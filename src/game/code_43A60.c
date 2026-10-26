@@ -49,13 +49,14 @@ void func_80088EA0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 330 of 13100 (an earlier note gave 225). Same blocks and calls. The original takes the rand index
-// (srl a0) through three copies (a1, v0, a0) before the lookup; this C uses two (a1, v1, a0) and is one
-// instruction shorter, so the rand/loop registers differ (the address immediates in the diff only move with the size).
+// Score 285 of 13100. The original is 4 bytes longer: it has a third move after the lookup (`move a1,v0`, the raw result of
+// the second rand call, which nothing reads) besides the entry and loop copies of the seed, and keeps the seed in v0/a0.
+// The copy new_var (kept equal to rand_seed) is a FAKE that gives the loop its extra copy; the registers still differ.
 void func_80088EA8(void) {
     s32 var_s4;
     s32 var_s6;
     s32 rand_seed;
+    s32 new_var; // FAKE: copy of rand_seed, see the note above
 
     for (var_s4 = 0; var_s4 < gRiders; var_s4++) {
         D_801C4100[D_801C26C0[var_s4]] = var_s4;
@@ -69,10 +70,12 @@ void func_80088EA8(void) {
     }
     for (var_s6 = var_s4 = 0; var_s4 < (gRiders - 1); var_s6++, var_s4++) {
         rand_seed = (SysUtils_Rand(), SysUtils_Rand() / 256) % 4; // What?
+        new_var = rand_seed;
 
         while (D_801C3C58 = (struct_801C3C58*) &D_801C3C60[rand_seed],
-               D_801C3C58->unk5C != -1 || rand_seed == gPlayer1Rider) {
+               D_801C3C58->unk5C != -1 || new_var == gPlayer1Rider) {
             rand_seed = (rand_seed % gRiders) + 1;
+            new_var = rand_seed;
         }
         D_801C3C58->unk5C = var_s6;
     }
