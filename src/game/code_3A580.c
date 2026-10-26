@@ -6,7 +6,7 @@ typedef struct UnkStruct_801C3B90 {
     /* 0x8 */ s32 unk8;
 } UnkStruct_801C3B90; // size = 0xC
 
-extern s16 D_800D9640[16][2];
+extern s16 D_800D9640[32];
 extern UnkStruct_801C3B90 D_801C3B90[16];
 extern UnkStruct_80192420 gWaterWindow[];
 extern Gfx D_E010F28[];
@@ -17,25 +17,17 @@ f32 func_8004D30C(f32, f32);
 
 // Places D_801C3B90 at D_800D9640's sixteen positions with random angles, and sets the texture coordinates of the
 // vertices at GfxPool + 0x185E8 in both pools (eight per entry).
-#ifdef NON_MATCHING
-// Score 35 of 13800: the first loop's index temp is $t6, the original's $t7 (one hidden temp more), and its addu has
-// the base first. The pair pointer, tbl and the (u16) cast were found with the permuter.
 void func_8007FD80(void) {
     s32 i;
     s32 j;
     Vtx* v;
-    s16 (*tbl)[2];
-    s16 (*pair)[2];
 
     for (i = 0; i < 16; i++) {
-        tbl = D_800D9640; // FAKE: pointer to the table and to its pair, as the original indexes it
-        pair = &tbl[i];
-        D_801C3B90[i].unk0 = (*pair)[0];
-        D_801C3B90[i].unk4 = (*pair)[1];
-        D_801C3B90[i].unk8 = (u16) (SysUtils_Rand() & 0xFFF); // FAKE: the cast takes a temp, as in the original
+        D_801C3B90[i].unk0 = D_800D9640[i << 1];
+        D_801C3B90[i].unk4 = D_800D9640[(i << 1) + 1];
+        D_801C3B90[i].unk8 = SysUtils_Rand() & 0xFFF;
     }
     for (j = 1; j >= 0; j--) {
-        if (i) {} // FAKE: keeps i live after the first loop, as the original
         // GfxPool + 0x185E8 (16 * 8 vertices; func_8007FFA8 also addresses them there)
         v = D_8011F8E8[j].unk170D8 + 0x151;
         for (i = 0; i < 16; i++, v += 8) {
@@ -47,9 +39,6 @@ void func_8007FD80(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_3A580/func_8007FD80.s")
-#endif
 
 // In Port Blue, draws each D_801C3B90 entry inside the water window (gWaterWindow[0]) as eight vertices at its angle,
 // on the water height (func_8004D30C), and six triangles.
