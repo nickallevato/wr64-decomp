@@ -180,10 +180,6 @@ extern s32 D_i2_802C8BB0[];
 extern s32 D_i2_802C8BB8[];
 extern s16 D_80228A32;
 
-#ifdef NON_MATCHING
-// Score 590 of 59300: the "held" check before the repeat counter is scheduled as
-// li -3 / beqzl instead of beqz with li -3 in the delay slot, which makes the function one
-// instruction longer and shifts everything after it; the rest matches.
 void func_i2_802C5E28(void) {
     s32 i;
     s32 ctrl;
@@ -387,13 +383,13 @@ void func_i2_802C5E28(void) {
                         case 0:
                             if (locked) {
                                 sound = 0;
-                            } else {
-                                D_800DA9C0[i]++;
-                                if (D_800DA9C0[i] == 4) {
-                                    D_800DA9C0[i] = 0;
-                                }
-                                D_i2_802C8C60[i] = 0x200;
+                                break;
                             }
+                            D_800DA9C0[i]++;
+                            if (D_800DA9C0[i] == 4) {
+                                D_800DA9C0[i] = 0;
+                            }
+                            D_i2_802C8C60[i] = 0x200;
                             break;
                         case 1:
                             D_800DA9C8[i]++;
@@ -477,9 +473,6 @@ void func_i2_802C5E28(void) {
     }
     SysUtils_Rand();
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i2/ovl_1B9440/func_i2_802C5E28.s")
-#endif
 
 s32 RiderSelect_DecrementStat(s32 arg0, s32 arg1) {
     PlayerName(*tbl)[4] = (PlayerName(*)[4]) gPlayerNames;
