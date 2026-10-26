@@ -686,11 +686,11 @@ void SaveLoad_UpdateMessageBox(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 695 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
+// Score 330 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
 // stored at its first use, reloaded for the second panel and for y + 3. Written plainly (y = 186)
 // IDO folds it (score 7011); the two FAKE lines below get most of it back. The rest is register
-// allocation: one `lui t0, 0x600` rematerialised at the end of the second prim colour block, the
-// D_i13_802C8DB4 load register, and two operand orders in the D_i13_802C8EB0 box.
+// allocation: the D_i13_802C8DB4 load register ($a3 for the original's $t0), the first call's 186 ($a3, stored to y)
+// and two operand orders in the D_i13_802C8EB0 box.
 Gfx* func_i13_802C711C(Gfx* gdl) {
     s32 i;
     s32 y;
@@ -762,6 +762,7 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     if (drawRow1) {
         gdl = func_80094338(gdl, 0, 56, 112, 100, 16);
         gdl = func_80094338(gdl, 0, 164, 112, 100, 16);
+        if (1) {} if (1) {} if (1) {} if (1) {} // FAKE: four empty tests move the register allocation (found with the permuter); any four blocks here do
     }
     if (drawModels) {
         gdl = func_80094338(gdl, 0, 28, 132, 264, 50);

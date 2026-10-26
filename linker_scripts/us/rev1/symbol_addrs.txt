@@ -161,10 +161,6 @@ D_800EABB0 = 0x800EABB0; //defined:true size:0xC
 D_800EABBC = 0x800EABBC; //defined:true
 D_800EAC14 = 0x800EAC14; //defined:true
 D_800EAC44 = 0x800EAC44; //defined:true
-// D_800EB54C: an unreferenced zero word after func_8009C2CC's jump table. IDO does not
-// emit it from that C, so it rides in func_8009D6B0's late rodata; when func_8009D6B0 is
-// in C it must emit this word before its jump tables.
-D_800EB54C = 0x800EB54C; // type:f32 function_owner:func_8009D6B0
 // D_800EB868 and D_800EB998 are each followed by an unreferenced second copy of their
 // value (-1300.0f, 0.05); without force_migration splat folds the copy into the symbol
 // and stops migrating func_800A68A4's and func_800A9D48's constants.

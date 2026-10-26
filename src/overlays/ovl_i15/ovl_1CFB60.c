@@ -47,12 +47,8 @@ Gfx* func_i15_802C602C(Gfx*);
 void Ceremony_Input(void);
 void Ceremony_Init(void);
 void Ceremony_AddEntry(s32);
-void func_800C489C(s32);
+void func_800C489C(void);
 
-#ifdef NON_MATCHING
-// Score 505 of 31400, register allocation only: the saved registers of &spFC, &D_i15_802C6DE0 and the loop bound
-// 0x80 are permuted (s7/s5/s6 for the original's s5/s6/s7), and the original passes func_800C489C its 10 in the a0
-// it already holds for the `unk4 == 10` tests.
 void func_i15_802C5800(void) {
     s32 i;
     s32 j;
@@ -81,7 +77,6 @@ void func_i15_802C5800(void) {
         }
     }
 
-    i = 0;
     if ((--D_i15_802C6D6C < 0) && (D_i15_802C6D68 != -1)) {
         Ceremony_AddEntry(D_i15_802C6D68);
         D_i15_802C6D6C = 40;
@@ -104,8 +99,7 @@ void func_i15_802C5800(void) {
     SysUtils_MtxToMtxF(&spB8, &sp17C);
     SysUtils_MatrixAffineMultiply(&sp13C, &sp17C, &spFC);
 
-    thing = D_i15_802C6E80;
-    do {
+    for (i = 0, thing = D_i15_802C6E80; i < 10; i++, thing++) {
         if (thing->unk0 != 0) {
             draw = 0;
             switch (thing->unk0) {
@@ -136,7 +130,7 @@ void func_i15_802C5800(void) {
                             D_i15_802C6DD4 = 255;
                             D_i15_802C6DD8 = 170;
                             D_i15_802C6DF4 = 1;
-                            func_800C489C(10);
+                            func_800C489C();
                         } else {
                             D_i15_802C6DD8 = D_i15_802C6DDC * 170 / 20;
                             D_i15_802C6DD4 = D_i15_802C6DDC * 255 / 20;
@@ -158,12 +152,8 @@ void func_i15_802C5800(void) {
                 if (1) {} // FAKE (permuter)
             }
         }
-        thing++;
-    } while (++i != 10);
+    }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C5800.s")
-#endif
 
 void Ceremony_Init(void) {
     s32 i;
