@@ -1750,8 +1750,6 @@ typedef struct UnkStruct_800E6C78 {
 
 extern UnkStruct_800E6C78* D_800E6C78[];
 
-#ifdef NON_MATCHING
-// Score 320 of 61500: the D_801D06D4 address is loaded before the unk10 checks instead of after the -2.0f test; everything else matches. FAKE: node2 (found with the permuter).
 void func_800A52D8(s32 arg0, f32 arg1) {
     f32 temp;
     f32 temp2;
@@ -1764,8 +1762,8 @@ void func_800A52D8(s32 arg0, f32 arg1) {
     } else {
         D_801D0758 = Math_Normalize_Angle(func_8009D3AC(D_801CF060[arg0].unkC - D_801CF060[arg0].unk80,
                                                         -(D_801CF060[arg0].unk14 - D_801CF060[arg0].unk88)));
-        D_801D0754 = (COS((s32) ((D_801D0758 / 360.0f) * 4096.0f)) * D_801CF060[arg0].unk70) + D_801D06BC;
-        D_801D075C = (SIN((s32) ((D_801D0758 / 360.0f) * 4096.0f)) * D_801CF060[arg0].unk70) + D_801D06C4;
+        D_801D0754 = (D_801CF060[arg0].unk70 * COS((s32) ((D_801D0758 / 360.0f) * 4096.0f))) + D_801D06BC;
+        D_801D075C = (D_801CF060[arg0].unk70 * SIN((s32) ((D_801D0758 / 360.0f) * 4096.0f))) + D_801D06C4;
         D_801CF060[arg0].unk4C =
             func_8009D4A8(D_801D0754 - D_801CF060[arg0].unkC, D_801D075C - D_801CF060[arg0].unk14) / 10.0f;
         if (D_801CF060[arg0].unk4C > 70) {
@@ -1794,7 +1792,8 @@ void func_800A52D8(s32 arg0, f32 arg1) {
         }
     } else {
         if (D_801D0760 >= 0.5) {
-            D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 0.5f);
+            temp = 0.5f; // FAKE: a float local for the 0.5f (found with the permuter)
+            D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + temp);
             if (D_801D0760 > 45.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
             }
@@ -1828,21 +1827,22 @@ void func_800A52D8(s32 arg0, f32 arg1) {
     if ((func_8009D4DC(D_801CF060[arg0].unkC - D_801D0754, D_801CF060[arg0].unk14 - D_801D075C) < SQ(arg1)) &&
         (D_801CF060[arg0].unk9C >= 0)) {
         if (func_8009D4A8(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4) <
-            (node2 = &D_800E6C78[gCourseID][D_801CF060[arg0].unk9C])->unk18) {
+            (node2 = D_801CF060[arg0].unk9C + D_800E6C78[gCourseID])->unk18) { // int + pointer: the addu operand order
+
             D_801CF060[arg0].unkC +=
                 (D_801CF060[arg0].unk24 = COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
             D_801CF060[arg0].unk14 +=
                 (D_801CF060[arg0].unk2C = SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * D_801D0764);
-            node = node2; // FAKE
+            node = node2; // FAKE: the same pointer; node here and node2 in the unk10 tests give the original's registers
             temp2 = node->unk14;
             if (temp2 > -1.0f) {
                 D_801CF060[arg0].unk54 = 0;
                 D_801CF060[arg0].unk50 = temp2;
             }
-            if (node->unk10 != -1.0f) {
+            if (node2->unk10 != -1.0f) {
                 D_801CF060[arg0].unk4C = node->unk10;
             }
-            if (node->unk10 == -2.0f) {
+            if (node2->unk10 == -2.0f) {
                 D_801CF060[arg0].unk4C = D_801D06D4;
                 if (D_801D06D4 < 30.0f) {
                     D_801CF060[arg0].unk4C = 30.0f;
@@ -1878,9 +1878,6 @@ void func_800A52D8(s32 arg0, f32 arg1) {
     }
     func_800A2B24(arg0);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800A52D8.s")
-#endif
 
 void func_800C1E0C(f32);
 
