@@ -531,9 +531,8 @@ void func_8007EF80(UnkStruct_80192690* arg0) {
 // removes the velocity into the triangle, records the strongest push and its normal in arg0, and moves arg1's first
 // twelve points out by the depth.
 #ifdef NON_MATCHING
-// Score 115 of 26200: only the float registers of the triangle normal and the point's velocity are swapped (the
-// original has the normal in f16-f20 and the velocity in f22-f26). dx/dy/dz are reused for the push, which puts them in
-// the original's f0/f2/f12.
+// Score 55 of 26200: only two float registers differ (the normal's x is in f14 and the depth in f16; the original has
+// them the other way round). dx/dy/dz are reused for the push, which puts them in the original's f0/f2/f12.
 void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
     UnkStruct_801C3B84* tri;
     UnkStruct_8004B0F8_1* pt;
@@ -589,6 +588,7 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
             if (push <= 0.0f) {
                 continue;
             }
+            if (1) {} // FAKE: found by the permuter, moves the float registers closer
             if (arg0->unkC4C < push) {
                 arg0->unkC4C = push;
                 arg0->unk15B4 = tri->unkC;
