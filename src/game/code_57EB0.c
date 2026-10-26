@@ -350,16 +350,16 @@ f32 func_8009D564(f32 arg0);
 void func_8009D5C0(void);
 
 #ifdef NON_MATCHING
-// Score 315 of 17500: the result and the D_801CE780 row pointer swap v0 and a0. In C it must also emit the unreferenced zero word D_800EB54C before its jump tables (see func_8009C2CC's commit).
+// Score 215 of 17500: the result `ret` (u32, a copy of arg0) and the D_801CE780 index swap v1 and v0, and the original's second switch tests that register instead of a0. The jump tables are right since the object split (code_57EB0).
 s32 func_8009D6B0(s32 arg0, s32 arg1, s32 arg2) {
-    s32 type = arg0;
+    u32 ret = arg0;
     s16 index;
     UnkStruct_801CE780_unk4** pp;
     UnkStruct_801CE780_unk4* p;
     s16 k;
     s32 idx;
 
-    switch (type) {
+    switch (arg0) {
         case 6:
             idx = 0;
             break;
@@ -387,18 +387,18 @@ s32 func_8009D6B0(s32 arg0, s32 arg1, s32 arg2) {
             break;
     }
     index = D_801CE768[idx];
-    switch (type) {
+    switch (ret) {
         case 6:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk8[arg2];
-            arg0 = (s32) &p->unk4[k];
+            ret = (s32) &p->unk4[k];
             break;
         case 5:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk10[arg2];
-            arg0 = (s32) &p->unk4[k];
+            ret = (s32) &p->unk4[k];
             break;
         case 7:
         case 8:
@@ -406,28 +406,28 @@ s32 func_8009D6B0(s32 arg0, s32 arg1, s32 arg2) {
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unkC[arg2];
-            arg0 = (s32) &p->unk4[k];
+            ret = (s32) &p->unk4[k];
             break;
         case 3:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk8[arg2];
-            arg0 = (s32) &p->unk4[k];
+            ret = (s32) &p->unk4[k];
             break;
         case 10:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unkC[arg2];
-            arg0 = (s32) &p->unk4[k];
+            ret = (s32) &p->unk4[k];
             break;
         case 1:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk8[arg2];
-            arg0 = (s32) &p->unk4[k];
+            ret = (s32) &p->unk4[k];
             break;
     }
-    return arg0;
+    return ret;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_8009D6B0.s")
