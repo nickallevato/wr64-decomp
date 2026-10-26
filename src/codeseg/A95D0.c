@@ -440,8 +440,7 @@ void func_801DB430(struct UnkStruct_801DB0E4_arg0* arg0, struct UnkStruct_801DB0
 }
 
 #ifdef NON_MATCHING
-// Score 220 of 41400.
-// Close: register allocation drifts by one temp in the second loop, and the first sqrt result sits in fa1, not fa0.
+// Score 10 of 41400: only the first loop's sqrt result (mag) sits in f14, where the original has f12.
 void func_801DB8F0(UnkA95D0_Runner* runner) {
     s32 j;
     s32 i;
@@ -482,7 +481,7 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
             for (i = 0; i < (SysUtils_Rand() & 3) + 2; i++) {
                 j = sqrtf(sqrtf((f32) (SysUtils_Rand() & 3) / 4)) * 4;
                 D_80228110[j] = 0xFFFF;
-                D_80228120[j][1] = (f32) (SysUtils_Rand() & 3) + 12.5f;
+                ((f32*) D_80228120)[j * 2 + 1] = (f32) (SysUtils_Rand() & 3) + 12.5f; // flat index: takes the temp the original spends here
             }
         }
         for (i = 0, e = D_80228190; i < 4; i++, e++) {
