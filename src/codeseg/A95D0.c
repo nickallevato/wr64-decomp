@@ -439,9 +439,6 @@ void func_801DB430(struct UnkStruct_801DB0E4_arg0* arg0, struct UnkStruct_801DB0
     }
 }
 
-#ifdef NON_MATCHING
-// Score 220 of 41400.
-// Close: register allocation drifts by one temp in the second loop, and the first sqrt result sits in fa1, not fa0.
 void func_801DB8F0(UnkA95D0_Runner* runner) {
     s32 j;
     s32 i;
@@ -464,13 +461,9 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
                 e->unk8 = SysUtils_Rand() % 15U;
                 e->unkC[0] = (f32) (SysUtils_Rand() & 7) + (origin.x + (f32) i * 35.0f);
                 e->unkC[1] = sqrtf((f32) ((SysUtils_Rand() & 0x7FF) * i)) * 3.2f + origin.y;
-                mag = sqrtf((f32) ((SysUtils_Rand() & 0x1FF) * i));
-                if (i & 4) {
-                    sign = 1.0f;
-                } else {
-                    sign = -1.0f;
-                }
-                e->unkC[2] = sign * mag + origin.z;
+                // FAKE: the comma keeps the sqrt result in a temp and `sign` in f2, as in the original
+                e->unkC[2] =
+                    sqrtf((f32) ((SysUtils_Rand() & 0x1FF) * i)) * ((sign = (i & 4) ? 1.0f : -1.0f), sign) + origin.z;
                 e->unk24[0] = 0.0f;
                 e->unk24[1] = 1.0f;
                 e->unk24[2] = 0.0f;
@@ -482,7 +475,8 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
             for (i = 0; i < (SysUtils_Rand() & 3) + 2; i++) {
                 j = sqrtf(sqrtf((f32) (SysUtils_Rand() & 3) / 4)) * 4;
                 D_80228110[j] = 0xFFFF;
-                D_80228120[j][1] = (f32) (SysUtils_Rand() & 3) + 12.5f;
+                // FAKE: flat index of D_80228120, takes the temp the original spends here
+                ((f32*) D_80228120)[j * 2 + 1] = (f32) (SysUtils_Rand() & 3) + 12.5f;
             }
         }
         for (i = 0, e = D_80228190; i < 4; i++, e++) {
@@ -529,9 +523,6 @@ void func_801DB8F0(UnkA95D0_Runner* runner) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DB8F0.s")
-#endif
 
 void func_801DBF68(struct UnkStruct_801DB0E4_arg0* arg0) {
     s32 var_s2;
