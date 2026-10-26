@@ -1,8 +1,6 @@
 #include "common.h"
 
-#ifdef NON_MATCHING
-// Score 36 of 34300: isBlock and segs are stored to the stack in the other order (isBlock at sp+0x3c in the original), and in case 1 tex
-// and height take $t1/$a3 where the original has $a3/$t4. The (s32) cast makes the rectangle's right edge signed (blez), as the original.
+// The (s32) cast makes the rectangle's right edge signed (blez), as the original.
 extern TexEntry D_802263C0[];
 extern TexEntry D_802264F8[];
 extern TexEntry D_80226568[];
@@ -12,8 +10,8 @@ extern TexEntry D_80226A48[];
 Gfx* func_801E3EE0(Gfx* gdl, s32 kind, s32 index, s32 x, s32 y, s32 arg5) {
     s32 i;
     s32 height;
-    s32 segs;
     s32 isBlock;
+    s32 segs;
     TexEntry* tex;
 
     isBlock = 1;
@@ -28,10 +26,10 @@ Gfx* func_801E3EE0(Gfx* gdl, s32 kind, s32 index, s32 x, s32 y, s32 arg5) {
             tex = &D_802264F8[index];
             break;
         case 1:
-            tex = &D_80226568[index];
             height = arg5 + 10;
+            tex = &D_80226568[index];
             isBlock = 0;
-            if (height) {} // FAKE: empty test, reassigns this case's registers (found with a scan)
+            if (tex) {} // FAKE: empty test, gives tex and height this case's registers ($a3/$t4)
             break;
         case 2:
             tex = &D_80226A48[index];
@@ -71,6 +69,3 @@ Gfx* func_801E3EE0(Gfx* gdl, s32 kind, s32 index, s32 x, s32 y, s32 arg5) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B2510/func_801E3EE0.s")
-#endif

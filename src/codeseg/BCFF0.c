@@ -1164,14 +1164,15 @@ void Hud_UpdateOffCourseCountdown(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 25 of 20800: the temp registers now agree, but gPlayer1Rider is loaded into t8 for both index products where
-// the original loads it into v0. The pointer to gPlayer1Rider and the copy t are FAKEs found by the permuter: they take
-// the extra early temp the original spends.
+// Score 10 of 20800: only the lui before the gPlayer1Rider load differs (t8 here, v0 in the original); the loaded value is
+// in v0 for both index products, as the original. The pointer to gPlayer1Rider and the copy t are FAKEs found by the
+// permuter: they take the extra early temp the original spends. The s32 return type with no return statement (C94E0.c
+// declares it void) keeps v0 live to the end, so the assembler moves the load into v0 instead of t8.
 extern char D_802279D0[];
 extern char D_802279D8[];
 extern char D_802279DC[];
 
-void func_801F2060(Gfx** gdlp) {
+s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
     RiderStruct* rider;
     UnkStruct_80192690* p;
     s32 i;

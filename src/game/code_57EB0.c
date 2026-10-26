@@ -349,10 +349,8 @@ f32 Math_Normalize_Angle(f32 x);
 f32 func_8009D564(f32 arg0);
 void func_8009D5C0(void);
 
-#ifdef NON_MATCHING
-// Score 215 of 17500: the result `ret` (u32, a copy of arg0) and the D_801CE780 index swap v1 and v0, and the original's second switch tests that register instead of a0. The jump tables are right since the object split (code_57EB0).
 s32 func_8009D6B0(s32 arg0, s32 arg1, s32 arg2) {
-    u32 ret = arg0;
+    s32 pad; // stack pad: puts idx at sp+8, as the original
     s16 index;
     UnkStruct_801CE780_unk4** pp;
     UnkStruct_801CE780_unk4* p;
@@ -387,51 +385,42 @@ s32 func_8009D6B0(s32 arg0, s32 arg1, s32 arg2) {
             break;
     }
     index = D_801CE768[idx];
-    switch (ret) {
+    switch (arg0) {
         case 6:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk8[arg2];
-            ret = (s32) &p->unk4[k];
-            break;
+            return (s32) &p->unk4[k];
         case 5:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk10[arg2];
-            ret = (s32) &p->unk4[k];
-            break;
+            return (s32) &p->unk4[k];
         case 7:
         case 8:
         case 9:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unkC[arg2];
-            ret = (s32) &p->unk4[k];
-            break;
+            return (s32) &p->unk4[k];
         case 3:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk8[arg2];
-            ret = (s32) &p->unk4[k];
-            break;
+            return (s32) &p->unk4[k];
         case 10:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unkC[arg2];
-            ret = (s32) &p->unk4[k];
-            break;
+            return (s32) &p->unk4[k];
         case 1:
             pp = D_801CE780[index].unk4;
             p = pp[arg1];
             k = p->unk8[arg2];
-            ret = (s32) &p->unk4[k];
-            break;
+            return (s32) &p->unk4[k];
     }
-    return ret;
+    // FAKE: no return here; the original falls off the end with arg0 (the switch value) still in v0
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_8009D6B0.s")
-#endif
 
 Gfx* func_8009D96C(Gfx* gdl, s32 arg1, f32 arg2) {
     f32 sp4C;
@@ -3168,8 +3157,6 @@ void func_800AAAC8(s32 arg0) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 60 of 39700: two float registers swap in each of the case 1/2 position blocks (the 200.0f constant and the SIN value).
 void func_800AB25C(s32 arg0) {
     s32 angle;
     f32 dist;
@@ -3180,9 +3167,10 @@ void func_800AB25C(s32 arg0) {
             switch (arg0) {
                 case 1:
                     angle = ((D_801D0758 - 20.0f) / 360.0f) * 4096.0f;
-                    dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
+                    dist = 400.0f;
+                    dist += 200.0f * SIN(D_800E62C4 * 2);
                     D_801D0754 = D_801CF060[D_801CF060[arg0].unk7C].unkC + (COS(angle) * dist);
-                    D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
+                    D_801D075C = D_801CF060[D_801CF060[arg0].unk7C].unk14 + (SIN(angle) * dist);
                     if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
                         (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 50)) {
                         D_801CF060[arg0].unk50 = 15;
@@ -3196,9 +3184,10 @@ void func_800AB25C(s32 arg0) {
                     break;
                 case 2:
                     angle = ((D_801D0758 + 20.0f) / 360.0f) * 4096.0f;
-                    dist = 400.0f + (200.0f * SIN(D_800E62C4 * 2));
+                    dist = 400.0f;
+                    dist += 200.0f * SIN(D_800E62C4 * 2);
                     D_801D0754 = D_801CF060[D_801CF060[arg0].unk7C].unkC + (COS(angle) * dist);
-                    D_801D075C = (SIN(angle) * dist) + D_801CF060[D_801CF060[arg0].unk7C].unk14;
+                    D_801D075C = D_801CF060[D_801CF060[arg0].unk7C].unk14 + (SIN(angle) * dist);
                     if ((D_801CF060[D_801CF060[arg0].unk7C].unk50 == 15) &&
                         (D_801CF060[D_801CF060[arg0].unk7C].unk54 == 55)) {
                         D_801CF060[arg0].unk50 = 15;
@@ -3251,9 +3240,6 @@ void func_800AB25C(s32 arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800AB25C.s")
-#endif
 
 void func_800AB890(s32 arg0) {
     s32 temp_v1;
