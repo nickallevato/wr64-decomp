@@ -1117,15 +1117,19 @@ typedef struct SaveBlock {
 // mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
 // merged records (Save_MergePakImage). The result is written to the EEPROM.
 #ifdef NON_MATCHING
-// The frame is 8 bytes smaller (each slot 8 lower), and the read result is copied to v1 (v0/v1 swap). Score 931 of 20800.
+// Score 845 of 20800: the read result is copied to v1 here and returned from v1 by the default case; the original
+// keeps it in v0 and jumps straight to the epilogue, so v0/v1/a0 swap in the two loops. The two stack pads give
+// the original's frame (0x48).
 extern u8 D_801AEA78[];
 
 s32 func_8007D2D4(s32 mode) {
     s32 n;
     s32 ret;
     s32 i;
+    s32 pad; // stack pad
     s32 second;
     s32 fileNo;
+    s32 pad2; // stack pad
 
     second = 0;
     ret = Save_PfsIsPlug();
