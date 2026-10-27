@@ -68,9 +68,6 @@ extern s32 D_801C1FE8;
 extern RiderStruct gRiderRaceState[];
 extern u8* gPortraitFaces[];
 extern f32 gPortraitBob[];
-extern char D_802279E0[];
-extern char D_802279EC[];
-extern f32 D_80227A24;
 extern s32 D_80228A9C;
 extern s32 D_80228AAC;
 extern s32 D_80228AB0;
@@ -342,24 +339,18 @@ void Hud_SetupMatrices(void) {
     MtxF sp40;
 
     func_800481E0(&D_801AE948->unk4080, &gHudPerspNorm, 24.0f, 1.3333334f, 16.0f, 4096.0f, 0.0f, 0.0f);
-    func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, D_80227A24, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, 1500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     guOrtho(&D_801AE948->unk4000, -160.0f, 160.0f, -120.0f, 120.0f, -1024.0f, 1024.0f, 1.0f);
     guOrtho(&D_801AE948->unk4040, 0.0f, 320.0f, 240.0f, 0.0f, -1024.0f, 1024.0f, 1.0f);
 }
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 10863 of 69300: the float literal at 0x80227A34 is an extern here (its rodata is in the F6010 data blob), so its address is hoisted into s7 and i moves to s8; node selection and the show flag also schedule differently.
+// Score 11233 of 69300: &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not
+// 0xB8, and the saved registers shift; the rest differs in register allocation.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
-extern f32 D_80227A28;
-extern f32 D_80227A2C;
-extern f32 D_80227A30;
-extern f32 D_80227A34;
-extern f32 D_80227A38;
-extern f32 D_80227A3C;
-extern f32 D_80227A40;
 
 f32 func_801ED090(f32 arg0);
 s32 func_801ED388(s32 arg0, s32 arg1);
@@ -452,7 +443,7 @@ void func_801EF504(void) {
         } else {
             rider->unk2D0 += func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
         }
-        if ((fwd < D_80227A28) && (node->unk9C == 1)) {
+        if ((fwd < 0.7f) && (node->unk9C == 1)) {
             dx = node->unkC - cam->eyeX;
             dz = node->unk14 - cam->eyeZ;
             dist = sqrtf(dx * dx + dz * dz);
@@ -462,7 +453,7 @@ void func_801EF504(void) {
             }
             cross = dirX * dz - dirZ * dx;
             dot = dirX * dx + dirZ * dz;
-            if (dot < D_80227A2C) {
+            if (dot < 0.7f) {
                 dx = node->unk18 - cam->eyeX;
                 dz = node->unk20 - cam->eyeZ;
                 dist = sqrtf(dx * dx + dz * dz);
@@ -477,7 +468,7 @@ void func_801EF504(void) {
                 }
             }
         }
-        show = (dot < D_80227A30) && ((dist > 2048.0f) || !show);
+        show = (dot < 0.7f) && ((dist > 2048.0f) || !show);
         if (rider->inBox != 0) {
             show = 0;
         }
@@ -496,7 +487,7 @@ void func_801EF504(void) {
                         dx /= dist;
                         dz /= dist;
                     }
-                    if ((D_80227A34 <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
+                    if ((0.7f <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
                         found = 1;
                         break;
                     }
@@ -516,9 +507,9 @@ void func_801EF504(void) {
             show = 0;
         }
         if (show && (D_800DAB68 != 0) && (gCourseID == MARINE_FORTRESS) && (rider->lapCount >= 2)) {
-            dx = p->unk44.x - D_80227A38;
+            dx = p->unk44.x - (-2500.0f);
             dz = p->unk44.z - 2800.0f;
-            if (dx * dx + dz * dz < D_80227A3C) {
+            if (dx * dx + dz * dz < 490000.0f) {
                 show = 0;
             }
         }
@@ -560,7 +551,7 @@ void func_801EF504(void) {
             dx /= dist;
             dz /= dist;
         }
-        if ((func_801ED090(dirX * dx + dirZ * dz) >= 100.0f) && (p->unkB90 * D_80227A40 >= 10.0f) &&
+        if ((func_801ED090(dirX * dx + dirZ * dz) >= 100.0f) && (p->unkB90 * 1.8f >= 10.0f) &&
             (func_80074448(p->unk44.x, p->unk44.z) == 0) && (gCourseID != DOLPHIN_PARK)) {
             if (rider->unk328 < 0x7FFFFFFF) {
                 rider->unk328++;
@@ -813,9 +804,8 @@ void Hud_DrawStartLights(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10992 of 39800: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
-extern f32 D_80227A44;
-extern f32 D_80227A48;
+// Score 4701 of 39800: the hoisted float constants match; the original loads gPlayers into a0 (its address in a3) and keeps
+// &D_80228C28 in a1 for one store, so most temps here are one register higher, and a few blocks schedule differently.
 extern s32 gHudMarkerColorFrame;
 extern s32 gHudMarkerColorStep;
 
@@ -847,7 +837,7 @@ void func_801F0E7C(void) {
                 if (gPlayers == ONE_PLAYER) {
                     e->unk10 = 1.0f;
                 } else {
-                    e->unk10 = D_80227A48;
+                    e->unk10 = 0.7f;
                 }
                 e->unk8 = e->unk10 * 64.0f;
                 e->unkC = e->unk10 * 10.0f;
@@ -960,9 +950,9 @@ void func_801F0E7C(void) {
                             e->unk14++;
                         }
                         if (e->unk14 >= 20) {
-                            e->unk10 -= D_80227A44;
-                            if (e->unk10 < D_80227A48) {
-                                e->unk10 = D_80227A48;
+                            e->unk10 -= 0.08f;
+                            if (e->unk10 < 0.7f) {
+                                e->unk10 = 0.7f;
                             }
                         }
                     }
@@ -1166,11 +1156,8 @@ void Hud_UpdateOffCourseCountdown(void) {
 #ifdef NON_MATCHING
 // Score 10 of 20800: only the lui before the gPlayer1Rider load differs (t8 here, v0 in the original); the loaded value is
 // in v0 for both index products, as the original. The pointer to gPlayer1Rider and the copy t are FAKEs found by the
-// permuter: they take the extra early temp the original spends. The s32 return type with no return statement (C94E0.c
-// declares it void) keeps v0 live to the end, so the assembler moves the load into v0 instead of t8.
-extern char D_802279D0[];
-extern char D_802279D8[];
-extern char D_802279DC[];
+// permuter: they take the extra early temp the original spends. The s32 return type with no return statement (its caller,
+// func_801FC4D4, ignores the result) keeps v0 live to the end, so the assembler moves the load into v0 instead of t8.
 
 s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
     RiderStruct* rider;
@@ -1220,10 +1207,10 @@ s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
                 r1 = 255;
                 g1 = 255;
             }
-            gdl = Printer_Print(gdl, 0, D_802279D0, 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
-            gdl = Printer_Print(gdl, 0, D_802279D8, 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = Printer_Print(gdl, 0, "COURSE", 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = Printer_Print(gdl, 0, "OUT", 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
             n = rider->unk2E8 / 20;
-            sprintf((char*) D_80228CF8, D_802279DC, n);
+            sprintf((char*) D_80228CF8, "%d", n);
             x = 223 - (n >= 10) * 5;
             gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
                                 255, r1, g1, 255, r1, g1);
@@ -2049,12 +2036,12 @@ void func_801F4120(Gfx** gdlp) {
     // Time trials: the best times.
     if ((gGameModes == GMODE_TIME_TRIALS) && (gCourseID != DOLPHIN_PARK)) {
         y = 0x16;
-        gdl = Printer_Print(gdl, 1, D_802279E0, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        gdl = Printer_Print(gdl, 1, "BEST TIME", 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         y += 9;
         gdl = Printer_PrintTime(gdl, 1, D_801C1FE4, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         if (D_800DAB68 == 0) {
             y += 0xB;
-            gdl = Printer_Print(gdl, 1, D_802279EC, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            gdl = Printer_Print(gdl, 1, "BEST LAP", 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             y += 9;
             gdl = Printer_PrintTime(gdl, 1, D_801C1FE8, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
@@ -2336,9 +2323,9 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10788 of 32800: float register allocation; the original keeps the camera position and direction on the stack (no saved FP register left).
+// Score 10398 of 32800: 1.0f and 0.0f are hoisted into f30/f28 here; the original keeps the camera position and direction
+// on the stack instead; frame 0x90, not 0x98.
 extern s32 D_80223934;
-extern f32 D_80227A50;
 extern f32 gSinTable[0x1000];
 
 f32 func_801ED090(f32 arg0);
@@ -2419,7 +2406,7 @@ void func_801F9EA0(void) {
                 aa = (a >= 0.0f) ? a : -a;
                 sgn = (a == 0.0f) ? 0.0f : ((a > 0.0f) ? 1 : -1);
                 if (aa > 0.0f) {
-                    aa *= D_80227A50;
+                    aa *= 0.6666667f;
                     if (aa > 90.0f) {
                         aa = 90.0f;
                     }
@@ -2610,4 +2597,503 @@ void func_801FAD68(s32 x0, s32 y0, s32 x1, s32 y1, s32* count, s32* xs, s32* ys)
 }
 
 void func_801FAEA8(void) {
+}
+
+// From here on, the code splat had split off as C94E0.c (0xC94E0): its strings and float constants sit
+// between BCFF0's in the one .rodata block at 0x802279D0, so both are one translation unit.
+
+extern Vp D_1014450;
+extern s32 gPlayer2Rider;
+extern s32 D_801C1FD8;
+extern struct RiderStruct gRiderRaceState[];
+extern s16 D_801CE6F0;
+extern s32 gStartLightsState;
+extern s32 D_80227740;
+extern s32 D_80228AA8;
+extern s32 D_80228B50;
+extern s32 D_80228B54;
+extern s32 D_80228E00[];
+extern s32 D_80228E08[];
+extern UnkStruct_80228AE0 D_80228AE0[];
+extern s32 D_80228D14;
+extern s32 D_80228D18;
+extern s8 D_80228CF8[];
+
+s32 func_801F2060(Gfx**); // void in effect; s32 for its set-aside's FAKE return type (see its note)
+void func_801FAEB8(Gfx**);
+void func_801FB514(Gfx**);
+void func_801FBFB4(Gfx**);
+
+void func_801FAEB0(s32 arg0) {
+}
+
+#ifdef NON_MATCHING
+// Score 445 of 37200: only the three hoisted float constants take other saved FP registers (the original: 1.0f in f24,
+// 3.0f in f22, 1.3f in f20; here 3.0f, 1.3f, 1.0f in that order).
+extern u8 D_80227744[][3];
+extern u8 D_80227754[][3];
+extern s32 D_80228B60[2];
+extern s32 D_80228B68[2];
+extern s32 D_80228B70[2];
+
+// Flash "LAP n" (or the final-lap message) for each player when a lap starts.
+void func_801FAEB8(Gfx** gdlp) {
+    Gfx* gdl;
+    RiderStruct* rider;
+    s32 i;
+    f32 f;
+    f32 g;
+    s32 step;
+    s32 r0;
+    s32 g0;
+    s32 b0;
+    s32 r1;
+    s32 g1;
+    s32 b1;
+    s32 x;
+    s32 y;
+    s32 w;
+    f32 scale;
+
+    gdl = *gdlp;
+    for (i = 0; i < gPlayers; i++) {
+        if (i == 0) {
+            rider = &gRiderRaceState[gPlayer1Rider];
+        } else {
+            rider = &gRiderRaceState[gPlayer2Rider];
+        }
+        if (rider->unk308 != 0) {
+            rider->unk308 = 0;
+            D_80228B60[i] = 40;
+            D_80228B70[i] = 0;
+            D_80228B68[i] = 0;
+        }
+        if (D_80228B60[i] > 0) {
+            D_80228B60[i]--;
+            f = (3 - D_80228B70[i]) / 3.0f;
+            g = 1.0f - f;
+            step = D_80228B68[i];
+            r0 = D_80227744[step][0] * f + D_80227744[step + 1][0] * g;
+            scale = f; // FAKE: found by the permuter; the colour terms after r0 use the copy
+            g0 = D_80227744[step][1] * scale + D_80227744[step + 1][1] * g;
+            b0 = D_80227744[step][2] * scale + D_80227744[step + 1][2] * g;
+            r1 = D_80227754[step][0] * scale + D_80227754[step + 1][0] * g;
+            g1 = D_80227754[step][1] * scale + D_80227754[step + 1][1] * g;
+            b1 = D_80227754[step][2] * scale + D_80227754[step + 1][2] * g;
+            D_80228B70[i]++;
+            if (D_80228B70[i] >= 3) {
+                D_80228B68[i]++;
+                D_80228B70[i] = 0;
+                D_80228B68[i] &= 3;
+            }
+            if (rider->lapCount < D_801CE728[0]) {
+                if (gPlayers == ONE_PLAYER) {
+                    x = 116;
+                    y = 70;
+                    w = 60;
+                    scale = 1.3f;
+                } else {
+                    x = 125;
+                    w = 48;
+                    scale = 1.0f;
+                    if (i == 0) {
+                        y = 40;
+                    } else {
+                        y = 150;
+                    }
+                }
+                gdl = Printer_PrintScaled(gdl, 0, "LAP", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
+                sprintf((char*) D_80228CF8, "%d", rider->lapCount);
+                gdl = Printer_DrawString(gdl, 0, (char*) D_80228CF8, x + w, y);
+            } else {
+                x = 100;
+                if (gPlayers == ONE_PLAYER) {
+                    x = 82;
+                    y = 70;
+                    w = 98;
+                    scale = 1.3f;
+                } else {
+                    scale = 1.0f;
+                    w = 77;
+                    if (i == 0) {
+                        y = 40;
+                    } else {
+                        y = 150;
+                    }
+                }
+                gdl = Printer_DrawString(Printer_PrintScaled(gdl, 0, "FINAL", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
+                                                  g1, b1, scale),
+                                    0, "LAP", x + w, y);
+            }
+        }
+    }
+    *gdlp = gdl;
+}
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FAEB8.s")
+#endif
+
+void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
+    UnkStruct_80228AE0* var_v1;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (D_80228AE0[i].unk0 == 0) {
+            break;
+        }
+    }
+
+    if (i >= 4) {
+        i = 0;
+    }
+
+    D_80228AE0[i].unk0 = arg0;
+    D_80228AE0[i].unk4 = arg1;
+    D_80228AE0[i].unk10 = 0;
+    D_80228AE0[i].unkC = 0;
+    D_80228AE0[i].unk8 = 0;
+    D_80228AE0[i].unk14 = -8;
+    if (arg2 == 0) {
+        D_80228AE0[i].unk18 = 0;
+    } else {
+        D_80228AE0[i].unk18 = -0x20;
+    }
+    D_80228D14 = D_80228D18 = 0;
+}
+
+#ifdef NON_MATCHING
+// Score 12094 of 68000: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered.
+extern u8 D_80246D0[];
+extern u8 D_8024858[];
+extern u8 D_8024A40[];
+extern u8 D_80269D0[];
+extern s32 D_801C26E4;
+extern s32 D_80228A94;
+
+// Draw the stunt-score popups (D_80228AE0) and add them to the stunt totals as they finish.
+void func_801FB514(Gfx** gdlp) {
+    Gfx* gdl;
+    UnkStruct_80228AE0* p;
+    f32 f;
+    f32 g;
+    u8* img;
+    s32 w;
+    s32 x;
+    s32 y;
+    s32 alpha;
+    s32 n;
+    s32 count;
+    s32 k;
+    s8* digit;
+
+    gdl = *gdlp;
+    f = (2 - D_80228D18) / (f32) 2;
+    g = 1.0f - f;
+    D_80228D18++;
+    if (D_80228D18 >= 2) {
+        D_80228D14++;
+        D_80228D18 = 0;
+        D_80228D14 &= 3;
+    }
+    gSPClearGeometryMode(gdl++, G_ZBUFFER | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(gdl++, G_SHADE);
+    gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    gDPPipeSync(gdl++);
+    gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+    gDPSetTexturePersp(gdl++, G_TP_NONE);
+    gDPSetTextureFilter(gdl++, G_TF_BILERP);
+    gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetAlphaCompare(gdl++, G_AC_NONE);
+    for (p = D_80228AE0; p != &D_80228AE0[4]; p++) {
+        if (p->unk0 == 0) {
+            continue;
+        }
+        count = 0;
+        if (p->unk8 < 4) {
+            alpha = p->unk8 * 255 / 4;
+        } else {
+            alpha = 255;
+            if (p->unk8 >= 20) {
+                alpha = (23 - p->unk8) * 255 / 4;
+            }
+        }
+        gDPPipeSync(gdl++);
+        switch (p->unk0) {
+            case 1:
+                img = D_80246D0;
+                w = 32;
+                x = 144;
+                gDPSetEnvColor(gdl++, 255, 133, 255, alpha);
+                break;
+            case 2:
+                img = D_8024858;
+                w = 40;
+                x = 140;
+                gDPSetEnvColor(gdl++, 100, 255, 100, alpha);
+                break;
+            case 3:
+                img = D_8024A40;
+                w = 32;
+                x = 144;
+                gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
+                break;
+        }
+        gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+        y = p->unk10 + p->unk18 + 116;
+        x += p->unkC;
+        gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
+                            1 << 10);
+        n = p->unk4;
+        digit = &D_80228CF8[4];
+        for (;;) {
+            *digit = n % 10;
+            n /= 10;
+            if (n == 0) {
+                break;
+            }
+            count++;
+            digit--;
+            if (count >= 5) {
+                break;
+            }
+        }
+        count++;
+        if (count >= 6) {
+            count = 5;
+        }
+        x = (304 - count * 14) / 2 + p->unkC + 8;
+        y = p->unk10 + p->unk18 + 128;
+        for (k = 0; k < count; k++) {
+            gDPLoadTextureBlock(gdl++, &D_80269D0[D_80228CF8[5 - count + k] << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
+                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                                G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(gdl++, x << 2, y << 2, (x + 16) << 2, (y + 16) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
+                                1 << 10);
+            x += 14;
+        }
+        p->unk10 += p->unk14;
+        if (p->unk14 >= -8) {
+            p->unk14++;
+        }
+        if (p->unk10 >= 0) {
+            p->unk14 = -10;
+            p->unk10 = 0;
+        }
+        if (p->unk14 == -10) {
+            p->unkC -= 10;
+        }
+        p->unk8++;
+        if (p->unk8 >= 23) {
+            D_801C26D0 += p->unk4;
+            if (D_801C26D0 >= 100000) {
+                D_801C26D0 = 99999;
+            }
+            switch (p->unk0) {
+                case 1:
+                    D_801C26D4 += p->unk4;
+                    if (D_801C26D4 >= 100000) {
+                        D_801C26D4 = 99999;
+                    }
+                    break;
+                case 2:
+                    D_801C26DC += p->unk4;
+                    if (D_801C26DC >= 100000) {
+                        D_801C26DC = 99999;
+                    }
+                    break;
+                case 3:
+                    D_801C26D8 += p->unk4;
+                    if (D_801C26D8 >= 100000) {
+                        D_801C26D8 = 99999;
+                    }
+                    break;
+            }
+            p->unk0 = 0;
+        }
+    }
+    if (D_80228A94 != 0) {
+        D_80228A94--;
+        gdl = Printer_Print(Printer_Print(gdl, 0, "TIME", 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
+                            "EXTEND", 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    if ((D_80227740 != 0) && (D_801C26E4 != 0)) {
+        sprintf((char*) D_80228CF8, "%04d", D_801C26E4);
+        gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    *gdlp = gdl;
+}
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FB514.s")
+#endif
+
+#ifdef NON_MATCHING
+// Score 6732 of 25000: w is in s3 in the original (v1 here) and the texture pointer is set later; the loop's temps and
+// constant hoisting differ; frame 0xD0, not 0xE0.
+extern Gfx D_10146B0[];
+extern u32 D_804C008[];
+extern u32 D_804F010[];
+extern u32 D_8052018[];
+
+void func_801FBFB4(Gfx** gdlp) {
+    Gfx* gdl;
+    s32 i;
+    s32 j;
+    s32 cx;
+    s32 cy;
+    s32 w;
+    u32* tex;
+    f32 scale;
+    f32 width;
+    f32 height;
+    f32 x;
+    f32 y;
+    f32 nextY;
+
+    gdl = *gdlp;
+    gSPDisplayList(gdl++, D_10146B0);
+    for (i = 0; i < 2; i++) {
+        if (D_80228E00[i] == 0) {
+            continue;
+        }
+        cx = 160;
+        if (i == 0) {
+            cy = 64;
+        } else {
+            cy = 174;
+        }
+        tex = D_804F010;
+        w = 96;
+        if (D_80228E08[i] < 6) {
+            scale = (D_80228E08[i] / 5.0f) * 1.3f;
+        } else {
+            scale = 1.0f;
+        }
+        switch (D_80228E00[i]) {
+            case 1:
+                break;
+            case 2:
+                tex = D_804C008;
+                w = 96;
+                break;
+            case 3:
+            default:
+                tex = D_8052018;
+                w = 112;
+                break;
+        }
+        height = 32.0f * scale;
+        width = w * scale;
+        y = cy - height * 0.5f;
+        x = cx - width * 0.5f;
+        for (j = 0; j < 4; j++) {
+            nextY = y + height * 0.25f;
+            gDPLoadTextureTile(gdl++, &tex[j * w * 8], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
+                               G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                               G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
+                                (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
+                                (s32) (32768.0f / height));
+            y = nextY;
+        }
+    }
+    *gdlp = gdl;
+}
+#else
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FBFB4.s")
+#endif
+
+void func_801FC39C(void) {
+    Players player;
+
+    if (D_80228AA4 == 1) {
+        D_80228B50 += 0x1E;
+        D_80228B54 -= 0x1E;
+        if (D_80228B50 >= 0x140) {
+            D_80228AA4 = 2;
+        }
+    }
+    if (gGameModes == GMODE_2P_VS) {
+        if (D_80228AA8 != 0) {
+            if (D_80228AA8 == 1) {
+                D_80228E00[0] = 1;
+                D_80228E00[1] = 2;
+            } else if (D_80228AA8 == 2) {
+                D_80228E00[0] = 2;
+                D_80228E00[1] = 1;
+            } else {
+                D_80228E00[0] = D_80228E00[1] = 3;
+            }
+            D_80228AA8 = 0;
+            D_80228E08[0] = D_80228E08[1] = 0;
+        }
+
+        for (player = NO_PLAYERS; player < gPlayers; player++) {
+            if (D_80228E00[player] != 0) {
+                if (D_80228E08[player] < 0x7FFFFFFF) {
+                    D_80228E08[player]++;
+                }
+            }
+        }
+    }
+}
+
+void func_801FC4D4(Gfx** arg0) {
+    struct RiderStruct* temp_v0;
+    s32 pad;
+    Gfx* sp2C;
+
+    sp2C = *arg0;
+    if ((D_801CE638 == 1) || (D_801CE638 == 8)) {
+        Hud_BlendColorSets();
+        Hud_SetupMatrices();
+        gSPViewport(sp2C++, &D_1014450);
+        gDPPipeSync(sp2C++);
+
+        if (gPlayers == ONE_PLAYER) {
+            gDPSetScissor(sp2C++, G_SC_NON_INTERLACE, 8, 20, 311, 219);
+        } else {
+            gDPSetScissor(sp2C++, G_SC_NON_INTERLACE, 8, 12, 311, 229);
+        }
+        if (D_801CE638 == 8) {
+            gRiderRaceState[gPlayer1Rider].raceTime += 0x32;
+            *arg0 = sp2C;
+            return;
+        }
+        if (((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_2P_VS)) && (gGameModeState == 3) &&
+            (gCourseID != DOLPHIN_PARK) && (D_801C1FD8 == 0)) {
+            func_801FA3C0(&sp2C);
+        }
+        if (((gGameModeState != 3) || (gStartLightsState == 2)) && (gRiderRaceState[gPlayer1Rider].finishState == 0) &&
+            ((gPlayers != TWO_PLAYERS) || (gRiderRaceState[gPlayer2Rider].finishState == 0))) {
+            Hud_DrawStartLights(&sp2C);
+        }
+        if ((D_801CE638 == 1) && (gCurrentPauseMenuOption == -1) && (gGameModeState == 3) &&
+            ((gPlayers != TWO_PLAYERS) || (D_801CE6F0 == 0))) {
+            Hud_DrawGuideArrow(&sp2C);
+        }
+        if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
+            Hud_DrawMarkers(&sp2C);
+        }
+        if (gCurrentPauseMenuOption == -1) {
+            func_801F2060(&sp2C);
+            func_801FAEB8(&sp2C);
+            if (gGameModes == GMODE_STUNT) {
+                func_801FB514(&sp2C);
+            }
+        }
+        func_801F4120(&sp2C);
+
+        if (((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_2P_VS)) && (gCourseID != DOLPHIN_PARK)) {
+            func_801F9520(&sp2C);
+        }
+        if (gGameModes == GMODE_2P_VS) {
+            func_801FBFB4(&sp2C);
+        }
+        if ((gPlayers == ONE_PLAYER) && (D_80227740 != 0)) {
+            func_801FAEB0(&sp2C);
+        }
+        *arg0 = sp2C;
+    }
 }

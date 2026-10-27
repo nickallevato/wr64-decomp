@@ -155,11 +155,13 @@ Gfx* func_80093DBC(Gfx* gfxPtr, u16 red, u16 green, u16 blue);
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
 #ifdef NON_MATCHING
-// Score 913 of 63000: the frame is 0x18 smaller here (the original spills the list walk pointer at sp18 and keeps
-// the five saved entries on the stack); the list walk keeps the next entry in v1; the race-list choice and the
-// two list lui are scheduled differently.
+// Score 270 of 63000: one instruction. In the unrolled ceremony loop the original stores D_801CE9A0[3] through
+// the at it already holds and moves the second src step (+0x88) up two stores; here another lui at is emitted.
+// The two stack pads give the original's frame (0x68).
 void unk_game_load(void) {
+    s32 pad[5]; // stack pad
     s32 fromState67;
+    s32 pad2; // stack pad
     DmaEntry** list;
     Gfx* saved30;
     Gfx* saved34;
@@ -173,6 +175,7 @@ void unk_game_load(void) {
     UnkStruct_800DCE98* e;
     UnkStruct_80227A60* src;
     DmaEntry** p;
+    DmaEntry* entry;
 
     load = 0;
     buffer = 0;
@@ -212,14 +215,16 @@ void unk_game_load(void) {
                 course = SOUTHERN_ISLAND;
             }
             if (D_801CE608.player == 1) {
-                if (D_801CE608.gameMode != 0) {
-                    if (D_801CE608.gameMode != 0xB) {
-                        list = D_800DC868;
-                    } else {
+                switch (D_801CE608.gameMode) {
+                    case 0:
+                        list = D_800DC88C;
+                        break;
+                    case 0xB:
                         list = D_800DC8B0;
-                    }
-                } else {
-                    list = D_800DC88C;
+                        break;
+                    default:
+                        list = D_800DC868;
+                        break;
                 }
                 list[2] = D_800DC4F0[course];
                 list[3] = D_800DC698[course];
@@ -266,13 +271,13 @@ void unk_game_load(void) {
             course = gCourseID;
             load = 1;
             buffer = 1;
+            list = D_800DCA38;
             if (course < 0) {
                 course = DOLPHIN_PARK;
             }
             if (course >= 9) {
                 course = SOUTHERN_ISLAND;
             }
-            list = D_800DCA38;
             D_800DCA3C = D_800DC0E4[course];
             break;
         case GAME_STATE_TIME_TRIALS_RESULTS:
@@ -368,13 +373,13 @@ void unk_game_load(void) {
             course = gCourseID;
             load = 1;
             buffer = 1;
+            list = D_800DCD84;
             if (course < 0) {
                 course = DOLPHIN_PARK;
             }
             if (course >= 9) {
                 course = SOUTHERN_ISLAND;
             }
-            list = D_800DCD84;
             D_800DCD88 = D_800DC0E4[course];
             break;
         case GAME_STATE_36:
@@ -412,7 +417,9 @@ void unk_game_load(void) {
             D_801CE738 = 0;
             p = list;
             while (*p != NULL) {
-                func_80095A28(*p++);
+                entry = *p;
+                func_80095A28(entry);
+                p++;
             }
             if (D_801CE730 > 0) {
                 if (D_801CE760[0] != -1) {
@@ -454,8 +461,8 @@ void unk_game_load(void) {
                 }
                 if (gGameState == GAME_STATE_CEREMONY) {
                     for (i = 0, src = D_80227A60; i < 4; i++, src++) {
-                        D_801CE9A0[i] = src->unk0[2];
                         e = &D_800DCE98[D_800DA9B0[i]];
+                        D_801CE9A0[i] = src->unk0[2];
                         src->unk0[2] = D_8090510;
                         src->unk0[3] = e->unk0;
                         src->unk0[8] = e->unk4;

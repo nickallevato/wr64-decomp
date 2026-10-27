@@ -88,14 +88,14 @@ void func_80088EA8(void) {
 // entries for unk80[i], colours the vertices at D_801C4698/D_801C46C8 in both frame-buffer blocks, and lists the
 // D_801BC940 entries whose unk4C is 1 in D_801C4118 (count D_801C4110).
 #ifdef NON_MATCHING
-// The two vertex loops are strength-reduced (a pointer += 0x10) where the original indexes with i << 4, and the
-// D_801C3C58 = &D_801C3C60[3] store goes through s1 instead of lui at; v0/v1 swap in the first loop.
-// Score 1285 of 18900.
+// Score 75 of 18900: register allocation only. In the first loop the D_80192690 step pointer and the unkB64 switch
+// value take each other's registers (v0/v1), and the vertex address adds put the base second (addu v0,t4,t1).
 void func_800890B4(void) {
     s32 i;
     s32 j;
     Vtx* va;
     Vtx* vb;
+    Vtx* v;
 
     for (i = 0; i < 4; i++) {
         D_801C3C50 = (struct UnkStruct_801C3C50*) &D_80192690[i];
@@ -135,23 +135,25 @@ void func_800890B4(void) {
             D_801C3C58->unk80[i] = 1;
         }
     }
-    D_801C3C58 = (struct_801C3C58*) &D_801C3C60[3];
-    for (i = 0; i < 3; i++) { // empty: the original counts to 3 here too
+    for (i = 0; i < 3; i++) { // IDO moves the store out of the loop and keeps the empty count to 3
+        D_801C3C58 = (struct_801C3C58*) &D_801C3C60[3];
     }
     for (j = 0; j < 2; j++) {
         va = D_801C4698[j];
         vb = D_801C46C8[j];
         for (i = 0; i < 3; i++) {
-            va[i].v.cn[0] = 0xFF;
-            va[i].v.cn[1] = 0;
-            va[i].v.cn[2] = 0;
-            va[i].v.cn[3] = 0xFF;
+            v = &va[i];
+            v->v.cn[0] = 0xFF;
+            v->v.cn[1] = 0;
+            v->v.cn[2] = 0;
+            v->v.cn[3] = 0xFF;
         }
         for (i = 0; i < 4; i++) {
-            vb[i].v.ob[1] = 0;
-            vb[i].v.cn[0] = 0xFF;
-            vb[i].v.cn[1] = 0xFF;
-            vb[i].v.cn[2] = 0xFF;
+            v = &vb[i];
+            v->v.ob[1] = 0;
+            v->v.cn[0] = 0xFF;
+            v->v.cn[1] = 0xFF;
+            v->v.cn[2] = 0xFF;
         }
         D_801C4110 = 0;
         for (i = 0; i < D_801BFA40; i++) {

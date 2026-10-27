@@ -1895,14 +1895,12 @@ void func_800C37D4(s32 arg0) {
 }
 
 // chonker
-#ifdef NON_MATCHING
-// Score 13 of 37900: one instruction: in case 0x21 with arg1 & 0x80 the original saves rnd across the
-// AudioThread_QueueCmdS8 call as a stored zero (sw zero); here it stores v1, which holds the same zero.
 void AudioGeneral_PlaySound(s32 arg0, s32 arg1) {
     s32 rnd;
     s32 id;
     s32 pad[2]; // stack pad
     u32 prio;
+    s32 pad2; // stack pad: moves the spill of arg0 down to 0x18
 
     if (D_800E7C94 != 7) {
         switch (arg0) {
@@ -1974,7 +1972,6 @@ void AudioGeneral_PlaySound(s32 arg0, s32 arg1) {
                     AudioGeneral_DisableSeqPlayer2(10);
                     D_800E7CEC = 0x12;
                 }
-                rnd = 0;
                 if (D_801D7DF8[2] == 0) {
                     id = 0x39;
                 } else if (D_801D7DF8[2] == 4) {
@@ -1982,6 +1979,7 @@ void AudioGeneral_PlaySound(s32 arg0, s32 arg1) {
                 } else {
                     id = 0x3B;
                 }
+                rnd = 0;
                 prio = 16;
                 if ((arg1 & 1) == 1) {
                     AudioThread_QueueCmdS8(0x06000F00, 0x39);
@@ -2075,9 +2073,6 @@ void AudioGeneral_PlaySound(s32 arg0, s32 arg1) {
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_general/AudioGeneral_PlaySound.s")
-#endif
 
 void func_800C3DE0(void) {
     AudioGeneral_PlaySound(0x20, 0);
