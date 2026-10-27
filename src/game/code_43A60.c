@@ -88,8 +88,8 @@ void func_80088EA8(void) {
 // entries for unk80[i], colours the vertices at D_801C4698/D_801C46C8 in both frame-buffer blocks, and lists the
 // D_801BC940 entries whose unk4C is 1 in D_801C4118 (count D_801C4110).
 #ifdef NON_MATCHING
-// Score 75 of 18900: register allocation only. In the first loop the D_80192690 step pointer and the unkB64 switch
-// value take each other's registers (v0/v1), and the vertex address adds put the base second (addu v0,t4,t1).
+// Score 55 of 18900: register allocation only. In the first loop the D_80192690 step pointer and the unkB64 switch
+// value take each other's registers (v0/v1). The vertex pointers as v = va; v += i put the base first in the adds.
 void func_800890B4(void) {
     s32 i;
     s32 j;
@@ -142,14 +142,16 @@ void func_800890B4(void) {
         va = D_801C4698[j];
         vb = D_801C46C8[j];
         for (i = 0; i < 3; i++) {
-            v = &va[i];
+            v = va;
+            v += i;
             v->v.cn[0] = 0xFF;
             v->v.cn[1] = 0;
             v->v.cn[2] = 0;
             v->v.cn[3] = 0xFF;
         }
         for (i = 0; i < 4; i++) {
-            v = &vb[i];
+            v = vb;
+            v += i;
             v->v.ob[1] = 0;
             v->v.cn[0] = 0xFF;
             v->v.cn[1] = 0xFF;
