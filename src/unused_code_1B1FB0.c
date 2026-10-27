@@ -16,6 +16,11 @@ extern u8 D_804A460[];
 extern u8 D_8008510[];
 extern u8 D_800A618[];
 extern s32 D_1B1FB0_802C76B0;
+extern s32 D_1B1FB0_802C76BC;
+extern s32 D_1B1FB0_802C76C0;
+extern s32 D_1B1FB0_802C76C4[];
+extern s32 D_1B1FB0_802C76E8;
+extern s32 D_1B1FB0_802C76EC;
 extern s32 D_1B1FB0_802C7660;
 extern u8* D_1B1FB0_802C7664[];
 extern u8* D_1B1FB0_802C767C[];
@@ -31,7 +36,53 @@ extern Gfx D_80661F8[];
 extern Gfx D_8066A80[];
 extern Gfx D_80671B8[];
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5800.s")
+void func_1B1FB0_802C5800(void) {
+    s32 i;
+
+    if (D_1B1FB0_802C76BC == 0) {
+        D_802C7710 = (u32) ((12 - D_1B1FB0_802C76C0) * 127.0f / 12.0f + 128.0f);
+    } else {
+        D_802C7710 = (u32) ((f32) D_1B1FB0_802C76C0 * 127.0 / 12.0 + 128.0);
+    }
+    D_1B1FB0_802C76C0++;
+    if (D_1B1FB0_802C76C0 >= 12) {
+        D_1B1FB0_802C76C0 = 0;
+        D_1B1FB0_802C76BC ^= 1;
+    }
+    if (D_1B1FB0_802C76E8 == 1) {
+        D_1B1FB0_802C76EC -= 4;
+        if (D_1B1FB0_802C76EC < 191) {
+            D_1B1FB0_802C76EC = 210;
+            D_1B1FB0_802C76E8 = 0;
+            for (i = 0; i < 8; i++) {
+                if (i < 7) {
+                    D_1B1FB0_802C76C4[i] = D_1B1FB0_802C76C4[i + 1];
+                } else if (D_1B1FB0_802C76C4[i - 1] == 16 || D_1B1FB0_802C76C4[i - 1] == 0) {
+                    D_1B1FB0_802C76C4[i] = 0;
+                } else {
+                    D_1B1FB0_802C76C4[i] = D_1B1FB0_802C76C4[i - 1] + 1;
+                }
+            }
+            D_1B1FB0_802C76C4[0] = D_1B1FB0_802C76C4[8] = 0;
+        }
+    } else if (D_1B1FB0_802C76E8 == 2) {
+        D_1B1FB0_802C76EC += 4;
+        if (D_1B1FB0_802C76EC >= 230) {
+            D_1B1FB0_802C76EC = 210;
+            D_1B1FB0_802C76E8 = 0;
+            for (i = 8; i > 0; i--) {
+                if (i >= 2) {
+                    D_1B1FB0_802C76C4[i] = D_1B1FB0_802C76C4[i - 1];
+                } else if (D_1B1FB0_802C76C4[i + 1] == 1 || D_1B1FB0_802C76C4[i + 1] == 0) {
+                    D_1B1FB0_802C76C4[i] = 0;
+                } else {
+                    D_1B1FB0_802C76C4[i] = D_1B1FB0_802C76C4[i + 1] - 1;
+                }
+            }
+            D_1B1FB0_802C76C4[0] = D_1B1FB0_802C76C4[8] = 0;
+        }
+    }
+}
 
 Gfx* func_1B1FB0_802C5BA4(Gfx* gdl) {
     if (D_801CE63C != 0) {
