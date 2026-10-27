@@ -925,4 +925,54 @@ UNUSED void SysUtils_ReadContData(void) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_8004A3C0.s")
 
+#ifdef NON_MATCHING
+// Score 1368 of 24200: the original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup);
+// here both share one register and the loop's registers shift from that. Writing the [62] index as
+// (prev - prev + 16000) >> 8 gives two copies (score 720 measured the same way) but is a fake.
+extern u16 D_80158350[];
+
+void func_8004A8B0(u16* fb) {
+    s32 i;
+    s32 v;
+    u16* top;
+    static s16 D_800D4644 = 1; // the file's .data has it as D_800D4644 for the asm
+    u16* col;
+    u16* p;
+    u16 pix;
+    s32 lum;
+    s32 prev;
+
+    if (D_800D4644 != 0) {
+        for (i = 0; i < 125; i++) {
+            v = (i * 2) - 108;
+            if (v >= 32) {
+                v = 31;
+            } else if (v < 0) {
+                v = 0;
+            }
+            D_80158350[i] = (v << 11) | ((v / 2) << 6) | ((v / 3) << 1) | 1;
+        }
+        D_800D4644 = 0;
+    }
+
+    fb += 20 * 320;
+    col = fb + 8;
+    do {
+        top = col;
+        pix = col[198 * 320];
+        prev = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
+        col[198 * 320] = D_80158350[62];
+        p = col + 197 * 320;
+        col++;
+        do {
+            pix = *p;
+            lum = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
+            *p = D_80158350[((lum - prev) + 16000) >> 8];
+            prev = lum;
+            p -= 320;
+        } while (p >= top);
+    } while (col < fb + 311);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_8004A8B0.s")
+#endif
