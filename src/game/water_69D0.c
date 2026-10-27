@@ -555,21 +555,23 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     (pt)->unk14 = (d * dz * k) + (body->unk14 * vz2);
 
 #ifdef NON_MATCHING
-// Score 532 of 36500: in the pair blocks the original keeps the second point's vz in $fs1 (so it saves $fs0
-// and $fs1, and ra and the k spill sit 8 bytes higher); here it gets $f0 and d moves to $f2. The
-// `.0f` (not `0.0f`) in the test keeps the two zeros apart, as in the original
+// Score 45 of 36500: in the three pair blocks the second point's d is in $f0, where the original reuses the
+// first point's $f12; the rest matches. The copy `alias` and the empty `if (!k)` in the last pair block are FAKEs
+// that put the second point's vx/vz in $fs0/$fs1 (the original's frame). The `.0f` (not `0.0f`) in the test
+// keeps the two zeros apart, as in the original
 void func_8004DAF0(void* arg0) {
     UnkStruct_80192690* body = arg0;
     f32 vx;
     UnkStruct_8004B0F8_1* pt2;
     UnkStruct_8004B0F8_1* pt;
     f32 vz;
-    f32 vz2;
     f32 k;
     f32 dx;
+    f32 vz2;
     f32 inv;
     f32 d;
     f32 dz;
+    UnkStruct_8004B0F8_1* alias; // FAKE: see the note above
     f32 vx2;
     f32 len;
 
@@ -616,8 +618,15 @@ void func_8004DAF0(void* arg0) {
     pt = &body->unk30[9];
     pt2 = &body->unk30[10];
     if ((pt->unk1C | pt2->unk1C) & 1) {
-        WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT2(pt2);
+        alias = pt; // FAKE
+        WATER_DAMP_POINT(alias);
+        vx2 = pt2->unkC;
+        vz2 = pt2->unk14;
+        d = (vx2 * dx) + (vz2 * dz);
+        pt2->unkC = (d * dx * k) + (body->unk14 * vx2);
+        pt2->unk10 *= body->unk10;
+        if (!k) {} // FAKE
+        pt2->unk14 = (d * dz * k) + (body->unk14 * vz2);
     }
     pt2 = &body->unk30[2];
     if ((body->unk30[0].unk1C | pt2->unk1C) & 1) {

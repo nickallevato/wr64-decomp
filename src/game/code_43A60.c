@@ -48,15 +48,15 @@ extern s32 D_801C4118[];
 void func_80088EA0(void) {
 }
 
-#ifdef NON_MATCHING
-// Score 285 of 13100. The original is 4 bytes longer: it has a third move after the lookup (`move a1,v0`, the raw result of
-// the second rand call, which nothing reads) besides the entry and loop copies of the seed, and keeps the seed in v0/a0.
-// The copy new_var (kept equal to rand_seed) is a FAKE that gives the loop its extra copy; the registers still differ.
+// Fills D_801C4100 as the inverse of D_801C26C0, sets D_801C3C58->unk60 to 1.0f, sets every D_801C3C60 entry's unk5C
+// to -1, then numbers gRiders - 1 entries 0, 1, ...: each from a random index (bits 8-9 of the second SysUtils_Rand
+// result), stepped by (seed % gRiders) + 1 while that entry is numbered already or the index is gPlayer1Rider.
 void func_80088EA8(void) {
     s32 var_s4;
     s32 var_s6;
+    u32 raw = 0; // FAKE: with the test after the loop, keeps the raw rand result live (the original's `move a1,v0`)
     s32 rand_seed;
-    s32 new_var; // FAKE: copy of rand_seed, see the note above
+    s32 seed;
 
     for (var_s4 = 0; var_s4 < gRiders; var_s4++) {
         D_801C4100[D_801C26C0[var_s4]] = var_s4;
@@ -69,20 +69,20 @@ void func_80088EA8(void) {
         D_801C3C58->unk5C = -1;
     }
     for (var_s6 = var_s4 = 0; var_s4 < (gRiders - 1); var_s6++, var_s4++) {
-        rand_seed = (SysUtils_Rand(), SysUtils_Rand() / 256) % 4; // What?
-        new_var = rand_seed;
-
-        while (D_801C3C58 = (struct_801C3C58*) &D_801C3C60[rand_seed],
-               D_801C3C58->unk5C != -1 || new_var == gPlayer1Rider) {
-            rand_seed = (rand_seed % gRiders) + 1;
-            new_var = rand_seed;
+        do { // FAKE: the block boundary puts seed (loop) and rand_seed (first test) in the original's registers
+            SysUtils_Rand();
+            raw = SysUtils_Rand();
+            rand_seed = (raw >> 8) % 4;
+            // FAKE: one line, for the order of the two seed copies
+            D_801C3C58 = (struct_801C3C58*) &D_801C3C60[rand_seed]; } while (0); seed = rand_seed;
+        while (D_801C3C58->unk5C != -1 || seed == gPlayer1Rider) {
+            seed = (seed % gRiders) + 1;
+            D_801C3C58 = (struct_801C3C58*) &D_801C3C60[seed];
         }
         D_801C3C58->unk5C = var_s6;
     }
+    if (raw) {} // FAKE: see raw
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43A60/func_80088EA8.s")
-#endif
 
 // Sets up the four D_801C3C60 entries from the riders (D_80192690) and func_80088EA8, picks up to three random
 // entries for unk80[i], colours the vertices at D_801C4698/D_801C46C8 in both frame-buffer blocks, and lists the

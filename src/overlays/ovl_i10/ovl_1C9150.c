@@ -323,9 +323,6 @@ void ChangeConditions_Input(void) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 359 of 51200, stack layout only: the instructions match, but the original's sprintf buffer is at sp+0x94
-// and its spill slots 4 to 8 bytes lower; no declaration order or buffer size tried reproduces both.
 // The `conds != &gDifficulty` test is the asm's (gDifficulty follows D_801CB308[4][3]); its source is unknown.
 Gfx* func_i10_802C6200(Gfx* gdl) {
     s32 i;
@@ -336,9 +333,10 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
     s32 texture;
     s32 pad; // stack pad
     s32 sel;
-    char buf[16];
     s32* conds;
     s32 value;
+    s32* cond;
+    char buf[16];
 
     gSPMatrix(gdl++, D_7000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -379,16 +377,17 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
 
     if ((sel != 4) && (sel != 3)) {
         conds = D_801CB308[sel];
-        for (i = 0; i < 3; i++) {
+        cond = conds;
+        for (i = 0; i < 3; i++, cond++) {
             if (D_801CE640 != 0) {
                 if (i == D_i10_802C6B38) {
                     mode = 6;
-                } else if (conds[i] == -1) {
+                } else if (*cond == -1) {
                     mode = 7;
                 } else {
                     mode = 0;
                 }
-            } else if (conds[i] == -1) {
+            } else if (*cond == -1) {
                 mode = 7;
             } else {
                 mode = 0;
@@ -399,17 +398,17 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
 
             if (D_801CE640 != 0) {
                 if (i == D_i10_802C6B38) {
-                    if (conds[i] == D_800DA988[sel][i]) {
+                    if (*cond == D_800DA988[sel][i]) {
                         mode = 6;
                     } else {
                         mode = 4;
                     }
-                } else if (conds[i] == -1) {
+                } else if (*cond == -1) {
                     mode = 7;
                 } else {
                     mode = 0;
                 }
-            } else if (conds[i] == -1) {
+            } else if (*cond == -1) {
                 mode = 7;
             } else {
                 mode = 0;
@@ -417,34 +416,34 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
 
             if (i == 0) {
                 useString = false;
-                if (conds[i] == -1) {
+                if (*cond == -1) {
                     value = 0;
                 } else {
-                    value = conds[i];
+                    value = *cond;
                 }
                 texture = D_i10_802C6AD4[value];
             } else if (i == 1) {
                 useString = true;
-                if (conds[i] == -1) {
+                if (*cond == -1) {
                     value = 1;
                 } else {
-                    value = conds[i];
+                    value = *cond;
                 }
                 sprintf(buf, "%d", value);
             } else if (i == 2) {
                 useString = true;
-                if (conds[i] == -1) {
+                if (*cond == -1) {
                     value = 1;
                 } else {
-                    value = conds[i];
+                    value = *cond;
                 }
                 sprintf(buf, "%d", value);
             } else {
                 useString = false;
-                if (conds[i] == -1) {
+                if (*cond == -1) {
                     value = 0;
                 } else {
-                    value = conds[i];
+                    value = *cond;
                 }
                 texture = D_i10_802C6AE4[value];
             }
@@ -469,9 +468,6 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i10/ovl_1C9150/func_i10_802C6200.s")
-#endif
 
 void ChangeConditions_Leave(s32 arg0) {
     gPrevGameState = gGameState;
