@@ -357,9 +357,11 @@ Gfx* func_1B1FB0_802C6970(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 295 of 13700: register allocation only. The original keeps i, x + 16 and x in t0, t1, t2 (this
-// gives a3, t1, t0) and n % 10 in a3. Without the local d, or with x + 16 written as 560 - i * 18, IDO
-// unrolls the loop by two.
+// Score 85 of 13700: register allocation only. The empty if after d = n % 10 (a FAKE) makes d a register
+// variable, in a3 as in the original. Left: the original keeps i, x + 16 and x in t0, t1, t2; here the fourth
+// packet pointer of gDPLoadTextureBlock takes t0 (t3 in the original) and i, x, x + 16 get t1, t2, t3 (x + 16
+// written as 560 - i * 18 gives their order but still t1..t3: score 90). Without the local d IDO unrolls the
+// loop by two.
 Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
     s32 n;
     s32 digits;
@@ -376,6 +378,7 @@ Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
     }
     for (i = 0; i < digits; i++) {
         d = n % 10;
+        if (!d) {} // FAKE: keeps d a register variable (a3)
         gDPLoadTextureBlock(gdl++, D_1B1FB0_802C767C[d], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 18, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
