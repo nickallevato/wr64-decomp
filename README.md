@@ -60,7 +60,7 @@ builds with those attempts, so most of the game can already be read and changed 
 - [x] HUD, menus, text and popups (`src/codeseg`)
 - [ ] Race, riders, camera and water (`src/game`): **in progress**
 - [x] Courses and menu screens (`src/overlays`): all but five set-asides
-- [ ] The last of the system, audio and loose-segment code: **in progress**
+- [ ] The last of the system, audio and loose-segment code: **in progress** (milestone 5; see [FORK.md](FORK.md#milestone-5-in-progress-paused-at-6698635))
 - [ ] Names, structs and documentation everywhere: the "readable" half of the job
 
 ## Building
