@@ -2628,8 +2628,9 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1072 of 37200: the three hoisted float constants take other saved FP registers (the original: 1.0f in f24, 3.0f in
-// f22, 1.3f in f20), and the int 3 is not hoisted into s0.
+// Score 1048 of 37200: the three hoisted float constants take other saved FP registers (the original: 1.0f in f24, 3.0f in
+// f22, 1.3f in f20), and the int 3 is in t3 where the original has it in s0 (y's register), so the temps that follow
+// are one register off. The stack pad gives the original's slots for r0..b1.
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2643,6 +2644,7 @@ void func_801FAEB8(Gfx** gdlp) {
     s32 i;
     f32 f;
     f32 g;
+    s32 pad; // stack pad
     s32 r0;
     s32 g0;
     s32 b0;
