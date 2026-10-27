@@ -5,9 +5,12 @@ Gfx* func_1C3D00_802C58DC(Gfx*);
 void func_1C3D00_802C5D44(void);
 void func_1C3D00_802C5E10(void);
 Gfx* func_80093C44(Gfx*);
+Gfx* Printer_DrawNumber(Gfx* gdl, s32 font, s32 value, s32 x, s32 y);
 
 extern s16 D_80228A16;
 extern s32 D_802C5EF0;
+extern TexLabel D_1C3D00_802C5EB0[];
+extern s32 D_801CB3F0[2];
 
 Gfx* func_1C3D00_802C5800(Gfx* gDisplayListHead) {
     if (D_801CE63C != 0) {
@@ -32,7 +35,36 @@ Gfx* func_1C3D00_802C5800(Gfx* gDisplayListHead) {
     return gDisplayListHead;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/seg_1C3D00/func_1C3D00_802C58DC.s")
+Gfx* func_1C3D00_802C58DC(Gfx* gdl) {
+    s32 i;
+    TexLabel* item;
+    char buf[32];
+
+    gSPDisplayList(gdl++, D_106F628);
+    gdl = func_80094338(gdl, 0, 53, 38, 214, 26);
+    gdl = func_80094338(gdl, 0, 73, 73, 174, 16);
+    gdl = func_80094338(gdl, 0, 73, 90, 174, 25);
+    for (i = 0; i < 4; i++) {
+        gdl = func_80094338(gdl, 0, 73, i * 18 + 140, 174, 16);
+    }
+    gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    gdl = func_801E3EE0(gdl, 2, 18, 70, 42, 0);
+    gdl = Printer_DrawString(gdl, 2, "1P", 99, 75);
+    gdl = Printer_DrawString(gdl, 2, "2P", 202, 75);
+    gdl = Printer_DrawString(gdl, 2, "-", 153, 95);
+    gdl = func_801E3EE0(gdl, 0, 21, 144, 77, 0);
+    gdl = Printer_DrawNumber(gdl, 0, D_801CB3F0[0], 99, 92);
+    sprintf(buf, "%d", D_801CB3F0[1]);
+    gdl = Printer_DrawString(gdl, 0, buf, 193, 92);
+    for (i = 0, item = D_1C3D00_802C5EB0; i < 4; i++, item++) {
+        if (i != D_802C5EF0) {
+            gdl = func_801E3EE0(gdl, 1, item->texture, item->x + 138, i * 18 + 143, 0);
+        }
+    }
+    gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
+    item = &D_1C3D00_802C5EB0[D_802C5EF0];
+    return func_801E3EE0(gdl, 1, item->texture, item->x + 138, D_802C5EF0 * 18 + 143, 0);
+}
 
 void func_1C3D00_802C5C4C(s32 arg0) {
     gPrevGameState = gGameState;
