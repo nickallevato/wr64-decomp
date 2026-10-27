@@ -391,7 +391,7 @@ void func_800BFFEC(u8 channelIndex, u8 arg1, u8 arg2) {
     AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_0, channelIndex, 0, arg1);
 }
 
-void func_800C0044(u8 arg0, s8 arg1, u8 arg2) {
+void func_800C0044(u8 arg0, u8 arg1, u8 arg2) {
     AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_0, arg0, 6, arg2);
     AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_0, arg0, 1, arg1);
 }
@@ -405,7 +405,414 @@ void func_800C00B0(s8 vol, f32 freqMod) {
 }
 
 // chonker
+#ifdef NON_MATCHING
+// Score 640 of 105600: chan sits in t0 and the constant 3 in a3, the other way round from the original;
+// at the end of the unk3 block the original stores chan's copy to sp+0x30 on both arms, here once after the
+// join; and reusing chan for gAudioRandom % 3 at the end costs one andi.
+typedef struct UnkStruct_func_800C010C {
+    /* 0x00 */ s8 unk0;
+    /* 0x01 */ s8 unk1;
+    /* 0x02 */ s8 unk2;
+    /* 0x03 */ s8 unk3;
+    /* 0x04 */ s8 unk4;
+    /* 0x05 */ u8 unk5;
+    /* 0x06 */ s8 unk6;
+    /* 0x07 */ s8 unk7;
+    /* 0x08 */ s8 unk8;
+    /* 0x09 */ s8 unk9;
+    /* 0x0A */ s16 unkA;
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ s8 unkE;
+    /* 0x0F */ s8 unkF;
+    /* 0x10 */ s8 unk10;
+    /* 0x11 */ s8 unk11;
+    /* 0x12 */ s8 unk12;
+    /* 0x13 */ s8 unk13;
+    /* 0x14 */ s8 unk14;
+    /* 0x15 */ s8 unk15;
+    /* 0x16 */ s8 unk16;
+    /* 0x17 */ s8 unk17;
+    /* 0x18 */ s8 unk18;
+    /* 0x19 */ s8 unk19;
+    /* 0x1A */ s8 unk1A;
+    /* 0x1B */ s8 unk1B;
+    /* 0x1C */ s8 unk1C;
+    /* 0x1D */ s8 unk1D;
+    /* 0x1E */ s8 unk1E;
+    /* 0x1F */ s8 unk1F;
+} UnkStruct_func_800C010C; // size = 0x20
+
+extern f32 D_800E7DC8[];
+extern s8 D_800E7F75[];
+extern f32 D_800E7F78[];
+extern s32 D_800E7CA0;
+extern s32 D_800E7CA4;
+extern s32 D_800E7CB4;
+extern s32 D_801D7DE0;
+void func_800C1EB8(s32 arg0);
+void func_800C317C(s32 arg0, s32 arg1);
+void func_800C3240(s32 arg0);
+void func_800C3270(s32 arg0);
+void func_800C36F8(s32 arg0);
+
+void func_800C010C(UnkStruct_func_800C010C* arg0, s8 arg1) {
+    s32 note;
+    s32 vol;
+    u8 chan;
+    s32 pad[2]; // stack pad
+    s32 io;
+    s32 i;
+    f32 tmp;
+    f32 scale;
+
+    if (D_800E7C94 == 4) {
+        if ((arg0->unk18 != 0) && (arg1 < 2)) {
+            // chan is read here before anything sets it; the original reads the same uninitialized register.
+            func_800BFFEC(chan * arg1 + 2, 1, 127);
+            arg0->unk18 = 0;
+        }
+    } else if (D_800E7C94 == 7) {
+        if (D_801D7DC0 == 0) {
+            if (arg1 == 0) {
+                if (D_800E7CE8 == 0) {
+                    if (arg0->unk19 < arg0->unk1A) {
+                        func_800C1EB8(0xC);
+                        if ((gAudioRandom & 0x30) == 0x30) {
+                            func_800C33C8(0x49 - arg0->unk19, 20, 70, 30);
+                        } else {
+                            func_800C33C8((gAudioRandom & 3) + 0x42, 20, 70, 30);
+                        }
+                        D_800E7CE8 = 100;
+                    } else if (arg0->unk1A < arg0->unk19) {
+                        func_800C1EB8(0xD);
+                        if ((gAudioRandom & 0x30) == 0x30) {
+                            func_800C33C8(arg0->unk19 + 0x4C, 20, 60, 30);
+                        } else {
+                            func_800C33C8((gAudioRandom & 1) + 0x4B, 20, 60, 30);
+                        }
+                        D_800E7CE8 = 100;
+                    }
+                }
+                D_801D7DC8 = arg0->unk1A = arg0->unk19;
+            }
+        } else if ((D_801D7DC0 == 1) && (arg1 == 0) && (D_801D7DFA != arg0->unk19)) {
+            func_800C1EB8(0xC);
+        }
+
+        if ((D_801D7DC0 == 3) || ((D_801D7DC0 == 0) && (D_801D7DC4 == 0))) {
+            arg0->unkE = 3;
+            arg0->unk9 = 3;
+        }
+
+        if (arg1 == 0) {
+            D_801D7DF8[2] = arg0->unk19;
+            chan = 0;
+            if (D_801D7DF8[2] != D_801D7DF8[3]) {
+                D_801D7DF8[3] = -1;
+            }
+        } else {
+            chan = 3;
+            if (arg1 == 1) {
+                D_801D7E00[2] = arg0->unk19;
+                if (D_801D7E00[2] != D_801D7E00[3]) {
+                    D_801D7E00[3] = -1;
+                }
+            }
+        }
+
+        if (arg0->unk15 != 0) {
+            arg0->unk4 = 0;
+        }
+        if (arg0->unk0 < 30) {
+            arg0->unk8 = 70;
+        }
+        if (arg0->unk8 < arg0->unk1) {
+            arg0->unk8++;
+        } else if (arg0->unk1 < arg0->unk8) {
+            arg0->unk8--;
+        }
+        vol = (arg0->unk8 / 3) + 0x60;
+        note = arg0->unk0;
+
+        if (arg0->unk7 != 0) {
+            arg0->unkA = 0;
+        } else if ((D_801D7DC0 != 2) && (arg1 < 2)) {
+            arg0->unkA++;
+        }
+
+        if (arg0->unk3 != arg0->unk7) {
+            io = 0;
+            do { // FAKE: the do-while(0) changes how the unk3 branches are laid out
+                if (arg0->unk3 != 0) {
+                    if (arg0->unk3 > 100) {
+                        func_800BFFEC(chan + 2, 11, (arg0->unk3 / 2) + 60);
+                    } else if (arg0->unk3 > 80) {
+                        func_800BFFEC(chan + 2, 12, (arg0->unk3 / 2) + 75);
+                    } else if ((arg0->unk3 > 40) || ((arg0->unk3 > 10) && (arg0->unk1F > 30))) {
+                        func_800BFFEC(chan + 2, 13, (arg0->unk3 / 2) + 86);
+                    } else if (arg0->unk3 > 10) {
+                        func_800BFFEC(chan + 2, 14, arg0->unk3 + 80);
+                    }
+                    io = 0xFF;
+                    arg0->unk3 = 1;
+                }
+            } while (0); // FAKE
+            arg0->unk7 = arg0->unk3;
+        } else {
+            io = 127 - (arg0->unkF / 4);
+        }
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_0, chan, 6, io);
+
+        if (arg0->unk7 == 0) {
+            vol += 16;
+            note += 32;
+        }
+
+        if (arg0->unk4 != 0) {
+            if (arg0->unk6 == 0) {
+                arg0->unk5 = 4;
+                if (arg1 < 2) {
+                    if ((arg0->unk0 == 0) && (D_800E7CA0 == 0) && (D_800E7CAC == 0)) {
+                        func_800BFFEC(chan + 2, 15, 127);
+                        (&D_801D7DD8)[arg1] = 1;
+                        arg0->unk1D = 29;
+                    } else if (arg0->unk0 < 30) {
+                        arg0->unk1D = 20;
+                    } else if (arg0->unk0 < 50) {
+                        arg0->unk1D = 8;
+                    } else {
+                        arg0->unk1D = 4;
+                    }
+                }
+            } else if (arg0->unk5 != 0) {
+                arg0->unk5--;
+            }
+        } else {
+            arg0->unk5 = 0xFF;
+        }
+        arg0->unk6 = arg0->unk4;
+
+        if (arg0->unk1C != 0) {
+            if (D_800E7CAC == 0) {
+                func_800BFFEC(chan + 2, 15, (gAudioRandom & 0x1F) + 0x60);
+                arg0->unk1D = 29;
+            } else {
+                func_800BFFEC(5, 10, 127);
+            }
+            arg0->unk1C = 0;
+        }
+
+        if (arg1 < 2) {
+            if (((arg0->unk9 == 0) || (arg0->unkE != 0)) && (arg0->unk9 != arg0->unkE)) {
+                func_800C36F8(arg0->unkE);
+            }
+            arg0->unk9 = arg0->unkE;
+        }
+
+        if (arg0->unk4 != 0) {
+            if (arg0->unkE == 5) {
+                scale = 0.6f;
+            } else {
+                scale = arg0->unkE * 0.1f;
+            }
+        } else {
+            scale = 0.0f;
+        }
+
+        if (arg1 == 0) {
+            D_801D7DF8[4] = arg0->unkE;
+        }
+        if (arg1 == 1) {
+            D_801D7E00[4] = arg0->unkE;
+        }
+
+        if (note < 0) {
+            note = 0;
+        }
+        if (vol < 0) {
+            vol = 0;
+        }
+        if (note > 99) {
+            note = 99;
+        }
+        if (vol > 127) {
+            vol = 127;
+        }
+
+        if (arg0->unk1D != 0) {
+            vol = 127;
+            tmp = D_800E7DC8[D_800E7F75[-arg0->unk1D]]; // FAKE temp: moves the load order
+            scale += D_800E7DC8[note];
+            scale += tmp * D_800E7F78[arg0->unk1D];
+            arg0->unk1D--;
+        } else {
+            scale += D_800E7DC8[note];
+        }
+
+        scale = D_800E7CC8[arg1] + ((scale - D_800E7CC8[arg1]) / 2.5f);
+        D_800E7CC8[arg1] = scale;
+        if (scale < 0.8409f) {
+            // FAKE: kept on one line; on separate lines the constant load and the reload of scale swap
+            AudioThread_QueueCmdS8(0x06000005, -3); scale *= 1.18921f;
+        } else if (scale > 1.1892f) {
+            AudioThread_QueueCmdS8(0x06000005, 3); scale /= 1.18921f; // FAKE: one line, as above
+        } else {
+            AudioThread_QueueCmdS8(0x06000005, 0);
+        }
+
+        switch (arg1) {
+            case 0:
+                tmp = (s32) (gAudioRandom & 0xF) * 0.002f + 0.97f; // FAKE: tmp reused as a temp, for the float registers
+                AudioThread_QueueCmdF32(0x04000000, scale * tmp);
+                AudioThread_QueueCmdF32(0x01000000, vol / 127.0f);
+                break;
+            case 1:
+                tmp = (s32) (gAudioRandom & 0xF) * 0.002f + 0.97f; // FAKE: tmp reused as a temp, for the float registers
+                AudioThread_QueueCmdF32(0x04000300, scale * tmp);
+                AudioThread_QueueCmdF32(0x01000300, vol / 127.0f);
+                break;
+            case 2:
+                func_800C00B0(vol, scale * D_801D7E20);
+                AudioThread_QueueCmdF32(0x01000300, D_801D7E24 * 0.8f);
+                AudioThread_QueueCmdF32(0x01000500, D_801D7E24);
+                AudioThread_QueueCmdS8(0x03000300, D_801D7E28);
+                AudioThread_QueueCmdS8(0x03000500, D_801D7E28);
+                if (D_801D7DE8 == 0) {
+                    AudioThread_QueueCmdS8(0x05000300, D_801D7E29);
+                }
+                break;
+        }
+
+        if ((arg0->unk11 < 100) && (D_800E7CAC == 1) && (arg0->unk0 > 20)) {
+            arg0->unk11 = (gAudioRandom & 0xF) + 100;
+            arg0->unk10 = 1;
+        }
+        if (arg0->unk11 < 50) {
+            arg0->unk11 = 0;
+        }
+        if (arg0->unk7 == 0) {
+            arg0->unk11 = 0;
+        }
+        if (arg1 == 2) {
+            arg0->unk11 = 0;
+        }
+        if (arg0->unk11 != 0) {
+            arg0->unk11 -= 50;
+            if (arg0->unk11 > 40) {
+                arg0->unk11 = (arg0->unk11 * 2) - 30;
+            } else {
+                arg0->unk11 = (arg0->unk11 / 2) + 20;
+            }
+            AUDIOCMD_CHANNEL_SET_FREQ_SCALE(SEQ_PLAYER_0, chan + 2, (arg0->unk0 / 100.0f) + 0.6f);
+            if ((D_801D7DC4 != 3) && (D_801D7DC4 != 6)) {
+                i = (gAudioRandom & 3) * 4;
+            } else {
+                i = (gAudioRandom % 5) * 4;
+            }
+            func_800C0044(chan + 2, arg0->unk10 + i, arg0->unk11);
+            arg0->unk11 = 0;
+        }
+
+        if ((arg0->unkC > 4) && (arg0->unk16 == arg0->unk12)) {
+            arg0->unk13 = 0;
+        }
+        if (arg0->unk12 == 2) {
+            AudioThread_QueueCmdS8(0x06000700, 0x13);
+            arg0->unk13 = 0;
+            arg0->unk12 = 0;
+        }
+
+        if (arg0->unk13 != 0) {
+            if (arg0->unkC == 0) {
+                if (arg0->unk1F > 35) {
+                    arg0->unk13 = (arg0->unk13 / 4) + 0x60;
+                } else if (arg0->unk1F > 15) {
+                    arg0->unk13 = (arg0->unk13 / 4) + 0x40;
+                } else {
+                    arg0->unk13 = arg0->unk13 / 2;
+                }
+            } else {
+                if (arg0->unk1F > 35) {
+                    arg0->unk13 = (arg0->unk13 / 4) + 0x30;
+                } else if (arg0->unk1F > 15) {
+                    arg0->unk13 = (arg0->unk13 / 4) + 0x20;
+                } else {
+                    arg0->unk13 = arg0->unk13 / 4;
+                }
+            }
+            if (arg0->unk12 == 0x1C) {
+                func_800BFFEC(chan + 2, arg0->unk14 + D_801D7E08, arg0->unk13);
+            } else if (arg0->unk12 == 0x40) {
+                if (arg0->unk7 != 0) {
+                    func_800BFFEC(chan + 2, arg0->unk14 + D_801D7E0C, arg0->unk13);
+                }
+            } else if (arg0->unk12 == 0x41) {
+                if (D_801D7E10 == 0) {
+                    goto skip; // FAKE: the original jumps straight to the unk13 store
+                }
+                func_800BFFEC(chan + 2, arg0->unk14 + D_801D7E10, arg0->unk13);
+            } else {
+                func_800BFFEC(chan + 2, arg0->unk12 + arg0->unk14, arg0->unk13);
+            }
+            if (arg0->unk12 == 0x14) {
+                if ((arg1 == 0) && (arg0->unk13 > 100)) {
+                    D_800E7CB4 = 1;
+                    D_801D7DE0 = arg0->unk14;
+                }
+                if ((arg1 == 2) && (D_800E7CB4 != 0)) {
+                    switch (D_801D7DE0) {
+                        case 0:
+                            func_800C3240((arg0->unk1B * 4) + (gAudioRandom & 1));
+                            break;
+                        case 2:
+                            func_800C3270((arg0->unk1B * 4) + (gAudioRandom & 1));
+                            break;
+                        case 1:
+                        case 3:
+                        default:
+                            func_800C317C(0, (arg0->unk1B * 4) + (gAudioRandom & 1));
+                            break;
+                    }
+                    D_800E7CB4 = 0;
+                }
+            } else {
+                D_800E7CB4 = 0;
+            }
+            arg0->unk16 = arg0->unk12;
+            arg0->unkC = 8;
+        skip:
+            arg0->unk13 = 0;
+        }
+
+        if (arg0->unkC != 0) {
+            arg0->unkC--;
+        }
+
+        if ((arg0->unk17 == 0) && (arg1 < 2) && (arg0->unk15 != 0)) {
+            if (arg0->unk15 == 1) {
+                func_800C317C(arg1, (arg0->unk1B * 4) + (gAudioRandom & 1) + 2);
+            } else {
+                func_800C317C(arg1, (arg0->unk1B * 4) + (gAudioRandom & 1));
+            }
+        }
+        arg0->unk17 = arg0->unk15;
+        if (arg0->unk15 == 2) {
+            D_800E7CA4 = 1;
+        }
+
+        // FAKE: arg1 < 2 written as a pointer comparison, which is what the original computes
+        if ((arg0->unk18 != 0) && (&D_800E7CC8[arg1] < &D_800E7CC8[2])) {
+            func_800BFFEC(chan + 2, 1, 127);
+            chan = gAudioRandom % 3; // FAKE reuse of chan: register coloring (costs one andi)
+            func_800C33C8(chan + 0x50, 10, 80, 40);
+            arg0->unk18 = 0;
+        }
+        arg0->unk1F = arg0->unk0;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_general/func_800C010C.s")
+#endif
 
 void func_800C118C(s32 arg0) {
     if ((D_800E7CBC == 0) || (D_800E7C94 == 4)) {
@@ -675,7 +1082,59 @@ void func_800C1B98(void) {
 }
 
 // https://decomp.me/scratch/io8AQ
+#ifdef NON_MATCHING
+// Score 605 of 11600: the case 0 and default branches of the switch get the call's lui a0 in their
+// delay slots (beqzl, b); the original leaves both as nops.
+void func_800C1BD8(f32 arg0, f32 arg1) {
+    f32 var_f0;
+    s8 var_a1;
+
+    if (D_800E7C9C != 0) {
+        if (arg0 >= 256.0f) {
+            var_f0 = 0.0f;
+        } else if (arg0 <= 48.0f) {
+            var_f0 = 1.0f;
+        } else {
+            var_f0 = (256.0f - arg0) / 208.0f;
+        }
+        if (D_801D7DC0 != 1) {
+            if (D_801D7DE8 != 0) {
+                var_f0 *= 0.3f;
+            }
+            AudioThread_QueueCmdF32(0x01000700U, var_f0);
+        } else {
+            var_a1 = 0x40;
+            switch (D_801D7DEC[0] + D_801D7DEC[1] * 2) {
+                case 0:
+                    break;
+                case 1:
+                    var_f0 *= 0.8f;
+                    var_a1 = 0x20;
+                    break;
+                case 2:
+                    var_f0 *= 0.8f;
+                    var_a1 = 0x60;
+                    break;
+                case 3:
+                    var_f0 *= 0.3f;
+                    break;
+            }
+            AudioThread_QueueCmdS8(0x03000700U, var_a1);
+        }
+        AudioThread_QueueCmdF32(0x01000700U, var_f0);
+        if (arg1 > 0.0f) {
+            AudioThread_QueueCmdF32(0x04000700U, 1.0f);
+        } else {
+            AudioThread_QueueCmdF32(0x04000700U, 0.96f);
+        }
+        D_800E7C9C = 5;
+        return;
+    }
+    func_800C1B98();
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_general/func_800C1BD8.s")
+#endif
 
 void func_800C1DA8(void) {
     if (D_800E7C94 == 7) {
@@ -1279,12 +1738,12 @@ void func_800C317C(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800C3240(s8 arg0) {
+void func_800C3240(s32 arg0) {
     func_800C312C();
     AudioThread_QueueCmdS8(0x06000A01U, arg0);
 }
 
-void func_800C3270(s8 arg0) {
+void func_800C3270(s32 arg0) {
     func_800C312C();
     AudioThread_QueueCmdS8(0x06000A02U, arg0);
 }
@@ -1436,7 +1895,189 @@ void func_800C37D4(s32 arg0) {
 }
 
 // chonker
+#ifdef NON_MATCHING
+// Score 13 of 37900: one instruction: in case 0x21 with arg1 & 0x80 the original saves rnd across the
+// AudioThread_QueueCmdS8 call as a stored zero (sw zero); here it stores v1, which holds the same zero.
+void AudioGeneral_PlaySound(s32 arg0, s32 arg1) {
+    s32 rnd;
+    s32 id;
+    s32 pad[2]; // stack pad
+    u32 prio;
+
+    if (D_800E7C94 != 7) {
+        switch (arg0) {
+            case 0xA:
+            case 0x21:
+            case 0x26:
+            case 0x27:
+            case 0x28:
+            case 0x29:
+            case 0x35:
+                return;
+        }
+    }
+
+    if ((D_801D7DC0 != 3) && ((arg0 == 0x28) || (arg0 == 0x29))) {
+        if ((D_801D7DF8[4] != 0) && !(arg1 & 0x80) && (arg1 & 0xF)) {
+            arg0 = 1;
+        }
+        if ((D_801D7E00[4] != 0) && ((arg1 & 0x80) == 0x80) && (arg1 & 0xF)) {
+            arg0 = 1;
+        }
+    }
+
+    AudioThread_QueueCmdS8(0x06000F00, arg0);
+
+    if ((D_800E7C94 == 7) && (D_800E7CB8 == 0)) {
+        if (arg0 == 0x23) {
+            D_800E7CD8 = 10;
+            D_800E7CD4 = 180;
+            D_800E7CA0 = 1;
+            D_800E7CE8 = 320;
+        }
+        if (arg0 == 0x21) {
+            D_800E7CE8 = 160;
+        }
+    }
+
+    switch (arg0) {
+        case 0x21:
+            func_800C1EB8(0x12);
+            if (D_801D7DC0 == 2) {
+                if ((arg1 & 1) == 1) {
+                    id = 0x3D;
+                    AudioThread_QueueCmdS8(0x06000F00, 0x39);
+                } else if ((arg1 & 2) == 2) {
+                    id = 0x2E;
+                } else {
+                    rnd = gAudioRandom & 1;
+                    id = rnd + 0x3E;
+                }
+                func_800C33C8(id, 30, 100, 40);
+                return;
+            }
+            if (D_801D7DC0 == 1) {
+                if ((arg1 & 0x80) && (D_800E7CA8 == 0)) {
+                    if (D_800E7C98 != 0) {
+                        func_800C15C8(0x1A, 0);
+                        AudioGeneral_DisableSeqPlayer2(10);
+                        D_800E7CEC = 0x12;
+                    }
+                    D_800E7CA8 = 1;
+                    func_800C33C8(0x3B, 16, 100, 40);
+                }
+                return;
+            }
+            if (arg1 & 0x80) {
+                if (D_800E7C98 != 0) {
+                    func_800C15C8(0x1A, 0);
+                    AudioGeneral_DisableSeqPlayer2(10);
+                    D_800E7CEC = 0x12;
+                }
+                rnd = 0;
+                if (D_801D7DF8[2] == 0) {
+                    id = 0x39;
+                } else if (D_801D7DF8[2] == 4) {
+                    id = 0x3A;
+                } else {
+                    id = 0x3B;
+                }
+                prio = 16;
+                if ((arg1 & 1) == 1) {
+                    AudioThread_QueueCmdS8(0x06000F00, 0x39);
+                }
+            } else if (arg1 == 1) {
+                id = 0x3D;
+                prio = 30;
+                rnd = 0;
+                AudioThread_QueueCmdS8(0x06000F00, 0x39);
+            } else {
+                rnd = gAudioRandom & 1;
+                if (D_801D7DF8[2] == 0) {
+                    id = 0x2D;
+                } else if (D_801D7DF8[2] == 3) {
+                    id = 0x30;
+                } else {
+                    id = D_801D7DF8[0] ? 0x33 : 0x36;
+                }
+                prio = 30;
+            }
+            func_800C33C8(id + rnd, prio, 100, 50);
+            D_801D7DF8[0] = 0;
+            D_801D7DF8[3] = D_801D7DF8[2];
+            break;
+        case 0x26:
+        case 0x27:
+            if (((D_801D7DF8[4] != 5) && !(arg1 & 0x80)) || ((D_801D7E00[4] != 5) && ((arg1 & 0x80) == 0x80))) {
+                rnd = gAudioRandom & 3;
+                func_800C3320(rnd + 0x61, 10, 20);
+            }
+            break;
+        case 0x1:
+        case 0x28:
+        case 0x29:
+            switch (arg1 & 0x80) {
+                case 0:
+                    D_801D7DF8[0] = 1;
+                    D_801D7DF8[1] = 1;
+                    break;
+                case 0x80:
+                    D_801D7E00[0] = 1;
+                    D_801D7E00[1] = 1;
+                    break;
+            }
+            switch (arg1 & 0xF) {
+                case 0:
+                    id = 0x22;
+                    break;
+                case 1:
+                    id = 0x19;
+                    break;
+                case 2:
+                    id = 0x1A;
+                    break;
+                default:
+                    id = (gAudioRandom & 1) + 0x1B;
+                    break;
+            }
+            func_800C33C8(id, 25, 40, 40);
+            break;
+        case 0xA:
+            if (((D_801D7DC4 == 0) ? 8 : 4) == (arg1 & 0xF)) {
+                if (!(arg1 & 0x80)) {
+                    id = (gAudioRandom & 1) + 0x1D;
+                } else {
+                    id = 0x20;
+                }
+                func_800C3320(id, 20, 40);
+            }
+            break;
+        case 0x22:
+            func_800C3320(arg1 + 10, 90, 1);
+            break;
+        case 0x23:
+            func_800C3320(10, 100, 60);
+            break;
+        case 0x2D:
+            func_800C32A0(0, 127, 20);
+            break;
+        case 0x33:
+            rnd = gAudioRandom & 1;
+            func_800C3408(rnd + 0x40, 24, 20);
+            break;
+        case 0x35:
+            D_800E7CF4++;
+            D_800E7CF0 = 100;
+            if ((D_800E7CF4 == 4) || (D_800E7CF4 == 12)) {
+                rnd = gAudioRandom & 1;
+                func_800C32A0(rnd + 0x17, 127, 60);
+            }
+            break;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_general/AudioGeneral_PlaySound.s")
+#endif
 
 void func_800C3DE0(void) {
     AudioGeneral_PlaySound(0x20, 0);
