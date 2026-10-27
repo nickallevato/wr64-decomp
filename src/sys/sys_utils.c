@@ -923,7 +923,136 @@ UNUSED void SysUtils_ReadContData(void) {
     SysUtils_UpdateControllers();
 }
 
+#ifdef NON_MATCHING
+// Score 8567 of 31600: control flow and arithmetic follow the original, the register allocation does not: the
+// original keeps x in f14 and reloads x and z from their argument slots after each sqrtf, where this keeps
+// them in saved registers (frame 0xB8 here, 0xB0 there).
+void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
+    f32 c;
+    f32 s;
+    f32 len;
+    f32 a;
+    f32 b;
+    f32 nx;
+    f32 ny;
+    f32 nz;
+    f32 t;
+    f32 u;
+    f32 v;
+    f32 w;
+    f32 px;
+    f32 py;
+    f32 qx;
+    f32 qy;
+    f32 qz;
+    s32 i;
+
+    i = (((angle * 4096.0f) / 3.141593f) * 0.5f) + 0.5f;
+    c = COS(i);
+    s = SIN(i);
+    if (y == 0.0f) {
+        if (x == 0.0f) {
+            if (z < 0.0f) {
+                func_800498A4(arg0, arg1, 0.0f, 0.0f, -angle);
+                return;
+            }
+            func_800498A4(arg0, arg1, 0.0f, 0.0f, angle);
+            return;
+        }
+        len = sqrtf((x * x) + (z * z));
+        a = z / len;
+        t = s * a;
+        arg1->mf[0][1] = t;
+        arg1->mf[1][0] = -t;
+        arg1->mf[1][1] = c;
+        b = x / len;
+        nx = -b;
+        t = s * nx;
+        u = c * a;
+        arg1->mf[2][1] = t;
+        arg1->mf[1][2] = -t;
+        arg1->mf[0][0] = (u * a) + (b * b);
+        arg1->mf[2][2] = (c * nx * nx) + (a * a);
+        t = (u * nx) + (b * a);
+        arg1->mf[2][0] = t;
+        arg1->mf[0][2] = t;
+    } else if (z == 0.0f) {
+        len = sqrtf((x * x) + (y * y));
+        a = y / len;
+        nx = -a;
+        t = s * nx;
+        arg1->mf[0][2] = t;
+        arg1->mf[2][0] = -t;
+        arg1->mf[2][2] = c;
+        b = x / len;
+        t = s * b;
+        u = c * nx;
+        arg1->mf[1][2] = t;
+        arg1->mf[2][1] = -t;
+        arg1->mf[0][0] = (u * nx) + (b * b);
+        arg1->mf[1][1] = (c * b * b) + (a * a);
+        t = (u * b) + (b * a);
+        arg1->mf[1][0] = t;
+        arg1->mf[0][1] = t;
+    } else if (x == 0.0f) {
+        len = sqrtf((y * y) + (z * z));
+        a = z / len;
+        arg1->mf[0][0] = c;
+        b = y / len;
+        nx = -a;
+        t = s * nx;
+        arg1->mf[1][0] = t;
+        u = s * b;
+        arg1->mf[0][1] = -t;
+        v = c * nx;
+        arg1->mf[2][0] = u;
+        arg1->mf[0][2] = -u;
+        arg1->mf[1][1] = (v * nx) + (b * b);
+        arg1->mf[2][2] = (c * b * b) + (a * a);
+        t = (v * b) + (b * a);
+        arg1->mf[2][1] = t;
+        arg1->mf[1][2] = t;
+    } else {
+        len = sqrtf((x * x) + (y * y) + (z * z));
+        ny = y / len;
+        nx = x / len;
+        a = -ny;
+        nz = z / len;
+        len = sqrtf((a * a) + (nx * nx));
+        px = nx / len;
+        py = a / len;
+        qx = px * nz;
+        qz = ((ny - px) * py) - (px * (nx - py));
+        qy = -py * nz;
+        arg1->mf[0][0] = (((qx * qx) + (py * py)) * c) + (nx * nx);
+        arg1->mf[1][1] = (((qy * qy) + (px * px)) * c) + (ny * ny);
+        arg1->mf[2][2] = (c * qz * qz) + (nz * nz);
+        t = (((qx * qy) + (py * px)) * c) + (nx * ny);
+        u = ((qy * py) - (qx * px)) * s;
+        arg1->mf[1][0] = t + u;
+        arg1->mf[0][1] = t - u;
+        w = s * qz;
+        t = (c * qx * qz) + (nx * nz);
+        u = w * py;
+        arg1->mf[2][0] = t + u;
+        arg1->mf[0][2] = t - u;
+        t = (c * qy * qz) + (ny * nz);
+        u = w * px;
+        arg1->mf[2][1] = t + u;
+        arg1->mf[1][2] = t - u;
+    }
+    arg1->mf[2][3] = 0.0f;
+    arg1->mf[1][3] = 0.0f;
+    arg1->mf[0][3] = 0.0f;
+    arg1->mf[3][2] = 0.0f;
+    arg1->mf[3][1] = 0.0f;
+    arg1->mf[3][0] = 0.0f;
+    arg1->mf[3][3] = 1.0f;
+    SysUtils_MtxFToMtx(arg1, arg0);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_8004A3C0.s")
+#endif
 
 #ifdef NON_MATCHING
 // Score 1368 of 24200: the original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup);
