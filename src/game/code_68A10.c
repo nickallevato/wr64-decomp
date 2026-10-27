@@ -630,9 +630,9 @@ extern struct camera_unk_1* D_801D7970;
 void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 
 #ifdef NON_MATCHING
-// Score 876 of 84200: same loops, calls and stores. Only the last loop differs: the original loads
-// D_800E6D80 before unk1C38, numbers its registers differently and has one extra dead
-// li t0, 0xDF in front of it.
+// Score 605 of 84200: same loops, calls, stores and frame. Only the last loop differs: the original has one
+// extra dead li t0, 0xDF in front of it, and from the first float store on its temps are numbered differently.
+// The index j and the pad give the original's frame (0xE8) and its a0 for the index.
 void func_800AFBD0(s32 arg0) {
     s32 i;
     s32 alpha;
@@ -645,6 +645,8 @@ void func_800AFBD0(s32 arg0) {
     f32 x;
     f32 y;
     f32 z;
+    s32 j;
+    s32 pad[3]; // stack pad
     f32 sideX;
     f32 sideY;
     f32 sideZ;
@@ -833,7 +835,8 @@ void func_800AFBD0(s32 arg0) {
     // The eight unk1AA0 records, newest first from unk1C38: two vertices each.
     vtx = D_801AE948->unk91C0[arg0];
     for (i = 7; i >= 0; i--) {
-        D_800E6D7C = &D_800E6D80[(D_800E6D60->unk1C38 + i) % 8];
+        j = (D_800E6D60->unk1C38 + i) % 8;
+        D_800E6D7C = &D_800E6D80[j];
         vtx->v.ob[0] = D_800E6D7C->unk0;
         vtx->v.ob[1] = D_800E6D7C->unk4;
         vtx->v.ob[2] = D_800E6D7C->unk8;
