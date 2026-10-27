@@ -1,7 +1,11 @@
 #include "global.h"
 #include "PR/ucode.h"
 
-extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
+#include "segment.h"
+
+// The devAddr parameter is a pointer here: SysMain_Thread passes the segment symbols, and with
+// uintptr_t IDO converts them separately from the size computations.
+extern void game_dma_copy(void* devAddr, void* vAddr, u32 nbytes);
 
 void func_80046850(void) {
     s32 prevValue = D_8015194C;
@@ -98,116 +102,145 @@ void SysMain_GfxInitBuffers(void) {
     gDisplayListHead = gGfxPool->dList;
 }
 
-// https://decomp.me/scratch/pXE01
-// These need to be separate symbols for this function to compile
-// D_801DAFA0 & D_801DAFA0_2
-// D_1008290 & D_1008290_2
-#if 1
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_main/SysMain_Thread.s")
-#else
-void* SysMain_Thread(void* entry) {
-    s32 pad;
-    Matrix mtx; // Guess
-    u32* temp_v1;
-    u32* temp_v0;
+extern u32 D_80151964;
+extern u32 D_80151968;
+extern u32 D_8015196C;
+extern u32 D_80151970;
+extern u32 D_80151974;
+extern u32 D_80151978;
+extern u32 D_8015197C;
+extern u32 D_80151980;
+extern u32 D_80151988;
+extern u32 D_8015198C;
+extern u32 D_80151990;
+extern u32 D_80151994;
+extern u32 D_80151998;
+extern u32 D_8015199C;
+extern u32 D_801519A0;
+extern u32 D_801519A4;
+extern u32 D_801519A8;
+extern u32 D_801519AC;
+extern u32 D_801519B0;
+extern u32 D_801519B4;
+extern u32 D_801519B8;
+extern u32 D_801519BC;
+extern u32 D_801519C0;
+extern u32 D_801519C4;
+extern u32 D_801519C8;
+extern u32 D_801519CC;
+extern u32 D_801519D0;
+extern u32 D_801519D4;
+extern OSMesg D_80151958;
+extern OSMesg D_8015195C;
+extern OSMesgQueue D_80154100;
+extern OSMesgQueue D_80154118;
+extern Mtx D_8011F820;
+extern s32 gFrameCounter;
+extern OSViMode D_800E8770;
+extern OSViMode D_800E89A0;
+extern OSViMode D_800E8BD0;
+extern OSViMode D_800E8E00;
+extern u8 D_80228E10[];
+extern u8 D_802A0000[];
+extern u8 D_8038F800[];
+extern u8 D_80400000[];
+extern u8 D_1008290[];
+extern u8 D_106FB70[];
+extern u8 D_FE320[];
+extern u8 codeseg_TEXT_START[];
+// FAKE: D_1008290 under a second name (resolve.txt). With one symbol IDO keeps the address in a
+// register for the second subtraction; the original loads it again.
+extern u8 D_1008290_2[];
+extern u8 gAudioHeap[];
+extern u64 gAudioGlobalsEndMarker;
+void func_i3_802C5800(void);
+void GameLoad_LoadCodeseg(void);
+void GameLoad_LoadOverlay(void);
+void unk_game_load(void);
+void SysUtils_ContInitialize(void);
+void func_80047B00(void);
+void func_80091F50(void);
+void func_800922E4(void);
+Gfx* func_80092CF0(Gfx* dList);
+
+void SysMain_Thread(void* entry) {
+    s32 pad; // stack pad
+    MtxF mtx;
+    u32* src;
+    u32* dst;
 
     D_80151964 = osVirtualToPhysical(main_segment_TEXT_START);
-    D_80151968 = osVirtualToPhysical(D_801DAFA0);
-
+    D_80151968 = osVirtualToPhysical(codeseg_VRAM);
     D_8015196C = D_80151968;
-    D_80151970 = D_8015196C + (D_80228E10 - D_801DAFA0_2);
-
+    D_80151970 = D_8015196C + (D_80228E10 - codeseg_TEXT_START);
     D_80151974 = osVirtualToPhysical(D_802A0000);
-    D_80151978 = osVirtualToPhysical(D_802C5800);
+    D_80151978 = osVirtualToPhysical(func_i3_802C5800);
     D_8015197C = osVirtualToPhysical(D_8038F800);
     D_80151980 = osVirtualToPhysical(D_80400000);
     D_801519A4 = osVirtualToPhysical(gAudioHeap);
-    D_801519A8 = osVirtualToPhysical(main_segment_TEXT_START);
-
+    D_801519A8 = osVirtualToPhysical(&gAudioGlobalsEndMarker + 3); // 0x80045650, as the asm names it
     D_80151984 = ALIGN16(D_80151970);
-    D_80151988 = D_80151984 + ALIGN16(D_1008290 - D_1000000);
-
+    D_80151988 = ALIGN16((u32) (D_1008290 - (u8*) D_1000000)) + D_80151984;
     D_8015198C = D_80151988;
-    D_80151990 = D_8015198C + ALIGN16(D_106FB70 - D_1008290_2);
-
-    D_801519CC = osVirtualToPhysical((u8*) 0x802C5800);
+    D_80151990 = ALIGN16((u32) (D_106FB70 - D_1008290_2)) + D_8015198C;
+    D_801519CC = osVirtualToPhysical((void*) 0x802C5800);
     D_801519D0 = D_801519CC + 0x11000;
-
-    D_801519BC = osVirtualToPhysical((u8*) 0x802D6800);
+    D_801519BC = osVirtualToPhysical((void*) 0x802D6800);
     D_801519C0 = D_801519BC + 0x40000;
-
-    D_801519C4 = osVirtualToPhysical((u8*) 0x802D6800) + 0x30000;
+    D_801519C4 = osVirtualToPhysical((void*) 0x802D6800) + 0x30000;
     D_801519C8 = D_801519C4 + 0x10000;
-
-    D_801519B4 = osVirtualToPhysical((u8*) 0x80316800);
+    D_801519B4 = osVirtualToPhysical((void*) 0x80316800);
     D_801519B8 = D_801519B4 + 0x79000;
-
-    D_80151994 = osVirtualToPhysical(&D_8011F820);
-    D_80151998 = osVirtualToPhysical(&D_8011F820 + 1);
-
+    D_80151994 = osVirtualToPhysical(&D_8011EDE0);
+    D_80151998 = osVirtualToPhysical(&D_8011F8E0);
     D_8015199C = osVirtualToPhysical(D_8011F8E8);
-    D_801519A0 = osVirtualToPhysical(D_8011F8E8 + 2);
-
+    D_801519A0 = osVirtualToPhysical(&gGfxPool);
     D_801519AC = D_8015197C;
     D_801519B0 = D_80151980;
-
-    D_801519D4 = (u32) (osVirtualToPhysical((void*) 0x8029A200) -
-                        (D_80151970 + ALIGN16(D_1008290 - D_1000000) + ALIGN16(D_106FB70 - D_1008290_2)));
+    D_801519D4 = osVirtualToPhysical((void*) 0x8029A200) - D_80151970 - ALIGN16((u32) (D_1008290 - (u8*) D_1000000)) -
+                 ALIGN16((u32) (D_106FB70 - D_1008290_2));
 
     GameLoad_LoadCodeseg();
 
-    game_dma_copy((codeseg_ROM_END,  D_80151984, ALIGN16(D_FE320 - codeseg_ROM_END));
-    game_dma_copy(D_FE320, D_8015198C, ALIGN16(D_165C00 - D_FE320));
+    game_dma_copy(codeseg_ROM_END, (void*) D_80151984, ALIGN16((u32) (D_FE320 - codeseg_ROM_END)));
+    game_dma_copy(D_FE320, (void*) D_8015198C, ALIGN16((u32) (D_165C00 - D_FE320)));
 
     D_8011F8E0 = 0;
-
     D_8015194C = 2;
     gFramebuffersIdx = 0;
     D_80151950 = 1;
 
     SysUtils_TaylorSeries();
-
-    SysUtils_MatrixLookAt(&D_8011F820.unk_A40, &mtx, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-
+    SysUtils_MatrixLookAt(&D_8011F820, &mtx, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     SysUtils_Srand(osGetTime());
     osSetTime(0);
-
-    osViSwapBuffer(gFrameBuffers[gFramebuffersIdx]);
-
+    osViSwapBuffer((void*) gFrameBuffers[gFramebuffersIdx]);
     SysUtils_ContInitialize();
-
     SysMain_GfxInitBuffers();
-
     func_80046850();
     func_800468E0();
     SysMain_GfxFullSync();
-
     SysMain_CreateGfxTask(sGfxTask);
     SysMain_SendGfxTaskSetMesg(sGfxTask);
-
     func_80091F50();
 
-    for (gFrameCounter = 0; /* Empty? */; gFrameCounter++) {
+    for (gFrameCounter = 0;; gFrameCounter++) {
         osContStartReadData(&D_801540D0);
-        osRecvMesg(&D_80154100, D_80151958, OS_MESG_BLOCK);
+        osRecvMesg(&D_80154100, &D_80151958, OS_MESG_BLOCK);
         func_80047B00();
         SysMain_GfxInitBuffers();
         func_800922E4();
         func_80046850();
         func_800468E0();
-
         gDisplayListHead = func_80092CF0(gDisplayListHead);
-
         SysMain_GfxFullSync();
-
-        osRecvMesg(&D_80154118, D_8015195C, OS_MESG_BLOCK);
+        osRecvMesg(&D_80154118, &D_8015195C, OS_MESG_BLOCK);
 
         while (osDpGetStatus() & 0x170) {}
 
         if ((gPrevGameState == 6) && (D_801CE63C != 0)) {
-            game_dma_copy((u8*) D_FE320, (u8*) D_8015198C, ALIGN16(D_165C00 - D_FE320));
+            game_dma_copy(D_FE320, (void*) D_8015198C, ALIGN16((u32) (D_165C00 - D_FE320)));
         }
-
         if (D_801CE63C != 0) {
             unk_game_load();
         }
@@ -216,46 +249,39 @@ void* SysMain_Thread(void* entry) {
         }
 
         func_80097E68();
-
         SysMain_CreateGfxTask(sGfxTask);
 
         if (D_800DAB1C == 2) {
-            temp_v1 = (u32*) gFrameBuffers[D_8015194C] + 38399;
-            temp_v0 = (u32*) gFrameBuffers[3] + 38399;
-            for (; (u32) temp_v0 >= (u32) gFrameBuffers[3]; --temp_v0, --temp_v1) {
-                *temp_v0 = *temp_v1;
+            src = (u32*) gFrameBuffers[D_8015194C] + 38399;
+            dst = (u32*) gFrameBuffers[3] + 38399;
+            for (; (u32) dst >= (u32) gFrameBuffers[3]; dst--, src--) {
+                *dst = *src;
             }
         }
 
         SysMain_SendGfxTaskSetMesg(sGfxTask);
 
-        //! osViSetMode arrays are likely just one array, so this is likely fake.
-        //! osViSetMode arrays are likely just one array, so this is likely fake.
-        //! osViSetMode arrays are likely just one array, so this is likely fake.
-
         if (D_800DAB1C == 3) {
             if ((gGameState == GAME_STATE_BOOT_UP) && (D_801CE63C != 0)) {
                 if (osTvType == OS_TV_NTSC) {
-                    osViSetMode(D_800E89A0);
+                    osViSetMode(&D_800E89A0);
                 } else {
-                    osViSetMode(D_800E8E00);
+                    osViSetMode(&D_800E8E00);
                 }
                 osViSetSpecialFeatures(OS_VI_GAMMA_OFF | OS_VI_GAMMA_DITHER_ON);
             }
-            osViSwapBuffer(D_800D45DC[D_800D45D8]);
+            osViSwapBuffer((void*) D_800D45DC[D_800D45D8]);
         } else {
             if ((gPrevGameState == 6) && (D_801CE63C != 0)) {
-                if (osTvType == 1) {
-                    osViSetMode(D_800E8770);
+                if (osTvType == OS_TV_NTSC) {
+                    osViSetMode(&D_800E8770);
                 } else {
-                    osViSetMode(D_800E8BD0);
+                    osViSetMode(&D_800E8BD0);
                 }
-
                 osViSetSpecialFeatures(OS_VI_GAMMA_OFF | OS_VI_GAMMA_DITHER_ON | OS_VI_DIVOT_OFF |
                                        OS_VI_DITHER_FILTER_ON);
             }
-            osViSwapBuffer(gFrameBuffers[D_8015194C]);
+            osViSwapBuffer((void*) gFrameBuffers[D_8015194C]);
         }
     }
 }
-#endif
