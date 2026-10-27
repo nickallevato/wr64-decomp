@@ -6,7 +6,8 @@
 
 // 0x800B
 
-void func_800C010C(u32, u32);
+struct UnkStruct_func_800C010C;
+void func_800C010C(struct UnkStruct_func_800C010C* arg0, s8 arg1);
 void CourseSelect_UpdateInput(void);
 void func_8009345C(void);
 void GameState_EnterRiderSelect(void);
