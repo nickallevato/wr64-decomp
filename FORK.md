@@ -741,3 +741,112 @@ Measured at `f40b21d` and at this branch's tip: the same except `func_8007687C` 
 - Possible original bugs kept as the asm has them: `ViewRecords_OverlayUpdate` places both panel
   coordinates from `unk0`; `ViewRecords_DrawRecordsPanel` draws kind 3's lap dashes at y + 302 and
   passes an unused argument to `sprintf(buf, "-", ...)`.
+
+## Milestone 5 (in progress, paused at `6698635`)
+
+Goal: the 124 functions still in assembly at `a0a7efa`: the closest set-asides first, then `src/sys`,
+`src/audio`, the unused segment and `seg_1C3D00` (never attempted), then the remaining set-asides by
+score band, largest last; names and a final review at the end. Plan:
+`docs/superpowers/plans/2026-10-25-decomp-milestone-5.md` in the wr_64_exe repo. Batches ran 2026-10-25
+to 27, one worker at a time, each reviewed and merged by the coordinator. Done so far: the closest and
+near set-asides (Tasks 1-3), sys and audio (Task 4), the unused segment and `seg_1C3D00` (Task 5), the
+first band's float data (Task 6, Step 1) and two short near-miss batches. Next: the 1360-1845 band.
+
+### Count
+
+**`tools/progress.py`: 1224 / 1348 -> 1255 / 1348 (90.8% -> 93.1%); matched bytes 64.5% -> 68.5%.**
+
+| After merge | Matched / total | Batch |
+|---|--:|---|
+| `86576d4` | 1226 / 1348 | `func_8004D30C`, `func_80096048`; `tools/fork/score.sh` |
+| `9c2fdcd` | 1228 / 1348 | `func_801E5554`, `func_80091DBC` (after code_43DA0's `.data` tail moved into C) |
+| `9165e6f` | 1233 / 1348 | five set-asides scored 220-330 |
+| `d6dc10f` | 1235 / 1348 | `func_800A52D8`, `func_i15_802C5800`; `code_52CD0.c` split |
+| `4bd66b9` | 1239 / 1348 | four near-misses (Opus head-to-head) |
+| `34d769a` | 1242 / 1348 | `func_80088EA8`, `func_i10_802C6200`, `func_i2_802C5E28` |
+| `b6ec626` | 1243 / 1348 | `SysMain_Thread`; eight sys/audio functions as C, set aside |
+| `4602b20` | 1252 / 1348 | nine of eleven in `segment_1B1FB0` and `seg_1C3D00` |
+| `afe8f66` | 1253 / 1348 | `AudioGeneral_PlaySound`; `C94E0.c` merged into `BCFF0.c` |
+| `6698635` | 1255 / 1348 | `func_8004DAF0`, `func_8007D2D4` |
+
+No batch changed the set of sized `F` symbols (each data move was checked with a sized-`F`-symbol diff of
+the ELF before and after); `SysMain_Thread`'s size went 1744 -> 1732 when its trailing `nop` padding left
+the symbol.
+
+### Matched and moved, by batch
+
+- **Closest set-asides** (24 to 60 points off): `func_8004D30C` (water), `func_80096048`, `func_801E5554`
+  (the popup cards, one register swap away since milestone 1), `func_80091DBC`. `func_800AB25C` matched
+  later, in the head-to-head.
+- **Near (220-330)**: `func_801EE4D0`, `func_801EE6F4`, `func_i1_802C6BD8` (the Dolphin Park scroller's
+  draw), `func_8007F030`, `func_801DB8F0`.
+- **Mid (315-739)**: `func_800A52D8`, `func_i15_802C5800`. `code_52CD0.c` was two objects: a second one
+  starts at `func_8009D6B0` (its first word, `D_800EB54C`, was rodata padding), now `code_57EB0.c`, with
+  its later functions and set-asides.
+- **Head-to-head** (Opus 5.5 against Sonnet 5.5 on the same five near-misses, same brief): Opus matched
+  `func_8007FD80`, `func_801E3EE0`, `func_800AB25C`, `func_8009D6B0` in 44 minutes and took
+  `func_801F2060` from 25 to 10; Sonnet matched one in 66 minutes for about as many tokens. From then on
+  every matching worker is Opus (see `CLAUDE.md`).
+- **Opus batch of five**: `func_80088EA8` (random numbering of the `D_801C3C60` entries),
+  `func_i10_802C6200` (the panel `ChangeConditions_Draw` draws), `func_i2_802C5E28` (rider select input).
+- **sys and audio**: `SysMain_Thread` (segment addresses, start-up, the frame loop). It needed a second
+  linker name for one address (`D_1008290_2`, marked FAKE), because the original materialises it twice.
+  `sys_utils.c`'s `.data` (`Seed`, `D_800D4644`) moved into C. Eight others are readable C, set aside.
+- **The unused segment and `seg_1C3D00`**: `segment_1B1FB0` is the boot-time Controller Pak note manager
+  (list, delete, page counts). Matched: its draw function, input, note list, five image-strip draws, a
+  scroller and `seg_1C3D00`'s "1P - 2P" menu. Set aside `func_1B1FB0_802C6C1C` and
+  `func_1B1FB0_802C71B8`.
+- **Band 1, Step 1**: the HUD's float constants in the `F6010` data blob showed that `C94E0.c` was the
+  second half of `BCFF0.c`: one rodata block holds both files' strings, then both files' floats. The two
+  are one file now, and the blob is its `.rodata`. `AudioGeneral_PlaySound` matched; eight set-asides got
+  closer.
+- **Nearest leftovers**: `func_8004DAF0` (water damping of a body's points; two old FAKEs gone) and
+  `func_8007D2D4` (the Controller Pak save read).
+
+### What we learned
+
+**Process**
+
+- **`tools/fork/score.sh <func>`** scores one set-aside alone (its `#ifdef` switched on in a scratch copy,
+  one object rebuilt, `diff.py` with the right `--max-size`). Every note's "Score N of M" comes from it.
+- **Prove each commit remotely.** Workers commit, run `remote-check.sh <name> HEAD` unpiped, and amend on
+  failure; only single-object compiles and `diff.py` run locally. A new worktree gets its build from
+  na-workhorse (build `main` there, tar `asm bin build mio0` and the generated linker scripts, untar,
+  then touch the outputs newer than the sources) instead of a local full build.
+- **Opus for matching.** On near-misses it was faster and cheaper per match than Sonnet (about 82k tokens
+  per match); free OpenRouter models made no progress. Caps of about 30 min / 1 h / 2 h by size held up:
+  most matches came early, and a function that resisted an hour of Opus rarely moved later in the cap.
+- **A worker that waits on its own background loop can outlive its work.** Two shell loops polling for a
+  permuter output that never came were found still running two days later. A worker stops every loop it
+  starts before it reports.
+
+**IDO 5.3**
+
+- **Source lines steer scheduling.** Two statements on one line let a constant load move ahead of a stack
+  reload. The permuter's import reformats the source and loses such joins, so its base score can be worse
+  than the local one.
+- **A field read twice with no store between becomes a CSE temporary,** coloured differently from locals:
+  reading `pt->unkC` directly, not through a local, put `func_8004DAF0`'s second point in callee-saved
+  registers with no FAKE.
+- **A local for a repeated subexpression** (`step`, `k`, `entry`) fixed a whole function's register
+  numbering three times; **reusing a variable** (a loop counter, a narrow local for an unrelated value)
+  can set the colouring of the whole function.
+- **`v = &arr[i]` per iteration stops strength reduction;** `v = base; v += i` puts the base first in the
+  address add.
+- **Falling off the end keeps v0 live,** including a switch whose cases the original returns straight
+  from; an empty `if (x) {}` at the end keeps `x` live; `do {} while (0)` is a register-allocation block
+  boundary with no code.
+- **Conditions written as `switch`** give the original's compare operand order.
+- **gbi display-list macros don't survive the permuter's import** (token pasting such as
+  `G_IM_SIZ_8b_SHIFTL` breaks; with `--preserve-macros=` the base score is far worse), so on
+  display-list-heavy functions it rarely helps.
+
+### Open follow-ups
+
+- Nearest set-asides: `func_801F2060` 10 (shared prototype is `s32` only for its FAKE; ugen renames the
+  `lw`'s target but not the `lui`'s), `func_800890B4` 55, `func_1B1FB0_802C6C1C` 85, `func_801DC274` 265
+  (needs codeseg's `.bss` split: defining `D_80228190` in `A95D0.c` plus an `s32 index` parameter matches
+  it in a scratch build), `func_80049A94` 268, `unk_game_load` 270 (one `lui at`).
+- Give 0x80045650 a symbol (now written `&gAudioGlobalsEndMarker + 3`, splat's naming of an unnamed
+  address).
+- The remaining bands (Tasks 7-13), names (Task 14) and the final review.
