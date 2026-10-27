@@ -9,6 +9,7 @@ extern u8 D_804A460[];
 extern u8 D_8008510[];
 extern u8 D_800A618[];
 extern s32 D_1B1FB0_802C76B0;
+extern u8* D_1B1FB0_802C767C[];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5800.s")
 
@@ -33,7 +34,38 @@ Gfx* func_1B1FB0_802C67BC(Gfx* gdl, s32 x, s32 y) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C6970.s")
 
+#ifdef NON_MATCHING
+// Score 295 of 13700: register allocation only. The original keeps i, x + 16 and x in t0, t1, t2 (this
+// gives a3, t1, t0) and n % 10 in a3. Without the local d, or with x + 16 written as 560 - i * 18, IDO
+// unrolls the loop by two.
+Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
+    s32 n;
+    s32 digits;
+    s32 i;
+    s32 d;
+
+    n = D_801CB410;
+    if (n < 10) {
+        digits = 1;
+    } else if (n < 100) {
+        digits = 2;
+    } else {
+        digits = 3;
+    }
+    for (i = 0; i < digits; i++) {
+        d = n % 10;
+        gDPLoadTextureBlock(gdl++, D_1B1FB0_802C767C[d], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 18, 0,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                            G_TX_NOLOD, G_TX_NOLOD);
+        gSPTextureRectangle(gdl++, (544 - i * 18) << 2, 368 << 2, (544 - i * 18 + 16) << 2, 386 << 2,
+                            G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+        n /= 10;
+    }
+    return gdl;
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C6C1C.s")
+#endif
 
 Gfx* func_1B1FB0_802C6E40(Gfx* gdl, s32 x, s32 y) {
     s32 i;
