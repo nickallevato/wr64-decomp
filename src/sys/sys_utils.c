@@ -710,8 +710,9 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 288 of 13000: the original keeps sysz on the stack (0x1C) and cycz in f0; here cycz is the one
-// spilled, and one add.s has its operands swapped.
+// Score 268 of 13000: the original keeps sysz on the stack (0x1C) and cycz in f0; here cycz is the one
+// spilled (0x18), so the last products take other float registers. The empty if on szcy is a FAKE the
+// permuter found (288 without it).
 void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -751,6 +752,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     szcy = sz * cy;
     arg1->mf[1][0] = (sx * sycz) - szcy;
     arg1->mf[0][2] = (sx * szcy) - sycz;
+    if (!szcy) {} // FAKE: found by the permuter
     arg1->mf[1][2] = (sx * cycz) + sysz;
     arg1->mf[3][0] = arg5;
     arg1->mf[3][1] = arg6;
