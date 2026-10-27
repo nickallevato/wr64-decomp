@@ -374,7 +374,7 @@ segments:
     - [0xB66E0, c, codeseg/B66E0]
     - [0xB97B0, c, codeseg/B97B0]
     - [0xBCFF0, c, codeseg/BCFF0]
-    - [0xC94E0, c, codeseg/C94E0] #
+    # 0xC94E0 (func_801FAEB0 on) is part of BCFF0.c: one .rodata block at 0x802279D0 holds both parts' strings, then their floats
     - [0xCAE70, data] # needs splitting
     - [0xF2810, data, codeseg/A95D0]
     - [0xF4540, .rodata, codeseg/A95D0]
