@@ -2628,9 +2628,9 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1048 of 37200: the three hoisted float constants take other saved FP registers (the original: 1.0f in f24, 3.0f in
-// f22, 1.3f in f20), and the int 3 is in t3 where the original has it in s0 (y's register), so the temps that follow
-// are one register off. The stack pad gives the original's slots for r0..b1.
+// Score 570 of 37200: the three hoisted float constants take other saved FP registers (the original: 1.0f in f24, 3.0f in
+// f22, 1.3f in f20), and the int 3 is in t3 where the original has it in s0 (y's register), so gPlayers' load and a
+// few temps are one register off. The stack pad gives the original's slots for r0..b1.
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2674,11 +2674,12 @@ void func_801FAEB8(Gfx** gdlp) {
             f = (3 - D_80228B70[i]) / 3.0f;
             g = 1.0f - f;
             r0 = D_80227744[D_80228B68[i]][0] * f + D_80227744[D_80228B68[i] + 1][0] * g;
-            g0 = D_80227744[D_80228B68[i]][1] * f + D_80227744[D_80228B68[i] + 1][1] * g;
-            b0 = D_80227744[D_80228B68[i]][2] * f + D_80227744[D_80228B68[i] + 1][2] * g;
-            r1 = D_80227754[D_80228B68[i]][0] * f + D_80227754[D_80228B68[i] + 1][0] * g;
-            g1 = D_80227754[D_80228B68[i]][1] * f + D_80227754[D_80228B68[i] + 1][1] * g;
-            b1 = D_80227754[D_80228B68[i]][2] * f + D_80227754[D_80228B68[i] + 1][2] * g;
+            scale = f; // FAKE: found by the permuter; the colour terms after r0 use the copy
+            g0 = D_80227744[D_80228B68[i]][1] * scale + D_80227744[D_80228B68[i] + 1][1] * g;
+            b0 = D_80227744[D_80228B68[i]][2] * scale + D_80227744[D_80228B68[i] + 1][2] * g;
+            r1 = D_80227754[D_80228B68[i]][0] * scale + D_80227754[D_80228B68[i] + 1][0] * g;
+            g1 = D_80227754[D_80228B68[i]][1] * scale + D_80227754[D_80228B68[i] + 1][1] * g;
+            b1 = D_80227754[D_80228B68[i]][2] * scale + D_80227754[D_80228B68[i] + 1][2] * g;
             D_80228B70[i]++;
             if (D_80228B70[i] >= 3) {
                 D_80228B68[i]++;
