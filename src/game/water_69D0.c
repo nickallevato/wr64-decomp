@@ -546,19 +546,6 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     (pt)->unk10 *= body->unk10;                                               \
     (pt)->unk14 = (d * dz * k) + (body->unk14 * vz);
 
-#define WATER_DAMP_POINT2(pt)                                                 \
-    vx2 = (pt)->unkC;                                                         \
-    vz2 = (pt)->unk14;                                                        \
-    d = (vx2 * dx) + (vz2 * dz);                                              \
-    (pt)->unkC = (d * dx * k) + (body->unk14 * vx2);                          \
-    (pt)->unk10 *= body->unk10;                                               \
-    (pt)->unk14 = (d * dz * k) + (body->unk14 * vz2);
-
-#ifdef NON_MATCHING
-// Score 45 of 36500: in the three pair blocks the second point's d is in $f0, where the original reuses the
-// first point's $f12; the rest matches. The copy `alias` and the empty `if (!k)` in the last pair block are FAKEs
-// that put the second point's vx/vz in $fs0/$fs1 (the original's frame). The `.0f` (not `0.0f`) in the test
-// keeps the two zeros apart, as in the original
 void func_8004DAF0(void* arg0) {
     UnkStruct_80192690* body = arg0;
     f32 vx;
@@ -567,19 +554,16 @@ void func_8004DAF0(void* arg0) {
     f32 vz;
     f32 k;
     f32 dx;
-    f32 vz2;
     f32 inv;
     f32 d;
     f32 dz;
-    UnkStruct_8004B0F8_1* alias; // FAKE: see the note above
-    f32 vx2;
     f32 len;
 
     vx = body->unk6C;
     vz = body->unk74;
     k = 1.0f - body->unk14;
     len = (vx * vx) + (vz * vz);
-    if (.0f == len) {
+    if (.0f == len) { // .0f, not 0.0f: keeps the two zero constants apart, as in the original
         dz = 0.0f;
         dx = 0.0f;
     } else {
@@ -606,27 +590,39 @@ void func_8004DAF0(void* arg0) {
     pt = &body->unk30[3];
     pt2 = &body->unk30[5];
     if ((pt->unk1C | pt2->unk1C) & 1) {
-        WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT2(pt2);
+        d = (pt->unkC * dx) + (pt->unk14 * dz);
+        pt->unkC = (d * dx * k) + (body->unk14 * pt->unkC);
+        pt->unk10 *= body->unk10;
+        pt->unk14 = (d * dz * k) + (body->unk14 * pt->unk14);
+        d = (pt2->unkC * dx) + (pt2->unk14 * dz);
+        pt2->unkC = (d * dx * k) + (body->unk14 * pt2->unkC);
+        pt2->unk10 *= body->unk10;
+        pt2->unk14 = (d * dz * k) + (body->unk14 * pt2->unk14);
     }
     pt = &body->unk30[6];
     pt2 = &body->unk30[7];
     if ((pt->unk1C | pt2->unk1C) & 1) {
-        WATER_DAMP_POINT(pt);
-        WATER_DAMP_POINT2(pt2);
+        d = (pt->unkC * dx) + (pt->unk14 * dz);
+        pt->unkC = (d * dx * k) + (body->unk14 * pt->unkC);
+        pt->unk10 *= body->unk10;
+        pt->unk14 = (d * dz * k) + (body->unk14 * pt->unk14);
+        d = (pt2->unkC * dx) + (pt2->unk14 * dz);
+        if (1) {} if (1) {} // FAKE: two empty ifs put the second point's d in $f12, as the original
+        pt2->unkC = (d * dx * k) + (body->unk14 * pt2->unkC);
+        pt2->unk10 *= body->unk10;
+        pt2->unk14 = (d * dz * k) + (body->unk14 * pt2->unk14);
     }
     pt = &body->unk30[9];
     pt2 = &body->unk30[10];
     if ((pt->unk1C | pt2->unk1C) & 1) {
-        alias = pt; // FAKE
-        WATER_DAMP_POINT(alias);
-        vx2 = pt2->unkC;
-        vz2 = pt2->unk14;
-        d = (vx2 * dx) + (vz2 * dz);
-        pt2->unkC = (d * dx * k) + (body->unk14 * vx2);
+        d = (pt->unkC * dx) + (pt->unk14 * dz);
+        pt->unkC = (d * dx * k) + (body->unk14 * pt->unkC);
+        pt->unk10 *= body->unk10;
+        pt->unk14 = (d * dz * k) + (body->unk14 * pt->unk14);
+        d = (pt2->unkC * dx) + (pt2->unk14 * dz);
+        pt2->unkC = (d * dx * k) + (body->unk14 * pt2->unkC);
         pt2->unk10 *= body->unk10;
-        if (!k) {} // FAKE
-        pt2->unk14 = (d * dz * k) + (body->unk14 * vz2);
+        pt2->unk14 = (d * dz * k) + (body->unk14 * pt2->unk14);
     }
     pt2 = &body->unk30[2];
     if ((body->unk30[0].unk1C | pt2->unk1C) & 1) {
@@ -634,9 +630,6 @@ void func_8004DAF0(void* arg0) {
         pt2->unk10 *= body->unk10;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004DAF0.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 2500 of 29700: register allocation; the original keeps arg0 in $t3 (reloaded from the stack after sqrtf) and copies fu/fv into $s6/$s7 from temps

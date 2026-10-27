@@ -1116,17 +1116,13 @@ typedef struct SaveBlock {
 // Reads the save file from the Controller Pak into gSavePakImage, checks its code and checksum, and takes part of it:
 // mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
 // merged records (Save_MergePakImage). The result is written to the EEPROM.
-#ifdef NON_MATCHING
-// Score 90 of 20800: register allocation only, in the two small loops (the check code compare and the three-byte
-// copy): their two pointers or the counter and the pointer take each other's registers (v1/a0, v0/v1). The two
-// stack pads give the original's frame (0x48).
 extern u8 D_801AEA78[];
 
 s32 func_8007D2D4(s32 mode) {
     s32 n;
     s32 ret;
     s32 i;
-    s32 pad; // stack pad
+    s32 pad; // stack pad: the original's frame is 0x48
     s32 second;
     s32 fileNo;
     s32 pad2; // stack pad
@@ -1144,8 +1140,8 @@ s32 func_8007D2D4(s32 mode) {
         ret = osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &gSavePakImage);
         switch (ret) {
             case 0:
-                for (i = 0; i < 2; i++) {
-                    if (gSavePakImage.unk4[i - 4] != gSaveCheckCode[i]) {
+                for (n = 0; n < 2; n++) { // n, not i: with i the pointers take each other's registers
+                    if (gSavePakImage.unk4[n - 4] != gSaveCheckCode[n]) {
                         return 6;
                     }
                 }
@@ -1208,9 +1204,6 @@ s32 func_8007D2D4(s32 mode) {
         return 4;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D2D4.s")
-#endif
 
 // Writes the save image to the Controller Pak file (making it when there is none): mode 0 the whole image, 1-4 name
 // mode - 1 (0x80 added is ignored), 5 the records. When the file is new or its data is bad, the rest of the image
