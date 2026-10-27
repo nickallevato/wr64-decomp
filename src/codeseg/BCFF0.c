@@ -346,7 +346,8 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 10863 of 69300: the float literal at 0x80227A34 is an extern here (its rodata is in the F6010 data blob), so its address is hoisted into s7 and i moves to s8; node selection and the show flag also schedule differently.
+// Score 11233 of 69300: &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not
+// 0xB8, and the saved registers shift; the rest differs in register allocation.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -803,7 +804,8 @@ void Hud_DrawStartLights(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10992 of 39800: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
+// Score 4701 of 39800: the hoisted float constants match; the original loads gPlayers into a0 (its address in a3) and keeps
+// &D_80228C28 in a1 for one store, so most temps here are one register higher, and a few blocks schedule differently.
 extern s32 gHudMarkerColorFrame;
 extern s32 gHudMarkerColorStep;
 
@@ -2321,7 +2323,8 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10788 of 32800: float register allocation; the original keeps the camera position and direction on the stack (no saved FP register left).
+// Score 10398 of 32800: 1.0f and 0.0f are hoisted into f30/f28 here; the original keeps the camera position and direction
+// on the stack instead; frame 0x90, not 0x98.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2625,7 +2628,8 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1287 of 37200: the float constants (1.0f, 3.0f, the literal) take different saved FP registers, and the int 3 is not hoisted into s0; the literal is a FAKE local (its rodata is in the F6010 data blob).
+// Score 1072 of 37200: the three hoisted float constants take other saved FP registers (the original: 1.0f in f24, 3.0f in
+// f22, 1.3f in f20), and the int 3 is not hoisted into s0.
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2922,7 +2926,8 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 9598 of 25000: the loop's register allocation and constant hoisting differ throughout; frame 0xD8, not 0xE0.
+// Score 6732 of 25000: w is in s3 in the original (v1 here) and the texture pointer is set later; the loop's temps and
+// constant hoisting differ; frame 0xD0, not 0xE0.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
