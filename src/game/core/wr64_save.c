@@ -1117,9 +1117,9 @@ typedef struct SaveBlock {
 // mode 0 the whole image, 1-4 name mode - 1 (with 0x80 added, only its three bytes, into the second set), 5 the
 // merged records (Save_MergePakImage). The result is written to the EEPROM.
 #ifdef NON_MATCHING
-// Score 845 of 20800: the read result is copied to v1 here and returned from v1 by the default case; the original
-// keeps it in v0 and jumps straight to the epilogue, so v0/v1/a0 swap in the two loops. The two stack pads give
-// the original's frame (0x48).
+// Score 90 of 20800: register allocation only, in the two small loops (the check code compare and the three-byte
+// copy): their two pointers or the counter and the pointer take each other's registers (v1/a0, v0/v1). The two
+// stack pads give the original's frame (0x48).
 extern u8 D_801AEA78[];
 
 s32 func_8007D2D4(s32 mode) {
@@ -1202,9 +1202,8 @@ s32 func_8007D2D4(s32 mode) {
             case 5:
             case 6:
                 return 2;
-            default:
-                return ret;
         }
+        // no return here: a read result of 1 or above 6 falls off the end and is returned in v0, as in the original
     } else {
         return 4;
     }
