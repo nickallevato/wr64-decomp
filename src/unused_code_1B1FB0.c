@@ -5,6 +5,7 @@ extern s32 D_800D45DC[]; // array pointing to some mio0 adresses
 Gfx* func_1B1FB0_802C71B8(Gfx*, char, s32, s32);
 extern s32 D_802C7718;
 extern u8 D_8000008[];
+extern u8 D_804A460[];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5800.s")
 
@@ -14,7 +15,18 @@ extern u8 D_8000008[];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C62E4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C67BC.s")
+Gfx* func_1B1FB0_802C67BC(Gfx* gdl, s32 x, s32 y) {
+    s32 i;
+
+    for (i = 0; i < 5; i++) {
+        gDPLoadTextureBlock(gdl++, &D_804A460[i * 0x1000], G_IM_FMT_RGBA, G_IM_SIZ_16b, 512, 4, 0,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                            G_TX_NOLOD, G_TX_NOLOD);
+        gSPTextureRectangle(gdl++, x << 2, (y + i * 4) << 2, (x + 511) << 2, (y + i * 4 + 3) << 2, G_TX_RENDERTILE,
+                            0, 0, 4 << 10, 1 << 10);
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C6970.s")
 
