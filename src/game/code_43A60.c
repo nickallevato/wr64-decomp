@@ -88,9 +88,8 @@ void func_80088EA8(void) {
 // entries for unk80[i], colours the vertices at D_801C4698/D_801C46C8 in both frame-buffer blocks, and lists the
 // D_801BC940 entries whose unk4C is 1 in D_801C4118 (count D_801C4110).
 #ifdef NON_MATCHING
-// The two vertex loops are strength-reduced (a pointer += 0x10) where the original indexes with i << 4, and the
-// D_801C3C58 = &D_801C3C60[3] store goes through s1 instead of lui at; v0/v1 swap in the first loop.
-// Score 1285 of 18900.
+// Score 995 of 18900: the two vertex loops are strength-reduced here (a pointer += 0x10) where the original indexes
+// with i << 4, and v0/v1 swap in the first loop.
 void func_800890B4(void) {
     s32 i;
     s32 j;
@@ -135,8 +134,8 @@ void func_800890B4(void) {
             D_801C3C58->unk80[i] = 1;
         }
     }
-    D_801C3C58 = (struct_801C3C58*) &D_801C3C60[3];
-    for (i = 0; i < 3; i++) { // empty: the original counts to 3 here too
+    for (i = 0; i < 3; i++) { // IDO moves the store out of the loop and keeps the empty count to 3
+        D_801C3C58 = (struct_801C3C58*) &D_801C3C60[3];
     }
     for (j = 0; j < 2; j++) {
         va = D_801C4698[j];
