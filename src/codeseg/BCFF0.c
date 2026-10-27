@@ -2628,9 +2628,8 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 570 of 37200: the three hoisted float constants take other saved FP registers (the original: 1.0f in f24, 3.0f in
-// f22, 1.3f in f20), and the int 3 is in t3 where the original has it in s0 (y's register), so gPlayers' load and a
-// few temps are one register off. The stack pad gives the original's slots for r0..b1.
+// Score 445 of 37200: only the three hoisted float constants take other saved FP registers (the original: 1.0f in f24,
+// 3.0f in f22, 1.3f in f20; here 3.0f, 1.3f, 1.0f in that order).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2644,7 +2643,7 @@ void func_801FAEB8(Gfx** gdlp) {
     s32 i;
     f32 f;
     f32 g;
-    s32 pad; // stack pad
+    s32 step;
     s32 r0;
     s32 g0;
     s32 b0;
@@ -2673,13 +2672,14 @@ void func_801FAEB8(Gfx** gdlp) {
             D_80228B60[i]--;
             f = (3 - D_80228B70[i]) / 3.0f;
             g = 1.0f - f;
-            r0 = D_80227744[D_80228B68[i]][0] * f + D_80227744[D_80228B68[i] + 1][0] * g;
+            step = D_80228B68[i];
+            r0 = D_80227744[step][0] * f + D_80227744[step + 1][0] * g;
             scale = f; // FAKE: found by the permuter; the colour terms after r0 use the copy
-            g0 = D_80227744[D_80228B68[i]][1] * scale + D_80227744[D_80228B68[i] + 1][1] * g;
-            b0 = D_80227744[D_80228B68[i]][2] * scale + D_80227744[D_80228B68[i] + 1][2] * g;
-            r1 = D_80227754[D_80228B68[i]][0] * scale + D_80227754[D_80228B68[i] + 1][0] * g;
-            g1 = D_80227754[D_80228B68[i]][1] * scale + D_80227754[D_80228B68[i] + 1][1] * g;
-            b1 = D_80227754[D_80228B68[i]][2] * scale + D_80227754[D_80228B68[i] + 1][2] * g;
+            g0 = D_80227744[step][1] * scale + D_80227744[step + 1][1] * g;
+            b0 = D_80227744[step][2] * scale + D_80227744[step + 1][2] * g;
+            r1 = D_80227754[step][0] * scale + D_80227754[step + 1][0] * g;
+            g1 = D_80227754[step][1] * scale + D_80227754[step + 1][1] * g;
+            b1 = D_80227754[step][2] * scale + D_80227754[step + 1][2] * g;
             D_80228B70[i]++;
             if (D_80228B70[i] >= 3) {
                 D_80228B68[i]++;
