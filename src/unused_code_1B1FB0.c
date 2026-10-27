@@ -4,10 +4,13 @@ extern s32 D_800D45DC[]; // array pointing to some mio0 adresses
 
 void func_1B1FB0_802C5DF4(void);
 Gfx* func_1B1FB0_802C62E4(Gfx*);
+Gfx* func_1B1FB0_802C67BC(Gfx*, s32, s32);
 Gfx* func_1B1FB0_802C6970(Gfx*);
 Gfx* func_1B1FB0_802C6C1C(Gfx*);
 Gfx* func_1B1FB0_802C6E40(Gfx*, s32, s32);
+Gfx* func_1B1FB0_802C6FF8(Gfx*);
 Gfx* func_1B1FB0_802C71B8(Gfx*, char, s32, s32);
+s32 func_1B1FB0_802C7304(s32, s8*, s32, s32, s32);
 Gfx* func_1B1FB0_802C73B0(Gfx*);
 void* func_1B1FB0_802C7578(Gfx*, s32, s32, s32, s32, s32);
 extern s32 D_802C7718;
@@ -35,6 +38,8 @@ extern Gfx D_8066180[];
 extern Gfx D_80661F8[];
 extern Gfx D_8066A80[];
 extern Gfx D_80671B8[];
+extern Gfx D_80675B8[];
+extern Gfx D_80675E8[];
 
 void func_1B1FB0_802C5800(void) {
     s32 i;
@@ -129,7 +134,61 @@ Gfx* func_1B1FB0_802C5BA4(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5DF4.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C62E4.s")
+Gfx* func_1B1FB0_802C62E4(Gfx* gdl) {
+    s32 i;
+    OSPfsState* note;
+    s32 d;
+    s32 pages;
+
+    gDPPipeSync(gdl++);
+    gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 0, 0, 639, 389);
+    for (i = 0; i < 9; i++) {
+        if (D_1B1FB0_802C76E8 != 0 || (i != 0 && i != 8)) {
+            gdl = func_1B1FB0_802C67BC(gdl, 64, i * 20 + D_1B1FB0_802C76EC);
+        }
+    }
+    gSPDisplayList(gdl++, D_80675E8);
+    gDPSetPrimColor(gdl++, 0, 0, 255, D_802C7710, 0, 255);
+    if (D_1B1FB0_802C76A4 != 0) {
+        gdl = func_1B1FB0_802C6FF8(gdl);
+    }
+    gDPPipeSync(gdl++);
+    gDPSetPrimColor(gdl++, 0, 0, 0, 0, 50, 255);
+    for (i = 0; i < 9; i++) {
+        if (D_1B1FB0_802C76C4[i] != 0) {
+            if (D_1B1FB0_802C76C4[i] < 10) {
+                gdl = func_1B1FB0_802C71B8(gdl, (char) D_1B1FB0_802C76C4[i] + 16, 101, i * 20 + D_1B1FB0_802C76EC + 2);
+            } else {
+                d = D_1B1FB0_802C76C4[i] % 10;
+                gdl = func_1B1FB0_802C71B8(gdl, (char) d + 16, 106, i * 20 + D_1B1FB0_802C76EC + 2);
+                gdl = func_1B1FB0_802C71B8(gdl, 17, 96, i * 20 + D_1B1FB0_802C76EC + 2);
+            }
+            if (D_801CB618[D_1B1FB0_802C76C4[i] - 1] == 0) {
+                note = (OSPfsState*) D_801CB418 + D_1B1FB0_802C76C4[i] - 1;
+                gdl = (Gfx*) func_1B1FB0_802C7304((s32) gdl, (s8*) note->game_name, 16, 159,
+                                                  i * 20 + D_1B1FB0_802C76EC + 2);
+                if ((s8) note->ext_name[0] != 0) { // tested with lb, passed with lbu
+                    gdl = func_1B1FB0_802C71B8(gdl, 60, D_802C7718 * 16 + 159, i * 20 + D_1B1FB0_802C76EC + 2);
+                    gdl = func_1B1FB0_802C71B8(gdl, note->ext_name[0], D_802C7718 * 16 + 175,
+                                               i * 20 + D_1B1FB0_802C76EC + 2);
+                }
+                pages = (note->file_size + 255) >> 8;
+                gdl = func_1B1FB0_802C71B8(gdl, (char) (pages % 10) + 16, 538, i * 20 + D_1B1FB0_802C76EC + 2);
+                if (pages >= 10) {
+                    d = pages / 10;
+                    gdl = func_1B1FB0_802C71B8(gdl, (char) (d % 10) + 16, 522, i * 20 + D_1B1FB0_802C76EC + 2);
+                }
+                if (pages >= 100) {
+                    d /= 10;
+                    gdl = func_1B1FB0_802C71B8(gdl, (char) (d % 10) + 16, 506, i * 20 + D_1B1FB0_802C76EC + 2);
+                }
+            }
+        }
+    }
+    gSPDisplayList(gdl++, D_80675B8);
+    gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 0, 0, 639, 479);
+    return gdl;
+}
 
 Gfx* func_1B1FB0_802C67BC(Gfx* gdl, s32 x, s32 y) {
     s32 i;
