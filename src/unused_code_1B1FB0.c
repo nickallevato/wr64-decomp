@@ -2,7 +2,14 @@
 
 extern s32 D_800D45DC[]; // array pointing to some mio0 adresses
 
+void func_1B1FB0_802C5DF4(void);
+Gfx* func_1B1FB0_802C62E4(Gfx*);
+Gfx* func_1B1FB0_802C6970(Gfx*);
+Gfx* func_1B1FB0_802C6C1C(Gfx*);
+Gfx* func_1B1FB0_802C6E40(Gfx*, s32, s32);
 Gfx* func_1B1FB0_802C71B8(Gfx*, char, s32, s32);
+Gfx* func_1B1FB0_802C73B0(Gfx*);
+void* func_1B1FB0_802C7578(Gfx*, s32, s32, s32, s32, s32);
 extern s32 D_802C7718;
 extern u8 D_8000008[];
 extern u8 D_804A460[];
@@ -10,10 +17,62 @@ extern u8 D_8008510[];
 extern u8 D_800A618[];
 extern s32 D_1B1FB0_802C76B0;
 extern u8* D_1B1FB0_802C767C[];
+extern s32 D_1B1FB0_802C76A4;
+extern s32 D_1B1FB0_802C76A8;
+extern s32 D_1B1FB0_802C76AC;
+extern s32 D_1B1FB0_802C76B4[];
+extern u32 D_1B1FB0_802C76F0;
+extern s32 D_1B1FB0_802C76F4;
+extern s32 D_802C7710;
+extern Gfx D_8066180[];
+extern Gfx D_80661F8[];
+extern Gfx D_8066A80[];
+extern Gfx D_80671B8[];
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5800.s")
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5BA4.s")
+Gfx* func_1B1FB0_802C5BA4(Gfx* gdl) {
+    if (D_801CE63C != 0) {
+        D_801CE63C = 0;
+        if (gGameState == GAME_STATE_BOOT_UP) {
+            return func_1B1FB0_802C73B0(gdl);
+        }
+    }
+    D_800DAB2C = 0;
+    gSPDisplayList(gdl++, D_8066180);
+    gDPPipeSync(gdl++);
+    gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 0, 0, 639, 479);
+    gSPDisplayList(gdl++, D_80661F8);
+    gdl = func_1B1FB0_802C62E4(gdl);
+    gSPDisplayList(gdl++, D_8066A80);
+    gSPDisplayList(gdl++, D_80671B8);
+    gdl = func_1B1FB0_802C6970(gdl);
+    gdl = func_1B1FB0_802C6C1C(gdl);
+    gDPSetPrimColor(gdl++, 0, 0, 255, D_802C7710, 0, 255);
+    gdl = func_1B1FB0_802C6E40(gdl, D_1B1FB0_802C76B4[D_1B1FB0_802C76A8], 134);
+    if (D_1B1FB0_802C76A4 == 2) {
+        gdl = func_1B1FB0_802C6E40(gdl, D_1B1FB0_802C76B4[D_1B1FB0_802C76AC], 394);
+    }
+    if (gGameState == GAME_STATE_6) {
+        gdl = func_1B1FB0_802C7578(gdl, 64, 50, 576, 432, D_1B1FB0_802C76F0);
+    }
+    if (gGameState == GAME_STATE_BOOT_UP) {
+        func_1B1FB0_802C5DF4();
+    } else {
+        D_1B1FB0_802C76F0 = D_1B1FB0_802C76F4 * 255 / 10;
+        if (D_1B1FB0_802C76F0 > 255) {
+            D_1B1FB0_802C76F0 = 255;
+        }
+        D_1B1FB0_802C76F4++;
+        if (D_1B1FB0_802C76F0 == 255) {
+            osViBlack(true);
+        }
+        if (D_1B1FB0_802C76F4 >= 14) {
+            GameState_EnterTitleScreen();
+        }
+    }
+    return gdl;
+}
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5DF4.s")
 
