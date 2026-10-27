@@ -7,6 +7,8 @@ extern s32 D_802C7718;
 extern u8 D_8000008[];
 extern u8 D_804A460[];
 extern u8 D_8008510[];
+extern u8 D_800A618[];
+extern s32 D_1B1FB0_802C76B0;
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C5800.s")
 
@@ -46,7 +48,18 @@ Gfx* func_1B1FB0_802C6E40(Gfx* gdl, s32 x, s32 y) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C6FF8.s")
+Gfx* func_1B1FB0_802C6FF8(Gfx* gdl) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        gDPLoadTextureTile(gdl++, &D_800A618[i * 0x9B0], G_IM_FMT_IA, G_IM_SIZ_8b, 496, 5, 0, 0, 495, 4, 0,
+                           G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                           G_TX_NOLOD, G_TX_NOLOD);
+        gSPTextureRectangle(gdl++, 72 << 2, (D_1B1FB0_802C76B0 * 20 + i * 5 + 248) << 2, 568 << 2,
+                            (D_1B1FB0_802C76B0 * 20 + i * 5 + 253) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+    }
+    return gdl;
+}
 
 #ifdef NON_MATCHING
 // Score 410 of 8300: the first packet goes through a copy of gdl (move v1,a0 in the delay slot); the
