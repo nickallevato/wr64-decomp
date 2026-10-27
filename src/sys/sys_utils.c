@@ -654,8 +654,8 @@ void func_80049710(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     SysUtils_MtxFToMtx(arg1, arg0);
 }
 #ifdef NON_MATCHING
-// Score 1116 of 12400: sysz is not spilled (the original keeps it at 0x1C, frame 0x38),
-// the integer temps for the second index start at t1 instead of t5, and one add.s has its operands swapped.
+// Score 1036 of 12400: sysz is not spilled (the original keeps it at 0x1C, frame 0x38), so the end of the
+// function schedules differently.
 void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     f32 sx;
     f32 sy;
@@ -674,10 +674,10 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     ax = ((arg2 * 4096.0f) / 6.283186f) + 0.5f;
     sx = SIN(ax);
     arg1->mf[2][1] = -sx;
-    cx = COS(ax);
     ay = ((arg3 * 4096.0f) / 6.283186f) + 0.5f;
     sysz = SIN(ay); // FAKE: through sysz, to put sin(y) in sysz's register
     sy = sysz;
+    cx = COS(ax);
     arg1->mf[2][0] = cx * sy;
     cy = COS(ay);
     arg1->mf[2][2] = cy * cx;
@@ -688,7 +688,8 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     arg1->mf[1][1] = cz * cx;
     sysz = sy * sz;
     cycz = cy * cz;
-    arg1->mf[0][0] = cycz + (sx * sysz);
+    cx = sx * sysz; // FAKE: reuses cx
+    arg1->mf[0][0] = cycz + cx;
     sycz = sy * cz;
     szcy = sz * cy;
     arg1->mf[1][0] = (sx * sycz) - szcy;
