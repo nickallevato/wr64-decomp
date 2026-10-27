@@ -653,7 +653,60 @@ void func_80049710(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 
     SysUtils_MtxFToMtx(arg1, arg0);
 }
+#ifdef NON_MATCHING
+// Score 1116 of 12400: sysz is not spilled (the original keeps it at 0x1C, frame 0x38),
+// the integer temps for the second index start at t1 instead of t5, and one add.s has its operands swapped.
+void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
+    f32 sx;
+    f32 sy;
+    f32 sz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 sysz;
+    f32 cycz;
+    f32 sycz;
+    f32 szcy;
+    s32 ax;
+    s32 ay;
+    s32 az;
+
+    ax = ((arg2 * 4096.0f) / 6.283186f) + 0.5f;
+    sx = SIN(ax);
+    arg1->mf[2][1] = -sx;
+    cx = COS(ax);
+    ay = ((arg3 * 4096.0f) / 6.283186f) + 0.5f;
+    sysz = SIN(ay); // FAKE: through sysz, to put sin(y) in sysz's register
+    sy = sysz;
+    arg1->mf[2][0] = cx * sy;
+    cy = COS(ay);
+    arg1->mf[2][2] = cy * cx;
+    az = ((arg4 * 4096.0f) / 6.283186f) + 0.5f;
+    sz = SIN(az);
+    arg1->mf[0][1] = sz * cx;
+    cz = COS(az);
+    arg1->mf[1][1] = cz * cx;
+    sysz = sy * sz;
+    cycz = cy * cz;
+    arg1->mf[0][0] = cycz + (sx * sysz);
+    sycz = sy * cz;
+    szcy = sz * cy;
+    arg1->mf[1][0] = (sx * sycz) - szcy;
+    sy = (sx * szcy) - sycz; // FAKE: reuses sy
+    arg1->mf[0][2] = sy;
+    arg1->mf[3][0] = 0.0f;
+    arg1->mf[3][1] = 0.0f;
+    arg1->mf[3][2] = 0.0f;
+    arg1->mf[0][3] = 0.0f;
+    arg1->mf[1][2] = (sx * cycz) + sysz;
+    arg1->mf[1][3] = 0.0f;
+    arg1->mf[2][3] = 0.0f;
+    arg1->mf[3][3] = 1.0f;
+    SysUtils_MtxFToMtx(arg1, arg0);
+}
+#else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_800498A4.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_80049A94.s")
 
