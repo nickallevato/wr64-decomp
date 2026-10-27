@@ -68,9 +68,6 @@ extern s32 D_801C1FE8;
 extern RiderStruct gRiderRaceState[];
 extern u8* gPortraitFaces[];
 extern f32 gPortraitBob[];
-extern char D_802279E0[];
-extern char D_802279EC[];
-extern f32 D_80227A24;
 extern s32 D_80228A9C;
 extern s32 D_80228AAC;
 extern s32 D_80228AB0;
@@ -342,7 +339,7 @@ void Hud_SetupMatrices(void) {
     MtxF sp40;
 
     func_800481E0(&D_801AE948->unk4080, &gHudPerspNorm, 24.0f, 1.3333334f, 16.0f, 4096.0f, 0.0f, 0.0f);
-    func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, D_80227A24, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    func_800484C8(&D_801AE948->unk40C0, &sp40, 0.0f, 512.0f, 1500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     guOrtho(&D_801AE948->unk4000, -160.0f, 160.0f, -120.0f, 120.0f, -1024.0f, 1024.0f, 1.0f);
     guOrtho(&D_801AE948->unk4040, 0.0f, 320.0f, 240.0f, 0.0f, -1024.0f, 1024.0f, 1.0f);
 }
@@ -353,13 +350,6 @@ void Hud_SetupMatrices(void) {
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
-extern f32 D_80227A28;
-extern f32 D_80227A2C;
-extern f32 D_80227A30;
-extern f32 D_80227A34;
-extern f32 D_80227A38;
-extern f32 D_80227A3C;
-extern f32 D_80227A40;
 
 f32 func_801ED090(f32 arg0);
 s32 func_801ED388(s32 arg0, s32 arg1);
@@ -452,7 +442,7 @@ void func_801EF504(void) {
         } else {
             rider->unk2D0 += func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
         }
-        if ((fwd < D_80227A28) && (node->unk9C == 1)) {
+        if ((fwd < 0.7f) && (node->unk9C == 1)) {
             dx = node->unkC - cam->eyeX;
             dz = node->unk14 - cam->eyeZ;
             dist = sqrtf(dx * dx + dz * dz);
@@ -462,7 +452,7 @@ void func_801EF504(void) {
             }
             cross = dirX * dz - dirZ * dx;
             dot = dirX * dx + dirZ * dz;
-            if (dot < D_80227A2C) {
+            if (dot < 0.7f) {
                 dx = node->unk18 - cam->eyeX;
                 dz = node->unk20 - cam->eyeZ;
                 dist = sqrtf(dx * dx + dz * dz);
@@ -477,7 +467,7 @@ void func_801EF504(void) {
                 }
             }
         }
-        show = (dot < D_80227A30) && ((dist > 2048.0f) || !show);
+        show = (dot < 0.7f) && ((dist > 2048.0f) || !show);
         if (rider->inBox != 0) {
             show = 0;
         }
@@ -496,7 +486,7 @@ void func_801EF504(void) {
                         dx /= dist;
                         dz /= dist;
                     }
-                    if ((D_80227A34 <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
+                    if ((0.7f <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
                         found = 1;
                         break;
                     }
@@ -516,9 +506,9 @@ void func_801EF504(void) {
             show = 0;
         }
         if (show && (D_800DAB68 != 0) && (gCourseID == MARINE_FORTRESS) && (rider->lapCount >= 2)) {
-            dx = p->unk44.x - D_80227A38;
+            dx = p->unk44.x - (-2500.0f);
             dz = p->unk44.z - 2800.0f;
-            if (dx * dx + dz * dz < D_80227A3C) {
+            if (dx * dx + dz * dz < 490000.0f) {
                 show = 0;
             }
         }
@@ -560,7 +550,7 @@ void func_801EF504(void) {
             dx /= dist;
             dz /= dist;
         }
-        if ((func_801ED090(dirX * dx + dirZ * dz) >= 100.0f) && (p->unkB90 * D_80227A40 >= 10.0f) &&
+        if ((func_801ED090(dirX * dx + dirZ * dz) >= 100.0f) && (p->unkB90 * 1.8f >= 10.0f) &&
             (func_80074448(p->unk44.x, p->unk44.z) == 0) && (gCourseID != DOLPHIN_PARK)) {
             if (rider->unk328 < 0x7FFFFFFF) {
                 rider->unk328++;
@@ -814,8 +804,6 @@ void Hud_DrawStartLights(Gfx** gdlp) {
 
 #ifdef NON_MATCHING
 // Score 10992 of 39800: the constants hoisted into saved registers differ (300.0f, 8.0f in; i spilled), so most registers differ.
-extern f32 D_80227A44;
-extern f32 D_80227A48;
 extern s32 gHudMarkerColorFrame;
 extern s32 gHudMarkerColorStep;
 
@@ -847,7 +835,7 @@ void func_801F0E7C(void) {
                 if (gPlayers == ONE_PLAYER) {
                     e->unk10 = 1.0f;
                 } else {
-                    e->unk10 = D_80227A48;
+                    e->unk10 = 0.7f;
                 }
                 e->unk8 = e->unk10 * 64.0f;
                 e->unkC = e->unk10 * 10.0f;
@@ -960,9 +948,9 @@ void func_801F0E7C(void) {
                             e->unk14++;
                         }
                         if (e->unk14 >= 20) {
-                            e->unk10 -= D_80227A44;
-                            if (e->unk10 < D_80227A48) {
-                                e->unk10 = D_80227A48;
+                            e->unk10 -= 0.08f;
+                            if (e->unk10 < 0.7f) {
+                                e->unk10 = 0.7f;
                             }
                         }
                     }
@@ -1168,9 +1156,6 @@ void Hud_UpdateOffCourseCountdown(void) {
 // in v0 for both index products, as the original. The pointer to gPlayer1Rider and the copy t are FAKEs found by the
 // permuter: they take the extra early temp the original spends. The s32 return type with no return statement (its caller,
 // func_801FC4D4, ignores the result) keeps v0 live to the end, so the assembler moves the load into v0 instead of t8.
-extern char D_802279D0[];
-extern char D_802279D8[];
-extern char D_802279DC[];
 
 s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
     RiderStruct* rider;
@@ -1220,10 +1205,10 @@ s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
                 r1 = 255;
                 g1 = 255;
             }
-            gdl = Printer_Print(gdl, 0, D_802279D0, 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
-            gdl = Printer_Print(gdl, 0, D_802279D8, 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = Printer_Print(gdl, 0, "COURSE", 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+            gdl = Printer_Print(gdl, 0, "OUT", 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
             n = rider->unk2E8 / 20;
-            sprintf((char*) D_80228CF8, D_802279DC, n);
+            sprintf((char*) D_80228CF8, "%d", n);
             x = 223 - (n >= 10) * 5;
             gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
                                 255, r1, g1, 255, r1, g1);
@@ -2049,12 +2034,12 @@ void func_801F4120(Gfx** gdlp) {
     // Time trials: the best times.
     if ((gGameModes == GMODE_TIME_TRIALS) && (gCourseID != DOLPHIN_PARK)) {
         y = 0x16;
-        gdl = Printer_Print(gdl, 1, D_802279E0, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        gdl = Printer_Print(gdl, 1, "BEST TIME", 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         y += 9;
         gdl = Printer_PrintTime(gdl, 1, D_801C1FE4, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         if (D_800DAB68 == 0) {
             y += 0xB;
-            gdl = Printer_Print(gdl, 1, D_802279EC, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            gdl = Printer_Print(gdl, 1, "BEST LAP", 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             y += 9;
             gdl = Printer_PrintTime(gdl, 1, D_801C1FE8, 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
@@ -2338,7 +2323,6 @@ void func_801F9520(Gfx** gdlp) {
 #ifdef NON_MATCHING
 // Score 10788 of 32800: float register allocation; the original keeps the camera position and direction on the stack (no saved FP register left).
 extern s32 D_80223934;
-extern f32 D_80227A50;
 extern f32 gSinTable[0x1000];
 
 f32 func_801ED090(f32 arg0);
@@ -2419,7 +2403,7 @@ void func_801F9EA0(void) {
                 aa = (a >= 0.0f) ? a : -a;
                 sgn = (a == 0.0f) ? 0.0f : ((a > 0.0f) ? 1 : -1);
                 if (aa > 0.0f) {
-                    aa *= D_80227A50;
+                    aa *= 0.6666667f;
                     if (aa > 90.0f) {
                         aa = 90.0f;
                     }
@@ -2644,11 +2628,6 @@ void func_801FAEB0(s32 arg0) {
 // Score 1287 of 37200: the float constants (1.0f, 3.0f, the literal) take different saved FP registers, and the int 3 is not hoisted into s0; the literal is a FAKE local (its rodata is in the F6010 data blob).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
-extern char D_802279F8[];
-extern char D_802279FC[];
-extern char D_80227A00[];
-extern char D_80227A08[];
-extern f32 D_80227A54;
 extern s32 D_80228B60[2];
 extern s32 D_80228B68[2];
 extern s32 D_80228B70[2];
@@ -2670,10 +2649,8 @@ void func_801FAEB8(Gfx** gdlp) {
     s32 y;
     s32 w;
     f32 scale;
-    f32 big;
 
     gdl = *gdlp;
-    big = D_80227A54; // FAKE: a float literal in the original (its rodata is still in the F6010 data blob)
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
             rider = &gRiderRaceState[gPlayer1Rider];
@@ -2707,7 +2684,7 @@ void func_801FAEB8(Gfx** gdlp) {
                     x = 116;
                     y = 70;
                     w = 60;
-                    scale = big;
+                    scale = 1.3f;
                 } else {
                     x = 125;
                     w = 48;
@@ -2718,8 +2695,8 @@ void func_801FAEB8(Gfx** gdlp) {
                         y = 150;
                     }
                 }
-                gdl = Printer_PrintScaled(gdl, 0, D_802279F8, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
-                sprintf((char*) D_80228CF8, D_802279FC, rider->lapCount);
+                gdl = Printer_PrintScaled(gdl, 0, "LAP", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
+                sprintf((char*) D_80228CF8, "%d", rider->lapCount);
                 gdl = Printer_DrawString(gdl, 0, (char*) D_80228CF8, x + w, y);
             } else {
                 x = 100;
@@ -2727,7 +2704,7 @@ void func_801FAEB8(Gfx** gdlp) {
                     x = 82;
                     y = 70;
                     w = 98;
-                    scale = big;
+                    scale = 1.3f;
                 } else {
                     scale = 1.0f;
                     w = 77;
@@ -2737,9 +2714,9 @@ void func_801FAEB8(Gfx** gdlp) {
                         y = 150;
                     }
                 }
-                gdl = Printer_DrawString(Printer_PrintScaled(gdl, 0, D_80227A00, x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
+                gdl = Printer_DrawString(Printer_PrintScaled(gdl, 0, "FINAL", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
                                                   g1, b1, scale),
-                                    0, D_80227A08, x + w, y);
+                                    0, "LAP", x + w, y);
             }
         }
     }
@@ -2784,9 +2761,6 @@ extern u8 D_8024858[];
 extern u8 D_8024A40[];
 extern u8 D_80269D0[];
 extern s32 D_801C26E4;
-extern char D_80227A0C[];
-extern char D_80227A14[];
-extern char D_80227A1C[];
 extern s32 D_80228A94;
 
 // Draw the stunt-score popups (D_80228AE0) and add them to the stunt totals as they finish.
@@ -2934,11 +2908,11 @@ void func_801FB514(Gfx** gdlp) {
     }
     if (D_80228A94 != 0) {
         D_80228A94--;
-        gdl = Printer_Print(Printer_Print(gdl, 0, D_80227A0C, 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
-                            D_80227A14, 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        gdl = Printer_Print(Printer_Print(gdl, 0, "TIME", 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
+                            "EXTEND", 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     if ((D_80227740 != 0) && (D_801C26E4 != 0)) {
-        sprintf((char*) D_80228CF8, D_80227A1C, D_801C26E4);
+        sprintf((char*) D_80228CF8, "%04d", D_801C26E4);
         gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     *gdlp = gdl;
@@ -2950,7 +2924,6 @@ void func_801FB514(Gfx** gdlp) {
 #ifdef NON_MATCHING
 // Score 9598 of 25000: the loop's register allocation and constant hoisting differ throughout; frame 0xD8, not 0xE0.
 extern Gfx D_10146B0[];
-extern f32 D_80227A58;
 extern u32 D_804C008[];
 extern u32 D_804F010[];
 extern u32 D_8052018[];
@@ -2969,10 +2942,8 @@ void func_801FBFB4(Gfx** gdlp) {
     f32 x;
     f32 y;
     f32 nextY;
-    f32 big;
 
     gdl = *gdlp;
-    big = D_80227A58; // FAKE: a float literal in the original (its rodata is still in the F6010 data blob)
     gSPDisplayList(gdl++, D_10146B0);
     for (i = 0; i < 2; i++) {
         if (D_80228E00[i] == 0) {
@@ -2987,7 +2958,7 @@ void func_801FBFB4(Gfx** gdlp) {
         tex = D_804F010;
         w = 96;
         if (D_80228E08[i] < 6) {
-            scale = (D_80228E08[i] / 5.0f) * big;
+            scale = (D_80228E08[i] / 5.0f) * 1.3f;
         } else {
             scale = 1.0f;
         }

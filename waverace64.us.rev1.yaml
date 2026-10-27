@@ -397,9 +397,8 @@ segments:
     - [0xF5480, .rodata, codeseg/B66E0]
     - [0xF5520, data, codeseg/B97B0]
     - [0xF5D40, .rodata, codeseg/B97B0]
-    - [0xF5D70, data, codeseg/C94E0]
-    #- [0xF5F30, data]
-    - [0xF6010, data]
+    - [0xF5D70, data, codeseg/BCFF0]
+    - [0xF6000, .rodata, codeseg/BCFF0]
 
   - name: segment_F6090 # looks like a bunch of uncompressed assets (Dlists and Textures)
     type: bin
