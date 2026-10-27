@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1243%20%2F%201348-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-92.2%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-67.2%25-4fc9b8?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1252%20%2F%201348-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-92.9%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-68.0%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -44,11 +44,11 @@ neighbour became its own symbol.
 | `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | `src/audio` | sequence and sound playback | 225 / 228 | `███████████████████▊` 98.7% |
 | `src/overlays` | courses and menu screens | 146 / 151 | `███████████████████▍` 96.7% |
+| other | handwritten assembly and loose segments | 53 / 55 | `███████████████████▎` 96.4% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 197 / 219 | `██████████████████░░` 90.0% |
 | `src/game` | race logic, riders, camera, water | 442 / 501 | `█████████████████▋░░` 88.2% |
 | `src/sys` | boot, threads, memory | 32 / 37 | `█████████████████▎░░` 86.5% |
-| other | handwritten assembly and loose segments | 44 / 55 | `████████████████░░░░` 80.0% |
-| **Total** | | **1243 / 1348** | **92.2%** |
+| **Total** | | **1252 / 1348** | **92.9%** |
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
 assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
