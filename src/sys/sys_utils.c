@@ -8,7 +8,8 @@ extern s32 D_80154344;
 extern float gSinTable[0x1000];
 
 // .data
-extern int Seed;
+int Seed = 1;
+s16 D_800D4644 = 1;
 
 s32 SysUtils_Round(f32 x) {
     if (x < 0.0f) {

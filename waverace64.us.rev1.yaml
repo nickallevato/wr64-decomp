@@ -243,7 +243,7 @@ segments:
       - [0x8EDD0, data]
       - [0x8EDF0, data]
       - [0x8EE30, .data, sys/sys_audio]
-      - [0x8EE40, data]
+      - [0x8EE40, .data, sys/sys_utils]
       # code_5480's .data, 0x800D4650..0x800D467F (the grid effect's state and fill colours)
       - [0x8EE50, .data, game/code_5480]
       - [0x8EE80, .data, game/water_69D0]
