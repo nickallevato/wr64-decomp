@@ -16,6 +16,8 @@ extern u8 D_804A460[];
 extern u8 D_8008510[];
 extern u8 D_800A618[];
 extern s32 D_1B1FB0_802C76B0;
+extern s32 D_1B1FB0_802C7660;
+extern u8* D_1B1FB0_802C7664[];
 extern u8* D_1B1FB0_802C767C[];
 extern s32 D_1B1FB0_802C76A4;
 extern s32 D_1B1FB0_802C76A8;
@@ -91,7 +93,20 @@ Gfx* func_1B1FB0_802C67BC(Gfx* gdl, s32 x, s32 y) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C6970.s")
+Gfx* func_1B1FB0_802C6970(Gfx* gdl) {
+    u8* tex;
+    s32 i;
+
+    for (i = 0, tex = D_1B1FB0_802C7664[D_1B1FB0_802C7660]; i < 8; i++) {
+        gDPLoadTextureTile(gdl++, tex, G_IM_FMT_IA, G_IM_SIZ_8b, 360, 8, 0, 0, 359, 7, 0,
+                           G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                           G_TX_NOLOD, G_TX_NOLOD);
+        gSPTextureRectangle(gdl++, 140 << 2, (59 + i * 8) << 2, 500 << 2, (67 + i * 8) << 2, G_TX_RENDERTILE, 0, 0,
+                            1 << 10, 1 << 10);
+        tex += 0xB40;
+    }
+    return gdl;
+}
 
 #ifdef NON_MATCHING
 // Score 295 of 13700: register allocation only. The original keeps i, x + 16 and x in t0, t1, t2 (this
