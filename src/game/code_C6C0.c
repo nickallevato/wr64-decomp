@@ -6209,8 +6209,10 @@ void func_8006390C(s32 arg0, void* arg1) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6362 of 99300: close in structure: register allocation and a few constant loads differ (1.0f, D_800D4AC0,
-// 0.9f), so the original is 0x18 bytes longer. Control flow matches, including the switch on unk1598.
+// Score 235 of 99300: same instructions; stats is in a2 and the constant 1 in a3 in the original (v1 and a2 here),
+// gSinTable's address and the angle swap v0/v1, and float temps around unk15CC/unk15D4 are numbered differently.
+// Integer literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads; f, d and speed
+// are each reused for a second value, as the original's stack homes show.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
     if ((r)->unk16E2 == 0) {    \
@@ -6222,13 +6224,11 @@ void func_8006390C(s32 arg0, void* arg1) {
 
 void func_80063C88(s32 arg0) {
     UnkStruct_80192690* rider;
-    struct UnkStruct_801C2938* stats;
     f32 f;
-    f32 d;
+    struct UnkStruct_801C2938* stats;
     f32 speed;
-    f32 dx;
-    f32 dz;
-    f32 max;
+    f32 d;
+    s32 pad[6]; // stack pad: the original's frame is 0x50
 
     if (D_801CE638 == 4) {
         D_80192690[arg0].unkB64 = D_80192690[arg0].unkB68;
@@ -6251,13 +6251,13 @@ void func_80063C88(s32 arg0) {
         }
         rider->unk1590 = rider->unk1594 * 0.01f;
     } else {
-        d = rider->unk15E8 - rider->unk14;
-        if (d < -0.01f) {
-            d = -0.01f;
-        } else if (d > 0.01f) {
-            d = 0.01f;
+        f = rider->unk15E8 - rider->unk14;
+        if (f < -0.01f) {
+            f = -0.01f;
+        } else if (f > 0.01f) {
+            f = 0.01f;
         }
-        rider->unk14 += d;
+        rider->unk14 += f;
         rider->unk1590 = rider->unk1594;
     }
     if (rider->unkC54 == 8) {
@@ -6267,7 +6267,7 @@ void func_80063C88(s32 arg0) {
     } else if (rider->unkC54 == 17) {
         f = 0.2f;
     } else {
-        f = 1.0f;
+        f = 1;
     }
     rider->unk169C = D_800D92F0[rider->unkB64] * f;
     rider->unk16A0 = D_800D9300[rider->unkB64] * f;
@@ -6276,7 +6276,7 @@ void func_80063C88(s32 arg0) {
     rider->unk16AC = D_800D9330[rider->unkB64] * f;
     rider->unk16B0 = D_800D9310[rider->unkB64] * f;
     if ((rider->unkB58 & 0x4000) && (rider->unkC54 == 22) && (rider->unk15D8 == 1.0f)) {
-        rider->unk15D8 = 0.9f;
+        rider->unk15D8 = 0.9;
     }
     if (rider->unkB64 == 1) {
         if (rider->unkC7C != 0) {
@@ -6316,18 +6316,20 @@ void func_80063C88(s32 arg0) {
         rider->unkB9C = (stats->power / 5.0f) * f;
         if ((gPlayers == TWO_PLAYERS) && ((u16) D_800D4970 != 0)) {
             if (stats->unk4 != 0) {
-                dx = D_80192690[gPlayer1Rider].unk44.x - D_80192690[gPlayer2Rider].unk44.x;
-                dz = D_80192690[gPlayer1Rider].unk44.z - D_80192690[gPlayer2Rider].unk44.z;
+                f = D_80192690[gPlayer1Rider].unk44.x - D_80192690[gPlayer2Rider].unk44.x;
+                d = SQ(f);
+                f = D_80192690[gPlayer1Rider].unk44.z - D_80192690[gPlayer2Rider].unk44.z;
+                d += SQ(f);
                 if (rider->unkB64 == 1) {
-                    max = 1.05f;
+                    speed = 1.05f;
                 } else if (rider->unkB64 == 2) {
-                    max = 1.15f;
+                    speed = 1.15f;
                 } else {
-                    max = 1.1f;
+                    speed = 1.1f;
                 }
-                f = ((sqrtf(SQ(dx) + SQ(dz)) * (max - 0.9f)) / 200.0f) + 0.9f;
-                if (max < f) {
-                    f = max;
+                f = ((sqrtf(d) * (speed - 0.9f)) / 200.0f) + 0.9f;
+                if (speed < f) {
+                    f = speed;
                 }
             } else {
                 f = 0.9f;
@@ -6356,7 +6358,7 @@ void func_80063C88(s32 arg0) {
         rider->unk15E4 = 0.0f;
         rider->unk15E0 = 1.0f;
     }
-    if (((rider->unkB90 < 11.111112f) && ((rider->unkC54 == 22) || (rider->unkC54 == 7))) || (rider->unkC44 != 0.0f)) {
+    if (((rider->unkB90 < 11.111112f) && ((rider->unkC54 == 22) || (rider->unkC54 == 7))) || (rider->unkC44 != 0)) {
         rider->unkBF8 = D_800D9480[rider->unkB64] * (f32) rider->unkB5E;
     } else {
         rider->unkBF8 = 0.0f;
@@ -6372,7 +6374,7 @@ void func_80063C88(s32 arg0) {
         rider->unk15C4 = 0.0f;
     } else {
         rider->unk15C4 = sqrtf(SQ(rider->unk6C) + SQ(rider->unk74)) * (f32) rider->unkB5F;
-        if (rider->unk15C4 < 0.0f) {
+        if (rider->unk15C4 < 0) {
             rider->unk15C4 *= rider->unk1570;
         } else {
             rider->unk15C4 *= rider->unk156C;
@@ -6398,7 +6400,8 @@ void func_80063C88(s32 arg0) {
         rider->unk15D4 = (f32) gWaterLevel - 10.0f;
     } else {
         if (speed < 33.333336f) {
-            rider->unk15D4 = (f32) gWaterLevel + (D_800D4954 * (speed / 33.333336f));
+            // FAKE: the comma expression renumbers the float temps
+            rider->unk15D4 = (f32) gWaterLevel + ((0, D_800D4954) * (speed / 33.333336f));
         } else {
             rider->unk15D4 = (f32) gWaterLevel + D_800D4954;
         }
@@ -6414,7 +6417,7 @@ void func_80063C88(s32 arg0) {
     } else {
         rider->unk16F0 = 0;
     }
-    if ((rider->unk16F0 != rider->unk16F2) && (rider->unkC54 == 22)) {
+    if ((rider->unk16F2 != rider->unk16F0) && (rider->unkC54 == 22)) {
         rider->unk16D4++;
     }
     if ((rider->unkC54 == 22) || (rider->unkC54 == 25)) {
