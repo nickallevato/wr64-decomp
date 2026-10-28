@@ -3473,8 +3473,11 @@ extern s32 D_800E62D4;
 extern s32 D_801CB340;
 
 #ifdef NON_MATCHING
-// Score 10230 of 116800: registers and scheduling; the loop-invariant float constants take f20/f22 the other way round, and some loop values are spilled differently.
+// Score 1500 of 116800: scheduling and float temporaries in the SUNNY_BEACH and GLACIER_COAST record loops,
+// and the SUNSET_BAY loop loads its constants in another order (f20 and f0 swap roles). Statement order
+// inside the cases was found by search; it decides which constants stay in saved registers.
 void func_800AC184(void) {
+    s32 pad[5]; // stack pad
     UnkStruct_80192690* rider;
     UnkStruct_80192690* rider2;
     GfxPool* pool;
@@ -3552,7 +3555,7 @@ void func_800AC184(void) {
         return;
     }
     if (gPlayers == TWO_PLAYERS) {
-        D_800E62CC = D_800E62C8 = 0;
+        D_800E62C8 = D_800E62CC = 0;
         return;
     }
     D_801D0724 = D_801D0728 = 30.0f;
@@ -3563,6 +3566,7 @@ void func_800AC184(void) {
             if (gPlayers == ONE_PLAYER) {
                 D_801CF060[0].unk2C = 0.0f;
                 D_801CF060[0].unk10 = -20.0f;
+                D_801CF060[0].unk68 = D_801CF060[0].unk10;
                 D_801CF060[0].unk6C = D_801CF060[0].unk14 = D_801AEE20[0].unk8 + 100.0f;
                 D_801CF060[0].unk0 = 6;
                 D_801CF060[0].unk7C = 0xFF;
@@ -3575,7 +3579,6 @@ void func_800AC184(void) {
                 D_801CF060[0].unk78 = 10;
                 D_801CF060[0].unk18 = 0.0f;
                 D_801CF060[0].unk1C = D_801CF060[0].unk24 = D_801CF060[0].unk28 = D_801CF060[0].unk2C;
-                D_801CF060[0].unk68 = D_801CF060[0].unk10;
                 if (D_800E62D4 > 0) {
                     D_801CF060[1].unk0 = 6;
                 }
@@ -3620,11 +3623,11 @@ void func_800AC184(void) {
                         if ((i % 3) == 2) {
                             D_801CF060[i].unk0 = 9;
                         }
-                        D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
+                        D_801CF060[i].unk78 = D_801CF060[i].unk74 = 0;
                     }
                 }
             }
-            D_800E62CC = D_800E62C8 = 12;
+            D_800E62C8 = D_800E62CC = 12;
             break;
         case SUNNY_BEACH:
             if (gPlayers == ONE_PLAYER) {
@@ -3647,40 +3650,41 @@ void func_800AC184(void) {
                     if ((i % 3) == 2) {
                         D_801CF060[i].unk0 = 9;
                     }
-                    D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
+                    D_801CF060[i].unk78 = D_801CF060[i].unk74 = 0;
                 }
                 for (i = 6; i < 11; i++) {
+                    D_801CF060[i].unk18 = 90.0f;
                     D_801CF060[i].unk0 = 3;
                     D_801CF060[i].unk7C = 0xFF;
-                    D_801CF060[i].unk8 = 1;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 3000.0f;
-                    D_801CF060[i].unk10 = (i - 4) * 50;
-                    D_801CF060[i].unk18 = 90.0f;
-                    D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + 1100.0f;
+                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk10 = (i - 4) * 50;
+                    D_801CF060[i].unk8 = 1;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
             }
-            D_800E62CC = D_800E62C8 = 12;
+            D_800E62C8 = D_800E62CC = 12;
             break;
         case SUNSET_BAY:
             if (gPlayers == ONE_PLAYER) {
                 if (D_800DAB68 == 0) {
                     for (i = 0; i < 3; i++) {
-                        D_801CF060[i].unkC = -4300.0f;
                         D_801CF060[i].unk14 = -800.0f;
+                        D_801CF060[i].unkC = -4300.0f;
                         D_801CF060[i].unk8 = 1;
                         D_801CF060[i].unk0 = 6;
                         D_801CF060[i].unk4C = 40.0f;
                         D_801CF060[i].unk80 = COS(((i * 120) / 360) * 4096) * 200.0f;
-                        D_801CF060[i].unk84 = 100000.0f;
+                        D_801CF060[i].unk84 = 100000.0; // double literal: a constant of its own, not shared with the 100000.0f
                         D_801CF060[i].unk88 = SIN(((i * 120) / 360) * 4096) * 200.0f;
                     }
                     D_801CF060[0].unk9C = 10;
                     D_801CF060[1].unk9C = 11;
                     D_801CF060[2].unk9C = 12;
                 } else {
+                    D_801CF060[0].unkC = 6000.0f;
                     D_801CF060[0].unk9C = 0;
                     D_801CF060[0].unk8 = 11;
                     D_801CF060[0].unk0 = 6;
@@ -3693,13 +3697,12 @@ void func_800AC184(void) {
                     D_801CF060[0].unk14 = 4000.0f;
                     D_801CF060[2].unk14 = 4000.0f;
                     D_801CF060[2].unk18 = 180.0f;
-                    D_801CF060[0].unkC = 6000.0f;
                     D_801CF060[0].unk18 = 90.0f;
                     D_801CF060[0].unk4C = 25.0f;
                     D_801CF060[2].unkC = 4800.0f;
                 }
             }
-            D_800E62CC = D_800E62C8 = 3;
+            D_800E62C8 = D_800E62CC = 3;
             break;
         case MARINE_FORTRESS:
             if (gPlayers == ONE_PLAYER) {
@@ -3716,7 +3719,7 @@ void func_800AC184(void) {
                     D_801CF060[i].unk70 = (s32) (2000 - (SysUtils_Rand() & 0x3FF));
                 }
             }
-            D_800E62CC = D_800E62C8 = 6;
+            D_800E62C8 = D_800E62CC = 6;
             break;
         case DRAKE_LAKE:
             if (gPlayers == ONE_PLAYER) {
@@ -3736,18 +3739,18 @@ void func_800AC184(void) {
                     D_801CF060[i].unk7C = 0xFF;
                     D_801CF060[i].unkC = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06BC;
                     D_801CF060[i].unk14 = (s32) ((SysUtils_Rand() & 0x3FF) - 0x200) + D_801D06C4;
-                    D_801CF060[i].unk8C = j;
                     t = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk8 = 5;
                     D_801CF060[i].unk80 = 100000.0f;
                     D_801CF060[i].unk84 = 100000.0f;
                     D_801CF060[i].unk88 = 100000.0f;
                     D_801CF060[i].unk10 = -50.0f - t;
+                    D_801CF060[i].unk8C = j;
                     D_801CF060[i].unk0 = 10;
-                    D_801CF060[i].unk74 = D_801CF060[i].unk78 = 0;
+                    D_801CF060[i].unk78 = D_801CF060[i].unk74 = 0;
                 }
             }
-            D_800E62CC = D_800E62C8 = 11;
+            D_800E62C8 = D_800E62CC = 11;
             break;
         case PORT_BLUE:
             if (gPlayers == ONE_PLAYER) {
@@ -3767,10 +3770,10 @@ void func_800AC184(void) {
                 D_801CF060[0].unk54 = 0;
                 D_801CF060[0].unk4C = 10.0f;
             }
-            D_800E62CC = D_800E62C8 = 2;
+            D_800E62C8 = D_800E62CC = 2;
             break;
         case TWILIGHT_CITY:
-            D_800E62CC = D_800E62C8 = 0;
+            D_800E62C8 = D_800E62CC = 0;
             break;
         case GLACIER_COAST:
             if (gPlayers == ONE_PLAYER) {
@@ -3806,19 +3809,19 @@ void func_800AC184(void) {
                     }
                 }
                 for (i = 3; i < 8; i++) {
-                    D_801CF060[i].unk0 = 3;
+                    D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk0 = 3;
+                    D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
                     D_801CF060[i].unk8 = 1;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 5000.0f;
                     D_801CF060[i].unk10 = (i * 10) + 240;
                     D_801CF060[i].unk18 = 90.0f;
-                    D_801CF060[i].unk74 = 0;
-                    D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
             }
-            D_800E62CC = D_800E62C8 = 9;
+            D_800E62C8 = D_800E62CC = 9;
             break;
         case SOUTHERN_ISLAND:
             if (gPlayers == ONE_PLAYER) {
@@ -3859,7 +3862,7 @@ void func_800AC184(void) {
                     D_801CF060[5].unk20 = 90.0f;
                 }
             }
-            D_800E62CC = D_800E62C8 = 6;
+            D_800E62C8 = D_800E62CC = 6;
             break;
     }
 }
