@@ -70,8 +70,6 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3290/func_801E4C60.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 3450 of 28700: &D_80228920 is kept in a register for the load and the store (the original reloads arg2 and uses at), which shifts the temps.
 typedef struct AnimKey {
     /* 0x0 */ s16 x;
     /* 0x2 */ s16 y;
@@ -101,53 +99,40 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
 
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx) {
     Anim* anim;
-    AnimKey* key;
-    UnkStruct_80227A60* dl;
-    Mtx* m1;
-    Mtx* m2;
+    s32 id;
 
-    if (arg2 != D_80228920) {
+    // id holds the animation number here and each part's key index below: with the copy, the store to D_80228920
+    // and the key loads get the original's registers
+    id = arg2;
+    if (id != D_80228920) {
         D_80226C30 = 0;
     }
+    D_80228920 = id;
     anim = D_802238DC[arg2];
-    D_80228920 = arg2;
 
-    key = &anim->keys[anim->parts[15][D_80226C30]];
-    func_801E4C60(mtx, key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, key->x, key->y, key->z, 1.0f);
+    id = anim->parts[15][D_80226C30];
+    func_801E4C60(mtx, anim->keys[id].fx, anim->keys[id].fy, anim->keys[id].fz, anim->keys[id].ux, anim->keys[id].uy,
+                  anim->keys[id].uz, anim->keys[id].x, anim->keys[id].y, anim->keys[id].z, 1.0f);
     gSPMatrix(gdl++, (u32) mtx & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
     if (D_801CE638 == 0x15) {
-        dl = &D_80227A60[arg1];
         gSPDisplayList(gdl++, D_801CE9A0[arg1]);
     } else {
-        dl = &D_80227A60[arg1];
-        gSPDisplayList(gdl++, dl->unk0[2]);
+        gSPDisplayList(gdl++, D_80227A60[arg1].unk0[2]);
     }
-    // FAKE: gSPPopMatrix written out; each macro's block variable takes a stack slot (frame 0x88, not 0x80)
-    gdl->words.w0 = 0xBD000000;
-    gdl->words.w1 = 0;
-    gdl++;
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
 
-    key = &anim->keys[anim->parts[16][D_80226C30]];
-    m1 = mtx + 1;
-    func_801E4C60(m1, key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, key->x, key->y, key->z, 1.0f);
-    gSPMatrix(gdl++, (u32) m1 & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-    gSPDisplayList(gdl++, dl->unk0[1]);
-    // FAKE: gSPPopMatrix written out; each macro's block variable takes a stack slot (frame 0x88, not 0x80)
-    gdl->words.w0 = 0xBD000000;
-    gdl->words.w1 = 0;
-    gdl++;
+    id = anim->parts[16][D_80226C30];
+    func_801E4C60(mtx + 1, anim->keys[id].fx, anim->keys[id].fy, anim->keys[id].fz, anim->keys[id].ux,
+                  anim->keys[id].uy, anim->keys[id].uz, anim->keys[id].x, anim->keys[id].y, anim->keys[id].z, 1.0f);
+    gSPMatrix(gdl++, (u32) (mtx + 1) & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[1]);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
 
-    key = &anim->keys[anim->parts[17][D_80226C30]];
-    m2 = mtx + 2;
-    func_801E4C60(m2, key->fx, key->fy, key->fz, key->ux, key->uy, key->uz, key->x, key->y, key->z, 1.0f);
-    gSPMatrix(gdl++, (u32) m2 & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-    gSPDisplayList(gdl++, dl->unk0[0]);
-    // FAKE: gSPPopMatrix written out; each macro's block variable takes a stack slot (frame 0x88, not 0x80)
-    gdl->words.w0 = 0xBD000000;
-    gdl->words.w1 = 0;
-    gdl++;
+    id = anim->parts[17][D_80226C30];
+    func_801E4C60(mtx + 2, anim->keys[id].fx, anim->keys[id].fy, anim->keys[id].fz, anim->keys[id].ux,
+                  anim->keys[id].uy, anim->keys[id].uz, anim->keys[id].x, anim->keys[id].y, anim->keys[id].z, 1.0f);
+    gSPMatrix(gdl++, (u32) (mtx + 2) & 0x1FFFFFFF, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPDisplayList(gdl++, D_80227A60[arg1].unk0[0]);
+    gSPPopMatrix(gdl++, G_MTX_MODELVIEW);
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3290/func_801E4FE8.s")
-#endif
