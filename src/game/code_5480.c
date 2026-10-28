@@ -168,8 +168,9 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
-// Same loops and calls; register allocation differs (the original keeps the point pointer in s1 throughout, 12 in s5
-// from the start, and other float registers), and its frame is 0x10 smaller. Score 8621 of 30700.
+// Score 8611 of 30700: same loops and calls; register allocation differs (the original keeps 12 in s5 from the start
+// and indexes D_80158450 with multu, and other float registers), and its frame is 0x10 larger. dt also holds the
+// link constant k, as the original's $f30 does.
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     UnkStruct_8004B0F8_1* pt;
     UnkStruct_8004B0F8_unk34* link;
@@ -177,7 +178,6 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     Vec3f* prev;
     s32 n;
     f32 dt;
-    f32 k;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -191,7 +191,6 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     f32 d;
     f32 count;
     f32 old;
-    f32 len2;
     f32 len;
 
     dt = arg0->unkC;
@@ -200,7 +199,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
         pt->unk4 = (prev->y = pt->unk4) + (dt * pt->unk10);
         pt->unk8 = (prev->z = pt->unk8) + (dt * pt->unk14);
     }
-    k = 0.5f / ((arg0->unk20 * (arg0->unk28 - 1)) + 1.0f);
+    dt = 0.5f / ((arg0->unk20 * (arg0->unk28 - 1)) + 1.0f);
     for (n = arg0->unk24; n != 0; n--) {
         for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
             pt->unk14 = 0.0f;
@@ -213,7 +212,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
             dx = b->unk0 - pt->unk0;
             dy = b->unk4 - pt->unk4;
             dz = b->unk8 - pt->unk8;
-            s = (link->unk8 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz))) - k;
+            s = (link->unk8 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz))) - dt;
             fx = dx * s;
             fy = dy * s;
             fz = dz * s;
@@ -259,9 +258,9 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     arg0->unk4C = sz / count;
     dz = arg0->unk4C - old;
     arg0->unk58 = dz;
-    len2 = SQ(dx) + SQ(dy) + SQ(dz);
-    if (len2 != 0.0f) {
-        len = sqrtf(len2);
+    d = SQ(dx) + SQ(dy) + SQ(dz);
+    if (d != 0.0f) {
+        len = sqrtf(d);
         arg0->unk68 = len;
         arg0->unk5C = dx / len;
         arg0->unk60 = dy / len;
