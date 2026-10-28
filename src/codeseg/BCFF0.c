@@ -161,7 +161,10 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 10726 of 40500: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
+// Score 8141 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// addresses in registers as in the original. Left: the original stores before incrementing in the Vtx copy loop and
+// rebuilds the 0xB240.. offsets inside it, keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and
+// B50/B54 at the top also go through registers there.
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -259,14 +262,8 @@ void func_801EED70(void) {
     } else {
         gStartLightsOffset = gStartLightsOffsetMax;
     }
-    gHudColorFrame = 0;
-    gHudMarkerColorFrame = 0;
-    gHudMarkerColorStep = 0;
-    gHudColorStep = 0;
-    D_80228B80 = 0;
-    D_80228B7C = 0;
-    D_80228B78 = 0;
-    D_80228A98 = 0;
+    gHudColorStep = gHudMarkerColorStep = gHudMarkerColorFrame = gHudColorFrame = 0;
+    D_80228A98 = D_80228B78 = D_80228B7C = D_80228B80 = 0;
     for (i = 0; i < 2; i++) {
         D_80228B70[i] = 0;
         D_80228B68[i] = 0;
