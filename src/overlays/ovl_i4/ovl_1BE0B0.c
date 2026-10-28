@@ -324,17 +324,17 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
     return dList;
 }
 
-#ifdef NON_MATCHING
-// Score 1845 of 14700: scheduling and register numbering of a few command stores (the perspective normalisation,
-// viewport and environment colour words, the ends of the two model lists). Written plainly IDO keeps a second
-// 0xB6000000 word in a register and spills to a 0x70 frame (5050); the block break and the `geometry` variable
-// (found by the permuter) remove that.
 Gfx* func_i4_802C6778(Gfx* dList) {
     s32 course = D_800DAAD8[D_800DA9D0];
+    u32* water;
     u32* models;
     s32 offset;
-    s32 geometry;
+    s32 drawModels;
 
+    water = D_800DB5B0[course];
+    // FAKE: never false here (ovl_i3's course overview has the same flag, false for Dolphin Park); its blocks
+    // stop IDO keeping the 0xB6000000 command word in a register and spilling.
+    drawModels = true;
     if (D_i4_802C7534 == 0) {
         models = D_800DB5F8[course];
     } else {
@@ -351,25 +351,24 @@ Gfx* func_i4_802C6778(Gfx* dList) {
     gSPDisplayList(dList++, D_106F748);
     gDPSetEnvColor(dList++, 255, 255, 255, 255);
     gDPSetScissor(dList++, G_SC_NON_INTERLACE, 150, 53, 292, 159);
-    geometry = G_LIGHTING;
     offset = course * 0x8000 + 0x10000;
-    gSPDisplayList(dList++, D_800DB5B0[course][0] + offset);
-    if (1) {} // FAKE: without this block break IDO spills display-list pointers to the stack
-    gSPClearGeometryMode(dList++, geometry);
-    gSPDisplayList(dList++, models[0] + offset);
-    gSPSetGeometryMode(dList++, geometry);
+    gSPDisplayList(dList++, water[0] + offset);
+    if (drawModels) {
+        gSPClearGeometryMode(dList++, G_LIGHTING);
+        gSPDisplayList(dList++, models[0] + offset);
+    }
+    gSPSetGeometryMode(dList++, G_LIGHTING);
     gDPPipeSync(dList++);
     gDPSetRenderMode(dList++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
-    gSPDisplayList(dList++, D_800DB5B0[course][1] + offset);
-    gSPClearGeometryMode(dList++, geometry);
-    gSPDisplayList(dList++, models[1] + offset);
+    gSPDisplayList(dList++, water[1] + offset);
+    if (drawModels) {
+        gSPClearGeometryMode(dList++, G_LIGHTING);
+        gSPDisplayList(dList++, models[1] + offset);
+    }
     gDPPipeSync(dList++);
     gDPSetScissor(dList++, G_SC_NON_INTERLACE, 0, 0, 319, 239);
     return dList;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i4/ovl_1BE0B0/func_i4_802C6778.s")
-#endif
 
 Gfx* func_i4_802C69C4(Gfx* dList, s32 x, s32 y) {
     s32 offset;
