@@ -730,17 +730,18 @@ Gfx* func_8008A0E0(Gfx* gdl) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 2741 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
-// for its unk4 load, where the original shares the lui with the unk0 load; temps are renumbered from there on, and
-// scale sits 8 bytes higher on the stack.
+// Score 260 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
+// for its unk4 load, where the original shares the lui with the unk0 load; and after the fourth, fifth and sixth
+// rectangles unk4 is reloaded before unk0, where the original reloads unk0 first. The rectangles are
+// gSPScisTextureRectangle with dsdx written as a shift (4 << 10 is 0x1000), and mirror is the s32 local the
+// original converts once: x for the fifth and sixth elements, assigned from the float sum in two steps.
 Gfx* func_8008BD2C(Gfx* gdl) {
-    s32 pad[2]; // stack pad
-    f32 scale;
-    UnkStruct_800DA624 flareAlpha;
     s32 alpha;
-    f32 mirror;
+    s32 mirror;
     s32 x;
     s32 y;
+    f32 scale;
+    UnkStruct_800DA624 flareAlpha;
 
     flareAlpha = D_800DA624; // probably a local array initialised from this file's data in the original
     switch (gCourseID) {
@@ -773,7 +774,8 @@ Gfx* func_8008BD2C(Gfx* gdl) {
         gDPPipeSync(gdl++);
         gDPSetCycleType(gdl++, G_CYC_1CYCLE);
         gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-        gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0);
+        gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE,
+                          0);
         gDPSetTexturePersp(gdl++, G_TP_NONE);
         alpha = 160.0f * D_801C4170.unk14 * D_801C4170.unk14 * scale;
         if (D_801C4170.unk14 > 0.7) {
@@ -789,87 +791,83 @@ Gfx* func_8008BD2C(Gfx* gdl) {
         if (D_801C4170.unk14 >= 0.0f) {
             gDPLoadTextureBlock(gdl++, D_100FAB0, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                 G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-            mirror = 319 - (s32) (D_801C4170.unk0 + D_801C4170.unkC);
+            mirror = D_801C4170.unk0 + D_801C4170.unkC;
+            mirror = 319 - mirror;
             x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 6.0f);
             y = D_801C4170.unk4 - D_801C41A0.fwork[0x10];
-            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
-                (y < SCREEN_HEIGHT)) {
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                (y >= 0) && (y < SCREEN_HEIGHT)) {
                 gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 4) << 2, 0), MAX((y - 4) << 2, 0), MAX((x + 4) << 2, 0),
-                                    MAX((y + 4) << 2, 0), 0, 0 - MIN((((x - 4) << 18) >> 7), 0),
-                                    0 - MIN((((y - 4) << 18) >> 7), 0), 0x1000, 0x1000);
+                gSPScisTextureRectangle(gdl++, (x - 4) << 2, (y - 4) << 2, (x + 4) << 2, (y + 4) << 2, 0, 0, 0, 4 << 10,
+                                        4 << 10);
             }
             x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 3.0f);
             y = D_801C4170.unk4 - D_801C41A0.fwork[0x16];
-            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
-                (y < SCREEN_HEIGHT)) {
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                (y >= 0) && (y < SCREEN_HEIGHT)) {
                 gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 0x14) << 2, 0), MAX((y - 0x14) << 2, 0), MAX((x + 0x14) << 2, 0),
-                                    MAX((y + 0x14) << 2, 0), 0, 0 - MIN((((x - 0x14) << 14) >> 7), 0),
-                                    0 - MIN((((y - 0x14) << 14) >> 7), 0), 0x300, 0x300);
+                gSPScisTextureRectangle(gdl++, (x - 0x14) << 2, (y - 0x14) << 2, (x + 0x14) << 2, (y + 0x14) << 2, 0, 0,
+                                        0, 3 << 8, 3 << 8);
             }
             x = D_801C4170.unk0 - (((D_801C4170.unk0 - mirror) * 2) / 3.0f);
             y = D_801C4170.unk4 - D_801C41A0.fwork[0x1C];
-            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
-                (y < SCREEN_HEIGHT)) {
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                (y >= 0) && (y < SCREEN_HEIGHT)) {
                 gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0x80, 0xEB, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 0x10) << 2, 0), MAX((y - 0x10) << 2, 0), MAX((x + 0x10) << 2, 0),
-                                    MAX((y + 0x10) << 2, 0), 0, 0 - MIN(((((x - 0x10) << 2) * 0x400) >> 7), 0),
-                                    0 - MIN(((((y - 0x10) << 2) * 0x400) >> 7), 0), 0x400, 0x400);
+                gSPScisTextureRectangle(gdl++, (x - 0x10) << 2, (y - 0x10) << 2, (x + 0x10) << 2, (y + 0x10) << 2, 0, 0,
+                                        0, 1 << 10, 1 << 10);
             }
             x = D_801C4170.unk0 - (((D_801C4170.unk0 - mirror) * 5.0f) / 6.0f);
             y = D_801C4170.unk4 - D_801C41A0.fwork[0x22];
-            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
-                (y < SCREEN_HEIGHT)) {
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                (y >= 0) && (y < SCREEN_HEIGHT)) {
                 gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 4) << 2, 0), MAX((y - 4) << 2, 0), MAX((x + 4) << 2, 0),
-                                    MAX((y + 4) << 2, 0), 0, 0 - MIN((((x - 4) << 18) >> 7), 0),
-                                    0 - MIN((((y - 4) << 18) >> 7), 0), 0x1000, 0x1000);
+                gSPScisTextureRectangle(gdl++, (x - 4) << 2, (y - 4) << 2, (x + 4) << 2, (y + 4) << 2, 0, 0, 0, 4 << 10,
+                                        4 << 10);
             }
-            x = 319 - (s32) (D_801C4170.unk0 + D_801C4170.unkC);
+            mirror = D_801C4170.unk0 + D_801C4170.unkC;
+            mirror = 319 - mirror;
             y = D_801C4170.unk4 - D_801C41A0.fwork[0x28];
-            if ((x >= -64) && (x < SCREEN_WIDTH) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
-                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 0x20) << 2, 0), MAX((y - 0x20) << 2, 0), MAX((x + 0x20) << 2, 0),
-                                    MAX((y + 0x20) << 2, 0), 0, 0 - MIN(((((x - 0x20) << 2) * 0x200) >> 7), 0),
-                                    0 - MIN(((((y - 0x20) << 2) * 0x200) >> 7), 0), 0x200, 0x200);
-            }
-            x = (2.0f * D_801C4170.unk0) - x;
-            y = D_801C4170.unk4 - D_801C41A0.fwork[4];
-            if ((x >= -32) && (x < SCREEN_WIDTH) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
-                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 8) << 2, 0), MAX((y - 8) << 2, 0), MAX((x + 8) << 2, 0),
-                                    MAX((y + 8) << 2, 0), 0, 0 - MIN((((x - 8) << 14) >> 7), 0),
-                                    0 - MIN((((y - 8) << 14) >> 7), 0), 0x800, 0x800);
-            }
-            x = ((x - D_801C4170.unk0) / 2) + D_801C4170.unk0;
-            y = D_801C4170.unk4 - D_801C41A0.fwork[0xA];
-            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
+            if ((mirror >= -64) && (mirror < SCREEN_WIDTH) && (mirror >= -32) && (mirror < SCREEN_WIDTH) && (y >= 0) &&
                 (y < SCREEN_HEIGHT)) {
                 gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
-                gSPTextureRectangle(gdl++, MAX((x - 4) << 2, 0), MAX((y - 4) << 2, 0), MAX((x + 4) << 2, 0),
-                                    MAX((y + 4) << 2, 0), 0, 0 - MIN((((x - 4) << 18) >> 7), 0),
-                                    0 - MIN((((y - 4) << 18) >> 7), 0), 0x1000, 0x1000);
+                gSPScisTextureRectangle(gdl++, (mirror - 0x20) << 2, (y - 0x20) << 2, (mirror + 0x20) << 2,
+                                        (y + 0x20) << 2, 0, 0, 0, 1 << 9, 1 << 9);
+            }
+            mirror = (2.0f * D_801C4170.unk0) - mirror;
+            y = D_801C4170.unk4 - D_801C41A0.fwork[4];
+            if ((mirror >= -32) && (mirror < SCREEN_WIDTH) && (mirror >= -32) && (mirror < SCREEN_WIDTH) && (y >= 0) &&
+                (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0x5C, alpha);
+                gSPScisTextureRectangle(gdl++, (mirror - 8) << 2, (y - 8) << 2, (mirror + 8) << 2, (y + 8) << 2, 0, 0,
+                                        0, 2 << 10, 2 << 10);
+            }
+            x = ((mirror - D_801C4170.unk0) / 2) + D_801C4170.unk0;
+            y = D_801C4170.unk4 - D_801C41A0.fwork[0xA];
+            if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                (y >= 0) && (y < SCREEN_HEIGHT)) {
+                gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
+                gSPScisTextureRectangle(gdl++, (x - 4) << 2, (y - 4) << 2, (x + 4) << 2, (y + 4) << 2, 0, 0, 0, 4 << 10,
+                                        4 << 10);
             }
             if (gCourseID == DOLPHIN_PARK) {
-                mirror = 319 - (s32) (D_801C4170.unk0 + D_801C4170.unkC);
+                mirror = D_801C4170.unk0 + D_801C4170.unkC;
+                mirror = 319 - mirror;
                 x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 4);
                 y = D_801C4170.unk4 - D_801C41A0.fwork[0x2E];
-                if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
-                    (y < SCREEN_HEIGHT)) {
+                if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                    (y >= 0) && (y < SCREEN_HEIGHT)) {
                     gDPSetPrimColor(gdl++, 0, 0, 0xC8, 0x7F, 0xFF, alpha);
-                    gSPTextureRectangle(gdl++, MAX((x - 8) << 2, 0), MAX((y - 8) << 2, 0), MAX((x + 8) << 2, 0),
-                                        MAX((y + 8) << 2, 0), 0, 0 - MIN((((x - 8) << 14) >> 7), 0),
-                                        0 - MIN((((y - 8) << 14) >> 7), 0), 0x800, 0x800);
+                    gSPScisTextureRectangle(gdl++, (x - 8) << 2, (y - 8) << 2, (x + 8) << 2, (y + 8) << 2, 0, 0, 0,
+                                            2 << 10, 2 << 10);
                 }
                 x = D_801C4170.unk0 - ((D_801C4170.unk0 - mirror) / 2);
                 y = D_801C4170.unk4 - D_801C41A0.fwork[0x34];
-                if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) && (y >= 0) &&
-                    (y < SCREEN_HEIGHT)) {
+                if ((D_801C4170.unk0 >= -32.0f) && (D_801C4170.unk0 < 320.0f) && (x >= -32) && (x < SCREEN_WIDTH) &&
+                    (y >= 0) && (y < SCREEN_HEIGHT)) {
                     gDPSetPrimColor(gdl++, 0, 0, 0x3B, 0xD4, 0x6B, alpha);
-                    gSPTextureRectangle(gdl++, MAX((x - 8) << 2, 0), MAX((y - 8) << 2, 0), MAX((x + 8) << 2, 0),
-                                        MAX((y + 8) << 2, 0), 0, 0 - MIN((((x - 8) << 14) >> 7), 0),
-                                        0 - MIN((((y - 8) << 14) >> 7), 0), 0x800, 0x800);
+                    gSPScisTextureRectangle(gdl++, (x - 8) << 2, (y - 8) << 2, (x + 8) << 2, (y + 8) << 2, 0, 0, 0,
+                                            2 << 10, 2 << 10);
                 }
             }
         }
