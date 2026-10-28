@@ -1094,13 +1094,13 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 13359 of 52100: registers from the start (saved registers numbered differently) and the frame (0x40 here, 0x50 in the original, which spills the two wrap counts to 0x40/0x44 across sqrtf)
+// Score 9535 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
+// their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across sqrtf.
+// Left: the frame (0x68 here, 0x50 in the original) and the saved registers are numbered differently.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     s32* src;
     s32* dst;
-    s32 nu;
-    s32 nv;
     GfxPool* pool;
     s32 i;
     s32 j;
@@ -1108,7 +1108,6 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 top;
     s32 bot;
     s32 b;
-    s32 c;
     s32 d;
     s32 step;
 
@@ -1145,12 +1144,12 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterLevel = waterLevel;
     Water_BuildCellLists();
     Water_FillNoise(amplitude);
-    nu = ((f32) ((D_801924A8 * 2) + D_801924A0) / 49152.0f) + 0.9;
-    nv = ((f32) (D_801924A4 + (D_801924A8 * 2)) / (sqrtf(3.0f) * 2.0f * 8192.0f)) + 0.9;
-    D_801924AC = (nu * 0x6000) - 1.0;
-    D_801924B0 = -nu * 0x6000;
-    D_801924B8 = (sqrtf(3.0f) * nv * 8192.0f) - 1.0;
-    D_801924BC = sqrtf(3.0f) * -nv * 8192.0f;
+    bot = ((f32) ((D_801924A8 * 2) + D_801924A0) / 49152.0f) + 0.9;
+    b = ((f32) (D_801924A4 + (D_801924A8 * 2)) / (sqrtf(3.0f) * 2.0f * 8192.0f)) + 0.9;
+    D_801924AC = (bot * 0x6000) - 1.0;
+    D_801924B0 = -bot * 0x6000;
+    D_801924B8 = (sqrtf(3.0f) * b * 8192.0f) - 1.0;
+    D_801924BC = sqrtf(3.0f) * -b * 8192.0f;
     D_801924B4 = (D_801924AC - D_801924B0) + 1.0;
     D_801924C0 = (D_801924B8 - D_801924BC) + 1.0;
     for (pool = &D_8011F8E8[1]; pool >= D_8011F8E8; pool--) {
@@ -1170,18 +1169,18 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         }
         top = gWaterWindowN;
         bot = D_8019249C - gWaterWindowN;
-        c = bot - 1;
+        set = bot - 1;
         d = bot - 2;
         b = top + 1;
         step = top + 2;
         for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
             pool->unk13D68[j].v.tc[1] = pool->unk13D68[j].v.tc[0] = pool->unk13D68[b].v.tc[1] = pool->unk13D68[b].v.tc[0] =
-                pool->unk13D68[top].v.tc[1] = pool->unk13D68[top].v.tc[0] = pool->unk13D68[c].v.tc[0] =
-                    pool->unk13D68[c].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
+                pool->unk13D68[top].v.tc[1] = pool->unk13D68[top].v.tc[0] = pool->unk13D68[set].v.tc[0] =
+                    pool->unk13D68[set].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
                         pool->unk13D68[k].v.tc[0] = pool->unk13D68[k].v.tc[1] = 0x400;
             b += step;
             top += step;
-            c -= step;
+            set -= step;
             d -= step;
             step++;
         }
@@ -1194,18 +1193,18 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         if (gPlayers == TWO_PLAYERS) {
             top = gWaterWindowN;
             bot = D_8019249C - gWaterWindowN;
-            c = bot - 1;
+            set = bot - 1;
             d = bot - 2;
             b = top + 1;
             step = top + 2;
             for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
                 pool->unk170D8[j].v.tc[1] = pool->unk170D8[j].v.tc[0] = pool->unk170D8[b].v.tc[1] = pool->unk170D8[b].v.tc[0] =
-                    pool->unk170D8[top].v.tc[1] = pool->unk170D8[top].v.tc[0] = pool->unk170D8[c].v.tc[0] =
-                        pool->unk170D8[c].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
+                    pool->unk170D8[top].v.tc[1] = pool->unk170D8[top].v.tc[0] = pool->unk170D8[set].v.tc[0] =
+                        pool->unk170D8[set].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
                             pool->unk170D8[k].v.tc[0] = pool->unk170D8[k].v.tc[1] = 0x400;
                 b += step;
                 top += step;
-                c -= step;
+                set -= step;
                 d -= step;
                 step++;
             }
