@@ -133,8 +133,6 @@ void func_801E355C(void) {
     D_802288FC = 0x28 - D_802288F8;
 }
 
-#ifdef NON_MATCHING
-// Score 3453 of 52700: saved-register assignment differs (gdl in s2, not s3) and the frame is 0xC0, not 0xB8.
 typedef struct CourseRecord {
     /* 0x0 */ s32 time;
     /* 0x4 */ s32 rider;
@@ -156,12 +154,11 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
 // Draw the course records screen.
 Gfx* func_801E3698(Gfx* gdl) {
-    char buf[8];
-    CourseRecord* rec;
-    s32 x;
-    s32 y;
     s32 i;
     s32 mode;
+    CourseRecord* rec;
+    char buf[8];
+    s32 x;
 
     gSPDisplayList(gdl++, D_106F628);
     gdl = func_80094338(gdl, 0, D_802288F8 + 8, 30, 264, 24);
@@ -196,9 +193,10 @@ Gfx* func_801E3698(Gfx* gdl) {
     gSPMatrix(gdl++, D_7000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gdl++, D_106F488);
     for (i = 0; i < 3; i++) {
+        rec = &gStuntRecords[gCourseID][i];
         gSPViewport(gdl++, &D_7001280[i]);
         gSPMatrix(gdl++, &D_7000A80[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gdl = func_801E4FE8(gdl, gStuntRecords[gCourseID][i].rider, 0, 0, D_801CE5F8->unkC80[i]);
+        gdl = func_801E4FE8(gdl, rec->rider, 0, 0, D_801CE5F8->unkC80[i]);
     }
     if (D_801C2928 == 0) {
         gSPViewport(gdl++, &D_7001280[i]);
@@ -213,7 +211,7 @@ Gfx* func_801E3698(Gfx* gdl) {
     if (D_801C2928 == 0) {
         gdl = func_801E3EE0(gdl, 0, 26, D_802288FC + 18, 184, 0);
     }
-    for (i = 0, y = 112; i < 3; i++, y += 18) {
+    for (i = 0; i < 3; i++) {
         if (D_801C2928 != 0) {
             if (D_801C2928 == 1) {
                 if (i + 1 == D_801C2928) {
@@ -237,15 +235,15 @@ Gfx* func_801E3698(Gfx* gdl) {
             x = D_802288F8;
         }
         sprintf(buf, "%1d", i + 1);
-        gdl = Printer_DrawString(gdl, 2, buf, D_80226E44[i + 1] + x + 17, y);
+        gdl = Printer_DrawString(gdl, 2, buf, D_80226E44[i + 1] + x + 17, 112 + i * 18);
         if (rec->flag == 0) {
             sprintf(buf, "%s", "N");
         } else {
             sprintf(buf, "%s", "C");
         }
-        gdl = Printer_DrawString(gdl, 1, buf, x + 59, y);
-        gdl = Printer_DrawString(gdl, 2, rec->name, x + 119, y);
-        gdl = func_80094200(gdl, 2, rec->time, x + 208, y);
+        gdl = Printer_DrawString(gdl, 1, buf, x + 59, 112 + i * 18);
+        gdl = Printer_DrawString(gdl, 2, rec->name, x + 119, 112 + i * 18);
+        gdl = func_80094200(gdl, 2, rec->time, x + 208, 112 + i * 18);
     }
     if (D_801C2928 == 0) {
         gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
@@ -259,6 +257,3 @@ Gfx* func_801E3698(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B17D0/func_801E3698.s")
-#endif
