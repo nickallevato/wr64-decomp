@@ -5891,11 +5891,10 @@ void func_80062918(Vec3f* arg0) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 2090 of 29800: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of reusing the copy
-// in $f18, and schedules the unk16CE load later, so this version is 0x10 bytes shorter. Before t the code matches;
-// after it, this version keeps t in $f16 (the original: $f0) and the float registers of the unk16CE blocks shift
-// with it. Control flow matches.
+// Sets arg0's fields from the D_800D93D0..D_800D9620 tables indexed by unkB64: the tables' fixed values when
+// unk16CE is set, otherwise LERPs by unkB6C, unkB70 or unkB74 out of 11. Then calls func_8004AC80 and copies
+// unk90[i].unk18 to unk630[i].
+// FAKE: unkBD0's first term reads D_800D9530[] again instead of v (else branch), for the original's registers.
 void func_800629A8(UnkStruct_80192690* arg0) {
     f32 t;
     f32 v;
@@ -5938,7 +5937,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
         arg0->unkBC8 = LERP(D_800D94D0[arg0->unkB64], D_800D94E0[arg0->unkB64], t);
         arg0->unkBCC = LERP(D_800D9500[arg0->unkB64], D_800D9510[arg0->unkB64], t);
         v = D_800D9530[arg0->unkB64];
-        arg0->unkBD0 = ((v / 1.8f) / 5.0f) + ((((100.0f - v) / 1.8f) / 5.0f) * t);
+        arg0->unkBD0 = ((D_800D9530[arg0->unkB64] / 1.8f) / 5.0f) + ((((100.0f - v) / 1.8f) / 5.0f) * t); // FAKE
         arg0->unkBC4 = LERP(D_800D9580[arg0->unkB64], D_800D9590[arg0->unkB64], arg0->unkB74  / 11.0f);
         arg0->unkBBC = D_800D95B0[arg0->unkB64] + arg0->unkBC4;
     }
@@ -5947,19 +5946,16 @@ void func_800629A8(UnkStruct_80192690* arg0) {
         arg0->unkBD4 = 2048.0f / arg0->unkBD0;
         arg0->unkBD8 = (1.0f - arg0->unkBC8) * 0.5f;
     }
-    v = 11.111112f - arg0->unkBD0;
-    if (v != 0.0f) {
+    t = 11.111112f - arg0->unkBD0;
+    if (t != 0.0f) {
+        arg0->unkBDC = 1024.0f / t;
         arg0->unkBE0 = 1.0f - arg0->unkBCC;
-        arg0->unkBDC = 1024.0f / v;
     }
     func_8004AC80((struct UnkStruct_8004B0F8*) arg0, arg0->unk44.x, arg0->unk44.y, arg0->unk44.z);
     for (i = 11; i >= 0; i--) {
         arg0->unk630[i] = arg0->unk90[i].unk18;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800629A8.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 41018 of 68700: far off: the original clears the state with long chained assignments in an order not yet

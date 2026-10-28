@@ -73,7 +73,11 @@ void func_800AB92C(void);
 #define SIGNF(x) (x >= 0 ? 1.0f : -1.0f)
 
 extern s32 D_80228110[];
-extern struct UnkStruct_801DB0E4_arg0 D_80228190[];
+// FAKE (until codeseg's .bss is split): defined here, not extern, as gInitialsEntered is in AF8C0.c. This adds a
+// .bss slot to A95D0.o and moves the later codeseg .bss objects in the ELF (not the ROM). IDO then addresses
+// func_801DC274's stores from one `lui at`, as the original does. Its address still comes from the linker script
+// (undefined_syms_auto.ld), whose assignment wins over this slot. 11 entries: the uses here reach index 10.
+struct UnkStruct_801DB0E4_arg0 D_80228190[11];
 extern s32 D_802287A8;
 extern s32 D_802287AC;
 
@@ -241,7 +245,7 @@ void func_801DFDA8(UnkA95D0_Runner* runner, f32* arg1, f32* arg2, f32* arg3, f32
 extern RiderStruct D_801C2C70[];
 void func_801DB8F0(UnkA95D0_Runner* runner);
 void func_801DC0AC(UnkA95D0_Runner* runner);
-void func_801DC274(UnkA95D0_Runner* runner);
+void func_801DC274(UnkA95D0_Runner* runner, s32 index);
 void func_801DC60C(UnkA95D0_Runner* runner);
 void func_801DCD34(UnkA95D0_Runner* runner);
 void func_801DD2D0(UnkA95D0_Runner* runner);
@@ -571,19 +575,15 @@ void func_801DC0AC(UnkA95D0_Runner* runner) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 265 of 10000: the four D_80228190-> stores go through a base register (v0) where the original shares
-// one lui at, the index lands in v0, not a1, and the frame is 8 bytes larger. Storing those four through
-// D_80228190 instead of e is a FAKE that gives the original's store order. Tried in a scratch build: with
-// D_80228190 defined in this file (it needs codeseg's .bss split) and e-> for all stores, the stores match;
-// with the index also kept in a second parameter (`s32 index`, as UnkA95D0_Runner.func's type has) and no
-// index local, every instruction matches.
-void func_801DC274(UnkA95D0_Runner* runner) {
+// Dolphin Park's camera step 2 (UnkA95D0_Runner.func): on its first frame sets up D_80228190[0], then counts its
+// frames and moves it along the normalised (-3, 0, -5) at 8 units a frame.
+// FAKE: index is the step function's second parameter (UnkA95D0_Step.func's type), overwritten before use; as a
+// local it lands in another register and the frame is 8 bytes larger.
+void func_801DC274(UnkA95D0_Runner* runner, s32 index) {
     UnkStruct_801DB0E4_arg0* e = D_80228190;
+    f32 vec[3];
     s32 i;
     f32 mag;
-    f32 vec[3];
-    s32 index;
 
     index = runner->step - D_80223A30;
     if (index != 2) {
@@ -592,16 +592,16 @@ void func_801DC274(UnkA95D0_Runner* runner) {
     D_802287A8 = 1;
     if (runner->frame == 1) {
         func_800AB92C();
-        D_80228190->unk0 = 6; // FAKE
-        D_80228190->unk4 = 2; // FAKE
+        e->unk0 = 6;
+        e->unk4 = 2;
         e->unk8 = 0;
         e->unk30 = 0.1f;
         e->unkC[0] = -300.0f;
         e->unkC[1] = 0.0f;
         e->unkC[2] = -540.0f;
         e->unk24[0] = 0.0f;
-        D_80228190->unk24[1] = 1.0f; // FAKE
-        D_80228190->unk24[2] = 0.0f; // FAKE
+        e->unk24[1] = 1.0f;
+        e->unk24[2] = 0.0f;
     }
     e->unk8++;
     vec[0] = -3.0f;
@@ -613,9 +613,6 @@ void func_801DC274(UnkA95D0_Runner* runner) {
         e->unkC[i] += e->unk14[i] * 8.0f;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC274.s")
-#endif
 
 void func_801DC404(UnkA95D0_Runner* runner) {
     f32 t;
@@ -750,7 +747,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 4833 of 35900.
+// Score 4387 of 35900 (4833 before D_80228190 was defined in this file).
 // IDO keeps the D_802287DC address in a saved register here; the original loads it with a lui each time.
 extern f32 D_802287B0[3];
 extern f32 D_802287C0[3];
@@ -895,7 +892,7 @@ void func_801DD6B4(UnkA95D0_Runner* runner) {
         case 8:
             switch (gCourseID) {
                 case DOLPHIN_PARK:
-                    func = func_801DC274;
+                    func = (void (*)(UnkA95D0_Runner*)) func_801DC274;
                     break;
                 case SUNNY_BEACH:
                     if (gDifficulty == DIFFICULTY_EXPERT) {
