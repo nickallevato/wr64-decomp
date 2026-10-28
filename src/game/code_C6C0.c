@@ -6214,10 +6214,10 @@ void func_8006390C(s32 arg0, void* arg1) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 235 of 99300: same instructions; stats is in a2 and the constant 1 in a3 in the original (v1 and a2 here),
-// gSinTable's address and the angle swap v0/v1, and float temps around unk15CC/unk15D4 are numbered differently.
-// Integer literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads; f, d and speed
-// are each reused for a second value, as the original's stack homes show.
+// Score 40 of 99300: only gSinTable's address and the angle swap v0/v1 (seven instructions). The FAKE c54 temp moves
+// stats and the constant 1 to a2/a3 as in the original, and tbl gives the original's extra stack slot; f, d and speed
+// are each reused for a second value, as the original's stack homes show (f also holds 1 - speed / 16.666668f); integer
+// literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
     if ((r)->unk16E2 == 0) {    \
@@ -6232,8 +6232,9 @@ void func_80063C88(s32 arg0) {
     f32 f;
     struct UnkStruct_801C2938* stats;
     f32 speed;
+    u32 c54; // FAKE: a temp for one compare of unkC54, moves stats and the constant 1 to a2/a3
     f32 d;
-    s32 pad[6]; // stack pad: the original's frame is 0x50
+    s32 pad[4]; // stack pad: the original's frame is 0x50
 
     if (D_801CE638 == 4) {
         D_80192690[arg0].unkB64 = D_80192690[arg0].unkB68;
@@ -6269,7 +6270,7 @@ void func_80063C88(s32 arg0) {
         f = 0.1f;
     } else if (rider->unkC54 == 9) {
         f = 0.15f;
-    } else if (rider->unkC54 == 17) {
+    } else if ((c54 = rider->unkC54) == 17) {
         f = 0.2f;
     } else {
         f = 1;
@@ -6355,9 +6356,10 @@ void func_80063C88(s32 arg0) {
         }
     }
     {
+        f32* tbl = gSinTable;
         s32 ang = DEG_TO_BINANG((((f32) rider->unkB5E * rider->unk1588) / 70.0f));
-        rider->unk15E4 = SIN(ang);
-        rider->unk15E0 = COS(ang);
+        rider->unk15E4 = tbl[ang & 0xFFF];
+        rider->unk15E0 = tbl[(ang + 0x400) & 0xFFF];
     }
     if (rider->unk1598 != 0) {
         rider->unk15E4 = 0.0f;
@@ -6397,7 +6399,8 @@ void func_80063C88(s32 arg0) {
         }
     }
     if (speed < 16.666668f) {
-        rider->unk15CC = D_800D494C * (1.0f - (speed / 16.666668f)) * (f32) rider->unkB5E;
+        f = 1.0f - (speed / 16.666668f);
+        rider->unk15CC = D_800D494C * f * (f32) rider->unkB5E;
     } else {
         rider->unk15CC = 0.0f;
     }
@@ -6405,8 +6408,7 @@ void func_80063C88(s32 arg0) {
         rider->unk15D4 = (f32) gWaterLevel - 10.0f;
     } else {
         if (speed < 33.333336f) {
-            // FAKE: the comma expression renumbers the float temps
-            rider->unk15D4 = (f32) gWaterLevel + ((0, D_800D4954) * (speed / 33.333336f));
+            rider->unk15D4 = (f32) gWaterLevel + (D_800D4954 * (speed / 33.333336f));
         } else {
             rider->unk15D4 = (f32) gWaterLevel + D_800D4954;
         }
