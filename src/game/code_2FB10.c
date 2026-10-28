@@ -529,8 +529,11 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 3003 of 32100: same blocks and calls. With the FAKE empty if below, x, z and the distances stay on the
-// stack as in the original; the frame is 0x98, not 0x88, and the registers differ.
+// Score 1232 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
+// reused; the permuter found them, and with them the int registers match, except wasIn's). Left: the frame is 0x90,
+// not 0x88 (isHuman and rider spill to new slots below the declared ones, where the original spills them to slots of
+// their own among them), d is not stored, and the float registers of the nearest-record and Drake Lake blocks differ.
 void func_80076378(s32 arg0) {
     s32 prev;
     s32 next;
@@ -546,8 +549,6 @@ void func_80076378(s32 arg0) {
     f32 bestDist;
     f32 dzp;
     f32 dxn;
-    s32 n;
-    s32 i;
     f32 dzn;
     s32 wasIn;
     s32 player;
@@ -579,8 +580,8 @@ void func_80076378(s32 arg0) {
         prev = D_801AEE20[cur].unkA8;
         next = D_801AEE20[cur].unkA0;
         dx0 = D_801AEE20[cur].unk0 - x;
-        dxp = D_801AEE20[prev].unk0 - x;
         dzp = D_801AEE20[prev].unk8 - z;
+        dxp = D_801AEE20[prev].unk0 - x;
         dz0 = D_801AEE20[cur].unk8 - z;
         dxn = D_801AEE20[next].unk0 - x;
         dzn = D_801AEE20[next].unk8 - z;
@@ -588,7 +589,7 @@ void func_80076378(s32 arg0) {
         d = (dxp * dxp) + (dzp * dzp);
         if (d < bestDist) {
             bestDist = d;
-            if (cur && cur && cur) {} // FAKE
+            if (cur && cur && cur) {} // FAKE: keeps x, z and d on the stack, as in the original
             best = prev;
         }
         if (((dxn * dxn) + (dzn * dzn)) < bestDist) {
@@ -597,22 +598,24 @@ void func_80076378(s32 arg0) {
         func_80074368(x, z, &zoneA, &zoneB);
         if (cur != best) {
             func_80074368(D_801AEE20[best].unk0, D_801AEE20[best].unk8, &zoneC, &zoneD);
-            if (((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) ||
-                ((zoneB != -1) && ((zoneB == zoneC) || (zoneB == zoneD)))) {
+            if ((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) {
+                rider->nearestRecord = best;
+            } else if ((zoneB != -1) && ((zoneB == zoneC) || (zoneB == zoneD))) {
                 rider->nearestRecord = best;
             }
         }
     }
     if (gCourseID == DRAKE_LAKE) {
         rider->unk318 = 0;
-        n = 6;
         if (gDifficulty < 2) {
-            n = 3;
+            wasIn = 3;
+        } else {
+            wasIn = 6;
         }
-        for (i = 0; i < n; i++) {
+        for (best = 0; best < wasIn; best++) {
             if (!(D_801C3784 > 40.0f)) {
-                dx = D_801C3780 - D_800D81D4[i].x;
-                dz = D_801C3788 - D_800D81D4[i].z;
+                dx = D_801C3780 - D_800D81D4[best].x;
+                dz = D_801C3788 - D_800D81D4[best].z;
                 if (((dx * dx) + (dz * dz)) <= 22500.0f) {
                     rider->unk318 = 1;
                     break;
@@ -634,9 +637,10 @@ void func_80076378(s32 arg0) {
             rider->inBox = 0;
         }
         if (isHuman && (wasIn != rider->inBox)) {
-            player = 1;
             if (arg0 == gPlayer1Rider) {
                 player = 0;
+            } else {
+                player = 1;
             }
             if (rider->inBox != 0) {
                 func_800C1904(player);
