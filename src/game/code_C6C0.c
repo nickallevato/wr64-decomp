@@ -512,9 +512,9 @@ extern f32 D_800D9610[];
 extern f32 D_800D9620[];
 extern s16 D_800D4928;
 extern u16 D_800D4964;
-extern s16 D_800D496C;
-extern s16 D_800D4974;
-extern s16 D_800D4978;
+extern u16 D_800D496C;
+extern u16 D_800D4974;
+extern u16 D_800D4978;
 extern s32 D_80223934;
 extern f32 D_800D4AF0;
 extern f32 D_800D4AF4;
@@ -6802,14 +6802,14 @@ void func_80064C0C(s32 arg0) {
         f *= (rider->unk18 - D_800D49D4) / (D_800D49D0 - D_800D49D4);
         rider->unk10 = ((D_800D4AD4 - D_800D4AD0) * f) + D_800D4AD0;
     }
-    if ((u16) D_800D496C != 0) {
+    if (D_800D496C != 0) {
         func_80051740((struct UnkStruct_801C3C50*) rider, (struct UnkStruct_8004B0F8*) rider);
     }
-    if ((u16) D_800D4974 != 0) {
+    if (D_800D4974 != 0) {
         func_8007F030(rider, rider);
     }
     func_8007F700(rider);
-    if ((u16) D_800D4978 != 0) {
+    if (D_800D4978 != 0) {
         func_8007E8C8(rider);
     }
     func_8007EF80(rider);
@@ -7378,10 +7378,6 @@ void Riders_BuildPartsLists(void) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 1680 of 34400.
-// After the rider loop the original keeps the constant 1 in $s2 and stores D_800D496C through
-// an address in $v1; this version uses $v1 = 1 and a %lo store. The rest matches.
 void func_80067E40(void) {
     u8 sp50[0x48];
     camera_unk_1* cam;
@@ -7412,11 +7408,9 @@ void func_80067E40(void) {
         func_8006390C(i, sp50);
     }
     if ((gCourseID < 9) && (D_801CE638 != 21)) {
-        D_800D496C = 1;
-        D_800D4974 = 1;
+        D_800D4974 = D_800D496C = 1;
     } else {
-        D_800D496C = 0;
-        D_800D4974 = 0;
+        D_800D4974 = D_800D496C = 0;
     }
     if (D_801CE638 == 4) {
         D_800D4978 = 0;
@@ -7457,9 +7451,6 @@ void func_80067E40(void) {
     cam->unk38 = D_80192690[gPlayer2Rider].unk88;
     cam->unk3C = D_80192690[gPlayer2Rider].unk8C;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80067E40.s")
-#endif
 
 void func_800683A0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
