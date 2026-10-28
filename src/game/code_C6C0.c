@@ -6530,43 +6530,39 @@ void func_80063C88(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80063C88.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 1805 of 102700: same size as the original and close: float register allocation differs in a few blocks
-// (thrust sits in $f2 rather than $f18, the g +/- f sums, the 0.5f moves). Control flow matches.
 void func_80064C0C(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
+    f32 g;
+    s32 ang;
+    f32 f;
     UnkStruct_8004B0F8_1* point;
-    f32 thrust;
     f32 x;
     f32 y;
     f32 z;
-    f32 f;
-    f32 g;
-    s32 ang;
 
     if (rider->unk16B4 >= 40) {
-        thrust = rider->unkBBC;
+        f = rider->unkBBC;
     } else if (rider->unkC4C != 0.0f) {
-        thrust = rider->unkBBC * D_800D9630;
+        f = rider->unkBBC * D_800D9630;
     } else {
         if (rider->unk68 >= 11.111112f) {
-            thrust = rider->unkBCC * rider->unkBC4;
+            f = rider->unkBCC * rider->unkBC4;
         } else if (rider->unkBD0 <= rider->unk68) {
             ang = (rider->unk68 - rider->unkBD0) * rider->unkBDC;
-            thrust = (1.0f - ((1.0f - COS(ang)) * rider->unkBE0)) * rider->unkBC4;
+            f = (1.0f - ((1.0f - COS(ang)) * rider->unkBE0)) * rider->unkBC4;
         } else {
             ang = (rider->unkBD0 - rider->unk68) * rider->unkBD4;
-            thrust = (1.0f - ((1.0f - COS(ang)) * rider->unkBD8)) * rider->unkBC4;
+            f = (1.0f - ((1.0f - COS(ang)) * rider->unkBD8)) * rider->unkBC4;
         }
-        thrust += rider->unkB9C;
-        thrust *= sqrtf(1.0f - SQ(rider->unk70));
+        f += rider->unkB9C;
+        f *= sqrtf(1.0f - SQ(rider->unk70));
         if (!((rider->unk90[2].unk1C | rider->unk90[0].unk1C) & 1)) {
-            thrust *= D_800D49C4;
+            f *= D_800D49C4;
         }
-        thrust *= rider->unk1578;
+        f *= rider->unk1578;
     }
     if (rider->unkC66 != 0) {
-        rider->unkB98 = thrust;
+        rider->unkB98 = f;
     } else if ((D_800D49C8 < rider->unkB98) && (rider->unkC54 != 23)) {
         rider->unkB98 -= D_800D49C8;
     } else {
@@ -6671,14 +6667,16 @@ void func_80064C0C(s32 arg0) {
     } else {
         f = (rider->unk1590 * ((rider->unk84 * rider->unkC20) + (rider->unk88 * rider->unkC24) + (rider->unk8C * rider->unkC28))) +
             rider->unk15CC;
-        rider->unk90[5].unk10 += rider->unk0.f + f;
-        rider->unk90[7].unk10 += rider->unk0.f + f;
-        rider->unk90[10].unk10 += rider->unk0.f + f;
-        rider->unk90[2].unk10 += rider->unk0.f + f;
-        rider->unk90[3].unk10 += rider->unk0.f - f;
-        rider->unk90[6].unk10 += rider->unk0.f - f;
-        rider->unk90[9].unk10 += rider->unk0.f - f;
-        rider->unk90[0].unk10 += rider->unk0.f - f;
+        g = rider->unk0.f + f;
+        rider->unk90[5].unk10 += g;
+        rider->unk90[7].unk10 += g;
+        rider->unk90[10].unk10 += g;
+        rider->unk90[2].unk10 += g;
+        g = rider->unk0.f - f;
+        rider->unk90[3].unk10 += g;
+        rider->unk90[6].unk10 += g;
+        rider->unk90[9].unk10 += g;
+        rider->unk90[0].unk10 += g;
     }
     if (rider->unkBF8 != 0.0f) {
         x = rider->unkBF8 * rider->unk84;
@@ -6705,61 +6703,60 @@ void func_80064C0C(s32 arg0) {
     }
     if ((rider->unk1598 == 2) || (rider->unk1598 == 1)) {
         x = rider->unk15AC * rider->unk84;
+        y = rider->unk15AC * rider->unk88;
         z = rider->unk15AC * rider->unk8C;
-        g = rider->unk0.f;
-        g *= 0.5f;
-        y = (rider->unk15AC * rider->unk88) - g;
+        f = rider->unk0.f * 0.5f;
+        g = y - f;
         rider->unk90[2].unkC += x;
-        rider->unk90[2].unk10 += y;
+        rider->unk90[2].unk10 += g;
         rider->unk90[2].unk14 += z;
         rider->unk90[10].unkC += x;
-        rider->unk90[10].unk10 += y;
+        rider->unk90[10].unk10 += g;
         rider->unk90[10].unk14 += z;
         rider->unk90[0].unkC += x;
-        rider->unk90[0].unk10 += y;
+        rider->unk90[0].unk10 += g;
         rider->unk90[0].unk14 += z;
         rider->unk90[9].unkC += x;
-        rider->unk90[9].unk10 += y;
+        rider->unk90[9].unk10 += g;
         rider->unk90[9].unk14 += z;
         rider->unk90[1].unkC -= x;
-        rider->unk90[1].unk10 -= y;
+        rider->unk90[1].unk10 -= g;
         rider->unk90[1].unk14 -= z;
         rider->unk90[11].unkC -= x;
-        rider->unk90[11].unk10 -= y;
+        rider->unk90[11].unk10 -= g;
         rider->unk90[11].unk14 -= z;
-        rider->unk90[4].unk10 += g;
-        rider->unk90[8].unk10 += g;
+        rider->unk90[4].unk10 += f;
+        rider->unk90[8].unk10 += f;
     } else if (rider->unk1598 == 4) {
         x = rider->unk15AC * rider->unk78;
-        f = rider->unk15AC * rider->unk7C;
+        y = rider->unk15AC * rider->unk7C;
         z = rider->unk15AC * rider->unk80;
-        g = rider->unk0.f * 0.5f;
-        y = f - g;
-        f = f + g;
+        f = rider->unk0.f * 0.5f;
+        g = y + f;
         rider->unk90[3].unkC += x;
-        rider->unk90[3].unk10 += y;
+        rider->unk90[3].unk10 += (y - f);
         rider->unk90[3].unk14 += z;
         rider->unk90[4].unkC += x;
-        rider->unk90[4].unk10 += f;
+        rider->unk90[4].unk10 += g;
         rider->unk90[4].unk14 += z;
         rider->unk90[5].unkC += x;
-        rider->unk90[5].unk10 += y;
+        rider->unk90[5].unk10 += (y - f);
         rider->unk90[5].unk14 += z;
         rider->unk90[0].unkC -= x;
-        rider->unk90[0].unk10 -= f;
+        rider->unk90[0].unk10 -= g;
         rider->unk90[0].unk14 -= z;
         rider->unk90[1].unkC -= x;
-        rider->unk90[1].unk10 -= y;
+        rider->unk90[1].unk10 -= (y - f);
         rider->unk90[1].unk14 -= z;
         rider->unk90[2].unkC -= x;
-        rider->unk90[2].unk10 -= f;
+        rider->unk90[2].unk10 -= g;
         rider->unk90[2].unk14 -= z;
-        rider->unk90[8].unk10 += g;
-        rider->unk90[6].unk10 -= g;
-        rider->unk90[11].unk10 += g;
-        rider->unk90[9].unk10 -= g;
-        rider->unk90[7].unk10 -= g;
-        rider->unk90[10].unk10 -= g;
+        rider->unk90[8].unk10 += f;
+        rider->unk90[11].unk10 += f;
+        rider->unk90[6].unk10 -= f;
+        rider->unk90[7].unk10 -= f;
+        rider->unk90[9].unk10 -= f;
+        rider->unk90[10].unk10 -= f;
     }
     if ((rider->unkC78 == 0) && (rider->unk1598 == 0)) {
         f = ((rider->unk50 * rider->unk78) + (rider->unk58 * rider->unk80)) * D_800D498C;
@@ -6797,7 +6794,8 @@ void func_80064C0C(s32 arg0) {
     }
     f = rider->unkB5F / 70.0f;
     if (f < 0.0f) {
-        rider->unk10 = ((D_800D4ACC - D_800D4AD0) * SQ(f)) + D_800D4AD0;
+        f = SQ(f);
+        rider->unk10 = ((D_800D4ACC - D_800D4AD0) * f) + D_800D4AD0;
     } else {
         f *= (rider->unk18 - D_800D49D4) / (D_800D49D0 - D_800D49D4);
         rider->unk10 = ((D_800D4AD4 - D_800D4AD0) * f) + D_800D4AD0;
@@ -6827,9 +6825,6 @@ void func_80064C0C(s32 arg0) {
                       (s32) (rider->unk15D0 * f));
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80064C0C.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 7624 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
