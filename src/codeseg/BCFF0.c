@@ -803,9 +803,6 @@ void Hud_DrawStartLights(Gfx** gdlp) {
     *gdlp = gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 4701 of 39800: the hoisted float constants match; the original loads gPlayers into a0 (its address in a3) and keeps
-// &D_80228C28 in a1 for one store, so most temps here are one register higher, and a few blocks schedule differently.
 extern s32 gHudMarkerColorFrame;
 extern s32 gHudMarkerColorStep;
 
@@ -817,6 +814,7 @@ void func_801F0E7C(void) {
     UnkStruct_80228C30_sub* e;
     s32 tx;
     s32 ty;
+    s32 pad; // stack pad
 
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
@@ -826,14 +824,14 @@ void func_801F0E7C(void) {
         }
         if ((rider->unk28 != 0) && (((m = &gHudMarkers[i])->unk0[0].unk18 == 0) || (rider->unk13C == 0))) {
             gHudMarkerColorFrame = 0;
-            gHudMarkerColorStep = 0;
+            gHudMarkerColorStep = gHudMarkerColorFrame; // reading it back keeps its address in a register
             if ((rider->unk28 == 1) && ((rider->unk314 != 0) || (m->unk0[1].unk18 == 3))) {
                 e = &m->unk0[2];
                 if (m->unk0[1].unk18 == 3) {
                     m->unk0[1].unk18 = 0;
                     rider->power = 1;
                 }
-                m->unk0[2].unk18 = 2;
+                gHudMarkers[i].unk0[2].unk18 = 2;
                 if (gPlayers == ONE_PLAYER) {
                     e->unk10 = 1.0f;
                 } else {
@@ -842,6 +840,7 @@ void func_801F0E7C(void) {
                 e->unk8 = e->unk10 * 64.0f;
                 e->unkC = e->unk10 * 10.0f;
                 if (gPlayers == ONE_PLAYER) {
+                    if (1) {} // FAKE: without this block the stores schedule differently
                     e->unk0 = 300.0f;
                     e->unk4 = 206.0f;
                 } else if (i == 0) {
@@ -857,9 +856,9 @@ void func_801F0E7C(void) {
                     e->unk14 = 0;
                 }
             } else if ((rider->unk28 == 2) && (gBuoyMisses >= rider->unk134)) {
-                m->unk0[0].unk18 = 1;
+                gHudMarkers[i].unk0[0].unk18 = 1;
                 if (rider->power >= 5) {
-                    m->unk0[2].unk18 = 0;
+                    gHudMarkers[i].unk0[2].unk18 = 0;
                 }
                 if (gPlayers == ONE_PLAYER) {
                     m->unk0[0].unk0 = 160.0f;
@@ -883,6 +882,7 @@ void func_801F0E7C(void) {
                 if ((rider->power > 0) && (m->unk0[1].unk18 != 3)) {
                     m->unk0[1].unk18 = 3;
                     e = &m->unk0[1];
+                    tx = 198;
                     if (gPlayers == ONE_PLAYER) {
                         e->unk0 = 160.0f;
                         ty = 211;
@@ -896,7 +896,6 @@ void func_801F0E7C(void) {
                         ty = 220;
                         e->unk4 = 188.0f;
                     }
-                    tx = 198;
                     e->unk14 = 16;
                     e->unk10 = 1.0f;
                     e->unk8 = (tx - e->unk0) / 8;
@@ -906,64 +905,59 @@ void func_801F0E7C(void) {
         }
         for (j = 0; j < 3; j++) {
             e = &gHudMarkers[i].unk0[j];
-            switch (e->unk18) {
-                case 1:
-                    if (e->unk14 < 9) {
-                        e->unk0 += e->unk8;
-                        e->unk4 += e->unkC;
+            if (e->unk18 == 0) {
+                // nothing to update
+            } else if (e->unk18 == 1) {
+                if (e->unk14 < 9) {
+                    e->unk0 += e->unk8;
+                    e->unk4 += e->unkC;
+                }
+                e->unk10 = (e->unk14 + 0.5f) / 8.5f;
+                if (e->unk10 > 1.0f) {
+                    e->unk10 = 1.0f;
+                }
+                e->unk14--;
+                if (e->unk14 < 0) {
+                    e->unk18 = 0;
+                    if (rider->unk13C != 0) {
+                        Rider_SetFinishState((struct_800762D0*) rider);
                     }
-                    e->unk10 = (e->unk14 + 0.5f) / 8.5f;
-                    if (e->unk10 > 1.0f) {
-                        e->unk10 = 1.0f;
-                    }
+                }
+            } else if (e->unk18 == 3) {
+                if (e->unk14 < 9) {
+                    e->unk0 += e->unk8;
+                    e->unk4 += e->unkC;
+                }
+                e->unk10 = (e->unk14 + 0.5f) / 8.5f;
+                if (e->unk10 > 1.0f) {
+                    e->unk10 = 1.0f;
+                }
+                e->unk14--;
+                if (e->unk14 < 0) {
+                    e->unk18 = 0;
+                    rider->power = 0;
+                }
+            } else if (e->unk18 == 2) {
+                if (rider->power < 5) {
                     e->unk14--;
                     if (e->unk14 < 0) {
                         e->unk18 = 0;
-                        if (rider->unk13C != 0) {
-                            Rider_SetFinishState((struct_800762D0*) rider);
+                    }
+                } else {
+                    if (e->unk14 < 255) {
+                        e->unk14++;
+                    }
+                    if (e->unk14 >= 20) {
+                        e->unk10 -= 0.08f;
+                        if (e->unk10 < 0.7f) {
+                            e->unk10 = 0.7f;
                         }
                     }
-                    break;
-                case 3:
-                    if (e->unk14 < 9) {
-                        e->unk0 += e->unk8;
-                        e->unk4 += e->unkC;
-                    }
-                    e->unk10 = (e->unk14 + 0.5f) / 8.5f;
-                    if (e->unk10 > 1.0f) {
-                        e->unk10 = 1.0f;
-                    }
-                    e->unk14--;
-                    if (e->unk14 < 0) {
-                        e->unk18 = 0;
-                        rider->power = 0;
-                    }
-                    break;
-                case 2:
-                    if (rider->power < 5) {
-                        e->unk14--;
-                        if (e->unk14 < 0) {
-                            e->unk18 = 0;
-                        }
-                    } else {
-                        if (e->unk14 < 255) {
-                            e->unk14++;
-                        }
-                        if (e->unk14 >= 20) {
-                            e->unk10 -= 0.08f;
-                            if (e->unk10 < 0.7f) {
-                                e->unk10 = 0.7f;
-                            }
-                        }
-                    }
-                    break;
+                }
             }
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
-#endif
 
 extern Gfx D_1014820[];
 extern Gfx D_1014870[];
