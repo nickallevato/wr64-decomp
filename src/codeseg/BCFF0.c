@@ -2318,8 +2318,10 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10398 of 32800: 1.0f and 0.0f are hoisted into f30/f28 here; the original keeps the camera position and direction
-// on the stack instead; frame 0x90, not 0x98.
+// Score 3660 of 32800: the side offset's numerator is computed before the sqrt and func_801ED090 is called before the
+// distance test, as in the original, but the saved FP registers are coloured differently (the numerator takes f28 and
+// dist f30; the original has them the other way round, and dot/fwd in f24/f26), and 0.0f is hoisted into f18 across
+// blocks where the original rematerialises it at each use.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2328,6 +2330,7 @@ f32 func_801ED154(f32 arg0, f32 arg1);
 
 // Place each rider ahead of the player on the radar: side offset, distance and heading.
 void func_801F9EA0(void) {
+    s32 pad; // stack pad
     s32 i;
     s32 j;
     s32 me;
@@ -2375,16 +2378,22 @@ void func_801F9EA0(void) {
                 p = &D_80192690[j];
                 dx = p->unk44.x - camX;
                 dz = p->unk44.z - camZ;
+                side = dx * dirZ + dz * -dirX;
                 fwd = dot = dx * dirX + dz * dirZ;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
                     dot = (dx / dist) * dirX + (dz / dist) * dirZ;
                 }
-                if ((dist > 1024.0f) || (func_801ED090(dot) > 135.0f)) {
+                dot = func_801ED090(dot);
+                if ((dist > 1024.0f) || (dot > 135.0f)) {
                     continue;
                 }
-                scale = ((fwd < 0.0f) ? 0.0f : fwd) * 0.0009765625f * 1024.0f + 60.0f;
-                side = (dx * dirZ + dz * -dirX) / scale;
+                sx = fwd;
+                if (fwd < 0.0f) {
+                    sx = 0.0f;
+                }
+                scale = sx * 0.0009765625f * 1024.0f + 60.0f;
+                side /= scale;
                 sx = side;
                 if (side > 1.0f) {
                     sx = 1.0f;
@@ -2393,13 +2402,13 @@ void func_801F9EA0(void) {
                     sx = -1.0f;
                     a = func_801ED154(side + 1.0f, fwd / scale);
                 } else {
-                    a = 0.0f;
+                    a = 0; // integer literal: with 0.0f the zero is shared with the other tests
                 }
                 if (a > 180.0f) {
                     a -= 360.0f;
                 }
                 aa = (a >= 0.0f) ? a : -a;
-                sgn = (a == 0.0f) ? 0.0f : ((a > 0.0f) ? 1 : -1);
+                sgn = (a == 0.0f) ? 0.0f : ((a > 0) ? 1 : -1); // integer literal, as above
                 if (aa > 0.0f) {
                     aa *= 0.6666667f;
                     if (aa > 90.0f) {
