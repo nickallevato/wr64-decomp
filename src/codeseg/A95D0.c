@@ -747,7 +747,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 4833 of 35900.
+// Score 4387 of 35900 (4833 before D_80228190 was defined in this file).
 // IDO keeps the D_802287DC address in a saved register here; the original loads it with a lui each time.
 extern f32 D_802287B0[3];
 extern f32 D_802287C0[3];
