@@ -468,8 +468,6 @@ f32 func_8004D30C(f32 x, f32 z) {
 #undef CU
 #undef CV
 
-#ifdef NON_MATCHING
-// Score 2600 of 30600: register allocation (saved and temp register numbering). Same operations as func_8004E0A4
 void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     f32 max;
     f32 inv;
@@ -487,16 +485,19 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     s32 fv;
     s32 d0;
     s32 d1;
+    f32 x;
 
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
     for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
-        u = (s32) ((INV_SQRT3 * pt->unk8) + pt->unk0) % 24576;
+        x = pt->unk0;
+        nx = pt->unk8; // nx holds the point's z until the normal is computed, as in func_8004E0A4
+        u = (s32) ((INV_SQRT3 * nx) + x) % 24576;
         cu = u >> 6;
-        v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576;
-        cv = v >> 6;
-        h00 = WATER_CELL(cu, cv)->unk0 >> 8;
         fu = (cu << 6) - u;
+        v = (s32) (TWO_OVER_SQRT_3 * nx) % 24576;
+        cv = v >> 6;
         fv = (cv << 6) - v;
+        h00 = WATER_CELL(cu, cv)->unk0 >> 8;
         if (fv < fu) {
             d0 = WATER_CELL(cu, cv + 1)->unk0 >> 8;
             d1 = h00 - d0;
@@ -504,7 +505,6 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
         } else {
             d1 = WATER_CELL(cu + 1, cv)->unk0 >> 8;
             d0 = h00 - d1;
-            v = (s32) (TWO_OVER_SQRT_3 * pt->unk8) % 24576; // FAKE: a dead recomputation, in this branch only
             d1 -= WATER_CELL(cu + 1, cv + 1)->unk0 >> 8;
         }
         inv = 1.0f / sqrtf((f32) (((d0 * d0) + (d1 * d1) + 0x1000) << 12));
@@ -529,9 +529,6 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004D628.s")
-#endif
 
 /*
  * For each of a body's points touching the water (unk1C bit 0), keeps the part of its (unkC, unk14)
