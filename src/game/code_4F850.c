@@ -977,22 +977,21 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 13917 of 134600, 2 instructions short: register allocation from the start of the function; the original
-// stores to D_801CE740[i].unk2 in cases 0 and 2 through lui/%lo of each element (here through one base register),
-// and keeps count/models/rider in other stack slots.
+// Score 2795 of 134600, 2 instructions short: the original stores D_801CE740[0..3].unk2 in case 2 through
+// lui/%lo of each element (here through one base register), schedules the first loop's pointer step later,
+// and in the display-list loop reloads alts[i] after each store (here the loads move above the stores).
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
 void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 i;
-    s32 rider;
     s32 count;
     s32 models;
-    s32 offset;
+    s32 rider;
     DmaEntry* src;
+    s32 offset;
     DmaEntry* dst;
     s16 alts[8];
-    s32 mode;
     s32* dl;
 
     for (i = 0; i < 8; i++) {
@@ -1001,16 +1000,16 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     D_801CE760[1] = -1;
     D_801CE760[0] = -1;
     D_801CE73C = arg0;
-    switch (arg0) {
+    switch (D_801CE73C) {
         case 0:
+            count = 4;
             models = 7;
             D_801CE740[0].unk2 = 0;
-            count = 4;
             break;
         case 1:
             D_801CE740[1].unk2 = 0;
-            models = 2;
             count = 2;
+            models = 2;
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
         case 2:
@@ -1018,20 +1017,20 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             D_801CE740[1].unk2 = 0;
             D_801CE740[2].unk2 = 0;
             D_801CE740[3].unk2 = 0;
-            models = 4;
             count = 4;
+            models = 4;
             break;
         case 3:
             for (i = 0; i < 8; i++) {
                 D_801CE740[i].unk2 = 0;
             }
-            models = 8;
             count = 8;
+            models = 8;
             break;
         case 4:
             D_801CE740[1].unk2 = 0;
-            models = 6;
             count = 4;
+            models = 6;
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
     }
@@ -1074,14 +1073,14 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             dst->offset = D_800DAB90[i];
         }
     }
-    dst[1].segRomStart = 0;
-    dst[1].segRomEnd = 0;
-    dst[1].flag = 0;
-    dst[1].offset = 0;
+    dst++;
+    dst->segRomStart = 0;
+    dst->segRomEnd = 0;
+    dst->flag = 0;
+    dst->offset = 0;
     for (i = 0; i < 8; i++) {
         alts[i] = 0;
     }
-    mode = arg0;
     switch (arg0) {
         case 0:
             D_80227A60[0] = MODEL(D_801CE740[0].rider * 3);
@@ -1097,38 +1096,32 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                 alts[0] = 2;
             }
             if (D_801CE740[1].rider == 2) {
-                alts[1] = 1;
-                alts[2] = 1;
+                alts[2] = alts[1] = 1;
             } else if (D_801CE740[1].rider == 6) {
-                alts[1] = 2;
-                alts[2] = 2;
+                alts[2] = alts[1] = 2;
             }
             if (D_801CE740[2].rider == 2) {
-                alts[3] = 1;
-                alts[4] = 1;
+                alts[4] = alts[3] = 1;
             } else if (D_801CE740[2].rider == 6) {
-                alts[3] = 2;
-                alts[4] = 2;
+                alts[4] = alts[3] = 2;
             }
             if (D_801CE740[3].rider == 2) {
-                alts[6] = 1;
-                alts[5] = 1;
+                alts[6] = alts[5] = 1;
             } else if (D_801CE740[3].rider == 6) {
-                alts[6] = 2;
-                alts[5] = 2;
+                alts[6] = alts[5] = 2;
             }
             for (i = 0; i < count; i++) {
                 if (D_801CE740[i].rider == 2) {
                     if (i == 0) {
                         D_801CE760[0] = i;
                     } else {
-                        D_801CE760[0] = (i * 2) - 1;
+                        D_801CE760[0] = (i + i) - 1;
                     }
                 } else if (D_801CE740[i].rider == 6) {
                     if (i == 0) {
                         D_801CE760[1] = i;
                     } else {
-                        D_801CE760[1] = (i * 2) - 1;
+                        D_801CE760[1] = (i + i) - 1;
                     }
                 }
             }
@@ -1205,18 +1198,14 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                 alts[1] = 2;
             }
             if (D_801CE740[2].rider == 2) {
-                alts[2] = 1;
-                alts[4] = 1;
+                alts[2] = alts[4] = 1;
             } else if (D_801CE740[2].rider == 6) {
-                alts[2] = 2;
-                alts[4] = 2;
+                alts[2] = alts[4] = 2;
             }
             if (D_801CE740[3].rider == 2) {
-                alts[3] = 1;
-                alts[5] = 1;
+                alts[5] = alts[3] = 1;
             } else if (D_801CE740[3].rider == 6) {
-                alts[3] = 2;
-                alts[5] = 2;
+                alts[5] = alts[3] = 2;
             }
             for (i = 0; i < 2; i++) {
                 if (D_801CE740[i].rider == 2) {
@@ -1245,7 +1234,7 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             break;
     }
     for (i = 0; i < models; i++) {
-        switch (mode) {
+        switch (arg0) {
             case 0:
                 if (i == 0) {
                     offset = D_800DAB90[0];
