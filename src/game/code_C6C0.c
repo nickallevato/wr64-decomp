@@ -5790,12 +5790,8 @@ void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 7979 of 27500: float register allocation differs (unk6C/unk70 swap $f16/$f18 from the cross product on, and
-// the 1/len and 0.5 temps swap $f2/$f12); the frame is 8 bytes larger. Control flow and operation order match.
 void func_800624CC(UnkStruct_80192690* arg0) {
     f32 len;
-    f32 inv;
     f32 t;
     f32 px;
     f32 py;
@@ -5804,30 +5800,31 @@ void func_800624CC(UnkStruct_80192690* arg0) {
     arg0->unk6C = arg0->unk90[8].unk0 - arg0->unk90[11].unk0;
     arg0->unk70 = arg0->unk90[8].unk4 - arg0->unk90[11].unk4;
     arg0->unk74 = arg0->unk90[8].unk8 - arg0->unk90[11].unk8;
-    inv = 1.0f / sqrtf(SQ(arg0->unk6C) + SQ(arg0->unk70) + SQ(arg0->unk74));
-    arg0->unk6C *= inv;
-    arg0->unk70 *= inv;
-    arg0->unk74 *= inv;
+    len = 1.0f / sqrtf(SQ(arg0->unk6C) + SQ(arg0->unk70) + SQ(arg0->unk74));
+    arg0->unk6C *= len;
+    arg0->unk70 *= len;
+    arg0->unk74 *= len;
     arg0->unk78 = arg0->unk90[11].unk0 - (arg0->unk90[9].unk0 + arg0->unk90[10].unk0) * 0.5;
     arg0->unk7C = arg0->unk90[11].unk4 - (arg0->unk90[9].unk4 + arg0->unk90[10].unk4) * 0.5;
     arg0->unk80 = arg0->unk90[11].unk8 - (arg0->unk90[9].unk8 + arg0->unk90[10].unk8) * 0.5;
     arg0->unk84 = (arg0->unk7C * arg0->unk74) - (arg0->unk80 * arg0->unk70);
     arg0->unk88 = (arg0->unk80 * arg0->unk6C) - (arg0->unk78 * arg0->unk74);
     arg0->unk8C = (arg0->unk78 * arg0->unk70) - (arg0->unk7C * arg0->unk6C);
-    inv = 1.0f / sqrtf(SQ(arg0->unk84) + SQ(arg0->unk88) + SQ(arg0->unk8C));
-    arg0->unk84 *= inv;
-    arg0->unk88 *= inv;
-    arg0->unk8C *= inv;
+    len = 1.0f / sqrtf(SQ(arg0->unk84) + SQ(arg0->unk88) + SQ(arg0->unk8C));
+    arg0->unk84 *= len;
+    arg0->unk88 *= len;
+    arg0->unk8C *= len;
     arg0->unk78 = (arg0->unk70 * arg0->unk8C) - (arg0->unk74 * arg0->unk88);
     arg0->unk7C = (arg0->unk74 * arg0->unk84) - (arg0->unk6C * arg0->unk8C);
     arg0->unk80 = (arg0->unk6C * arg0->unk88) - (arg0->unk70 * arg0->unk84);
     len = SQ(arg0->unk6C) + SQ(arg0->unk74);
-    if (len != 0.0f) {
-        inv = 1.0f / sqrtf(len);
-        t = arg0->unk6C * inv;
+    // An integer 0: the original loads this zero separately.
+    if (len != 0) {
+        len = 1.0f / sqrtf(len);
+        t = arg0->unk6C * len;
         arg0->unk1434 = t;
         arg0->unk1440 = -t;
-        t = arg0->unk74 * inv;
+        t = arg0->unk74 * len;
         arg0->unk1438 = t;
         arg0->unk143C = t;
     }
@@ -5838,46 +5835,55 @@ void func_800624CC(UnkStruct_80192690* arg0) {
     px = arg0->unk44.x + (2.0f * arg0->unk78);
     py = arg0->unk44.y + (2.0f * arg0->unk7C);
     pz = arg0->unk44.z + (2.0f * arg0->unk80);
-    t = RIDER_SPHERES(arg0)[0].pos.x;
-    RIDER_SPHERES(arg0)[0].pos.x = (arg0->unk6C * 27.0f) + px;
-    RIDER_SPHERES(arg0)[0].vel.x = RIDER_SPHERES(arg0)[0].pos.x - t;
-    t = RIDER_SPHERES(arg0)[0].pos.y;
-    RIDER_SPHERES(arg0)[0].pos.y = (arg0->unk70 * 27.0f) + py;
-    RIDER_SPHERES(arg0)[0].vel.y = RIDER_SPHERES(arg0)[0].pos.y - t;
-    t = RIDER_SPHERES(arg0)[0].pos.z;
-    RIDER_SPHERES(arg0)[0].pos.z = (arg0->unk74 * 27.0f) + pz;
-    RIDER_SPHERES(arg0)[0].vel.z = RIDER_SPHERES(arg0)[0].pos.z - t;
-    t = RIDER_SPHERES(arg0)[1].pos.x;
-    RIDER_SPHERES(arg0)[1].pos.x = (arg0->unk6C * 9.0f) + px;
-    RIDER_SPHERES(arg0)[1].vel.x = RIDER_SPHERES(arg0)[1].pos.x - t;
-    t = RIDER_SPHERES(arg0)[1].pos.y;
-    RIDER_SPHERES(arg0)[1].pos.y = (arg0->unk70 * 9.0f) + py;
-    RIDER_SPHERES(arg0)[1].vel.y = RIDER_SPHERES(arg0)[1].pos.y - t;
-    t = RIDER_SPHERES(arg0)[1].pos.z;
-    RIDER_SPHERES(arg0)[1].pos.z = (arg0->unk74 * 9.0f) + pz;
-    RIDER_SPHERES(arg0)[1].vel.z = RIDER_SPHERES(arg0)[1].pos.z - t;
-    t = RIDER_SPHERES(arg0)[2].pos.x;
-    RIDER_SPHERES(arg0)[2].pos.x = (arg0->unk6C * -9.0f) + px;
-    RIDER_SPHERES(arg0)[2].vel.x = RIDER_SPHERES(arg0)[2].pos.x - t;
-    t = RIDER_SPHERES(arg0)[2].pos.y;
-    RIDER_SPHERES(arg0)[2].pos.y = (arg0->unk70 * -9.0f) + py;
-    RIDER_SPHERES(arg0)[2].vel.y = RIDER_SPHERES(arg0)[2].pos.y - t;
-    t = RIDER_SPHERES(arg0)[2].pos.z;
-    RIDER_SPHERES(arg0)[2].pos.z = (arg0->unk74 * -9.0f) + pz;
-    RIDER_SPHERES(arg0)[2].vel.z = RIDER_SPHERES(arg0)[2].pos.z - t;
-    t = RIDER_SPHERES(arg0)[3].pos.x;
-    RIDER_SPHERES(arg0)[3].pos.x = (arg0->unk6C * -27.0f) + px;
-    RIDER_SPHERES(arg0)[3].vel.x = RIDER_SPHERES(arg0)[3].pos.x - t;
-    t = RIDER_SPHERES(arg0)[3].pos.y;
-    RIDER_SPHERES(arg0)[3].pos.y = (arg0->unk70 * -27.0f) + py;
-    RIDER_SPHERES(arg0)[3].vel.y = RIDER_SPHERES(arg0)[3].pos.y - t;
-    t = RIDER_SPHERES(arg0)[3].pos.z;
-    RIDER_SPHERES(arg0)[3].pos.z = (arg0->unk74 * -27.0f) + pz;
-    RIDER_SPHERES(arg0)[3].vel.z = RIDER_SPHERES(arg0)[3].pos.z - t;
+    len = RIDER_SPHERES(arg0)[0].pos.x;
+    t = (arg0->unk6C * 27.0f) + px;
+    RIDER_SPHERES(arg0)[0].pos.x = t;
+    RIDER_SPHERES(arg0)[0].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[0].pos.y;
+    t = (arg0->unk70 * 27.0f) + py;
+    RIDER_SPHERES(arg0)[0].pos.y = t;
+    RIDER_SPHERES(arg0)[0].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[0].pos.z;
+    t = (arg0->unk74 * 27.0f) + pz;
+    RIDER_SPHERES(arg0)[0].pos.z = t;
+    RIDER_SPHERES(arg0)[0].vel.z = t - len;
+    len = RIDER_SPHERES(arg0)[1].pos.x;
+    t = (arg0->unk6C * 9.0f) + px;
+    RIDER_SPHERES(arg0)[1].pos.x = t;
+    RIDER_SPHERES(arg0)[1].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[1].pos.y;
+    t = (arg0->unk70 * 9.0f) + py;
+    RIDER_SPHERES(arg0)[1].pos.y = t;
+    RIDER_SPHERES(arg0)[1].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[1].pos.z;
+    t = (arg0->unk74 * 9.0f) + pz;
+    RIDER_SPHERES(arg0)[1].pos.z = t;
+    RIDER_SPHERES(arg0)[1].vel.z = t - len;
+    len = RIDER_SPHERES(arg0)[2].pos.x;
+    t = (arg0->unk6C * -9.0f) + px;
+    RIDER_SPHERES(arg0)[2].pos.x = t;
+    RIDER_SPHERES(arg0)[2].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[2].pos.y;
+    t = (arg0->unk70 * -9.0f) + py;
+    RIDER_SPHERES(arg0)[2].pos.y = t;
+    RIDER_SPHERES(arg0)[2].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[2].pos.z;
+    t = (arg0->unk74 * -9.0f) + pz;
+    RIDER_SPHERES(arg0)[2].pos.z = t;
+    RIDER_SPHERES(arg0)[2].vel.z = t - len;
+    len = RIDER_SPHERES(arg0)[3].pos.x;
+    t = (arg0->unk6C * -27.0f) + px;
+    RIDER_SPHERES(arg0)[3].pos.x = t;
+    RIDER_SPHERES(arg0)[3].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[3].pos.y;
+    t = (arg0->unk70 * -27.0f) + py;
+    RIDER_SPHERES(arg0)[3].pos.y = t;
+    RIDER_SPHERES(arg0)[3].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[3].pos.z;
+    t = (arg0->unk74 * -27.0f) + pz;
+    RIDER_SPHERES(arg0)[3].pos.z = t;
+    RIDER_SPHERES(arg0)[3].vel.z = t - len;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800624CC.s")
-#endif
 
 void func_80062918(Vec3f* arg0) {
     f32 temp_f20;
