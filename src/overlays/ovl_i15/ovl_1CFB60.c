@@ -248,10 +248,6 @@ Gfx* Ceremony_Draw(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 1717 of 76400: the instructions match except the scheduling of the standings' first assignments (rank,
-// tieRank, count and the loop index before the first panel); the two address constants it keeps on the stack
-// (D_7000A40, D_106F488) sit at sp+0x7C/0x80 instead of sp+0x80/0x84.
 Gfx* func_i15_802C602C(Gfx* gdl) {
     s32 i;
     s32 race;
@@ -259,18 +255,18 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
     s32 show;
     s32 rank;
     s32 count;
-    s32 tieRank;
     s32 value;
+    s32 tieRank;
     s32 mode;
     s32 valueMode;
     s32 valueX;
     s32* place;
     PlayerName* name;
     UnkStruct_D_802C6E80* thing;
+    s32 pad; // stack pad
     char placeBuf[20];
     char valueBuf[12];
     s32 idx;
-    s32 pad; // stack pad
 
     for (i = 0, thing = D_i15_802C6E80; i < 10; i++, thing++) {
         if (thing->unk0 == 0) {
@@ -317,10 +313,10 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
 
             case 10:
                 gSPDisplayList(gdl++, D_106F628);
-                rank = 1;
-                tieRank = 1;
-                count = 1;
                 gdl = func_80094338(gdl, 0, thing->unk8, thing->unkC, 265, 23);
+                tieRank = 1;
+                rank = 1;
+                count = 1;
                 gdl = func_80094338(gdl, 0, thing->unk8, thing->unkC + 27, 265, 16);
                 for (i = 0; i < 4; i++) {
                     gdl = func_80094338(gdl, 0, thing->unk8, thing->unkC + i * 32 + 46, 265, 28);
@@ -423,9 +419,6 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i15/ovl_1CFB60/func_i15_802C602C.s")
-#endif
 
 void Ceremony_Input(void) {
     if (D_i15_802C6DF4) {

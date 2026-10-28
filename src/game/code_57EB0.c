@@ -2822,8 +2822,6 @@ extern UnkStruct_801BC940 D_801BC940[];
 extern f32 D_801D06F0;
 extern f32 D_801D06F8;
 
-#ifdef NON_MATCHING
-// Score 1810 of 86400: the state-7 step loads unk24 and unk2C later in the original (after the COS/SIN products).
 void func_800A9D48(s32 arg0) {
     if (gCurrentPauseMenuOption == -1) {
         if (D_801CF060[arg0].unk8 == 2) {
@@ -2903,8 +2901,8 @@ void func_800A9D48(s32 arg0) {
         } else if (D_801CF060[arg0].unk8 == 9) {
             D_801CF060[arg0].unk74 = 1;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk28;
-            D_801CF060[arg0].unk78 += 3;
             D_801CF060[arg0].unkA4++;
+            D_801CF060[arg0].unk78 += 3;
             if (D_801CF060[arg0].unk78 >= 21) {
                 D_801CF060[arg0].unk78 = 1;
             }
@@ -2914,8 +2912,10 @@ void func_800A9D48(s32 arg0) {
             }
         } else if (D_801CF060[arg0].unk8 == 7) {
             if (func_8009D4DC(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) < 400.0f) {
-                D_801CF060[arg0].unk24 += COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
-                D_801CF060[arg0].unk2C += SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
+                D_801CF060[arg0].unk24 =
+                    D_801CF060[arg0].unk24 + COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
+                D_801CF060[arg0].unk2C =
+                    D_801CF060[arg0].unk2C + SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
             } else {
                 D_801CF060[arg0].unk24 =
                     (D_801CF060[arg0].unk24 / func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C)) * 20.0f;
@@ -3038,9 +3038,6 @@ void func_800A9D48(s32 arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800A9D48.s")
-#endif
 
 extern f32 D_801D06D8;
 extern f32 D_801D06E0;
@@ -3444,42 +3441,34 @@ typedef struct UnkStruct_800AC098 {
     /* 0x30 */ f32 unk30;
 } UnkStruct_800AC098; /* size = 0x34 */
 
-#ifdef NON_MATCHING
-// Score 1710 of 5900: the D_801CF060 pointer steps at the end of the loop in the original and the loop test keeps slt; registers differ.
 void func_800AC098(UnkStruct_800AC098* arg0, s32 arg1) {
-    s32 end = D_800E62CC + arg1;
-    s32 i;
     s32 j;
+    s32 k;
 
     if (D_800E62CC < 30) {
-        i = j = D_800E62CC;
-        while (j < end) {
+        for (k = 0, j = D_800E62CC; j < D_800E62CC + arg1; j++) {
+            D_801CF060[j].unk0 = arg0[k].unk0;
             D_801CF060[j].unkB8 = 1;
-            D_801CF060[j].unk0 = arg0->unk0;
-            D_801CF060[j].unk74 = arg0->unk4;
-            D_801CF060[j].unk78 = arg0->unk8;
-            D_801CF060[j].unkC = arg0->unkC.x;
-            D_801CF060[j].unk10 = arg0->unkC.y;
-            D_801CF060[j].unk14 = arg0->unkC.z;
-            D_801CF060[j].unk30 = arg0->unk18.x;
-            D_801CF060[j].unk34 = arg0->unk18.y;
-            D_801CF060[j].unk38 = arg0->unk18.z;
-            D_801CF060[j].unk3C = arg0->unk24.x;
-            D_801CF060[j].unk40 = arg0->unk24.y;
-            D_801CF060[j].unk44 = arg0->unk24.z;
-            D_801CF060[j].unk48 = arg0->unk30;
-            arg0++;
-            j++;
-            if (++i >= 30) {
+            D_801CF060[j].unk74 = arg0[k].unk4;
+            D_801CF060[j].unk78 = arg0[k].unk8;
+            D_801CF060[j].unkC = arg0[k].unkC.x;
+            D_801CF060[j].unk10 = arg0[k].unkC.y;
+            D_801CF060[j].unk14 = arg0[k].unkC.z;
+            D_801CF060[j].unk30 = arg0[k].unk18.x;
+            D_801CF060[j].unk34 = arg0[k].unk18.y;
+            D_801CF060[j].unk38 = arg0[k].unk18.z;
+            D_801CF060[j].unk3C = arg0[k].unk24.x;
+            D_801CF060[j].unk40 = arg0[k].unk24.y;
+            D_801CF060[j].unk44 = arg0[k].unk24.z;
+            D_801CF060[j].unk48 = arg0[k].unk30;
+            k++;
+            if (D_800E62CC + k >= 30) {
                 return;
             }
         }
-        D_800E62CC = end;
+        D_800E62CC += arg1;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800AC098.s")
-#endif
 
 extern MtxF D_800E6280;
 extern s32 D_800E62D0;
