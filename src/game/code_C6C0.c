@@ -958,63 +958,53 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 14660 of 16800: float register allocation differs: the original keeps arg9/arg13 (later px/py/pz) in fs0-fs2
-// and has a 0x70 frame; this version spills more (frame 0x88). Control flow and arithmetic order match.
+// Score 9765 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// are laid out) and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the original's frame is 0x70
+// (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 cx;
-    f32 cy;
-    f32 cz;
-    f32 mx;
-    f32 my;
-    f32 mz;
-    f32 ex;
-    f32 ey;
-    f32 ez;
-    f32 px;
-    f32 py;
-    f32 pz;
+    f32 d[3];
+    f32 c[3];
+    f32 m[3];
+    f32 e[3];
     f32 len;
     f32 t;
 
-    dx = arg6 - arg3;
-    dy = arg7 - arg4;
-    dz = arg8 - arg5;
-    len = SQ(dx) + SQ(dy) + SQ(dz);
+    d[2] = arg6 - arg3;
+    d[1] = arg7 - arg4;
+    d[0] = arg8 - arg5;
+    len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
         t = (0.5 / len) * ((arg9 - arg10) + len);
-        mx = (t * dx) + arg3;
-        ex = mx - arg3;
-        my = (t * dy) + arg4;
-        ey = my - arg4;
-        mz = (t * dz) + arg5;
-        ez = mz - arg5;
-        t = ((arg9 - SQ(ex)) - SQ(ey)) - SQ(ez);
+        m[2] = (t * d[2]) + arg3;
+        e[2] = m[2] - arg3;
+        m[1] = (t * d[1]) + arg4;
+        e[1] = m[1] - arg4;
+        m[0] = (t * d[0]) + arg5;
+        e[0] = m[0] - arg5;
+        t = ((arg9 - SQ(e[2])) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
-            cx = (arg12 * dz) - (arg13 * dy);
-            cy = (arg13 * dx) - (arg11 * dz);
-            cz = (arg11 * dy) - (arg12 * dx);
-            px = (dy * cz) - (dz * cy);
-            py = (dz * cx) - (dx * cz);
-            pz = (dx * cy) - (dy * cx);
-            len = SQ(px) + SQ(py) + SQ(pz);
+            c[2] = (arg12 * d[0]) - (arg13 * d[1]);
+            c[1] = (arg13 * d[2]) - (arg11 * d[0]);
+            c[0] = (arg11 * d[1]) - (arg12 * d[2]);
+            arg11 = (d[1] * c[0]) - (d[0] * c[1]);
+            arg12 = (d[0] * c[2]) - (d[2] * c[0]);
+            arg13 = (d[2] * c[1]) - (d[1] * c[2]);
+            len = SQ(arg11) + SQ(arg12) + SQ(arg13);
             if (len != 0.0f) {
                 t = sqrtf(t / len);
-                arg0->unk0.x = (t * px) + mx;
-                *arg1 = (t * py) + my;
-                *arg2 = (t * pz) + mz;
+                arg0->unk0.x = (t * arg11) + m[2];
+                *arg1 = (t * arg12) + m[1];
+                *arg2 = (t * arg13) + m[0];
                 return;
             }
         }
     }
     arg9 = sqrtf(arg9);
     t = arg9 / (arg9 + sqrtf(arg10));
-    arg0->unk0.x = (t * dx) + arg3;
-    *arg1 = (t * dy) + arg4;
-    *arg2 = (t * dz) + arg5;
+    arg0->unk0.x = (t * d[2]) + arg3;
+    *arg1 = (t * d[1]) + arg4;
+    *arg2 = (t * d[0]) + arg5;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800534AC.s")
