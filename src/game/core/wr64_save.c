@@ -462,21 +462,21 @@ void func_8007B630(void) {
 }
 
 // Packs the records, the names and the options (Save_PackOptions) into the EEPROM image; the inverse of func_8007B630.
-#ifdef NON_MATCHING
-// Same calls and loops; the original's frame is 0x78 (here 0x40), keeps a dead counter (1, 2, ...) in s5 in every
-// loop and spills the gBestLaps pointer. Score 4557 of 17400.
 void func_8007B930(void) {
     s32 i;
     s32 j;
     s32 k;
+    s32 course;
+    s32 pad; // stack pad: the original's frame is 0x78
 
     for (i = 0; i < 8; i++) {
+        course = i + 1;
         for (j = 0; j < 3; j++) {
-            Save_PackRecord(&gBestTimes[i + 1][j], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
+            Save_PackRecord(&gBestTimes[course][j], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
         }
-        Save_PackRecord(&gBestLaps[i + 1], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
+        Save_PackRecord(&gBestLaps[course], (UnkStruct_func_8007AF78_2*) gSaveImage->unk60[i][j]);
         for (j = 0; j < 2; j++) {
-            Save_Pack24(gBestCheckpointTimes[i + 1][j], (UnkStruct_8007B2BC*) gSaveImage->unk1A8[i][j]);
+            Save_Pack24(gBestCheckpointTimes[course][j], (UnkStruct_8007B2BC*) gSaveImage->unk1A8[i][j]);
         }
     }
     for (i = 0; i < 9; i++) {
@@ -504,9 +504,6 @@ void func_8007B930(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007B930.s")
-#endif
 
 void func_8007BBE8() {
 }
