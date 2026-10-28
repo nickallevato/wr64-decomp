@@ -73,11 +73,15 @@ void func_800AB92C(void);
 #define SIGNF(x) (x >= 0 ? 1.0f : -1.0f)
 
 extern s32 D_80228110[];
-// FAKE (until codeseg's .bss is split): defined here, not extern, as gInitialsEntered is in AF8C0.c. This adds a
-// .bss slot to A95D0.o and moves the later codeseg .bss objects in the ELF (not the ROM). IDO then addresses
-// func_801DC274's stores from one `lui at`, as the original does. Its address still comes from the linker script
-// (undefined_syms_auto.ld), whose assignment wins over this slot. 11 entries: the uses here reach index 10.
+// FAKE (until codeseg's .bss is split): defined here, not extern, as gInitialsEntered is in AF8C0.c. IDO then
+// addresses func_801DC274's stores from one `lui at`, as the original does. 11 entries: the uses here reach index 10.
+// FAKE: gA95D0BssPad0/1 stand in for the rest of A95D0's .bss (0x80227A60..0x802287AF: the globals other files
+// reach through the linker script, whose assignments win over these slots). With them, D_80228190's slot and
+// func_801DCD34's function-scope statics (0x802287B0..0x802287DF, just below AF8C0's gLetterWheelFirst) land at
+// their own addresses. Pad1 starts at 0x802283D0: D_80228190 ends at 0x802283CC and the array is 8-aligned.
+u8 gA95D0BssPad0[0x80228190 - 0x80227A60];
 struct UnkStruct_801DB0E4_arg0 D_80228190[11];
+u8 gA95D0BssPad1[0x802287B0 - 0x802283D0];
 extern s32 D_802287A8;
 extern s32 D_802287AC;
 
