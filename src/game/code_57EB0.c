@@ -2822,8 +2822,6 @@ extern UnkStruct_801BC940 D_801BC940[];
 extern f32 D_801D06F0;
 extern f32 D_801D06F8;
 
-#ifdef NON_MATCHING
-// Score 1810 of 86400: the state-7 step loads unk24 and unk2C later in the original (after the COS/SIN products).
 void func_800A9D48(s32 arg0) {
     if (gCurrentPauseMenuOption == -1) {
         if (D_801CF060[arg0].unk8 == 2) {
@@ -2903,8 +2901,8 @@ void func_800A9D48(s32 arg0) {
         } else if (D_801CF060[arg0].unk8 == 9) {
             D_801CF060[arg0].unk74 = 1;
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk28;
-            D_801CF060[arg0].unk78 += 3;
             D_801CF060[arg0].unkA4++;
+            D_801CF060[arg0].unk78 += 3;
             if (D_801CF060[arg0].unk78 >= 21) {
                 D_801CF060[arg0].unk78 = 1;
             }
@@ -2914,8 +2912,10 @@ void func_800A9D48(s32 arg0) {
             }
         } else if (D_801CF060[arg0].unk8 == 7) {
             if (func_8009D4DC(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) < 400.0f) {
-                D_801CF060[arg0].unk24 += COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
-                D_801CF060[arg0].unk2C += SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
+                D_801CF060[arg0].unk24 =
+                    D_801CF060[arg0].unk24 + COS((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
+                D_801CF060[arg0].unk2C =
+                    D_801CF060[arg0].unk2C + SIN((s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f)) * 1;
             } else {
                 D_801CF060[arg0].unk24 =
                     (D_801CF060[arg0].unk24 / func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C)) * 20.0f;
@@ -3038,9 +3038,6 @@ void func_800A9D48(s32 arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800A9D48.s")
-#endif
 
 extern f32 D_801D06D8;
 extern f32 D_801D06E0;
