@@ -109,9 +109,9 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 13908 of 97200: same blocks, loops and calls. The original stores gMapHalfSize with lui at in the
-// extent loops and materialises 0.0f twice there; elsewhere register allocation and
-// scheduling differ, and this C is 10 instructions shorter.
+// Score 8944 of 97200: same blocks, loops and calls. The original keeps one more value in a saved register
+// (frame 0x80, here 0x78), so most registers are renamed from the first loop on; it stores gMapHalfSize
+// with lui at in the extent loops, and does not unroll the 8-step checkpointTimes loop (unrolled here).
 void func_80075310(void) {
     s32 i;
     s32 j;
@@ -152,7 +152,7 @@ void func_80075310(void) {
     D_801C1FC4 = 0;
     D_801C1F9C = D_801C1FA4 = 32767.0f;
     D_801C1FA0 = D_801C1FA8 = -32768.0f;
-    gMapHalfSize = 0.0f;
+    gMapHalfSize = 0; // int 0: a separate zero from the loops' 0.0f
     for (i = 0; i < D_801BB120; i++) {
         x = D_801AEE20[i].unk24;
         if (x < D_801C1F9C) {
@@ -270,7 +270,7 @@ void func_80075310(void) {
         rider->unk324 = 0;
         rider->unk8 = 0;
         rider->unk320 = 0;
-        rider->progress = 0.0f;
+        rider->progress = 0; // int 0, as gMapHalfSize
         rider->unk1C = -1;
         rider->unk20 = 0;
         rider->unk24 = 0;
@@ -314,7 +314,7 @@ void func_80075310(void) {
         rider->unk16C = 0;
         rider->raceTime = 0;
         rider->bestLapTime = 599999;
-        rider->timeLeft = D_800D9280[gCourseID] * 1000;
+        rider->timeLeft = D_800D9280[gCourseID * 4] * 1000;
         for (j = 0; j < 9; j++) {
             rider->lapBuoyMisses[j] = 0;
             rider->lapTimes[j] = 0;
@@ -373,8 +373,7 @@ void func_80075310(void) {
     }
 
     D_800D817C = 1;
-    D_801C1FD8 = 0;
-    D_801C1FD4 = 0;
+    D_801C1FD8 = D_801C1FD4 = 0;
     D_801C1FDC = 0;
     D_801C39C4 = D_800D8180[gCourseID];
     if (gDifficulty == DIFFICULTY_NORMAL) {
@@ -384,9 +383,7 @@ void func_80075310(void) {
     } else {
         D_801C39B8 = 5;
     }
-    D_801C1FD0 = 0;
-    D_801C1FCC = 0;
-    D_801C1FC8 = 0;
+    D_801C1FD0 = D_801C1FCC = D_801C1FC8 = 0;
     if (gCourseID == MARINE_FORTRESS) {
         for (i = 0; i < D_801BFA40; i++) {
             if (D_801BC940[i].unk4C == 2) {
@@ -414,16 +411,13 @@ void func_80075310(void) {
     }
     D_801C39B0 = 100000.0f;
     D_801C39B4 = -100000.0f;
-    D_801C2928 = 0;
-    D_801C2658 = 0;
-    D_801C2654 = 0;
-    D_801C2650 = 0;
+    D_801C2928 = D_801C2658 = D_801C2654 = D_801C2650 = 0;
     if (D_800DAB68 == 0) {
         D_801C1FE4 = gBestTimes[gCourseID][0].time;
-        D_801C1FE0 = D_801C1FE8 = gBestLaps[gCourseID].time;
+        D_801C1FE8 = D_801C1FE0 = gBestLaps[gCourseID].time;
     } else {
         D_801C1FE4 = D_801C23B0[gCourseID].time;
-        D_801C1FE0 = D_801C1FE8 = 0;
+        D_801C1FE8 = D_801C1FE0 = 0;
     }
 
     // The starting order D_801C26C0.
