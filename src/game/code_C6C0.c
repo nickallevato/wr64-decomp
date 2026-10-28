@@ -6824,8 +6824,9 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 7624 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
-// the C14..C34 block, the zero constants); control flow follows the original.
+// Score 6359 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
+// so their moves to a1/a3 are hoisted; the C14..C34 block; frame 0x48, not 0x50). The zero literals written as 0 and
+// .0f give the original's separate zero loads in three of the compares.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     camera_unk_1* cam;
@@ -6880,7 +6881,7 @@ void func_80065C18(s32 arg0) {
             rider->unkB94 = rider->unkB90;
         }
     }
-    if (((rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) && (rider->unkC66 != 0)) {
+    if (((rider->unkC4C != 0) || (rider->unkC48 != .0f)) && (rider->unkC66 != 0)) {
         if ((rider->unk16B4 < 40) && (rider->unkB90 < 2.777778f)) {
             rider->unk16B4++;
         }
@@ -6920,7 +6921,7 @@ void func_80065C18(s32 arg0) {
     rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
     rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
     if ((rider->unkC7C == 0) &&
-        ((rider->unkC4C != 0.0f) || ((rider->unkC48 != 0.0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
+        ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
         rider->unk16D0++;
     } else {
         rider->unk16D0 = 0;
@@ -6955,7 +6956,7 @@ void func_80065C18(s32 arg0) {
         }
     }
     if (rider->unk16CE != 0) {
-        if (rider->unkC40 != 0.0f) {
+        if (rider->unkC40 != 0) {
             rider->unk1602 = 1;
         } else {
             rider->unk1602 = 0;
