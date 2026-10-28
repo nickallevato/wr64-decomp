@@ -17,7 +17,10 @@ extern Gfx D_106F6C0[];
 extern s32 gLetterWheelFirst;
 extern s32 gLetterWheelLast;
 extern s32 gLetterWheelSlots[];
-extern s8 gInitialsEntered[];
+// Defined here, not extern: IDO then addresses the four zero stores in func_801E1BA8 from one
+// `lui at`, as the original does. Its address still comes from symbol_addrs.txt (the linker
+// script's assignment wins over this .bss slot), because codeseg's .bss is not split yet.
+s8 gInitialsEntered[4];
 extern u16 D_802288EC;
 extern s16 D_800DAB6C;
 extern s32 D_801C2650;
@@ -289,13 +292,11 @@ void Initials_Update(void) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 1460 of 18500.
-// The four initials stores in the D_800DAB6C branch use the hoisted &gInitialsEntered in $v1;
-// the original addresses them from $at (lui once, four sb). Everything else matches.
 void func_801E1BA8(void) {
     s32 i;
     s32 j;
+    s32 first;
+    s32 course;
 
     gLetterWheelCursor = 0;
     gInitialsState = 0;
@@ -315,10 +316,11 @@ void func_801E1BA8(void) {
     }
     if (D_800DAB6C != 0) {
         D_800DAB6C = 0;
-        gInitialsEntered[0] = 0;
-        gInitialsEntered[1] = 0;
-        gInitialsEntered[2] = 0;
-        gInitialsEntered[3] = 0;
+        i = 0;
+        do {
+            gInitialsEntered[i] = 0;
+            i++;
+        } while (i < 4);
     } else {
         for (i = 0; i < 4; i++) {
             gInitialsEntered[i] = D_801CE700[i];
@@ -344,12 +346,14 @@ void func_801E1BA8(void) {
     D_802261F8 = 0;
     switch (D_801CE608.gameMode) {
         case GMODE_CHAMPIONSHIP:
-            i = 0;
             if (gDifficulty == DIFFICULTY_NORMAL) {
-                i = 1;
+                first = 1;
+            } else {
+                first = 0;
             }
-            for (; i < D_801CB334 + 1; i++) {
-                if ((D_801C2660[D_800EAC14[gDifficulty][i]] == 1) || (D_801C2690[D_800EAC14[gDifficulty][i]] != 0)) {
+            for (i = first; i < D_801CB334 + 1; i++) {
+                course = D_800EAC14[gDifficulty][i];
+                if ((D_801C2660[course] == 1) || (D_801C2690[course] != 0)) {
                     D_802261F8 = 1;
                 }
             }
@@ -366,9 +370,6 @@ void func_801E1BA8(void) {
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/AF8C0/func_801E1BA8.s")
-#endif
 
 Gfx* Initials_Draw(Gfx* gdl) {
     s32 i;

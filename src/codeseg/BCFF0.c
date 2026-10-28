@@ -2053,7 +2053,7 @@ void func_801F4120(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 1360 of 46800: one temp more early on and the loop constants (8, 1) land in other registers; the final D_80228DFC/D_80228DF8 block schedules its stores differently.
+// Score 30 of 46800: only the bob counter (d) takes $v0 where the original has $v1; everything else matches.
 extern s32 D_801C1FD4;
 extern s32 D_80228DD8[4];
 extern s32 D_80228DE8[4];
@@ -2064,9 +2064,8 @@ void func_801F8DD0(void) {
     s32 j;
     PortraitPos* pos;
     s32 me;
-    s32 d;
     s32 ad;
-    s32 bob;
+    s32 d;
     f32 dx;
     f32 dz;
     f32 dist;
@@ -2121,21 +2120,23 @@ void func_801F8DD0(void) {
         }
     }
     for (j = 0; j < gRiders; j++) {
-        if (D_80192690[j].unk15C0 == 2) {
+        me = D_80192690[j].unk15C0;
+        if (me == 2) {
             D_80228DD8[j] = -15;
-        } else if (D_80192690[j].unk15C0 == 1) {
+        } else if (me == 1) {
             D_80228DD8[j] = -5;
         } else {
             D_80228DE8[j] = 1;
             D_80228DD8[j] = 0;
         }
-        d = D_80228DD8[j] - D_80228DC8[j];
+        d = D_80228DC8[j]; // FAKE: loads D_80228DC8 before D_80228DD8
+        d = D_80228DD8[j] - d;
         if (D_80228DC8[j] != D_80228DD8[j]) {
-            ad = (d >= 0) ? d : -d;
+            me = (d >= 0) ? d : -d;
             D_80228DE8[j]++;
             if (d > 0) {
                 D_80228DC8[j]++;
-            } else if (D_80228DE8[j] >= ad) {
+            } else if (D_80228DE8[j] >= me) {
                 D_80228DC8[j] = D_80228DD8[j];
             } else {
                 D_80228DC8[j] -= D_80228DE8[j];
@@ -2162,13 +2163,13 @@ void func_801F8DD0(void) {
                         dz = D_80192690[me].unk44.z - D_80192690[j].unk44.z;
                         dist = sqrtf(dx * dx + dz * dz);
                         if (dist < 512.0f) {
-                            bob = gPortraitPos[i][j].bobPhase;
+                            d = gPortraitPos[i][j].bobPhase;
                             if (dist < 256.0f) {
-                                bob += 2;
+                                d += 2;
                             } else {
-                                bob += 1;
+                                d += 1;
                             }
-                            gPortraitPos[i][j].bobPhase = bob & 7;
+                            gPortraitPos[i][j].bobPhase = d & 7;
                         }
                     }
                 }
@@ -2185,17 +2186,17 @@ void func_801F8DD0(void) {
         D_80228A9C = 2;
         D_80228DFC = 4;
     }
-    d = D_80228DFC - D_80228DF8;
-    if (D_80228DFC != D_80228DF8) {
-        D_80228DF8 += (d == 0) ? 0 : (d > 0) ? 1 : -1;
+    if (D_80228DF8 != D_80228DFC) {
+        D_80228DF8 += ((D_80228DFC - D_80228DF8) == 0) ? 0 : ((D_80228DFC - D_80228DF8) > 0) ? 1 : -1;
     }
-    if (D_80228DFC == D_80228DF8) {
+    if (D_80228DF8 == D_80228DFC) {
         if (D_80228DF8 > 0) {
             D_80228A9C = 3;
+            D_80228DFC = 0;
         } else {
             D_80228A9C = 0;
+            D_80228DFC = 0;
         }
-        D_80228DFC = 0;
     }
 }
 #else
