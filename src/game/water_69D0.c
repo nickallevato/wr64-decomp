@@ -778,7 +778,9 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 8325 of 32400: registers, and the original reloads a cell velocity after storing the cell height (here it reuses the register), so the stepping blocks are a few instructions shorter here
+// Score 5770 of 32400: heights held in ha/hb as the original keeps them in registers; registers still differ, the
+// first pair's cells load in the other order, and the original reloads a cell velocity after storing the cell height
+// (here it reuses the register).
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -788,41 +790,49 @@ void func_8004EAA4(void) {
     s32 i;
     s32 mean;
     s32 diff;
+    s32 ha;
+    s32 hb;
 
     p = gWaterCellOffsets;
     for (i = -gWaterWindowN; i < 0; i++) {
         q = p + ((gWaterWindowN * 2) + i + 2);
         a = WATER_CELL_AT(p->unk0);
+        ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
-        mean = (a->unk0 + b->unk0) >> D_800D4724;
-        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        hb = b->unk0;
+        mean = (ha + hb) >> D_800D4724;
+        diff = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         b->unk2 = (b->unk2 - diff) - mean;
         for (end = p + ((gWaterWindowN * 2) + i); p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
-            mean = (a->unk0 + b->unk0) >> D_800D4724;
-            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            hb = b->unk0;
+            mean = (ha + hb) >> D_800D4724;
+            diff = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + diff) - mean;
             q++;
             b->unk2 = (b->unk2 - diff) - mean;
             a = WATER_CELL_AT(p->unk0);
-            mean = (a->unk0 + b->unk0) >> D_800D4724;
-            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            ha = a->unk0;
+            mean = (ha + hb) >> D_800D4724;
+            diff = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + diff) - mean;
             b->unk2 = (b->unk2 - diff) - mean;
             b = WATER_CELL_AT(p[-1].unk0);
-            mean = (a->unk0 + b->unk0) >> D_800D4724;
-            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            hb = b->unk0;
+            mean = (ha + hb) >> D_800D4724;
+            diff = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + diff) - mean;
             b->unk2 = (b->unk2 - diff) - mean;
             b->unk0 += b->unk2;
             b->unk2 -= b->unk2 >> D_800D4730;
         }
         b = WATER_CELL_AT(q->unk0);
+        hb = b->unk0;
         p++;
-        mean = (a->unk0 + b->unk0) >> D_800D4724;
-        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        mean = (ha + hb) >> D_800D4724;
+        diff = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         a->unk0 += a->unk2;
         b->unk2 = (b->unk2 - diff) - mean;
@@ -830,23 +840,27 @@ void func_8004EAA4(void) {
     }
     for (i = 0; i < gWaterWindowN; i++) {
         a = WATER_CELL_AT(p->unk0);
+        ha = a->unk0;
         end = p + ((gWaterWindowN * 2) - i);
         for (q = p + (((gWaterWindowN * 2) - i) + 1); p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
-            mean = (a->unk0 + b->unk0) >> D_800D4724;
-            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            hb = b->unk0;
+            mean = (ha + hb) >> D_800D4724;
+            diff = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + diff) - mean;
             q++;
             b->unk2 = (b->unk2 - diff) - mean;
             a = WATER_CELL_AT(p->unk0);
-            mean = (a->unk0 + b->unk0) >> D_800D4724;
-            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            ha = a->unk0;
+            mean = (ha + hb) >> D_800D4724;
+            diff = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + diff) - mean;
             b->unk2 = (b->unk2 - diff) - mean;
             b = WATER_CELL_AT(p[-1].unk0);
-            mean = (a->unk0 + b->unk0) >> D_800D4724;
-            diff = (b->unk0 - a->unk0) >> D_800D472C;
+            hb = b->unk0;
+            mean = (ha + hb) >> D_800D4724;
+            diff = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + diff) - mean;
             b->unk2 = (b->unk2 - diff) - mean;
             b->unk0 += b->unk2;
@@ -858,18 +872,21 @@ void func_8004EAA4(void) {
     }
     end = p + gWaterWindowN;
     a = WATER_CELL_AT(p->unk0);
+    ha = a->unk0;
     while (p < end) {
         b = WATER_CELL_AT(p[1].unk0);
+        hb = b->unk0;
         p += 2;
-        mean = (a->unk0 + b->unk0) >> D_800D4724;
-        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        mean = (ha + hb) >> D_800D4724;
+        diff = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         a->unk0 += a->unk2;
         b->unk2 = (b->unk2 - diff) - mean;
         a->unk2 -= a->unk2 >> D_800D4730;
         a = WATER_CELL_AT(p->unk0);
-        mean = (a->unk0 + b->unk0) >> D_800D4724;
-        diff = (b->unk0 - a->unk0) >> D_800D472C;
+        ha = a->unk0;
+        mean = (ha + hb) >> D_800D4724;
+        diff = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         b->unk2 = (b->unk2 - diff) - mean;
         b->unk0 += b->unk2;
