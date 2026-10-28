@@ -99,8 +99,12 @@ extern s32 D_801C39F0;
 extern s32 D_801C39F4;
 extern s32 D_801C39F8;
 extern s32 D_801C39FC;
-extern s32 D_801C3A00;
-extern s32 D_801C3A04;
+
+// The end of code_2FB10's .bss, defined here (the yaml splits it from bss2 at 0x801C3A00; the section is
+// 16-aligned). Defined, not extern, the two halves of a D_801C3A08 store share one lui, as in the original.
+s32 D_801C3A00;
+s32 D_801C3A04;
+u64 D_801C3A08;
 
 void func_801EED70(void);
 
@@ -1682,7 +1686,6 @@ extern s32 D_801C2660[];
 extern s32 D_801C2690[];
 extern s32 D_801C3990[];
 extern s32 D_801C39CC;
-extern u64 D_801C3A08;
 extern UnkStruct_80228AE0 D_80228AE0[4];
 extern s32 D_80228A9C;
 
@@ -1703,10 +1706,6 @@ void Hud_UpdateOffCourseCountdown(void);
 // the lap minus 2 (row 0 is the time at the start of lap 2).
 #define RIDER_CP_TIME(rider, lap, cp) ((rider)->checkpointTimes[(lap) - 2][cp])
 
-#ifdef NON_MATCHING
-// Score 3995 of 103300: same blocks and calls. In the 2P gap loop the original reads gPlayer2Rider / gPlayer1Rider
-// again after the rider's stores and indexes with multu; elsewhere only register numbers and
-// the scheduling of the D_801C3A08 stores differ.
 void func_80079528(void) {
     s32 i;
     s32 j;
@@ -1782,9 +1781,9 @@ void func_80079528(void) {
         // (gBestTimes, with the checkpoint times of a new best in gBestCheckpointTimes), or
         // D_801C23B0 when D_800DAB68 is set.
         if (D_801C1FD8 == 0) {
-            rider = &gRiderRaceState[gPlayer1Rider];
-            if ((rider->unk2F4 != 0) && (D_801CE638 == 1) && (gPlayers == ONE_PLAYER) && (D_801CE600 == 0)) {
+            if ((gRiderRaceState[gPlayer1Rider].unk2F4 != 0) && (D_801CE638 == 1) && (gPlayers == ONE_PLAYER) && (D_801CE600 == 0)) {
                 D_801C1FD8 = 1;
+                rider = &gRiderRaceState[gPlayer1Rider];
                 if (D_800DAB68 == 0) {
                     if (rider->bestLapTime < gBestLaps[gCourseID].time) {
                         gBestLaps[gCourseID].time = rider->bestLapTime;
@@ -1887,36 +1886,37 @@ void func_80079528(void) {
         }
     } else if (gGameModes == GMODE_2P_VS) {
         for (i = 0; i < gRiders; i++) {
-            if (gRiderRaceState[i].gapRequest == 10) {
-                if (gRiderRaceState[i].racePosition == 1) {
-                    time = RIDER_CP_TIME(&gRiderRaceState[i], gRiderRaceState[i].lapCount, gRiderRaceState[i].unk164);
+            rider = &gRiderRaceState[i];
+            if (rider->gapRequest == 10) {
+                if (rider->racePosition == 1) {
+                    time = RIDER_CP_TIME(rider, rider->lapCount, rider->unk164);
                     if (i == gPlayer1Rider) {
-                        other = RIDER_CP_TIME(&gRiderRaceState[gPlayer2Rider], gRiderRaceState[i].lapCount, gRiderRaceState[i].unk164);
+                        other = RIDER_CP_TIME(&gRiderRaceState[gPlayer2Rider], rider->lapCount, rider->unk164);
                         if (other == 0) {
                             other = time;
                         }
-                        gRiderRaceState[i].gapRequest = 1;
-                        gRiderRaceState[i].checkpointGap = time - other;
-                        gRiderRaceState[i].gapTimer = 40;
+                        rider->gapRequest = 1;
+                        rider->checkpointGap = time - other;
+                        rider->gapTimer = 40;
                         gRiderRaceState[gPlayer2Rider].gapRequest = 2;
                         gRiderRaceState[gPlayer2Rider].checkpointGap = time - other;
                         gRiderRaceState[gPlayer2Rider].gapTimer = 40;
-                        func_800C3EF4(-((gRiderRaceState[i].checkpointGap + 500) / 1000));
+                        func_800C3EF4(-((rider->checkpointGap + 500) / 1000));
                     } else {
-                        other = RIDER_CP_TIME(&gRiderRaceState[gPlayer1Rider], gRiderRaceState[i].lapCount, gRiderRaceState[i].unk164);
+                        other = RIDER_CP_TIME(&gRiderRaceState[gPlayer1Rider], rider->lapCount, rider->unk164);
                         if (other == 0) {
                             other = time;
                         }
-                        gRiderRaceState[i].gapRequest = 1;
-                        gRiderRaceState[i].checkpointGap = time - other;
-                        gRiderRaceState[i].gapTimer = 40;
+                        rider->gapRequest = 1;
+                        rider->checkpointGap = time - other;
+                        rider->gapTimer = 40;
                         gRiderRaceState[gPlayer1Rider].gapRequest = 2;
                         gRiderRaceState[gPlayer1Rider].checkpointGap = time - other;
                         gRiderRaceState[gPlayer1Rider].gapTimer = 40;
-                        func_800C3EF4(-((gRiderRaceState[i].checkpointGap + 500) / 1000));
+                        func_800C3EF4(-((rider->checkpointGap + 500) / 1000));
                     }
                 } else {
-                    gRiderRaceState[i].gapRequest = 0;
+                    rider->gapRequest = 0;
                 }
             }
         }
@@ -1926,6 +1926,7 @@ void func_80079528(void) {
             if (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) {
                 if (gRiderRaceState[gPlayer2Rider].unk2F4 != 0) {
                     D_801C1FD4 = 1;
+                    do {} while (0); // FAKE: register-allocation boundary found by the permuter
                     if (gRiderRaceState[gPlayer2Rider].raceTime >= gRiderRaceState[gPlayer1Rider].raceTime) {
                         gRiderRaceState[gPlayer1Rider].racePosition = 0;
                         gRiderRaceState[gPlayer2Rider].racePosition = 1;
@@ -1964,6 +1965,3 @@ void func_80079528(void) {
     func_801F0E7C();
     Hud_UpdateOffCourseCountdown();
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80079528.s")
-#endif
