@@ -17,7 +17,8 @@ extern Gfx D_106F6C0[];
 extern s32 gLetterWheelFirst;
 extern s32 gLetterWheelLast;
 extern s32 gLetterWheelSlots[];
-// Defined here, not extern: IDO then addresses the four zero stores in func_801E1BA8 from one
+// FAKE (until codeseg's .bss is split): defined here, not extern, which adds a 0x10 .bss slot to AF8C0.o and
+// moves the later codeseg .bss objects in the ELF (not the ROM). IDO then addresses the four zero stores in func_801E1BA8 from one
 // `lui at`, as the original does. Its address still comes from symbol_addrs.txt (the linker
 // script's assignment wins over this .bss slot), because codeseg's .bss is not split yet.
 s8 gInitialsEntered[4];
