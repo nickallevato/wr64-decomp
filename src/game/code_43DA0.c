@@ -1026,11 +1026,11 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 3190 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
+// Score 3160 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
 // move/addiu pairs here, where the original chains addiu from the previous command's pointer; the setup of the
-// texture-load words is also scheduled later.
+// texture-load words is also scheduled later (the original has it in t4, t5 and t9 before the vertices, which moves
+// the vertex temps to t6-t8). Frame and spill slots match.
 Gfx* func_8008DFD0(Gfx* gdl) {
-    s32 pad[2]; // stack pad
     camera_unk_1* cam;
     Vtx* vtx;
     UnkStruct_801C43F8* p;
