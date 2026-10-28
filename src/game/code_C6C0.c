@@ -5394,18 +5394,23 @@ void func_800609EC(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 4338 of 30400: register allocation differs: the original reads unkB56/unkB5E/unkB5F through a pointer kept
-// in $a1 (saved across SysUtils_Round); IDO folds this version's pointer into arg0. Control flow matches.
+// Score 1383 of 30400: same instructions; register choice differs: the original has unkB50.button in a1 (here v0)
+// and btn/pad in a1 (here v1), with unkC54 and &gFrameCounter in v1 (here a1), and loads the constant 1 for
+// unk1444/unk1600 into a fresh temp where IDO here keeps it in a2. btn and pad set at the top (not before first use)
+// stop IDO folding their first access into arg0; d holding the button is a reuse that put unkB56 in v1.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
     s32 d;
     u16 dirs;
 
+    pad = &arg0->unkB50;
+    btn = (RiderButtons*) (pad + 1);
+    d = arg0->unkB50.button;
     arg0->unkB58 = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB50.button;
     arg0->unkB5A = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB56;
     arg0->unkB5C = arg0->unkB56;
-    arg0->unkB56 = arg0->unkB50.button;
+    arg0->unkB56 = d;
     arg0->unkB5E = arg0->unkB50.stick_x;
     arg0->unkB5F = arg0->unkB50.stick_y;
     d = arg0->unkB50.stick_x - arg0->unkB60;
@@ -5415,7 +5420,6 @@ void func_80061184(UnkStruct_80192690* arg0) {
         d = D_800D49DC;
     }
     arg0->unkB60 += d;
-    btn = (RiderButtons*) &arg0->unkB56;
     arg0->unkC66 = btn->held & 0xA000;
     if ((arg0->unkC54 == 23) || (arg0->unk1608 != 0) || ((arg0->unkC54 == 7) && (arg0->unkC58 < 56)) ||
         ((arg0->unkC54 > 0) && (arg0->unkC54 < 7)) || (gRiderGameModes == PAUSE_MODE) ||
@@ -5454,7 +5458,6 @@ void func_80061184(UnkStruct_80192690* arg0) {
     } else if (btn->stickY >= 15) {
         arg0->unk15A4 = gFrameCounter;
     }
-    pad = &arg0->unkB50;
     dirs = 0;
     if (pad->stick_x < -64) {
         arg0->unk1600 = 1;
@@ -5478,15 +5481,15 @@ void func_80061184(UnkStruct_80192690* arg0) {
                 arg0->unk15F8++;
             } else {
                 switch (arg0->unk15FC) {
-                    case 0x100:
-                        if (arg0->unk15F4 & 0x800) {
+                    case 0x800:
+                        if (arg0->unk15F4 & 0x200) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
                         }
                         break;
-                    case 0x200:
-                        if (arg0->unk15F4 & 0x400) {
+                    case 0x100:
+                        if (arg0->unk15F4 & 0x800) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
@@ -5499,8 +5502,8 @@ void func_80061184(UnkStruct_80192690* arg0) {
                             arg0->unk15F8 = 0;
                         }
                         break;
-                    case 0x800:
-                        if (arg0->unk15F4 & 0x200) {
+                    case 0x200:
+                        if (arg0->unk15F4 & 0x400) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
@@ -5512,15 +5515,15 @@ void func_80061184(UnkStruct_80192690* arg0) {
                 arg0->unk15FA++;
             } else {
                 switch (arg0->unk15FC) {
-                    case 0x100:
-                        if (arg0->unk15F4 & 0x400) {
+                    case 0x800:
+                        if (arg0->unk15F4 & 0x100) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
                         }
                         break;
-                    case 0x200:
-                        if (arg0->unk15F4 & 0x800) {
+                    case 0x100:
+                        if (arg0->unk15F4 & 0x400) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
@@ -5533,8 +5536,8 @@ void func_80061184(UnkStruct_80192690* arg0) {
                             arg0->unk15FA = 0;
                         }
                         break;
-                    case 0x800:
-                        if (arg0->unk15F4 & 0x100) {
+                    case 0x200:
+                        if (arg0->unk15F4 & 0x800) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
