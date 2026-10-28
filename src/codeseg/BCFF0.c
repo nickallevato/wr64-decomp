@@ -343,8 +343,10 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 11233 of 69300: &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not
-// 0xB8, and the saved registers shift; the rest differs in register allocation.
+// Score 10063 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows. Left:
+// &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not 0xB8, and the
+// saved registers shift; and IDO folds `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps
+// the sub.s and compares with 0.0f.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -395,12 +397,16 @@ void func_801EF504(void) {
             node = &D_801AEE20[rider->unkC];
         } else if ((rider->unkC == rider->nearestRecord) && (rider->lapCount == rider->unk320)) {
             node = &D_801AEE20[rider->unkC];
-            if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > 0.0f) {
+            dx = p->unk44.x - node->unk0;
+            dz = p->unk44.z - node->unk8;
+            if (dx * node->unk70 + dz * node->unk74 > 0.0f) {
                 node = &D_801AEE20[node->unkA0];
             }
         } else {
             node = &D_801AEE20[rider->nearestRecord];
-            if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > -256.0f) {
+            dx = p->unk44.x - node->unk0;
+            dz = p->unk44.z - node->unk8;
+            if (dx * node->unk70 + dz * node->unk74 > -256.0f) {
                 node = &D_801AEE20[node->unkA0];
             }
         }
