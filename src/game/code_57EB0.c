@@ -3306,27 +3306,27 @@ void func_800A68A4(s32);
 void func_800A9D48(s32);
 void func_800AB25C(s32);
 
-#ifdef NON_MATCHING
-// Score 4743 of 46300: the frame is 0x98 now (with a stack pad), but sp94 sits at 0x58 instead of 0x94 and the camera pointer stays in s8 where the original spills it to 0x5C. sp94 is read but never written, as in the original.
 void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
+    s32 sp94;
     UnkStruct_80192690* rider;
     UnkStruct_80192690* rider2;
-    camera_unk_1* cam;
     s32 i;
     s32 j;
-    UNUSED s32 pad[10]; // stack pad
-    s32 sp94;
+    GfxPool* pool;
+    UNUSED s32 pad[8]; // stack pad: cam is spilled to 0x5C, as in the original
+    camera_unk_1* cam;
 
-    rider = &D_80192690[gPlayer1Rider];
     cam = &gCameraPerspective[D_80223930];
+    rider = &D_80192690[gPlayer1Rider];
     if (gPlayers == TWO_PLAYERS) {
         rider2 = &D_80192690[gPlayer2Rider];
     } else {
-        rider2 = rider;
+        rider2 = &D_80192690[gPlayer1Rider];
     }
+    pool = gGfxPool;
     D_800E62C4++;
-    D_801D0778 = gGfxPool->unk13D68[D_80192460[0]].v.ob[0];
-    D_801D0780 = gGfxPool->unk13D68[D_80192460[0]].v.ob[2];
+    D_801D0778 = pool->unk13D68[D_80192460[0]].v.ob[0];
+    D_801D0780 = pool->unk13D68[D_80192460[0]].v.ob[2];
     D_801D06BC = rider->unk44.x;
     D_801D06C0 = rider->unk44.y;
     D_801D06C4 = rider->unk44.z;
@@ -3348,11 +3348,11 @@ void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
     D_801D0734 = gRiderRaceState[gPlayer1Rider].unk4;
     D_801D073C = gRiderRaceState[gPlayer1Rider].unk2F4;
     if (gPlayers == TWO_PLAYERS) {
-        D_801D0784 = gGfxPool->unk13D68[D_80192460[1]].v.ob[0];
-        D_801D078C = gGfxPool->unk13D68[D_80192460[1]].v.ob[2];
+        D_801D0784 = pool->unk13D68[D_80192460[1]].v.ob[0];
+        D_801D078C = pool->unk13D68[D_80192460[1]].v.ob[2];
     } else {
-        D_801D0784 = gGfxPool->unk13D68[D_80192460[0]].v.ob[0];
-        D_801D078C = gGfxPool->unk13D68[D_80192460[0]].v.ob[2];
+        D_801D0784 = pool->unk13D68[D_80192460[0]].v.ob[0];
+        D_801D078C = pool->unk13D68[D_80192460[0]].v.ob[2];
     }
     D_801D06F0 = rider2->unk44.x;
     D_801D06F4 = rider2->unk44.y;
@@ -3393,8 +3393,7 @@ void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
             D_801CF060[2].unk7C = 0;
             D_801CF060[2].unk8 = 2;
             D_801CF060[2].unk0 = 6;
-            D_800E62CC = 3;
-            D_800E62C8 = 3;
+            D_800E62C8 = D_800E62CC = 3;
             D_801CF060[0].unk14 = 4000.0f;
             D_801CF060[2].unk14 = 4000.0f;
             D_801CF060[0].unk18 = 90.0f;
@@ -3408,9 +3407,10 @@ void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
                 D_801CF060[D_800E62C8].unk0 = arg0[sp94].unk0; // sp94 is never set
                 if ((D_801CF060[D_800E62C8].unk0 == 7) || (D_801CF060[D_800E62C8].unk0 == 8) ||
                     (D_801CF060[D_800E62C8].unk0 == 9) || (D_801CF060[D_800E62C8].unk0 == 10)) {
-                    D_801CF060[D_800E62C8].unkC = (COS(SysUtils_Rand()) * 500.0f) + cam->eyeX;
+                    // The random angles go through u16, as the original's temporary registers show.
+                    D_801CF060[D_800E62C8].unkC = (COS((u16) SysUtils_Rand()) * 500.0f) + cam->eyeX;
+                    D_801CF060[D_800E62C8].unk14 = (SIN((u16) SysUtils_Rand()) * 500.0f) + cam->eyeX;
                     D_801CF060[D_800E62C8].unk7C = 0xFF;
-                    D_801CF060[D_800E62C8].unk14 = (SIN(SysUtils_Rand()) * 500.0f) + cam->eyeX;
                     D_801CF060[D_800E62C8].unk10 = -80.0f - (s32) (SysUtils_Rand() & 0x3F);
                     D_801CF060[D_800E62C8].unk8 = 5;
                     D_801CF060[D_800E62C8].unk80 = 100000.0f;
@@ -3426,9 +3426,6 @@ void func_800AB95C(UnkStruct_800AB95C* arg0, s32 arg1) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800AB95C.s")
-#endif
 
 // The entries func_800AC098 copies into D_801CF060 (the same layout as code_C6C0.c's UnkStruct_80192540).
 typedef struct UnkStruct_800AC098 {
