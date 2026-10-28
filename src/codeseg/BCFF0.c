@@ -2934,8 +2934,9 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6732 of 25000: w is in s3 in the original (v1 here) and the texture pointer is set later; the loop's temps and
-// constant hoisting differ; frame 0xD0, not 0xE0.
+// Score 6046 of 25000: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
+// D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
+// IDO here hoists it; frame 0xD0, not 0xE0.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
@@ -2968,8 +2969,6 @@ void func_801FBFB4(Gfx** gdlp) {
         } else {
             cy = 174;
         }
-        tex = D_804F010;
-        w = 96;
         if (D_80228E08[i] < 6) {
             scale = (D_80228E08[i] / 5.0f) * 1.3f;
         } else {
@@ -2977,6 +2976,8 @@ void func_801FBFB4(Gfx** gdlp) {
         }
         switch (D_80228E00[i]) {
             case 1:
+                tex = D_804F010;
+                w = 96;
                 break;
             case 2:
                 tex = D_804C008;
