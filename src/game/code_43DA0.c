@@ -925,15 +925,18 @@ Gfx* func_8008CFEC(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 2180 of 31800: same instructions; register allocation differs (x is in t3, not t2, which renumbers the
-// temps of both rectangles), and the second rectangle's setup is scheduled differently around the gdl spill.
+// Score 125 of 31800: same instructions and schedule; register allocation only: x is in t3, not t2, and the
+// x - 12 temps are in a2, not a3 (y - 12 takes a3, not a2), and the second rectangle's copy of x - 12 is in t2,
+// not t3. The s/t terms come from gSPScisTextureRectangle's xl*dsdx with dsdx written 3 << 9 (0x600).
 Gfx* func_8008D454(Gfx* gdl) {
-    s32 pad[2]; // stack pad
-    s32 x;
+    s32 pad; // stack pad
     s32 y;
+    s32 x;
+    s32 l;
 
     x = D_801C4188.unk0 + D_801C4188.unkC;
     y = D_801C4188.unk4 - D_801C4188.unk10;
+    l = x - 12;
 
     gDPPipeSync(gdl++);
     gDPSetCycleType(gdl++, G_CYC_1CYCLE);
@@ -945,9 +948,8 @@ Gfx* func_8008D454(Gfx* gdl) {
                             G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPSetPrimColor(gdl++, 0, 0, 0xF0, 0xF0, 0x1C, 0x6E);
         if ((x >= -12) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
-            gSPTextureRectangle(gdl++, MAX((x - 12) << 2, 0), MAX((y - 12) << 2, 0), MAX((x + 12) << 2, 0),
-                                MAX((y + 12) << 2, 0), 0, 0 - MIN((((x - 12) << 15) >> 7), 0),
-                                0 - MIN((((y - 12) << 15) >> 7), 0), 0x600, 0x600);
+            gSPScisTextureRectangle(gdl++, l << 2, (y - 12) << 2, (x + 12) << 2, (y + 12) << 2, 0, 0, 0, 3 << 9,
+                                    3 << 9);
         }
     }
     if (D_801C4188.unk14 >= 0.0f) {
@@ -955,9 +957,8 @@ Gfx* func_8008D454(Gfx* gdl) {
                             G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
         if ((x >= -12) && (x < SCREEN_WIDTH) && (y >= 0) && (y < SCREEN_HEIGHT)) {
-            gSPTextureRectangle(gdl++, MAX((x - 12) << 2, 0), MAX((y - 12) << 2, 0), MAX((x + 12) << 2, 0),
-                                MAX((y + 12) << 2, 0), 0, 0 - MIN((((x - 12) << 15) >> 7), 0),
-                                0 - MIN((((y - 12) << 15) >> 7), 0), 0x600, 0x600);
+            gSPScisTextureRectangle(gdl++, l << 2, (y - 12) << 2, (x + 12) << 2, (y + 12) << 2, 0, 0, 0, 3 << 9,
+                                    3 << 9);
         }
     }
     return gdl;
