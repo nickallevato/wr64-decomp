@@ -6151,15 +6151,10 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80062E50.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 11133 of 22300: the original's unkA48 loop is unrolled by 2 (first entry peeled); IDO does not unroll this
-// pointer loop, and unrolls the indexed forms by 4. Before the loop only the stack slot of `first` differs (sp20,
-// original sp24).
 void func_8006390C(s32 arg0, void* arg1) {
     UnkStruct_80192690* rider;
-    UnkStruct_8004B0F8_1* first;
-    UnkStruct_80192690_A48* e;
-    s8 (*t)[4];
+    s32 i;
+    RiderLink* link;
 
     rider = &D_80192690[arg0];
     if ((gCourseID == DOLPHIN_PARK) && (D_800DAB60 != 0) && (gGameModes != GMODE_STUNT) &&
@@ -6182,7 +6177,7 @@ void func_8006390C(s32 arg0, void* arg1) {
     rider->unk24 = D_800D4AE4;
     rider->unk28 = 11;
     rider->unk2C = 65;
-    rider->unk30 = first = &rider->unk90[0];
+    rider->unk30 = &rider->unk90[0];
     rider->unk34 = (UnkStruct_8004B0F8_unk34*) &rider->unk90[12];
     rider->unk38 = rider->unk528;
     func_80062E50(arg0, arg1, 0);
@@ -6199,19 +6194,16 @@ void func_8006390C(s32 arg0, void* arg1) {
     RIDER_SPHERES(rider)[2].unk20 = &rider->unk90[9];
     RIDER_SPHERES(rider)[3].unk18 = &rider->unk90[1];
     RIDER_SPHERES(rider)[3].unk1C = &rider->unk90[2];
-    RIDER_SPHERES(rider)[3].unk20 = first;
+    RIDER_SPHERES(rider)[3].unk20 = &rider->unk90[0];
     func_800629A8(rider);
-    for (e = rider->unkA48, t = D_800D4A3C; t != &D_800D4A3C[11]; e++, t++) {
-        e->unk0 = &RIDER_PARTS(rider)[(*t)[0]];
-        e->unk4 = &RIDER_PARTS(rider)[(*t)[1]];
-        e->unkC = &RIDER_PARTS(rider)[(*t)[2]];
-        e->unk10 = &RIDER_PARTS(rider)[(*t)[3]];
+    // D_800D4A3C read as 22 pairs of entry indices, one per link; the byte offset (index * 0x28) gives the original's
+    // operand order
+    for (i = 0, link = RIDER_LINKS(rider); i < 22; i++, link++) {
+        link->unk0 = (RiderPart*) &rider->unk660[((s8*) D_800D4A3C)[i * 2] * 0x28];
+        link->unk4 = (RiderPart*) &rider->unk660[((s8*) D_800D4A3C)[i * 2 + 1] * 0x28];
     }
     func_80062918((Vec3f*) rider);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8006390C.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 40 of 99300: only gSinTable's address and the angle swap v0/v1 (seven instructions). The FAKE c54 temp moves
