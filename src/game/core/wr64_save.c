@@ -126,6 +126,7 @@ s32 Save_EepromReset(void);
 s32 Save_PfsIsPlug(void);
 void Save_BuildDefaultImage(UnkStruct_8007CB68_2* arg);
 void func_8007B630(void);
+void Libc_strncpy(); // defined in code_24270.c; callers pass s8 arrays and name structs
 void func_8007B930(void);
 s32 Save_EepromWriteAll(void);
 
@@ -1208,14 +1209,13 @@ s32 func_8007D2D4(s32 mode) {
 // Writes the save image to the Controller Pak file (making it when there is none): mode 0 the whole image, 1-4 name
 // mode - 1 (0x80 added is ignored), 5 the records. When the file is new or its data is bad, the rest of the image
 // starts from the defaults (Save_BuildDefaultImage).
-#ifdef NON_MATCHING
-// Same calls and jump tables; the original places the code that follows the file switch right after its case 0
-// (the new-file case jumps back into it), so blocks are ordered differently and registers differ. Score 4441 of 33100.
+// The new-file and error cases sit inside the read switch, ahead of its case labels (reached only by goto), so
+// the code after the find switch follows its case 0 directly, as in the original.
 s32 func_8007D614(s32 mode) {
+    s32 i;
     s32 n;
     s32 ret;
     s32 fresh;
-    s32 i;
     s32 j;
     s32 k;
     s32 fileNo;
@@ -1231,34 +1231,38 @@ s32 func_8007D614(s32 mode) {
         case 0:
             fresh = 0;
             break;
+        case PFS_ERR_INVALID:
+            goto invalid; // goto: its code sits in the read switch below
         default:
         case PFS_ERR_NOPACK:
         case PFS_ERR_NEW_PACK:
         case PFS_ERR_INCONSISTENT:
         case PFS_ERR_CONTRFAIL:
-            return 2;
-        case PFS_ERR_INVALID:
-            fresh = 1;
-            switch (osPfsAllocateFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, 0x200, &fileNo)) {
-                case 0:
-                    break;
-                case PFS_DIR_FULL:
-                    return 3;
-                default:
-                case PFS_ERR_NOPACK:
-                case PFS_ERR_NEW_PACK:
-                case PFS_ERR_INCONSISTENT:
-                case PFS_ERR_CONTRFAIL:
-                case PFS_ERR_INVALID:
-                case PFS_ERR_BAD_DATA:
-                case PFS_DATA_FULL:
-                    return 2;
-            }
-            break;
+            goto fail; // goto: its return sits in the read switch below
     }
+found: // goto target: a new file rejoins here
     func_8007B930();
     if ((mode != 0) && (fresh == 0)) {
         switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &gSavePakImage)) {
+            invalid: // goto target, ahead of the case labels
+                fresh = 1;
+                switch (osPfsAllocateFile(&D_801C3AD0, 1U, 0x4E57524AU, &D_800D82E8, &D_800D82D8, 0x200, &fileNo)) {
+                    case 0:
+                        goto found; // goto: back to the common path
+                    case PFS_DIR_FULL:
+                        return 3;
+                    default:
+                    case PFS_ERR_NOPACK:
+                    case PFS_ERR_NEW_PACK:
+                    case PFS_ERR_INCONSISTENT:
+                    case PFS_ERR_CONTRFAIL:
+                    case PFS_ERR_INVALID:
+                    case PFS_ERR_BAD_DATA:
+                    case PFS_DATA_FULL:
+                        return 2;
+                }
+            fail: // goto target
+                return 2;
             case 2:
             case 3:
             case 4:
@@ -1266,8 +1270,8 @@ s32 func_8007D614(s32 mode) {
             case 6:
                 return 2;
             default:
-                for (i = 0; i < 2; i++) {
-                    if (gSavePakImage.unk4[i - 4] != gSaveCheckCode[i]) {
+                for (n = 0; n < 2; n++) {
+                    if (gSavePakImage.unk4[n - 4] != gSaveCheckCode[n]) {
                         fresh = 1;
                     }
                 }
@@ -1289,10 +1293,10 @@ s32 func_8007D614(s32 mode) {
         case 2:
         case 3:
         case 4:
-            n = mode - 1;
-            Libc_strncpy(gSavePakImage.unk10[n], gSaveImage->unk10[n], 10);
-            for (i = 0; i < 3; i++) {
-                gSavePakImage.unk38[0][n][i] = gSaveImage->unk38[0][n][i];
+            i = mode - 1;
+            Libc_strncpy(gSavePakImage.unk10[mode - 1], gSaveImage->unk10[mode - 1], 10);
+            for (j = 0; j < 3; j++) {
+                gSavePakImage.unk38[0][i][j] = gSaveImage->unk38[0][i][j];
             }
             break;
         case 5:
@@ -1334,9 +1338,6 @@ s32 func_8007D614(s32 mode) {
             return 2;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/core/wr64_save/func_8007D614.s")
-#endif
 
 s32 Save_PfsDeleteFile(void) {
     s32 ret;
