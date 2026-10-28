@@ -1096,47 +1096,56 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
 }
 
 #ifdef NON_MATCHING
-// Score 6045 of 12200: c and the 1.0f constant get no callee-saved register (frame 0x68, not 0x70), so the products
-// spill.
+// Score 28 of 12200: only stack offsets differ. The spills of y*y and t sit at 0x38/0x3C, the original's at
+// 0x3C/0x40 (it leaves 0x38 unused). Same shape as func_801EE274 (guRotateF), plus the FAKE copy of x.
 void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
-    f32 len;
-    f32 xx;
-    f32 yy;
-    f32 zz;
-    s32 angle;
-    f32 s;
-    f32 c;
+    f32 sine;
+    f32 cosine;
+    f32 ab;
+    f32 bc;
+    f32 ca;
     f32 t;
+    f32 xs;
+    f32 nx;
+    f32 ys;
+    f32 zs;
+    f32 len;
+    s32 angle;
 
     len = sqrtf(SQ(x) + SQ(y) + SQ(z));
-    if (len > 0.0f) {
+    if (len > 0) {
         x /= len;
         y /= len;
         z /= len;
     }
-    xx = SQ(x);
-    yy = SQ(y);
-    zz = SQ(z);
+    nx = x; // FAKE: a copy of x after the normalisation, for the original's registers
     angle = ANGLE_TO_CUSTOM_UNITS(arg1);
-    c = COS(angle);
-    s = SIN(angle);
+    sine = SIN(angle);
+    cosine = COS(angle);
+    t = 1.0f - cosine;
+    ab = nx * y * t;
+    bc = y * z * t;
+    ca = z * nx * t;
     arg0[3][0] = 0.0f;
-    t = 1.0f - c;
     arg0[3][1] = 0.0f;
     arg0[3][2] = 0.0f;
     arg0[0][3] = 0.0f;
     arg0[1][3] = 0.0f;
     arg0[2][3] = 0.0f;
     arg0[3][3] = 1.0f;
-    arg0[0][0] = ((1.0f - xx) * c) + xx;
-    arg0[2][1] = (y * z * t) - (x * s);
-    arg0[1][2] = (x * s) + (y * z * t);
-    arg0[1][1] = ((1.0f - yy) * c) + yy;
-    arg0[2][0] = (y * s) + (z * x * t);
-    arg0[0][2] = (z * x * t) - (y * s);
-    arg0[2][2] = ((1.0f - zz) * c) + zz;
-    arg0[1][0] = (x * y * t) - (z * s);
-    arg0[0][1] = (z * s) + (x * y * t);
+    xs = nx * sine;
+    ys = y * sine;
+    zs = z * sine;
+    arg0[0][0] = ((1.0f - SQ(x)) * cosine) + SQ(x);
+    arg0[2][1] = bc - xs;
+    arg0[1][2] = xs + bc;
+    arg0[1][1] = ((1.0f - SQ(y)) * cosine) + SQ(y);
+    arg0[2][0] = ys + ca;
+    arg0[0][2] = ca - ys;
+    t = SQ(z);
+    arg0[2][2] = ((1.0f - t) * cosine) + t;
+    arg0[1][0] = ab - zs;
+    arg0[0][1] = zs + ab;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE040.s")
