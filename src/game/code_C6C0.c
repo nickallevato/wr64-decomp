@@ -5259,64 +5259,56 @@ void func_8005DE24(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8005DE24.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 6603 of 48600: register allocation differs: the original uses $s8 and a 0xD8 frame (this version 0xC8),
-// keeps the chain base pointer in $s1 and reads cur->pos through an index register. Control flow matches.
 void func_800609EC(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_80052C6C_2* prev;
     UnkStruct_80052C6C_2* cur;
-    UnkStruct_80192690_C88* base;
-    UnkStruct_80192690_C88* p14;
     f32* lengths;
+    s32 i;
     f32 nx;
     f32 ny;
     f32 nz;
+    f32 dx;
+    f32 dy;
+    f32 dz;
     f32 yOff;
     f32 yOffStep;
     f32 grav;
     f32 gravStep;
     f32 limit;
     f32 limitStep;
-    f32 k1;
-    f32 k2;
-    f32 dx;
-    f32 dy;
-    f32 dz;
     f32 len;
     f32 dot;
     f32 s;
-    s32 i;
 
     yOffStep = (D_800D4910 - D_800D490C) / 4;
     yOff = D_800D490C;
     grav = D_800D4914;
-    limit = D_800D491C;
     gravStep = (D_800D4918 - D_800D4914) / 4;
+    limit = D_800D491C;
     limitStep = (D_800D4920 - D_800D491C) / 4;
-    prev = &rider->unk1448[0];
-    base = (UnkStruct_80192690_C88*) ((u8*) rider + rider->unk1424 * 0x288 + 0xD84);
-    nx = (base->unk18.y * base->unkC.z) - (base->unk18.z * base->unkC.y);
-    ny = (base->unk18.z * base->unkC.x) - (base->unk18.x * base->unkC.z);
-    nz = (base->unk18.x * base->unkC.y) - (base->unk18.y * base->unkC.x);
+    prev = (UnkStruct_80052C6C_2*) &RIDER_C88(rider)[rider->unk1424][7];
+    cur = &rider->unk1448[0];
+    nx = (prev->unk14.y * prev->unkC.z) - (prev->unk14.z * prev->unkC.y);
+    ny = (prev->unk14.z * prev->unkC.x) - (prev->unk14.x * prev->unkC.z);
+    nz = (prev->unk14.x * prev->unkC.y) - (prev->unk14.y * prev->unkC.x);
     if (D_801CE638 == 21) {
-        k1 = 7.942f;
-        k2 = -2.746f;
+        dy = 7.942f;
+        dz = -2.746f;
     } else {
-        k1 = 2.0f;
-        k2 = -2.1f;
+        dy = 2.0f;
+        dz = -2.1f;
     }
-    prev->unk0.x = RIDER_PARTS(rider)[1].unk4.x + (k1 * base->unk18.x) + (k2 * base->unkC.x);
-    prev->unk0.y = RIDER_PARTS(rider)[1].unk4.y + (k1 * base->unk18.y) + (k2 * base->unkC.y);
-    prev->unk0.z = RIDER_PARTS(rider)[1].unk4.z + (k1 * base->unk18.z) + (k2 * base->unkC.z);
-    p14 = (UnkStruct_80192690_C88*) ((u8*) rider + rider->unk1424 * 0x288 + 0xE80);
-    dx = p14->unk18.x + base->unkC.x;
-    dy = p14->unk18.y + base->unkC.y;
-    dz = p14->unk18.z + base->unkC.z;
+    cur->unk0.x = RIDER_PARTS(rider)[1].unk4.x + (dy * prev->unk14.x) + (dz * prev->unkC.x);
+    cur->unk0.y = RIDER_PARTS(rider)[1].unk4.y + (dy * prev->unk14.y) + (dz * prev->unkC.y);
+    cur->unk0.z = RIDER_PARTS(rider)[1].unk4.z + (dy * prev->unk14.z) + (dz * prev->unkC.z);
+    dx = RIDER_C88(rider)[rider->unk1424][14].unk18.x + prev->unkC.x;
+    dy = RIDER_C88(rider)[rider->unk1424][14].unk18.y + prev->unkC.y;
+    dz = RIDER_C88(rider)[rider->unk1424][14].unk18.z + prev->unkC.z;
     len = 1.0f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
-    prev->unkC.x = len * dx;
-    prev->unkC.y = len * dy;
-    prev->unkC.z = len * dz;
+    cur->unkC.x = len * dx;
+    cur->unkC.y = len * dy;
+    cur->unkC.z = len * dz;
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
@@ -5332,7 +5324,9 @@ void func_800609EC(s32 arg0) {
     } else {
         lengths = D_800D48E4;
     }
-    for (i = 1, cur = &rider->unk1448[1]; i != 6; i++, prev = cur, cur++) {
+    for (i = 1; i < 6; i++) {
+        prev = cur;
+        cur = &rider->unk1448[i];
         dx = prev->unk0.x - ((rider->unk1520[i].x * grav) + cur->unk0.x);
         dy = prev->unk0.y - ((rider->unk1520[i].y * grav) + cur->unk0.y + yOff);
         dz = prev->unk0.z - ((rider->unk1520[i].z * grav) + cur->unk0.z);
@@ -5358,20 +5352,24 @@ void func_800609EC(s32 arg0) {
             cur->unk14.x = (cur->unkC.y * nz) - (cur->unkC.z * ny);
             cur->unk14.y = (cur->unkC.z * nx) - (cur->unkC.x * nz);
             cur->unk14.z = (cur->unkC.x * ny) - (cur->unkC.y * nx);
-            s = prev->unk0.x - (lengths[i - 1] * cur->unkC.x);
-            rider->unk1520[i].x = s - cur->unk0.x;
+            dx = cur->unk0.x;
+            dy = cur->unk0.y;
+            dz = cur->unk0.z;
+            dot = lengths[i - 1];
+            s = prev->unk0.x - (dot * cur->unkC.x);
             cur->unk0.x = s;
-            s = prev->unk0.y - (lengths[i - 1] * cur->unkC.y);
-            rider->unk1520[i].y = s - cur->unk0.y;
+            rider->unk1520[i].x = s - dx;
+            s = prev->unk0.y - (dot * cur->unkC.y);
             cur->unk0.y = s;
-            s = prev->unk0.z - (lengths[i - 1] * cur->unkC.z);
-            rider->unk1520[i].z = s - cur->unk0.z;
+            rider->unk1520[i].y = s - dy;
+            s = prev->unk0.z - (dot * cur->unkC.z);
             cur->unk0.z = s;
+            rider->unk1520[i].z = s - dz;
             func_80052A20(cur);
         }
         yOff += yOffStep;
-        limit += limitStep;
         grav += gravStep;
+        limit += limitStep;
     }
     func_80048A88(&gGfxPool->unkF308[arg0], rider->unk1448[1].unkC.x, rider->unk1448[1].unkC.y, rider->unk1448[1].unkC.z,
                   rider->unk1448[1].unk14.x, rider->unk1448[1].unk14.y, rider->unk1448[1].unk14.z, rider->unk1448[1].unk0.x,
@@ -5389,9 +5387,6 @@ void func_800609EC(s32 arg0) {
                   rider->unk1448[5].unk14.x, rider->unk1448[5].unk14.y, rider->unk1448[5].unk14.z, rider->unk1448[5].unk0.x,
                   rider->unk1448[5].unk0.y, rider->unk1448[5].unk0.z, 0.1f);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800609EC.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 1383 of 30400: same instructions; register choice differs: the original has unkB50.button in a1 (here v0)
