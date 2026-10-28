@@ -5892,10 +5892,10 @@ void func_80062918(Vec3f* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 2090 of 29800: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) instead of reusing the copy
-// in $f18, and schedules the unk16CE load later, so this version is 0x10 bytes shorter. Before t the code matches;
-// after it, this version keeps t in $f16 (the original: $f0) and the float registers of the unk16CE blocks shift
-// with it. Control flow matches.
+// Score 2075 of 29800: the original loads 11.0f again for t = unkB70 / 11.0f (into $f4) and for unkBC4's LERP,
+// instead of reusing the copy in $f18, and schedules the unk16CE load later, so this version is 0x10 bytes
+// shorter. Reusing t for 11.111112f - unkBD0 (no third float local) puts t in $f0 as in the original; the float
+// registers of the unk16CE blocks still shift around the $f18 copy. Control flow matches.
 void func_800629A8(UnkStruct_80192690* arg0) {
     f32 t;
     f32 v;
@@ -5947,10 +5947,10 @@ void func_800629A8(UnkStruct_80192690* arg0) {
         arg0->unkBD4 = 2048.0f / arg0->unkBD0;
         arg0->unkBD8 = (1.0f - arg0->unkBC8) * 0.5f;
     }
-    v = 11.111112f - arg0->unkBD0;
-    if (v != 0.0f) {
+    t = 11.111112f - arg0->unkBD0;
+    if (t != 0.0f) {
         arg0->unkBE0 = 1.0f - arg0->unkBCC;
-        arg0->unkBDC = 1024.0f / v;
+        arg0->unkBDC = 1024.0f / t;
     }
     func_8004AC80((struct UnkStruct_8004B0F8*) arg0, arg0->unk44.x, arg0->unk44.y, arg0->unk44.z);
     for (i = 11; i >= 0; i--) {
