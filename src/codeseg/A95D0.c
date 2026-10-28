@@ -750,21 +750,17 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC60C.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 4387 of 35900 (4833 before D_80228190 was defined in this file).
-// IDO keeps the D_802287DC address in a saved register here; the original loads it with a lui each time.
-extern f32 D_802287B0[3];
-extern f32 D_802287C0[3];
-extern f32 D_802287D0[3];
-extern f32 D_802287DC;
-
 void func_801DCD34(UnkA95D0_Runner* runner) {
+    static f32 D_802287B0[3];
+    static f32 D_802287C0[3];
+    static f32 D_802287D0[3];
+    static f32 D_802287DC;
     UnkStruct_801DB0E4_arg0* e = D_80228190;
     s32 i;
-    f32 d;
     f32 v;
 
-    if (runner->step - D_802242C0 != 2) {
+    i = runner->step - D_802242C0;
+    if (i != 2) {
         return;
     }
     D_802287A8 = 1;
@@ -788,13 +784,11 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
         e->unk30 = 0.25f;
     }
     for (i = 0; i < 3; i++) {
-        d = D_802287C0[i] - D_802287B0[i];
-        if (d >= 0.0f) {
-            D_802287DC = d;
-            v = sqrtf(d);
+        D_802287DC = D_802287C0[i] - D_802287B0[i];
+        if (D_802287DC >= 0.0f) {
+            v = sqrtf(D_802287DC);
         } else {
-            D_802287DC = d;
-            v = -sqrtf(-d);
+            v = -sqrtf(-D_802287DC);
         }
         D_802287B0[i] += v * 0.3f;
     }
@@ -802,8 +796,8 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
     e->unkC[1] = D_802287B0[1] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 4.5f)) * 12.0f;
     e->unkC[2] = D_802287B0[2] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 7.5f)) * 25.0f;
     D_802287D0[0] = COS(DEG_TO_BINANG(D_80228120[0][0]));
-    D_802287D0[2] = SIN(DEG_TO_BINANG(D_80228120[0][0]));
     D_802287D0[1] = (f32) (runner->frame / runner->step->duration) * 0.9f + -0.2f;
+    D_802287D0[2] = SIN(DEG_TO_BINANG(D_80228120[0][0]));
     D_802287DC = sqrtf(SQ(D_802287D0[0]) + SQ(D_802287D0[1]) + SQ(D_802287D0[2]));
     for (i = 0; i < 3; i++) {
         e->unk14[i] = D_802287D0[i] / D_802287DC;
@@ -818,9 +812,6 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
     }
     e->unk8 = (e->unk8 + 1) % 2;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DCD34.s")
-#endif
 
 void func_801DD2D0(UnkA95D0_Runner* runner) {
     UnkStruct_801DB0E4_arg0* e;
