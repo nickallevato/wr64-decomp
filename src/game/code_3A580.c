@@ -43,14 +43,13 @@ void func_8007FD80(void) {
 // In Port Blue, draws each D_801C3B90 entry inside the water window (gWaterWindow[0]) as eight vertices at its angle,
 // on the water height (func_8004D30C), and six triangles.
 #ifdef NON_MATCHING
-// Same blocks and calls; the frame is 0x40 larger, the original keeps ax/az on the stack (sp+0x78/0x74), and the
-// float and saved registers differ throughout. Score 7464 of 27500.
+// Score 4945 of 27500: the original computes bx and bz before the first func_8004D30C call (with c and s in dx/dz's
+// $f20/$f22) where IDO here computes them after it and keeps dx/dz in $f24/$f26 across the call; x/z and the
+// saved registers differ from there. dx/dz reused for the cosine and sine, and the chained stores, are closest.
 Gfx* func_8007FFA8(Gfx* gdl) {
     UnkStruct_801C3B90* p;
     Vtx* v;
     s32 i;
-    f32 c;
-    f32 s;
     f32 ax;
     f32 az;
     f32 bx;
@@ -71,17 +70,15 @@ Gfx* func_8007FFA8(Gfx* gdl) {
         dx = p->unk0 - gWaterWindow[0].unk8;
         dz = p->unk4 - gWaterWindow[0].unkC;
         if (!(gWaterWindow[0].unk10 <= dx * dx + dz * dz)) {
-            c = gSinTable[(p->unk8 + 0x400) & 0xFFF];
-            ax = 26.24f * c;
-            s = gSinTable[p->unk8 & 0xFFF];
-            az = 26.24f * s;
-            x = p->unk0 - ax;
+            dx = gSinTable[(p->unk8 + 0x400) & 0xFFF];
+            ax = 26.24f * dx;
+            dz = gSinTable[p->unk8 & 0xFFF];
+            az = 26.24f * dz;
+            bx = -17.28f * dz;
+            bz = 17.28f * dx;
             v = &gGfxPool->unk170D8[0x151 + i];
-            bx = -17.28f * s;
-            v[3].v.ob[0] = x;
-            z = p->unk4 - az;
-            bz = 17.28f * c;
-            v[3].v.ob[2] = z;
+            v[3].v.ob[0] = x = p->unk0 - ax;
+            v[3].v.ob[2] = z = p->unk4 - az;
             v[3].v.ob[1] = func_8004D30C(x, z);
             v[0].v.ob[0] = x - bx;
             v[0].v.ob[2] = z - bz;
@@ -89,16 +86,14 @@ Gfx* func_8007FFA8(Gfx* gdl) {
             v[5].v.ob[0] = x + bx;
             v[5].v.ob[2] = z + bz;
             v[5].v.ob[1] = func_8004D30C(x + bx, z + bz);
-            v[1].v.ob[0] = p->unk0 - bx;
-            v[1].v.ob[2] = p->unk4 - bz;
-            v[1].v.ob[1] = func_8004D30C(p->unk0 - bx, p->unk4 - bz);
-            v[6].v.ob[0] = p->unk0 + bx;
-            v[6].v.ob[2] = p->unk4 + bz;
-            v[6].v.ob[1] = func_8004D30C(p->unk0 + bx, p->unk4 + bz);
-            x = p->unk0 + ax;
-            z = p->unk4 + az;
-            v[4].v.ob[0] = x;
-            v[4].v.ob[2] = z;
+            v[1].v.ob[0] = x = p->unk0 - bx;
+            v[1].v.ob[2] = z = p->unk4 - bz;
+            v[1].v.ob[1] = func_8004D30C(x, z);
+            v[6].v.ob[0] = x = p->unk0 + bx;
+            v[6].v.ob[2] = z = p->unk4 + bz;
+            v[6].v.ob[1] = func_8004D30C(x, z);
+            v[4].v.ob[0] = x = p->unk0 + ax;
+            v[4].v.ob[2] = z = p->unk4 + az;
             v[4].v.ob[1] = func_8004D30C(x, z);
             v[2].v.ob[0] = x - bx;
             v[2].v.ob[2] = z - bz;

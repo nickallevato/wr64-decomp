@@ -1298,8 +1298,9 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
 }
 
 #ifdef NON_MATCHING
-// Score 9938 of 82500: close in structure: float register allocation differs (the original also keeps the double
-// 19.000002 in $f30 across the loop) and the frame is 8 bytes larger. Control flow matches.
+// Score 5359 of 82500: same instructions in the loop but float registers differ (the original also keeps the double
+// 19.000002 in $f30 across the loop); in the cross product the original spills ay, bx and by (sp+0x9C..0x94) where
+// this version spills others. The midpoint block follows the original's statement order; s holds len, mx holds ax.
 s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     UnkStruct_80192690* rider;
     UnkStruct_802238DC* anim;
@@ -1307,12 +1308,10 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
     f32 dx;
     f32 dy;
     f32 dz;
-    f32 len;
     f32 s;
     f32 mx;
     f32 my;
     f32 mz;
-    f32 ax;
     f32 ay;
     f32 az;
     f32 bx;
@@ -1352,9 +1351,9 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
             dx = arg1->unk168.unk0.x - arg1->unk120.unk0.x;
             dy = arg1->unk168.unk0.y - arg1->unk120.unk0.y;
             dz = arg1->unk168.unk0.z - arg1->unk120.unk0.z;
-            len = SQ(dx) + SQ(dy) + SQ(dz);
-            if (len > (19.000002 * 19.000002)) {
-                s = 19.000002 / sqrtf(len);
+            s = SQ(dx) + SQ(dy) + SQ(dz);
+            if (s > (19.000002 * 19.000002)) {
+                s = 19.000002 / sqrtf(s);
                 arg1->unk168.unk0.x = arg1->unk120.unk0.x + (s * dx);
                 arg1->unk168.unk0.y = arg1->unk120.unk0.y + (s * dy);
                 arg1->unk168.unk0.z = arg1->unk120.unk0.z + (s * dz);
@@ -1371,9 +1370,9 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
             dx = arg1->unk1D4.unk0.x - arg1->unk18C.unk0.x;
             dy = arg1->unk1D4.unk0.y - arg1->unk18C.unk0.y;
             dz = arg1->unk1D4.unk0.z - arg1->unk18C.unk0.z;
-            len = SQ(dx) + SQ(dy) + SQ(dz);
-            if (len > (19.000002 * 19.000002)) {
-                s = 19.000002 / sqrtf(len);
+            s = SQ(dx) + SQ(dy) + SQ(dz);
+            if (s > (19.000002 * 19.000002)) {
+                s = 19.000002 / sqrtf(s);
                 arg1->unk1D4.unk0.x = arg1->unk18C.unk0.x + (s * dx);
                 arg1->unk1D4.unk0.y = arg1->unk18C.unk0.y + (s * dy);
                 arg1->unk1D4.unk0.z = arg1->unk18C.unk0.z + (s * dz);
@@ -1389,17 +1388,17 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
         dx = arg1->unk168.unk0.x - arg1->unk1D4.unk0.x;
         dy = arg1->unk168.unk0.y - arg1->unk1D4.unk0.y;
         dz = arg1->unk168.unk0.z - arg1->unk1D4.unk0.z;
-        mx = (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5;
         s = 7.0 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+        mx = (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5;
         dx *= s;
         arg1->unk168.unk0.x = dx + mx;
-        dy *= s;
         my = (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5;
+        dy *= s;
         arg1->unk168.unk0.y = dy + my;
-        arg1->unk1D4.unk0.x = mx - dx;
-        dz *= s;
-        arg1->unk1D4.unk0.y = my - dy;
         mz = (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5;
+        arg1->unk1D4.unk0.x = mx - dx;
+        arg1->unk1D4.unk0.y = my - dy;
+        dz *= s;
         arg1->unk168.unk0.z = dz + mz;
         arg1->unk1D4.unk0.z = mz - dz;
     }
@@ -1410,15 +1409,15 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
     arg1->unk1F8.unkC.x = s * dx;
     arg1->unk1F8.unkC.y = s * dy;
     arg1->unk1F8.unkC.z = s * dz;
-    ax = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
+    mx = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
     ay = arg1->unk168.unk0.y - arg1->unk1F8.unk0.y;
     az = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
     bx = arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x;
     by = arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y;
     bz = arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z;
     dx = (bz * ay) - (by * az);
-    dy = (bx * az) - (bz * ax);
-    dz = (by * ax) - (bx * ay);
+    dy = (bx * az) - (bz * mx);
+    dz = (by * mx) - (bx * ay);
     s = 1.0f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
     arg1->unk1F8.unk14.x = s * dx;
     arg1->unk1F8.unk14.y = s * dy;
@@ -5259,64 +5258,56 @@ void func_8005DE24(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8005DE24.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 6603 of 48600: register allocation differs: the original uses $s8 and a 0xD8 frame (this version 0xC8),
-// keeps the chain base pointer in $s1 and reads cur->pos through an index register. Control flow matches.
 void func_800609EC(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_80052C6C_2* prev;
     UnkStruct_80052C6C_2* cur;
-    UnkStruct_80192690_C88* base;
-    UnkStruct_80192690_C88* p14;
     f32* lengths;
+    s32 i;
     f32 nx;
     f32 ny;
     f32 nz;
+    f32 dx;
+    f32 dy;
+    f32 dz;
     f32 yOff;
     f32 yOffStep;
     f32 grav;
     f32 gravStep;
     f32 limit;
     f32 limitStep;
-    f32 k1;
-    f32 k2;
-    f32 dx;
-    f32 dy;
-    f32 dz;
     f32 len;
     f32 dot;
     f32 s;
-    s32 i;
 
     yOffStep = (D_800D4910 - D_800D490C) / 4;
     yOff = D_800D490C;
     grav = D_800D4914;
-    limit = D_800D491C;
     gravStep = (D_800D4918 - D_800D4914) / 4;
+    limit = D_800D491C;
     limitStep = (D_800D4920 - D_800D491C) / 4;
-    prev = &rider->unk1448[0];
-    base = (UnkStruct_80192690_C88*) ((u8*) rider + rider->unk1424 * 0x288 + 0xD84);
-    nx = (base->unk18.y * base->unkC.z) - (base->unk18.z * base->unkC.y);
-    ny = (base->unk18.z * base->unkC.x) - (base->unk18.x * base->unkC.z);
-    nz = (base->unk18.x * base->unkC.y) - (base->unk18.y * base->unkC.x);
+    prev = (UnkStruct_80052C6C_2*) &RIDER_C88(rider)[rider->unk1424][7];
+    cur = &rider->unk1448[0];
+    nx = (prev->unk14.y * prev->unkC.z) - (prev->unk14.z * prev->unkC.y);
+    ny = (prev->unk14.z * prev->unkC.x) - (prev->unk14.x * prev->unkC.z);
+    nz = (prev->unk14.x * prev->unkC.y) - (prev->unk14.y * prev->unkC.x);
     if (D_801CE638 == 21) {
-        k1 = 7.942f;
-        k2 = -2.746f;
+        dy = 7.942f;
+        dz = -2.746f;
     } else {
-        k1 = 2.0f;
-        k2 = -2.1f;
+        dy = 2.0f;
+        dz = -2.1f;
     }
-    prev->unk0.x = RIDER_PARTS(rider)[1].unk4.x + (k1 * base->unk18.x) + (k2 * base->unkC.x);
-    prev->unk0.y = RIDER_PARTS(rider)[1].unk4.y + (k1 * base->unk18.y) + (k2 * base->unkC.y);
-    prev->unk0.z = RIDER_PARTS(rider)[1].unk4.z + (k1 * base->unk18.z) + (k2 * base->unkC.z);
-    p14 = (UnkStruct_80192690_C88*) ((u8*) rider + rider->unk1424 * 0x288 + 0xE80);
-    dx = p14->unk18.x + base->unkC.x;
-    dy = p14->unk18.y + base->unkC.y;
-    dz = p14->unk18.z + base->unkC.z;
+    cur->unk0.x = RIDER_PARTS(rider)[1].unk4.x + (dy * prev->unk14.x) + (dz * prev->unkC.x);
+    cur->unk0.y = RIDER_PARTS(rider)[1].unk4.y + (dy * prev->unk14.y) + (dz * prev->unkC.y);
+    cur->unk0.z = RIDER_PARTS(rider)[1].unk4.z + (dy * prev->unk14.z) + (dz * prev->unkC.z);
+    dx = RIDER_C88(rider)[rider->unk1424][14].unk18.x + prev->unkC.x;
+    dy = RIDER_C88(rider)[rider->unk1424][14].unk18.y + prev->unkC.y;
+    dz = RIDER_C88(rider)[rider->unk1424][14].unk18.z + prev->unkC.z;
     len = 1.0f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
-    prev->unkC.x = len * dx;
-    prev->unkC.y = len * dy;
-    prev->unkC.z = len * dz;
+    cur->unkC.x = len * dx;
+    cur->unkC.y = len * dy;
+    cur->unkC.z = len * dz;
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
@@ -5332,7 +5323,9 @@ void func_800609EC(s32 arg0) {
     } else {
         lengths = D_800D48E4;
     }
-    for (i = 1, cur = &rider->unk1448[1]; i != 6; i++, prev = cur, cur++) {
+    for (i = 1; i < 6; i++) {
+        prev = cur;
+        cur = &rider->unk1448[i];
         dx = prev->unk0.x - ((rider->unk1520[i].x * grav) + cur->unk0.x);
         dy = prev->unk0.y - ((rider->unk1520[i].y * grav) + cur->unk0.y + yOff);
         dz = prev->unk0.z - ((rider->unk1520[i].z * grav) + cur->unk0.z);
@@ -5358,20 +5351,24 @@ void func_800609EC(s32 arg0) {
             cur->unk14.x = (cur->unkC.y * nz) - (cur->unkC.z * ny);
             cur->unk14.y = (cur->unkC.z * nx) - (cur->unkC.x * nz);
             cur->unk14.z = (cur->unkC.x * ny) - (cur->unkC.y * nx);
-            s = prev->unk0.x - (lengths[i - 1] * cur->unkC.x);
-            rider->unk1520[i].x = s - cur->unk0.x;
+            dx = cur->unk0.x;
+            dy = cur->unk0.y;
+            dz = cur->unk0.z;
+            dot = lengths[i - 1];
+            s = prev->unk0.x - (dot * cur->unkC.x);
             cur->unk0.x = s;
-            s = prev->unk0.y - (lengths[i - 1] * cur->unkC.y);
-            rider->unk1520[i].y = s - cur->unk0.y;
+            rider->unk1520[i].x = s - dx;
+            s = prev->unk0.y - (dot * cur->unkC.y);
             cur->unk0.y = s;
-            s = prev->unk0.z - (lengths[i - 1] * cur->unkC.z);
-            rider->unk1520[i].z = s - cur->unk0.z;
+            rider->unk1520[i].y = s - dy;
+            s = prev->unk0.z - (dot * cur->unkC.z);
             cur->unk0.z = s;
+            rider->unk1520[i].z = s - dz;
             func_80052A20(cur);
         }
         yOff += yOffStep;
-        limit += limitStep;
         grav += gravStep;
+        limit += limitStep;
     }
     func_80048A88(&gGfxPool->unkF308[arg0], rider->unk1448[1].unkC.x, rider->unk1448[1].unkC.y, rider->unk1448[1].unkC.z,
                   rider->unk1448[1].unk14.x, rider->unk1448[1].unk14.y, rider->unk1448[1].unk14.z, rider->unk1448[1].unk0.x,
@@ -5389,23 +5386,25 @@ void func_800609EC(s32 arg0) {
                   rider->unk1448[5].unk14.x, rider->unk1448[5].unk14.y, rider->unk1448[5].unk14.z, rider->unk1448[5].unk0.x,
                   rider->unk1448[5].unk0.y, rider->unk1448[5].unk0.z, 0.1f);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800609EC.s")
-#endif
 
 #ifdef NON_MATCHING
-// Score 4338 of 30400: register allocation differs: the original reads unkB56/unkB5E/unkB5F through a pointer kept
-// in $a1 (saved across SysUtils_Round); IDO folds this version's pointer into arg0. Control flow matches.
+// Score 1383 of 30400: same instructions; register choice differs: the original has unkB50.button in a1 (here v0)
+// and btn/pad in a1 (here v1), with unkC54 and &gFrameCounter in v1 (here a1), and loads the constant 1 for
+// unk1444/unk1600 into a fresh temp where IDO here keeps it in a2. btn and pad set at the top (not before first use)
+// stop IDO folding their first access into arg0; d holding the button is a reuse that put unkB56 in v1.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
     s32 d;
     u16 dirs;
 
+    pad = &arg0->unkB50;
+    btn = (RiderButtons*) (pad + 1);
+    d = arg0->unkB50.button;
     arg0->unkB58 = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB50.button;
     arg0->unkB5A = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB56;
     arg0->unkB5C = arg0->unkB56;
-    arg0->unkB56 = arg0->unkB50.button;
+    arg0->unkB56 = d;
     arg0->unkB5E = arg0->unkB50.stick_x;
     arg0->unkB5F = arg0->unkB50.stick_y;
     d = arg0->unkB50.stick_x - arg0->unkB60;
@@ -5415,7 +5414,6 @@ void func_80061184(UnkStruct_80192690* arg0) {
         d = D_800D49DC;
     }
     arg0->unkB60 += d;
-    btn = (RiderButtons*) &arg0->unkB56;
     arg0->unkC66 = btn->held & 0xA000;
     if ((arg0->unkC54 == 23) || (arg0->unk1608 != 0) || ((arg0->unkC54 == 7) && (arg0->unkC58 < 56)) ||
         ((arg0->unkC54 > 0) && (arg0->unkC54 < 7)) || (gRiderGameModes == PAUSE_MODE) ||
@@ -5454,7 +5452,6 @@ void func_80061184(UnkStruct_80192690* arg0) {
     } else if (btn->stickY >= 15) {
         arg0->unk15A4 = gFrameCounter;
     }
-    pad = &arg0->unkB50;
     dirs = 0;
     if (pad->stick_x < -64) {
         arg0->unk1600 = 1;
@@ -5478,15 +5475,15 @@ void func_80061184(UnkStruct_80192690* arg0) {
                 arg0->unk15F8++;
             } else {
                 switch (arg0->unk15FC) {
-                    case 0x100:
-                        if (arg0->unk15F4 & 0x800) {
+                    case 0x800:
+                        if (arg0->unk15F4 & 0x200) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
                         }
                         break;
-                    case 0x200:
-                        if (arg0->unk15F4 & 0x400) {
+                    case 0x100:
+                        if (arg0->unk15F4 & 0x800) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
@@ -5499,8 +5496,8 @@ void func_80061184(UnkStruct_80192690* arg0) {
                             arg0->unk15F8 = 0;
                         }
                         break;
-                    case 0x800:
-                        if (arg0->unk15F4 & 0x200) {
+                    case 0x200:
+                        if (arg0->unk15F4 & 0x400) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
@@ -5512,15 +5509,15 @@ void func_80061184(UnkStruct_80192690* arg0) {
                 arg0->unk15FA++;
             } else {
                 switch (arg0->unk15FC) {
-                    case 0x100:
-                        if (arg0->unk15F4 & 0x400) {
+                    case 0x800:
+                        if (arg0->unk15F4 & 0x100) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
                         }
                         break;
-                    case 0x200:
-                        if (arg0->unk15F4 & 0x800) {
+                    case 0x100:
+                        if (arg0->unk15F4 & 0x400) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
@@ -5533,8 +5530,8 @@ void func_80061184(UnkStruct_80192690* arg0) {
                             arg0->unk15FA = 0;
                         }
                         break;
-                    case 0x800:
-                        if (arg0->unk15F4 & 0x100) {
+                    case 0x200:
+                        if (arg0->unk15F4 & 0x800) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
@@ -5792,12 +5789,8 @@ void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 7979 of 27500: float register allocation differs (unk6C/unk70 swap $f16/$f18 from the cross product on, and
-// the 1/len and 0.5 temps swap $f2/$f12); the frame is 8 bytes larger. Control flow and operation order match.
 void func_800624CC(UnkStruct_80192690* arg0) {
     f32 len;
-    f32 inv;
     f32 t;
     f32 px;
     f32 py;
@@ -5806,30 +5799,31 @@ void func_800624CC(UnkStruct_80192690* arg0) {
     arg0->unk6C = arg0->unk90[8].unk0 - arg0->unk90[11].unk0;
     arg0->unk70 = arg0->unk90[8].unk4 - arg0->unk90[11].unk4;
     arg0->unk74 = arg0->unk90[8].unk8 - arg0->unk90[11].unk8;
-    inv = 1.0f / sqrtf(SQ(arg0->unk6C) + SQ(arg0->unk70) + SQ(arg0->unk74));
-    arg0->unk6C *= inv;
-    arg0->unk70 *= inv;
-    arg0->unk74 *= inv;
+    len = 1.0f / sqrtf(SQ(arg0->unk6C) + SQ(arg0->unk70) + SQ(arg0->unk74));
+    arg0->unk6C *= len;
+    arg0->unk70 *= len;
+    arg0->unk74 *= len;
     arg0->unk78 = arg0->unk90[11].unk0 - (arg0->unk90[9].unk0 + arg0->unk90[10].unk0) * 0.5;
     arg0->unk7C = arg0->unk90[11].unk4 - (arg0->unk90[9].unk4 + arg0->unk90[10].unk4) * 0.5;
     arg0->unk80 = arg0->unk90[11].unk8 - (arg0->unk90[9].unk8 + arg0->unk90[10].unk8) * 0.5;
     arg0->unk84 = (arg0->unk7C * arg0->unk74) - (arg0->unk80 * arg0->unk70);
     arg0->unk88 = (arg0->unk80 * arg0->unk6C) - (arg0->unk78 * arg0->unk74);
     arg0->unk8C = (arg0->unk78 * arg0->unk70) - (arg0->unk7C * arg0->unk6C);
-    inv = 1.0f / sqrtf(SQ(arg0->unk84) + SQ(arg0->unk88) + SQ(arg0->unk8C));
-    arg0->unk84 *= inv;
-    arg0->unk88 *= inv;
-    arg0->unk8C *= inv;
+    len = 1.0f / sqrtf(SQ(arg0->unk84) + SQ(arg0->unk88) + SQ(arg0->unk8C));
+    arg0->unk84 *= len;
+    arg0->unk88 *= len;
+    arg0->unk8C *= len;
     arg0->unk78 = (arg0->unk70 * arg0->unk8C) - (arg0->unk74 * arg0->unk88);
     arg0->unk7C = (arg0->unk74 * arg0->unk84) - (arg0->unk6C * arg0->unk8C);
     arg0->unk80 = (arg0->unk6C * arg0->unk88) - (arg0->unk70 * arg0->unk84);
     len = SQ(arg0->unk6C) + SQ(arg0->unk74);
-    if (len != 0.0f) {
-        inv = 1.0f / sqrtf(len);
-        t = arg0->unk6C * inv;
+    // An integer 0: the original loads this zero separately.
+    if (len != 0) {
+        len = 1.0f / sqrtf(len);
+        t = arg0->unk6C * len;
         arg0->unk1434 = t;
         arg0->unk1440 = -t;
-        t = arg0->unk74 * inv;
+        t = arg0->unk74 * len;
         arg0->unk1438 = t;
         arg0->unk143C = t;
     }
@@ -5840,46 +5834,55 @@ void func_800624CC(UnkStruct_80192690* arg0) {
     px = arg0->unk44.x + (2.0f * arg0->unk78);
     py = arg0->unk44.y + (2.0f * arg0->unk7C);
     pz = arg0->unk44.z + (2.0f * arg0->unk80);
-    t = RIDER_SPHERES(arg0)[0].pos.x;
-    RIDER_SPHERES(arg0)[0].pos.x = (arg0->unk6C * 27.0f) + px;
-    RIDER_SPHERES(arg0)[0].vel.x = RIDER_SPHERES(arg0)[0].pos.x - t;
-    t = RIDER_SPHERES(arg0)[0].pos.y;
-    RIDER_SPHERES(arg0)[0].pos.y = (arg0->unk70 * 27.0f) + py;
-    RIDER_SPHERES(arg0)[0].vel.y = RIDER_SPHERES(arg0)[0].pos.y - t;
-    t = RIDER_SPHERES(arg0)[0].pos.z;
-    RIDER_SPHERES(arg0)[0].pos.z = (arg0->unk74 * 27.0f) + pz;
-    RIDER_SPHERES(arg0)[0].vel.z = RIDER_SPHERES(arg0)[0].pos.z - t;
-    t = RIDER_SPHERES(arg0)[1].pos.x;
-    RIDER_SPHERES(arg0)[1].pos.x = (arg0->unk6C * 9.0f) + px;
-    RIDER_SPHERES(arg0)[1].vel.x = RIDER_SPHERES(arg0)[1].pos.x - t;
-    t = RIDER_SPHERES(arg0)[1].pos.y;
-    RIDER_SPHERES(arg0)[1].pos.y = (arg0->unk70 * 9.0f) + py;
-    RIDER_SPHERES(arg0)[1].vel.y = RIDER_SPHERES(arg0)[1].pos.y - t;
-    t = RIDER_SPHERES(arg0)[1].pos.z;
-    RIDER_SPHERES(arg0)[1].pos.z = (arg0->unk74 * 9.0f) + pz;
-    RIDER_SPHERES(arg0)[1].vel.z = RIDER_SPHERES(arg0)[1].pos.z - t;
-    t = RIDER_SPHERES(arg0)[2].pos.x;
-    RIDER_SPHERES(arg0)[2].pos.x = (arg0->unk6C * -9.0f) + px;
-    RIDER_SPHERES(arg0)[2].vel.x = RIDER_SPHERES(arg0)[2].pos.x - t;
-    t = RIDER_SPHERES(arg0)[2].pos.y;
-    RIDER_SPHERES(arg0)[2].pos.y = (arg0->unk70 * -9.0f) + py;
-    RIDER_SPHERES(arg0)[2].vel.y = RIDER_SPHERES(arg0)[2].pos.y - t;
-    t = RIDER_SPHERES(arg0)[2].pos.z;
-    RIDER_SPHERES(arg0)[2].pos.z = (arg0->unk74 * -9.0f) + pz;
-    RIDER_SPHERES(arg0)[2].vel.z = RIDER_SPHERES(arg0)[2].pos.z - t;
-    t = RIDER_SPHERES(arg0)[3].pos.x;
-    RIDER_SPHERES(arg0)[3].pos.x = (arg0->unk6C * -27.0f) + px;
-    RIDER_SPHERES(arg0)[3].vel.x = RIDER_SPHERES(arg0)[3].pos.x - t;
-    t = RIDER_SPHERES(arg0)[3].pos.y;
-    RIDER_SPHERES(arg0)[3].pos.y = (arg0->unk70 * -27.0f) + py;
-    RIDER_SPHERES(arg0)[3].vel.y = RIDER_SPHERES(arg0)[3].pos.y - t;
-    t = RIDER_SPHERES(arg0)[3].pos.z;
-    RIDER_SPHERES(arg0)[3].pos.z = (arg0->unk74 * -27.0f) + pz;
-    RIDER_SPHERES(arg0)[3].vel.z = RIDER_SPHERES(arg0)[3].pos.z - t;
+    len = RIDER_SPHERES(arg0)[0].pos.x;
+    t = (arg0->unk6C * 27.0f) + px;
+    RIDER_SPHERES(arg0)[0].pos.x = t;
+    RIDER_SPHERES(arg0)[0].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[0].pos.y;
+    t = (arg0->unk70 * 27.0f) + py;
+    RIDER_SPHERES(arg0)[0].pos.y = t;
+    RIDER_SPHERES(arg0)[0].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[0].pos.z;
+    t = (arg0->unk74 * 27.0f) + pz;
+    RIDER_SPHERES(arg0)[0].pos.z = t;
+    RIDER_SPHERES(arg0)[0].vel.z = t - len;
+    len = RIDER_SPHERES(arg0)[1].pos.x;
+    t = (arg0->unk6C * 9.0f) + px;
+    RIDER_SPHERES(arg0)[1].pos.x = t;
+    RIDER_SPHERES(arg0)[1].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[1].pos.y;
+    t = (arg0->unk70 * 9.0f) + py;
+    RIDER_SPHERES(arg0)[1].pos.y = t;
+    RIDER_SPHERES(arg0)[1].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[1].pos.z;
+    t = (arg0->unk74 * 9.0f) + pz;
+    RIDER_SPHERES(arg0)[1].pos.z = t;
+    RIDER_SPHERES(arg0)[1].vel.z = t - len;
+    len = RIDER_SPHERES(arg0)[2].pos.x;
+    t = (arg0->unk6C * -9.0f) + px;
+    RIDER_SPHERES(arg0)[2].pos.x = t;
+    RIDER_SPHERES(arg0)[2].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[2].pos.y;
+    t = (arg0->unk70 * -9.0f) + py;
+    RIDER_SPHERES(arg0)[2].pos.y = t;
+    RIDER_SPHERES(arg0)[2].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[2].pos.z;
+    t = (arg0->unk74 * -9.0f) + pz;
+    RIDER_SPHERES(arg0)[2].pos.z = t;
+    RIDER_SPHERES(arg0)[2].vel.z = t - len;
+    len = RIDER_SPHERES(arg0)[3].pos.x;
+    t = (arg0->unk6C * -27.0f) + px;
+    RIDER_SPHERES(arg0)[3].pos.x = t;
+    RIDER_SPHERES(arg0)[3].vel.x = t - len;
+    len = RIDER_SPHERES(arg0)[3].pos.y;
+    t = (arg0->unk70 * -27.0f) + py;
+    RIDER_SPHERES(arg0)[3].pos.y = t;
+    RIDER_SPHERES(arg0)[3].vel.y = t - len;
+    len = RIDER_SPHERES(arg0)[3].pos.z;
+    t = (arg0->unk74 * -27.0f) + pz;
+    RIDER_SPHERES(arg0)[3].pos.z = t;
+    RIDER_SPHERES(arg0)[3].vel.z = t - len;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800624CC.s")
-#endif
 
 void func_80062918(Vec3f* arg0) {
     f32 temp_f20;
@@ -6211,8 +6214,10 @@ void func_8006390C(s32 arg0, void* arg1) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6362 of 99300: close in structure: register allocation and a few constant loads differ (1.0f, D_800D4AC0,
-// 0.9f), so the original is 0x18 bytes longer. Control flow matches, including the switch on unk1598.
+// Score 235 of 99300: same instructions; stats is in a2 and the constant 1 in a3 in the original (v1 and a2 here),
+// gSinTable's address and the angle swap v0/v1, and float temps around unk15CC/unk15D4 are numbered differently.
+// Integer literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads; f, d and speed
+// are each reused for a second value, as the original's stack homes show.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
     if ((r)->unk16E2 == 0) {    \
@@ -6224,13 +6229,11 @@ void func_8006390C(s32 arg0, void* arg1) {
 
 void func_80063C88(s32 arg0) {
     UnkStruct_80192690* rider;
-    struct UnkStruct_801C2938* stats;
     f32 f;
-    f32 d;
+    struct UnkStruct_801C2938* stats;
     f32 speed;
-    f32 dx;
-    f32 dz;
-    f32 max;
+    f32 d;
+    s32 pad[6]; // stack pad: the original's frame is 0x50
 
     if (D_801CE638 == 4) {
         D_80192690[arg0].unkB64 = D_80192690[arg0].unkB68;
@@ -6253,13 +6256,13 @@ void func_80063C88(s32 arg0) {
         }
         rider->unk1590 = rider->unk1594 * 0.01f;
     } else {
-        d = rider->unk15E8 - rider->unk14;
-        if (d < -0.01f) {
-            d = -0.01f;
-        } else if (d > 0.01f) {
-            d = 0.01f;
+        f = rider->unk15E8 - rider->unk14;
+        if (f < -0.01f) {
+            f = -0.01f;
+        } else if (f > 0.01f) {
+            f = 0.01f;
         }
-        rider->unk14 += d;
+        rider->unk14 += f;
         rider->unk1590 = rider->unk1594;
     }
     if (rider->unkC54 == 8) {
@@ -6269,7 +6272,7 @@ void func_80063C88(s32 arg0) {
     } else if (rider->unkC54 == 17) {
         f = 0.2f;
     } else {
-        f = 1.0f;
+        f = 1;
     }
     rider->unk169C = D_800D92F0[rider->unkB64] * f;
     rider->unk16A0 = D_800D9300[rider->unkB64] * f;
@@ -6278,7 +6281,7 @@ void func_80063C88(s32 arg0) {
     rider->unk16AC = D_800D9330[rider->unkB64] * f;
     rider->unk16B0 = D_800D9310[rider->unkB64] * f;
     if ((rider->unkB58 & 0x4000) && (rider->unkC54 == 22) && (rider->unk15D8 == 1.0f)) {
-        rider->unk15D8 = 0.9f;
+        rider->unk15D8 = 0.9;
     }
     if (rider->unkB64 == 1) {
         if (rider->unkC7C != 0) {
@@ -6318,18 +6321,20 @@ void func_80063C88(s32 arg0) {
         rider->unkB9C = (stats->power / 5.0f) * f;
         if ((gPlayers == TWO_PLAYERS) && ((u16) D_800D4970 != 0)) {
             if (stats->unk4 != 0) {
-                dx = D_80192690[gPlayer1Rider].unk44.x - D_80192690[gPlayer2Rider].unk44.x;
-                dz = D_80192690[gPlayer1Rider].unk44.z - D_80192690[gPlayer2Rider].unk44.z;
+                f = D_80192690[gPlayer1Rider].unk44.x - D_80192690[gPlayer2Rider].unk44.x;
+                d = SQ(f);
+                f = D_80192690[gPlayer1Rider].unk44.z - D_80192690[gPlayer2Rider].unk44.z;
+                d += SQ(f);
                 if (rider->unkB64 == 1) {
-                    max = 1.05f;
+                    speed = 1.05f;
                 } else if (rider->unkB64 == 2) {
-                    max = 1.15f;
+                    speed = 1.15f;
                 } else {
-                    max = 1.1f;
+                    speed = 1.1f;
                 }
-                f = ((sqrtf(SQ(dx) + SQ(dz)) * (max - 0.9f)) / 200.0f) + 0.9f;
-                if (max < f) {
-                    f = max;
+                f = ((sqrtf(d) * (speed - 0.9f)) / 200.0f) + 0.9f;
+                if (speed < f) {
+                    f = speed;
                 }
             } else {
                 f = 0.9f;
@@ -6358,7 +6363,7 @@ void func_80063C88(s32 arg0) {
         rider->unk15E4 = 0.0f;
         rider->unk15E0 = 1.0f;
     }
-    if (((rider->unkB90 < 11.111112f) && ((rider->unkC54 == 22) || (rider->unkC54 == 7))) || (rider->unkC44 != 0.0f)) {
+    if (((rider->unkB90 < 11.111112f) && ((rider->unkC54 == 22) || (rider->unkC54 == 7))) || (rider->unkC44 != 0)) {
         rider->unkBF8 = D_800D9480[rider->unkB64] * (f32) rider->unkB5E;
     } else {
         rider->unkBF8 = 0.0f;
@@ -6374,7 +6379,7 @@ void func_80063C88(s32 arg0) {
         rider->unk15C4 = 0.0f;
     } else {
         rider->unk15C4 = sqrtf(SQ(rider->unk6C) + SQ(rider->unk74)) * (f32) rider->unkB5F;
-        if (rider->unk15C4 < 0.0f) {
+        if (rider->unk15C4 < 0) {
             rider->unk15C4 *= rider->unk1570;
         } else {
             rider->unk15C4 *= rider->unk156C;
@@ -6400,7 +6405,8 @@ void func_80063C88(s32 arg0) {
         rider->unk15D4 = (f32) gWaterLevel - 10.0f;
     } else {
         if (speed < 33.333336f) {
-            rider->unk15D4 = (f32) gWaterLevel + (D_800D4954 * (speed / 33.333336f));
+            // FAKE: the comma expression renumbers the float temps
+            rider->unk15D4 = (f32) gWaterLevel + ((0, D_800D4954) * (speed / 33.333336f));
         } else {
             rider->unk15D4 = (f32) gWaterLevel + D_800D4954;
         }
@@ -6416,7 +6422,7 @@ void func_80063C88(s32 arg0) {
     } else {
         rider->unk16F0 = 0;
     }
-    if ((rider->unk16F0 != rider->unk16F2) && (rider->unkC54 == 22)) {
+    if ((rider->unk16F2 != rider->unk16F0) && (rider->unkC54 == 22)) {
         rider->unk16D4++;
     }
     if ((rider->unkC54 == 22) || (rider->unkC54 == 25)) {
@@ -6823,8 +6829,9 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 7624 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
-// the C14..C34 block, the zero constants); control flow follows the original.
+// Score 6359 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
+// so their moves to a1/a3 are hoisted; the C14..C34 block; frame 0x48, not 0x50). The zero literals written as 0 and
+// .0f give the original's separate zero loads in three of the compares.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     camera_unk_1* cam;
@@ -6879,7 +6886,7 @@ void func_80065C18(s32 arg0) {
             rider->unkB94 = rider->unkB90;
         }
     }
-    if (((rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) && (rider->unkC66 != 0)) {
+    if (((rider->unkC4C != 0) || (rider->unkC48 != .0f)) && (rider->unkC66 != 0)) {
         if ((rider->unk16B4 < 40) && (rider->unkB90 < 2.777778f)) {
             rider->unk16B4++;
         }
@@ -6919,7 +6926,7 @@ void func_80065C18(s32 arg0) {
     rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
     rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
     if ((rider->unkC7C == 0) &&
-        ((rider->unkC4C != 0.0f) || ((rider->unkC48 != 0.0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
+        ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
         rider->unk16D0++;
     } else {
         rider->unk16D0 = 0;
@@ -6954,7 +6961,7 @@ void func_80065C18(s32 arg0) {
         }
     }
     if (rider->unk16CE != 0) {
-        if (rider->unkC40 != 0.0f) {
+        if (rider->unkC40 != 0) {
             rider->unk1602 = 1;
         } else {
             rider->unk1602 = 0;
@@ -7035,24 +7042,22 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 9308 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 and the
-// nearest rider in saved registers); control flow follows the original.
+// Score 8106 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 in
+// saved registers and player in a temporary it spills across the calls; frame 0x60). level also serves as the
+// push-apart counter and the two-player stamp flag, and best as the stamp radius.
 void func_800665B0(void) {
     UnkStruct_80192690* player;
     UnkStruct_80192690* other;
     camera_unk_1* cam;
     s32 i;
-    s32 n;
     s32 nearest;
     s32 level;
-    s32 flag;
     u8 pan;
     f32 best;
     f32 dx;
     f32 dz;
     f32 dist;
     f32 lim;
-    f32 r;
     f32 sx;
     f32 sz;
 
@@ -7079,7 +7084,7 @@ void func_800665B0(void) {
         func_80063C88(i);
     }
     if ((D_801CE638 != 21) && (gRiderGameModes != PAUSE_MODE)) {
-        for (n = D_800D4924; n != 0; n--) {
+        for (level = D_800D4924; level != 0; level--) {
             if (D_800D4968 != 0) {
                 Riders_PushApart();
             }
@@ -7137,10 +7142,10 @@ void func_800665B0(void) {
         func_800BFB84(&D_80192650, &D_80192670, &D_80192660, &D_80192680, pan);
     }
     if (gRiderGameModes != PAUSE_MODE) {
-        r = D_80192498;
+        best = D_80192498;
         cam = &gCameraPerspective[D_80223930];
-        sx = gWaterWindow[0].unk0 + (r * cam->unkF0);
-        sz = gWaterWindow[0].unk4 + (r * cam->unkF4);
+        sx = gWaterWindow[0].unk0 + (best * cam->unkF0);
+        sz = gWaterWindow[0].unk4 + (best * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
             player = &D_80192690[gPlayer1Rider];
             dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
@@ -7158,20 +7163,20 @@ void func_800665B0(void) {
             }
             Water_StampDiagonalSine(sx, sz, level, D_800D49AC, 1);
         } else {
-            flag = 1;
+            level = 1;
             dx = sx - D_80192690[gPlayer2Rider].unk44.x;
             dz = sz - D_80192690[gPlayer2Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                flag = 0;
+                level = 0;
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
             }
             cam = &gCameraPerspective[D_80223934];
-            sx = gWaterWindow[1].unk0 + (r * cam->unkF0);
-            sz = gWaterWindow[1].unk4 + (r * cam->unkF4);
+            sx = gWaterWindow[1].unk0 + (best * cam->unkF0);
+            sz = gWaterWindow[1].unk4 + (best * cam->unkF4);
             dx = sx - D_80192690[gPlayer1Rider].unk44.x;
             dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, flag);
+                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, level);
             }
         }
     }

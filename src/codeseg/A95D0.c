@@ -73,11 +73,15 @@ void func_800AB92C(void);
 #define SIGNF(x) (x >= 0 ? 1.0f : -1.0f)
 
 extern s32 D_80228110[];
-// FAKE (until codeseg's .bss is split): defined here, not extern, as gInitialsEntered is in AF8C0.c. This adds a
-// .bss slot to A95D0.o and moves the later codeseg .bss objects in the ELF (not the ROM). IDO then addresses
-// func_801DC274's stores from one `lui at`, as the original does. Its address still comes from the linker script
-// (undefined_syms_auto.ld), whose assignment wins over this slot. 11 entries: the uses here reach index 10.
+// FAKE (until codeseg's .bss is split): defined here, not extern, as gInitialsEntered is in AF8C0.c. IDO then
+// addresses func_801DC274's stores from one `lui at`, as the original does. 11 entries: the uses here reach index 10.
+// FAKE: gA95D0BssPad0/1 stand in for the rest of A95D0's .bss (0x80227A60..0x802287AF: the globals other files
+// reach through the linker script, whose assignments win over these slots). With them, D_80228190's slot and
+// func_801DCD34's function-scope statics (0x802287B0..0x802287DF, just below AF8C0's gLetterWheelFirst) land at
+// their own addresses. Pad1 starts at 0x802283D0: D_80228190 ends at 0x802283CC and the array is 8-aligned.
+u8 gA95D0BssPad0[0x80228190 - 0x80227A60];
 struct UnkStruct_801DB0E4_arg0 D_80228190[11];
+u8 gA95D0BssPad1[0x802287B0 - 0x802283D0];
 extern s32 D_802287A8;
 extern s32 D_802287AC;
 
@@ -746,21 +750,17 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DC60C.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 4387 of 35900 (4833 before D_80228190 was defined in this file).
-// IDO keeps the D_802287DC address in a saved register here; the original loads it with a lui each time.
-extern f32 D_802287B0[3];
-extern f32 D_802287C0[3];
-extern f32 D_802287D0[3];
-extern f32 D_802287DC;
-
 void func_801DCD34(UnkA95D0_Runner* runner) {
+    static f32 D_802287B0[3];
+    static f32 D_802287C0[3];
+    static f32 D_802287D0[3];
+    static f32 D_802287DC;
     UnkStruct_801DB0E4_arg0* e = D_80228190;
     s32 i;
-    f32 d;
     f32 v;
 
-    if (runner->step - D_802242C0 != 2) {
+    i = runner->step - D_802242C0;
+    if (i != 2) {
         return;
     }
     D_802287A8 = 1;
@@ -784,13 +784,11 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
         e->unk30 = 0.25f;
     }
     for (i = 0; i < 3; i++) {
-        d = D_802287C0[i] - D_802287B0[i];
-        if (d >= 0.0f) {
-            D_802287DC = d;
-            v = sqrtf(d);
+        D_802287DC = D_802287C0[i] - D_802287B0[i];
+        if (D_802287DC >= 0.0f) {
+            v = sqrtf(D_802287DC);
         } else {
-            D_802287DC = d;
-            v = -sqrtf(-d);
+            v = -sqrtf(-D_802287DC);
         }
         D_802287B0[i] += v * 0.3f;
     }
@@ -798,8 +796,8 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
     e->unkC[1] = D_802287B0[1] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 4.5f)) * 12.0f;
     e->unkC[2] = D_802287B0[2] - SIN(DEG_TO_BINANG((f32) (runner->frame - 150) * 7.5f)) * 25.0f;
     D_802287D0[0] = COS(DEG_TO_BINANG(D_80228120[0][0]));
-    D_802287D0[2] = SIN(DEG_TO_BINANG(D_80228120[0][0]));
     D_802287D0[1] = (f32) (runner->frame / runner->step->duration) * 0.9f + -0.2f;
+    D_802287D0[2] = SIN(DEG_TO_BINANG(D_80228120[0][0]));
     D_802287DC = sqrtf(SQ(D_802287D0[0]) + SQ(D_802287D0[1]) + SQ(D_802287D0[2]));
     for (i = 0; i < 3; i++) {
         e->unk14[i] = D_802287D0[i] / D_802287DC;
@@ -814,9 +812,6 @@ void func_801DCD34(UnkA95D0_Runner* runner) {
     }
     e->unk8 = (e->unk8 + 1) % 2;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/A95D0/func_801DCD34.s")
-#endif
 
 void func_801DD2D0(UnkA95D0_Runner* runner) {
     UnkStruct_801DB0E4_arg0* e;
@@ -1583,31 +1578,32 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 5965 of 32100.
-// obj stays on the stack instead of in s0, so the frame is 8 bytes short and registers differ throughout.
+// Score 1374 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf; float temp
+// registers are numbered differently throughout, b is in a3 (original t0) and p spills to 0x2C (original 0x28).
+// p and b set at the top (as in func_801DF38C) put obj in s0 and fixed the frame.
 void func_801DF744(UnkA95D0_Obj* obj) {
+    UnkA95D0_Payload5* p = &obj->u.p5;
+    UnkA95D0_Base* b = &obj->base;
     f32 d[2];
     f32 v[2];
     f32 x;
     f32 y;
-    UnkA95D0_Payload5* p;
 
-    obj->u.p5.unk48[0].value += (obj->u.p5.unk48[0].target - obj->u.p5.unk48[0].value) * obj->u.p5.unk48[0].rate;
-    obj->u.p5.unk48[2].value += (obj->u.p5.unk48[2].target - obj->u.p5.unk48[2].value) * obj->u.p5.unk48[2].rate;
-    obj->u.p5.unk48[1].value += (obj->u.p5.unk48[1].target - obj->u.p5.unk48[1].value) * obj->u.p5.unk48[1].rate;
-    d[0] = obj->u.p5.unk18[0] - obj->u.p5.unk0[obj->u.p5.unk74[0]];
-    d[1] = obj->u.p5.unk18[1] - obj->u.p5.unk0[obj->u.p5.unk74[1]];
-    p = &obj->u.p5;
-    x = p->unk20 / sqrtf(SQ(d[1]) + SQ(d[0]));
+    p->unk48[0].value += (p->unk48[0].target - p->unk48[0].value) * p->unk48[0].rate;
+    p->unk48[2].value += (p->unk48[2].target - p->unk48[2].value) * p->unk48[2].rate;
+    p->unk48[1].value += (p->unk48[1].target - p->unk48[1].value) * p->unk48[1].rate;
+    d[0] = p->unk18[0] - p->unk0[p->unk74[0]];
+    d[1] = p->unk18[1] - p->unk0[p->unk74[1]];
+    x = p->unk20 / sqrtf(SQ(d[0]) + SQ(d[1]));
     p->unk18[0] = d[0] * x + p->unk0[p->unk74[0]];
     p->unk18[1] = d[1] * x + p->unk0[p->unk74[1]];
-    x = func_801ED154(d[1], d[0]) + p->unk48[1].value;
-    obj->base.unkC[p->unk74[0]] =
+    x = p->unk48[1].value + func_801ED154(d[1], d[0]);
+    b->unkC[p->unk74[0]] =
         COS(DEG_TO_BINANG(x)) * (p->unk48[0].value * COS(DEG_TO_BINANG(p->unk48[2].value))) + p->unk0[p->unk74[0]];
-    obj->base.unkC[p->unk74[1]] =
+    b->unkC[p->unk74[1]] =
         SIN(DEG_TO_BINANG(x)) * (p->unk48[0].value * COS(DEG_TO_BINANG(p->unk48[2].value))) + p->unk0[p->unk74[1]];
-    obj->base.unkC[p->unk74[2]] = SIN(DEG_TO_BINANG(p->unk48[2].value)) * p->unk48[0].value +
-                           ((p->unk0[p->unk74[2]] - p->unkC) * p->unk6C + p->unkC);
+    b->unkC[p->unk74[2]] = ((p->unk0[p->unk74[2]] - p->unkC) * p->unk6C + p->unkC) +
+                           SIN(DEG_TO_BINANG(p->unk48[2].value)) * p->unk48[0].value;
     x = p->unk34 * p->unk38;
     if (x < p->unk3C) {
         x = x / p->unk3C;
@@ -1617,8 +1613,10 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     x = -2.0f * x * x * x + 3.0f * x * x;
     v[0] = p->unk24[0] * x;
     v[1] = p->unk24[1] * x;
-    x = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[1]) + SQ(d[0]));
-    d[0] = (d[0] * x + v[0]) * p->unk2C;
+    x = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[0]) + SQ(d[1]));
+    y = v[0]; // FAKE: y as a temp for the new d[0]
+    y = (d[0] * x + y) * p->unk2C;
+    d[0] = y;
     d[1] = (d[1] * x + v[1]) * p->unk2C;
     x = sqrtf(SQ(d[1]) + SQ(d[0]));
     if (p->unk30 < x) {
@@ -1626,16 +1624,16 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         d[0] *= x;
         d[1] *= x;
     }
-    obj->base.unk0[p->unk74[0]] = d[0] + p->unk0[p->unk74[0]];
-    obj->base.unk0[p->unk74[1]] = d[1] + p->unk0[p->unk74[1]];
+    b->unk0[p->unk74[0]] = d[0] + p->unk0[p->unk74[0]];
+    b->unk0[p->unk74[1]] = d[1] + p->unk0[p->unk74[1]];
     if (p->unk80 != 0) {
-        obj->base.unk24[0] = d[0] * p->unk70;
-        obj->base.unk24[1] = p->unk30;
-        obj->base.unk24[2] = d[1] * p->unk70;
+        b->unk24[0] = d[0] * p->unk70;
+        b->unk24[1] = p->unk30;
+        b->unk24[2] = d[1] * p->unk70;
     } else {
-        obj->base.unk24[0] = 0.0f;
-        obj->base.unk24[2] = 0.0f;
-        obj->base.unk24[1] = 1.0f;
+        b->unk24[0] = 0.0f;
+        b->unk24[2] = 0.0f;
+        b->unk24[1] = 1.0f;
     }
     y = p->unk0[p->unk74[2]];
     if (y <= p->unk10) {
@@ -1646,7 +1644,7 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         x = (y - p->unk10) / (p->unk14 - p->unk10);
         x = x * x * (p->unk44 - p->unk40) + p->unk40;
     }
-    obj->base.unk0[p->unk74[2]] = (y - p->unkC) * x + p->unkC;
+    b->unk0[p->unk74[2]] = (y - p->unkC) * x + p->unkC;
     func_801DEEC4(obj);
 }
 #else

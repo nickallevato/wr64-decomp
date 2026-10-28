@@ -2431,7 +2431,9 @@ void func_801F9EA0(void) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6660 of 61800: the rider loops count j by 1, not in 0x14-byte steps against gRiders * 20 as the original does, which shifts registers.
+// Score 5900 of 61800: the first two rider loops count by 1, where the original counts a second induction variable in
+// 0x14-byte steps against gRiders * 20 (written that way, the frame and loop tests match but the guards and registers
+// do not). Each loop with its own counter is closest; the original keeps the first two counters in s3.
 extern Gfx D_10147C8[];
 extern Gfx D_10149F8[];
 extern u8 D_10448D0[];
@@ -2442,6 +2444,8 @@ void func_801FA3C0(Gfx** gdlp) {
     UnkStruct_80228B88* b;
     s32 i;
     s32 j;
+    s32 k;
+    s32 l;
     s32 x;
     s32 y;
     s32 face;
@@ -2457,8 +2461,8 @@ void func_801FA3C0(Gfx** gdlp) {
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
     gDPSetFillColor(gdl++, 0xFFFFFFFF);
     for (i = 0; i < gPlayers; i++) {
-        for (j = 0; j < gRiders; j++) {
-            b = &D_80228B88[i][j];
+        for (k = 0; k < gRiders; k++) {
+            b = &D_80228B88[i][k];
             if (b->unk10 != 0) {
                 if (gPlayers == ONE_PLAYER) {
                     x = b->unk0 + 160.0f;
@@ -2480,8 +2484,8 @@ void func_801FA3C0(Gfx** gdlp) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPMatrix(gdl++, &D_5000000->unk4040, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     for (i = 0; i < gPlayers; i++) {
-        for (j = 0; j < gRiders; j++) {
-            b = &D_80228B88[i][j];
+        for (l = 0; l < gRiders; l++) {
+            b = &D_80228B88[i][l];
             if (b->unk10 != 0) {
                 if (gPlayers == ONE_PLAYER) {
                     x = b->unk0 + 160.0f;
@@ -2930,8 +2934,9 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6732 of 25000: w is in s3 in the original (v1 here) and the texture pointer is set later; the loop's temps and
-// constant hoisting differ; frame 0xD0, not 0xE0.
+// Score 6046 of 25000: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
+// D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
+// IDO here hoists it; frame 0xD0, not 0xE0.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
@@ -2964,8 +2969,6 @@ void func_801FBFB4(Gfx** gdlp) {
         } else {
             cy = 174;
         }
-        tex = D_804F010;
-        w = 96;
         if (D_80228E08[i] < 6) {
             scale = (D_80228E08[i] / 5.0f) * 1.3f;
         } else {
@@ -2973,6 +2976,8 @@ void func_801FBFB4(Gfx** gdlp) {
         }
         switch (D_80228E00[i]) {
             case 1:
+                tex = D_804F010;
+                w = 96;
                 break;
             case 2:
                 tex = D_804C008;
