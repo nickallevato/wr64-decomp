@@ -7043,24 +7043,22 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 9308 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 and the
-// nearest rider in saved registers); control flow follows the original.
+// Score 8106 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 in
+// saved registers and player in a temporary it spills across the calls; frame 0x60). level also serves as the
+// push-apart counter and the two-player stamp flag, and best as the stamp radius.
 void func_800665B0(void) {
     UnkStruct_80192690* player;
     UnkStruct_80192690* other;
     camera_unk_1* cam;
     s32 i;
-    s32 n;
     s32 nearest;
     s32 level;
-    s32 flag;
     u8 pan;
     f32 best;
     f32 dx;
     f32 dz;
     f32 dist;
     f32 lim;
-    f32 r;
     f32 sx;
     f32 sz;
 
@@ -7087,7 +7085,7 @@ void func_800665B0(void) {
         func_80063C88(i);
     }
     if ((D_801CE638 != 21) && (gRiderGameModes != PAUSE_MODE)) {
-        for (n = D_800D4924; n != 0; n--) {
+        for (level = D_800D4924; level != 0; level--) {
             if (D_800D4968 != 0) {
                 Riders_PushApart();
             }
@@ -7145,10 +7143,10 @@ void func_800665B0(void) {
         func_800BFB84(&D_80192650, &D_80192670, &D_80192660, &D_80192680, pan);
     }
     if (gRiderGameModes != PAUSE_MODE) {
-        r = D_80192498;
+        best = D_80192498;
         cam = &gCameraPerspective[D_80223930];
-        sx = gWaterWindow[0].unk0 + (r * cam->unkF0);
-        sz = gWaterWindow[0].unk4 + (r * cam->unkF4);
+        sx = gWaterWindow[0].unk0 + (best * cam->unkF0);
+        sz = gWaterWindow[0].unk4 + (best * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
             player = &D_80192690[gPlayer1Rider];
             dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
@@ -7166,20 +7164,20 @@ void func_800665B0(void) {
             }
             Water_StampDiagonalSine(sx, sz, level, D_800D49AC, 1);
         } else {
-            flag = 1;
+            level = 1;
             dx = sx - D_80192690[gPlayer2Rider].unk44.x;
             dz = sz - D_80192690[gPlayer2Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                flag = 0;
+                level = 0;
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
             }
             cam = &gCameraPerspective[D_80223934];
-            sx = gWaterWindow[1].unk0 + (r * cam->unkF0);
-            sz = gWaterWindow[1].unk4 + (r * cam->unkF4);
+            sx = gWaterWindow[1].unk0 + (best * cam->unkF0);
+            sz = gWaterWindow[1].unk4 + (best * cam->unkF4);
             dx = sx - D_80192690[gPlayer1Rider].unk44.x;
             dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, flag);
+                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, level);
             }
         }
     }
