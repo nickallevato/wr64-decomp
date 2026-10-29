@@ -85,44 +85,33 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 22795 of 49800: float register allocation and stack layout (frame 0x108 here, 0xF0 in the original), as in func_80050B78
+// Score 14838 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
+// registers. Left: three locals short between hiz and upx, so most stack slots are off by a word, and float registers
+// differ (k stays in $f24 here; the original spills k to sp+0xE4 and keeps 0.866f in $f24)
 void func_8004C1D0(s32 view, Vtx* vtx) {
     camera_unk_1* cam;
     s32 angle;
+    f32 k;
     s32 i;
     f32 d;
-    f32 h;
-    f32 hv;
     f32 w;
+    f32 h;
     f32 s;
-    f32 ax;
-    f32 ay;
-    f32 az;
-    f32 bx;
-    f32 by;
-    f32 bz;
-    f32 cx;
-    f32 cy;
-    f32 cz;
-    f32 e;
-    f32 rx;
-    f32 ry;
-    f32 rz;
     f32 dist;
-    f32 r;
-    f32 upx;
-    f32 upy;
-    f32 upz;
     f32 lox;
     f32 loy;
     f32 loz;
     f32 hix;
     f32 hiy;
     f32 hiz;
-    f32 px;
-    f32 pz;
-    f32 k;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 upx;
+    f32 upy;
+    f32 upz;
     f32 a;
+    f32 e;
     Vtx* vp;
 
     if (view != 0) {
@@ -133,85 +122,78 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
     h = (d * SIN(angle)) / COS(angle);
-    hv = h;
     w = (h * 320.0f) / 240.0f;
     if (gPlayers == TWO_PLAYERS) {
-        hv = h;
         if (D_801CE638 == 1) {
-            hv = h * 0.5f;
+            h = h * 0.5f;
         }
     }
-    ax = cam->upX;
-    ay = cam->upY;
-    az = cam->upZ;
-    bx = cam->unk64;
-    by = cam->unk68;
-    bz = cam->unk6C;
-    cx = (ay * bz) - (az * by);
-    cy = (az * bx) - (ax * bz);
-    cz = (ax * by) - (ay * bx);
-    e = cam->unk94;
-    hix = (e + w) * cx;
-    hiy = (e + w) * cy;
-    hiz = (e + w) * cz;
-    lox = (e - w) * cx;
-    loy = (e - w) * cy;
-    loz = (e - w) * cz;
-    upx = d * bx;
-    upy = d * by;
-    upz = d * bz;
-    r = D_800D4744;
+    x = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
+    y = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C);
+    z = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
+    e = cam->unk94 + w;
+    hix = e * x;
+    hiy = e * y;
+    hiz = e * z;
+    e = cam->unk94 - w;
+    lox = e * x;
+    loy = e * y;
+    loz = e * z;
+    upx = d * cam->unk64;
+    upy = d * cam->unk68;
+    upz = d * cam->unk6C;
     s = D_800D4740 - cam->eyeY;
-    dist = (d * r * 1.732f) / 320.0f;
+    dist = (d * D_800D4744 * 1.732f) / 320.0f;
 
-    e = cam->unk98 - hv;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) > 5.0f) {
-        a = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    e = cam->unk98 - h;
+    x = (cam->upX * e) + upx;
+    y = (cam->upY * e) + upy;
+    z = (cam->upZ * e) + upz;
+    if ((y + hiy) > 5.0f) {
+        a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    if ((ry + loy) > 5.0f) {
-        a = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((y + loy) > 5.0f) {
+        a = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    e = cam->unk98 + hv;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) > 5.0f) {
-        a = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    e = cam->unk98 + h;
+    x = (cam->upX * e) + upx;
+    y = (cam->upY * e) + upy;
+    z = (cam->upZ * e) + upz;
+    if ((y + hiy) > 5.0f) {
+        a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    if ((ry + loy) > 5.0f) {
-        a = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((y + loy) > 5.0f) {
+        a = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    dist = (r * 0.866f) + dist;
-    px = cam->eyeX + (dist * cam->unkF0);
-    pz = cam->eyeZ + (dist * cam->unkF4);
-    k = r * D_800D4764;
+    dist = (D_800D4744 * 0.866f) + dist;
+    x = cam->eyeX + (dist * cam->unkF0);
+    z = cam->eyeZ + (dist * cam->unkF4);
+    k = D_800D4744 * D_800D4764;
 
-    vtx[6].v.ob[0] = SysUtils_Round(px - r);
-    vtx[1].v.ob[0] = vtx[5].v.ob[0] = SysUtils_Round(px - (D_800D4744 * 0.5f));
-    vtx[0].v.ob[0] = SysUtils_Round(px - (cam->unkF0 * k));
-    vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + px);
-    vtx[3].v.ob[0] = SysUtils_Round(px + D_800D4744);
+    vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
+    vtx[5].v.ob[0] = vtx[1].v.ob[0] =
+ SysUtils_Round(x - (D_800D4744 * 0.5f));
+    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * k));
+    vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
+    vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
     vtx[0].v.ob[1] = vtx[1].v.ob[1] = vtx[2].v.ob[1] = vtx[3].v.ob[1] = vtx[4].v.ob[1] = vtx[5].v.ob[1] =
         vtx[6].v.ob[1] = SysUtils_Round(D_800D4740);
-    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(pz - (D_800D4744 * 0.866f));
-    vtx[0].v.ob[2] = SysUtils_Round(pz - (cam->unkF4 * k));
-    vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(pz);
-    vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + pz);
+    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
+    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * k));
+    vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
+    vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
 
     if (gCourseID == DOLPHIN_PARK) {
         D_800D475C = D_800D4760 = 0;
@@ -232,9 +214,9 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     }
     for (i = 6; i >= 0; i--) {
         vp = &vtx[i];
-        px = vp->v.ob[0] - cam->eyeX;
-        pz = vp->v.ob[2] - cam->eyeZ;
-        a = (sqrtf((px * px) + (pz * pz)) * D_800D4738) + D_800D473C;
+        x = vp->v.ob[0] - cam->eyeX;
+        z = vp->v.ob[2] - cam->eyeZ;
+        a = (sqrtf((x * x) + (z * z)) * D_800D4738) + D_800D473C;
         if (a < 0.5f) {
             vp->v.cn[3] = 0;
         } else if (a > 254.5f) {
@@ -242,8 +224,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = a + 0.5f;
         }
-        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * px)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * pz)) / D_801924C8) + D_800D4760;
+        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
+        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;
     }
 }
 #else
