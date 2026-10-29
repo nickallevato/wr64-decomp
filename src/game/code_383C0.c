@@ -146,12 +146,10 @@ void func_8007DBC0(void) {
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
 #ifdef NON_MATCHING
-// Same blocks and calls; register allocation differs: the original saves f20-f30, spills the push (sp+0x48..0x50) and
-// is 0x84 bytes shorter. Score 23088 of 60700.
+// Score 14414 of 60700: same blocks, frame (0x88) and saved registers. The free sphere's push is written
+// (62.0f - len) * D_800D49B8 * x so that IDO computes it before the dot test instead of sinking it to the call.
+// Left: float register choice in every block and some scheduling around the normalisation.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
-    UnkStruct_8004B0F8_1* p4 = arg4;
-    UnkStruct_8004B0F8_1* p5 = arg5;
-    UnkStruct_8004B0F8_1* p6 = arg6;
     struct UnkStruct_801AEE20* e;
     f32 x;
     f32 y;
@@ -159,7 +157,7 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
     f32 d;
     f32 len;
     f32 pen;
-    f32 k;
+    f32 k; // stack pad: unused, but removing it moves the register allocation
     f32 px;
     f32 py;
     f32 pz;
@@ -184,33 +182,32 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                 x *= 1.0f / len;
                 y *= 1.0f / len;
                 z *= 1.0f / len;
-                k = pen * D_800D49B8;
-                pen -= k;
+                pen -= pen * D_800D49B8;
                 e->unk0 -= pen * x;
                 e->unk4 -= pen * y;
                 e->unk8 -= pen * z;
                 e->unk3C -= pen * x;
                 e->unk40 -= pen * y;
                 e->unk44 -= pen * z;
-                px = k * x;
-                py = k * y;
-                pz = k * z;
-                dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                px = (62.0f - len) * D_800D49B8 * x;
+                py = (62.0f - len) * D_800D49B8 * y;
+                pz = (62.0f - len) * D_800D49B8 * z;
+                dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC38 < dot) {
                     arg0->unkC38 = dot;
                     arg0->unk15B4 = x;
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
-                p4->unk10 += py;
-                p4->unk14 += pz;
-                p4->unkC += px;
-                p5->unkC += px;
-                p5->unk10 += py;
-                p5->unk14 += pz;
-                p6->unkC += px;
-                p6->unk10 += py;
-                p6->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg6)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg6)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg6)->unk14 += pz;
                 func_8006243C(arg0, px, py, pz);
                 return;
             }
@@ -232,22 +229,22 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     px = x * pen;
                     py = y * pen;
                     pz = z * pen;
-                    dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                    dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                     if (arg0->unkC3C < dot) {
                         arg0->unkC3C = dot;
                         arg0->unk15B4 = x;
                         arg0->unk15B8 = y;
                         arg0->unk15BC = z;
                     }
-                    p4->unk10 += py;
-                    p4->unk14 += pz;
-                    p4->unkC += px;
-                    p5->unkC += px;
-                    p5->unk10 += py;
-                    p5->unk14 += pz;
-                    p6->unkC += px;
-                    p6->unk10 += py;
-                    p6->unk14 += pz;
+                    ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
+                    ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
+                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
+                    ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
+                    ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
+                    ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
+                    ((UnkStruct_8004B0F8_1*) arg6)->unkC += px;
+                    ((UnkStruct_8004B0F8_1*) arg6)->unk10 += py;
+                    ((UnkStruct_8004B0F8_1*) arg6)->unk14 += pz;
                     func_8006243C(arg0, px, py, pz);
                     return;
                 }
@@ -267,22 +264,22 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     px = x * pen;
                     py = y * pen;
                     pz = z * pen;
-                    dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                    dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                     if (arg0->unkC3C < dot) {
                         arg0->unkC3C = dot;
                         arg0->unk15B4 = x;
                         arg0->unk15B8 = y;
                         arg0->unk15BC = z;
                     }
-                    p4->unk14 += pz;
-                    p4->unk10 += py;
-                    p4->unkC += px;
-                    p5->unkC += px;
-                    p5->unk10 += py;
-                    p5->unk14 += pz;
-                    p6->unkC += px;
-                    p6->unk10 += py;
-                    p6->unk14 += pz;
+                    ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
+                    ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
+                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
+                    ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
+                    ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
+                    ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
+                    ((UnkStruct_8004B0F8_1*) arg6)->unkC += px;
+                    ((UnkStruct_8004B0F8_1*) arg6)->unk10 += py;
+                    ((UnkStruct_8004B0F8_1*) arg6)->unk14 += pz;
                     func_8006243C(arg0, px, py, pz);
                     return;
                 }
@@ -304,22 +301,22 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                 px = x * pen;
                 py = y * pen;
                 pz = z * pen;
-                dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC3C < dot) {
                     arg0->unkC3C = dot;
                     arg0->unk15B4 = x;
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
-                p4->unk10 += py;
-                p4->unk14 += pz;
-                p4->unkC += px;
-                p5->unkC += px;
-                p5->unk10 += py;
-                p5->unk14 += pz;
-                p6->unkC += px;
-                p6->unk10 += py;
-                p6->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg6)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg6)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg6)->unk14 += pz;
                 func_8006243C(arg0, px, py, pz);
                 return;
             }
@@ -339,22 +336,22 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                 px = x * pen;
                 py = y * pen;
                 pz = z * pen;
-                dot = ((-x * p4->unkC) - (y * p4->unk10)) - (z * p4->unk14);
+                dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC3C < dot) {
                     arg0->unkC3C = dot;
                     arg0->unk15B4 = x;
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
-                p4->unk14 += pz;
-                p4->unk10 += py;
-                p4->unkC += px;
-                p5->unkC += px;
-                p5->unk10 += py;
-                p5->unk14 += pz;
-                p6->unkC += px;
-                p6->unk10 += py;
-                p6->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
+                ((UnkStruct_8004B0F8_1*) arg6)->unkC += px;
+                ((UnkStruct_8004B0F8_1*) arg6)->unk10 += py;
+                ((UnkStruct_8004B0F8_1*) arg6)->unk14 += pz;
                 func_8006243C(arg0, px, py, pz);
                 return;
             }
