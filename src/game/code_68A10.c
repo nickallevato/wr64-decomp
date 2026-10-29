@@ -505,6 +505,7 @@ void func_800AF51C(void) {
         temp_f24 = Math_FloatRand(32.0f);
         temp_f20 = Math_FloatRand(4.0f);
 
+        // FAKE: the (0, temp_f24) and (0, temp_f20) commas (reason not recorded)
         func_800AF4A0((0, temp_f24) + (D_801D7AE0 - 16.0f), (0, temp_f20) + (D_801D7AE4 - 2.0f),
                       Math_FloatRand(32.0f) + (D_801D7AE8 - 16.0f), ((f32) D_801D7ADC * 0.2f) + 1.2f);
     }
@@ -569,7 +570,7 @@ void func_800AF798(Gfx** gdl) {
         temp_fs2 = var_s3->eyeY - D_801D7A18[i].unkC;
         temp_fa1 = var_s3->eyeZ - D_801D7A18[i].unk10;
 
-        // fake match
+        // FAKE: two empty ifs (reason not recorded)
         if (temp_fa0 == temp_fa1) {}
         if (temp_fa0 == temp_fa1) {}
 
@@ -1748,7 +1749,7 @@ void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5) 
     s32* var_a3;
     f32 other;
     Gfx* gdlh;
-    char pad[0x4];
+    char pad[0x4]; // stack pad
     MtxF sp74;
 
     gdlh = *gdl;

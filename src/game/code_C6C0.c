@@ -6924,6 +6924,7 @@ void func_80065C18(s32 arg0) {
             rider->unkB94 = rider->unkB90;
         }
     }
+    // FAKE: .0f, not 0.0f: IDO keeps the two zero constants apart (FORK.md m5)
     if (((rider->unkC4C != 0) || (rider->unkC48 != .0f)) && (rider->unkC66 != 0)) {
         if ((rider->unk16B4 < 40) && (rider->unkB90 < 2.777778f)) {
             rider->unk16B4++;
@@ -6963,6 +6964,7 @@ void func_80065C18(s32 arg0) {
     rider->unkC78 = count;
     rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
     rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
+    // FAKE: .0f, not 0.0f, as above
     if ((rider->unkC7C == 0) &&
         ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
         rider->unk16D0++;

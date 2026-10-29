@@ -474,7 +474,7 @@ void func_8006B334(Gfx** gdl) {
     s32 var_v1;
     camera_unk_1* sp144;
     RiderStruct* var_v0;
-    s32 pad;
+    s32 pad; // stack pad
     Gfx* gdlh;
     MtxF spF8;
 
@@ -498,6 +498,7 @@ void func_8006B334(Gfx** gdl) {
     var_t5 = 0;
     var_ra = 0;
     var_v1 = var_v0->unkC;
+    // FAKE: the (0, D_801BB12C) comma (reason not recorded)
     if ((var_v0->lapCount >= D_801CE728[0]) && (var_v0->unkC == (0, D_801BB12C))) {
         var_ra = 1;
     }
@@ -594,6 +595,7 @@ void func_8006B334(Gfx** gdl) {
                       TEXEL0, 0, 0, 0, TEXEL0);
     gDPSetRenderMode(gdlh++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     if ((D_801CE638 == 1) && (D_801AEE20[var_t2].unk9C == 0) && (D_801C0840[var_t2] >= 0) && (var_t5 == 0)) {
+        // FAKE: empty if (reason not recorded)
         if (D_801C0840[var_t2]) {}
         switch (D_801AEE20[var_t2].unk98) {
             case 0:
@@ -751,7 +753,7 @@ void func_8006C5D8(Gfx** gdl) {
     f32 temp_f4;
     f32 temp_f6;
     f32 var_f0;
-    s32 pad[1];
+    s32 pad[1]; // stack pad
     f32 sp150;
     s32 pad14C;
     f32 var_f24;
@@ -1108,9 +1110,9 @@ void func_8006E01C(s32 arg0) {
 
 void configSignalRectangle(Gfx** gdl) {
 
-    s32 pad1[0xF];
+    s32 pad1[0xF]; // stack pad
     Gfx* gdlh = *gdl;
-    s32 pad2[2];
+    s32 pad2[2]; // stack pad
 
     gDPPipeSync(gdlh++);
     gDPSetTextureLUT(gdlh++, G_TT_NONE);
@@ -1169,7 +1171,7 @@ void func_8006E0F4(void) {
 
         func_801EE6F4((s32*) &ptr->unk74, ptr->unkC, ptr->unk10, ptr->unk14, ptr->unk0, ptr->unk4, ptr->unk8);
 
-        // FAKE
+        // FAKE: the three empty ifs (reason not recorded)
         if (D_801BFD78) {}
         if (ptr->unk68 == 1) {}
         if (ptr->unk68 == 10) {}

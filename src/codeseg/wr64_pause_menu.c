@@ -62,9 +62,9 @@ extern s16 gCurrentPauseMenuOptionCount;
 Gfx* PauseMenu_Update(Gfx* gdl) {
     s32 i;
     s32 startBtnPressed;
-    s32 pad;
+    s32 pad; // stack pad
     s32 retire;
-    s32 pad2;
+    s32 pad2; // stack pad, also used below for the printer mode
     PauseMenuState pauseMenuState;
     s32 yOffset[1];
     PauseOption* option;

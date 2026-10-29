@@ -223,7 +223,7 @@ void* func_80091DBC(Gfx* arg0);
 void func_800895A0(f64* arg0, f64* arg1, f32 arg2, f32 arg3) {
     f64 sp0;
     f64 temp_f0;
-    s32 pad[4];
+    s32 pad[4]; // stack pad
 
     temp_f0 = (*arg0 * arg2) + (*arg1 * arg3);
 
@@ -250,7 +250,7 @@ f32 func_8008962C(f32 arg0, f32 arg1, f32 arg2, UnkStruct_8008962C* arg3) {
     f64 var_ft4 = 0;
     f32 temp_fv1_1;
     f32 temp_ft4;
-    UNUSED s32 pad;
+    UNUSED s32 pad; // stack pad
 
     cam = &gCameraPerspective[D_80223930];
     temp_fv1_1 = cam->unkF0;
@@ -365,7 +365,7 @@ void func_80089E24(void) {
 void func_80089F28(void) {
     MtxF sp80;
     MtxF sp40;
-    char pad[0x20];
+    char pad[0x20]; // stack pad
     SysUtils_MtxToMtxF(&gGfxPool->unkE008[D_80223930], &sp80);
     SysUtils_MtxToMtxF(&gGfxPool->unkE088[D_80223930], &sp40);
 

@@ -208,6 +208,7 @@ void Save_UnpackRecord(func_8007AFF4_arg0* arg0, func_8007AFF4_arg1* arg1) {
     var_v1 = (((temp_t1 & 0x1F) << 0x10) + (a3 << 8)) + arg0->unk2;
 
     if (var_v1 < 0) {
+        // FAKE: the empty if and the * 0 below (reason not recorded)
         if (temp_t1 && temp_t1) {}
         var_v1 = arg0->unk2 * 0;
     }

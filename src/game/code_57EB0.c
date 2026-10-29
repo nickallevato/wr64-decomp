@@ -467,7 +467,7 @@ typedef struct UnkStruct_801CE798 {
 extern UnkStruct_801CE798 D_801CE798[];
 
 Gfx* func_8009DB90(Gfx* dl, s32 arg1) {
-    UNUSED s32 pad;
+    UNUSED s32 pad; // stack pad
     s32 sp18;
 
     sp18 = D_801CE774;
@@ -558,7 +558,7 @@ Gfx* func_8009DC10(Gfx* gdl, s32 arg1) {
 }
 
 Gfx* func_8009E794(Gfx* dl, s32 arg1) {
-    UNUSED s32 pad;
+    UNUSED s32 pad; // stack pad
     s32 sp18;
 
     sp18 = D_801CE76E;
@@ -1086,7 +1086,7 @@ Gfx* func_800A28F4(Gfx* gdl, s32 arg1) {
     s32 sp68;
     StructVarS0* temp_t0_2;
     UnkStruct_801CE780* temp_a2;
-    s32 pad;
+    s32 pad; // stack pad
 
     if (gCurrentPauseMenuOption == -1) {
         D_801CF060[arg1].unk78 = (s32) (D_801CF060[arg1].unk78 + 1) % 2;
@@ -2592,7 +2592,7 @@ void func_800A68A4(s32 arg0) {
 // TODO: Migrate rodata
 
 void func_800A9130(s32 arg0) {
-    char pad[0x8];
+    char pad[0x8]; // stack pad
 
     if ((gGameModeState == 3) && (gCurrentPauseMenuOption == -1)) {
         if (D_801CF060[arg0].unk8 == 1) {

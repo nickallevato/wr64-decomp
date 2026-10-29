@@ -3106,7 +3106,7 @@ void func_801FC39C(void) {
 
 void func_801FC4D4(Gfx** arg0) {
     struct RiderStruct* temp_v0;
-    s32 pad;
+    s32 pad; // stack pad
     Gfx* sp2C;
 
     sp2C = *arg0;

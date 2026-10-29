@@ -520,7 +520,7 @@ s32 func_80099514(s32 arg0, s32 arg1, UnkStruct_801CED60* arg2, s16* arg3, f32* 
     f32 sp48;
     f32 var_fv1;
     s32 sp40;
-    s32 pad;
+    s32 pad; // stack pad
 
     sp9C = 0;
     sp4C = 0.0f;
@@ -680,7 +680,7 @@ void func_80099D94(UnkStruct_80099D94* arg0, UnkStruct_80099D94* arg1) {
     s32 temp_f16;
     f32 sp5C;
     s32 temp_f8;
-    s32 pad[5];
+    s32 pad[5]; // stack pad
     Vec3f sp38;
     Vec3f sp2C;
 
@@ -803,6 +803,7 @@ void func_8009A4DC(UnkStruct_801CF060* arg0) {
 }
 
 void func_8009A520(UnkStruct_801CF060* arg0) {
+    // FAKE: new_var (uninitialised, doubled at the end) and the empty if (reason not recorded)
     int new_var;
     if (!D_800E5138) {}
     D_801CEAA6[D_800E5138] = 1;
@@ -920,7 +921,7 @@ void func_8009AA24(UnkStruct_801CF060* arg0) {
 
 void func_8009AB20(UnkStruct_801CF060* arg0, f32 arg1, f32 arg2, f32 arg3) {
     Vec3f sp3C;
-    UNUSED char pad[0x14];
+    UNUSED char pad[0x14]; // stack pad
 
     func_800989E0(&D_801CEC70->vec1, gPlayer1Rider, arg1, arg2, arg3);
     Math_Vec3f_Set(&sp3C, D_80192690[gPlayer1Rider].unk44.x, D_80192690[gPlayer1Rider].unk44.y,
@@ -1084,9 +1085,9 @@ void func_8009B57C(UnkStruct_801CF060* arg0) {
 }
 
 void func_8009B650(UnkStruct_801CF060* arg0, f32 arg1, f32 arg2) {
-    UNUSED s32 pad[3];
+    UNUSED s32 pad[3]; // stack pad
     f32 sp40;
-    UNUSED s32 pad44;
+    UNUSED s32 pad44; // stack pad
     f32 sp38;
     f32 sp34;
     f32 sp30; // Might be Vec3f
@@ -1355,7 +1356,7 @@ extern UnkStruct_800E60DC D_800E6214[];
 extern UnkStruct_800E60DC D_800E622C[];
 
 void func_8009C2CC(UnkStruct_801CEBE0* arg0) {
-    s32 pad[3];
+    s32 pad[3]; // stack pad
     s16 sp22;
 
     switch (arg0->unk1C) {
@@ -1673,7 +1674,7 @@ void func_8009D340(void) {
 f32 func_8009D3AC(f32 arg0, f32 arg1) {
     f32 var_fv1;
     f32 temp_fa0;
-    s32 pad;
+    s32 pad; // stack pad
 
     temp_fa0 = SQ(arg0) + SQ(arg1);
     if (sqrtf(temp_fa0) != 0.0f) {
