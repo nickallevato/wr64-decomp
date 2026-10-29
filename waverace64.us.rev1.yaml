@@ -370,6 +370,7 @@ segments:
     type: code
     start: 0xA95D0           
     vram: 0x801DAFA0
+    bss_size: 0x13B0
     subsegments:
     - [0xA95D0, c, codeseg/A95D0]
     - [0xAF8C0, c, codeseg/AF8C0]
@@ -407,6 +408,13 @@ segments:
     - [0xF5D40, .rodata, codeseg/B97B0]
     - [0xF5D70, data, codeseg/BCFF0]
     - [0xF6000, .rodata, codeseg/BCFF0]
+    # codeseg's .bss, 0x80227A60..0x80228E0F (the game loader clears D_80227A60 up to D_80228E10): A95D0's,
+    # AF8C0's and wr64_fade's are split; B17D0..B3AA0's and B66E0..BCFF0's are still the two bss_ blocks
+    - { type: .bss, start: 0xF6090, vram: 0x80227A60, name: codeseg/A95D0 }
+    - { type: .bss, start: 0xF6090, vram: 0x802287E0, name: codeseg/AF8C0 }
+    - { type: bss, start: 0xF6090, vram: 0x802288F0, name: codeseg/bss_802288F0 }
+    - { type: .bss, start: 0xF6090, vram: 0x80228A10, name: codeseg/wr64_fade }
+    - { type: bss, start: 0xF6090, vram: 0x80228A40, name: codeseg/bss_80228A40 }
 
   - name: segment_F6090 # looks like a bunch of uncompressed assets (Dlists and Textures)
     type: bin

@@ -1,10 +1,13 @@
 #include "common.h"
 
 #ifdef NON_MATCHING
-// Score 210 of 22600: as in guLookAtF, the second cross product is written back into ux, uy, uz. The third
-// value of each block (c before) is a repeated cast, not a local; without c the spill slots match. Left: the FAKE copy m2
-// takes c's stack slot back, so the spills are 4 bytes lower again; the integer temporaries of the third and last
-// blocks are swapped (a2, a3, t0 here for the third, v0, v1, a1 for the last; the other way round in the original).
+// Score 130 of 22600: as in guLookAtF, the second cross product is written back into ux, uy, uz. The third
+// value of each block is a repeated cast, not a local. The stores go in the order of func_80048A88 (the
+// matched sibling): [r][c], [r][c + 1], [r + 2][c], [r + 2][c + 1]. Left: the FAKE copy m2 takes a stack slot,
+// so the spills are 4 bytes lower; the integer temporaries of the third and last blocks are swapped (a2, a3, t0
+// here for the third, v0, v1, a1 for the last; the other way round in the original). Without m2 (plain mtx) the
+// spills and the third block match, but 0xFFFF0000 lands in a2 instead of t1 and the last block shifts by one
+// register (score 295).
 void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 arg7, f32 arg8, f32 arg9,
                    f32 arg10) {
     f32 scale;
@@ -26,8 +29,8 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
     a = fx * scale;
     b = fy * scale;
     mtx->m[1][0] = (a & 0xFFFF0000) | ((u32) b >> 16);
-    mtx->m[3][0] = (a << 16) | (b & 0xFFFF);
     mtx->m[1][1] = ((s32) (fz * scale)) & 0xFFFF0000;
+    mtx->m[3][0] = (a << 16) | (b & 0xFFFF);
     mtx->m[3][1] = ((s32) (fz * scale)) << 16;
 
     xx = uy * fz - uz * fy;
@@ -40,8 +43,8 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
         b = xy * len;
         mtx->m[0][0] = (a & 0xFFFF0000) | ((u32) b >> 16);
         mtx->m[0][1] = ((s32) (xz * len)) & 0xFFFF0000;
-        mtx->m[2][1] = ((s32) (xz * len)) << 16;
         mtx->m[2][0] = (a << 16) | (b & 0xFFFF);
+        mtx->m[2][1] = ((s32) (xz * len)) << 16;
 
         ux = fy * xz - fz * xy;
         uy = fz * xx - fx * xz;

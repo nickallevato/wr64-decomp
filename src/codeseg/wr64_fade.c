@@ -7,7 +7,11 @@ void func_801E73A0(FadeTransition* fade);
 void func_801E76C0(FadeTransition* fade);
 void func_801E74BC(FadeTransition* fade);
 
+// This file's .bss, 0x80228A10..0x80228A3F (yaml split). The code names some fields of
+// sCurrentFadeTransitionProps by address (D_80228A14..D_80228A32, resolve.txt).
 FadeTransition sCurrentFadeTransitionProps;
+u16 D_80228A34;
+s16 D_80228A36;
 extern s16 D_80228A30;
 extern s16 D_80228A32;
 
@@ -302,7 +306,6 @@ extern s16 D_80228A20; // r
 extern s16 D_80228A22; // g
 extern s16 D_80228A24; // b
 extern s16 D_80228A26; // alpha
-extern s16 D_80228A36;
 extern Gfx* D_80226CE4[2][2];
 extern Gfx* D_80226CF4[2][2];
 extern Mtx D_7001300[];

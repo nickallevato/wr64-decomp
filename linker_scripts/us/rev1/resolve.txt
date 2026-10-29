@@ -16,3 +16,17 @@ D_801CB3F0 = 0x801CB3F0;
 /* SysMain_Thread subtracts 0x1008290 twice. With one symbol IDO keeps the address in a register for
    the second subtraction, where the original loads it again, so the second use has its own name. */
 D_1008290_2 = 0x1008290;
+/* func_801DC60C (codeseg A95D0) names D_80228120 + 4 and its loop end, D_80228120 + 0x60. */
+D_80228124 = 0x80228124;
+D_80228180 = 0x80228180;
+/* Fields of sCurrentFadeTransitionProps (0x80228A10) that the code names by address. */
+D_80228A14 = 0x80228A14;
+D_80228A16 = 0x80228A16;
+D_80228A18 = 0x80228A18;
+D_80228A1C = 0x80228A1C;
+D_80228A20 = 0x80228A20;
+D_80228A22 = 0x80228A22;
+D_80228A24 = 0x80228A24;
+D_80228A26 = 0x80228A26;
+D_80228A30 = 0x80228A30;
+D_80228A32 = 0x80228A32;
