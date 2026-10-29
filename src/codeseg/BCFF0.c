@@ -378,7 +378,7 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 10063 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows. Left:
+// Score 10003 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows. Left:
 // &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not 0xB8, and the
 // saved registers shift; and IDO folds `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps
 // the sub.s and compares with 0.0f.
@@ -405,11 +405,11 @@ void func_801EF504(void) {
     f32 dz;
     f32 fwd;
     f32 cross;
-    f32 dot;
     s32 angle;
     s32 diff;
     s32 step;
     f32 dist;
+    f32 dot;
 
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
