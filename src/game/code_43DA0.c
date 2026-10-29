@@ -1145,7 +1145,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 15264 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
+// Score 13710 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
 // 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
 // original keeps the camera direction on the stack across sqrtf (five saved FP registers, frame 0xC8; four and 0xB8
 // here), and in the D_800D988C == 1 loop it reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
@@ -1172,7 +1172,7 @@ void func_8008E794(void) {
     p = &D_801C43F8[D_8011F8E0];
     arena = gGfxPool->unk13D68;
     len = sqrtf((dirX * dirX) + (dirZ * dirZ));
-    if (len != 0.0f) {
+    if (len != 0) {
         len = 4000.0f / len;
         dirZ *= len;
         dirX *= len;
@@ -1255,7 +1255,7 @@ void func_8008E794(void) {
             D_801C4168 = e->unkB4;
             D_801C4164 = e->unkB0;
             len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
-            if (len == 0.0f) {
+            if (len == 0) {
                 D_801C4168 = 120;
             }
             e->unkAC = (D_801C4160 / len) * 120.0f;
@@ -1331,7 +1331,7 @@ void func_8008E794(void) {
                     break;
                 case SOUTHERN_ISLAND:
                     angle = (e->unk10C << 12) / 360;
-                    e->unkB4 = 0.0f;
+                    e->unkB4 = 0;
                     e->unkFC = (COS(angle) * cam->unk64) - (SIN(angle) * cam->unk6C);
                     e->unkAC = -64.0f;
                     e->unkCC = e->unkE4;
