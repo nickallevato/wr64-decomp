@@ -6012,7 +6012,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 13265 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
+// Score 12925 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
 // floats, an unsigned conversion into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by
 // index, and the C88 entry is re-read through the rider each time (the loop reloads unk1424 after every store, as in
 // the original). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared with an int 0, a
@@ -6082,8 +6082,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC80 = 0;
     rider->unkC7C = 1;
     rider->unkC82 = 1;
-    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unkC78 = 8;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unk1578 = 1;
     rider->unkC00 = 34.11f;
     rider->unkC54 = 22;
