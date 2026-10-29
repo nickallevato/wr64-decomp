@@ -1288,11 +1288,10 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 22849 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
+// Score 22781 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
 // original keeps more values on the stack; frame 0xB0, here 0x78), and this C is shorter.
 void func_800783AC(s32 arg0) {
     s32 trick;
-    s32 points;
     s32 cur;
     s32 passed;
     s32 inGate;
@@ -1303,6 +1302,7 @@ void func_800783AC(s32 arg0) {
     s32 sfx;
     f32 dx;
     f32 dz;
+    s32 points;
     f32 len;
     f32 dot;
     f32 dPos;
