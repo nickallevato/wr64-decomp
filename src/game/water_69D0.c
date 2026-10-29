@@ -85,44 +85,33 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 22795 of 49800: float register allocation and stack layout (frame 0x108 here, 0xF0 in the original), as in func_80050B78
+// Score 12816 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
+// registers. Left: three locals short between hiz and upx, so most stack slots are off by a word, and float registers
+// differ (k stays in $f24 here; the original spills k to sp+0xE4 and keeps 0.866f in $f24)
 void func_8004C1D0(s32 view, Vtx* vtx) {
     camera_unk_1* cam;
     s32 angle;
+    f32 k;
     s32 i;
     f32 d;
-    f32 h;
-    f32 hv;
     f32 w;
+    f32 h;
     f32 s;
-    f32 ax;
-    f32 ay;
-    f32 az;
-    f32 bx;
-    f32 by;
-    f32 bz;
-    f32 cx;
-    f32 cy;
-    f32 cz;
-    f32 e;
-    f32 rx;
-    f32 ry;
-    f32 rz;
     f32 dist;
-    f32 r;
-    f32 upx;
-    f32 upy;
-    f32 upz;
     f32 lox;
     f32 loy;
     f32 loz;
     f32 hix;
     f32 hiy;
     f32 hiz;
-    f32 px;
-    f32 pz;
-    f32 k;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 upx;
+    f32 upy;
+    f32 upz;
     f32 a;
+    f32 e;
     Vtx* vp;
 
     if (view != 0) {
@@ -133,85 +122,79 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
     h = (d * SIN(angle)) / COS(angle);
-    hv = h;
     w = (h * 320.0f) / 240.0f;
     if (gPlayers == TWO_PLAYERS) {
-        hv = h;
         if (D_801CE638 == 1) {
-            hv = h * 0.5f;
+            h = h * 0.5f;
         }
     }
-    ax = cam->upX;
-    ay = cam->upY;
-    az = cam->upZ;
-    bx = cam->unk64;
-    by = cam->unk68;
-    bz = cam->unk6C;
-    cx = (ay * bz) - (az * by);
-    cy = (az * bx) - (ax * bz);
-    cz = (ax * by) - (ay * bx);
-    e = cam->unk94;
-    hix = (e + w) * cx;
-    hiy = (e + w) * cy;
-    hiz = (e + w) * cz;
-    lox = (e - w) * cx;
-    loy = (e - w) * cy;
-    loz = (e - w) * cz;
-    upx = d * bx;
-    upy = d * by;
-    upz = d * bz;
-    r = D_800D4744;
+    x = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
+    y = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C);
+    z = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
+    e = cam->unk94 + w;
+    hix = e * x;
+    hiy = e * y;
+    hiz = e * z;
+    e = cam->unk94 - w;
+    lox = e * x;
+    loy = e * y;
+    loz = e * z;
+    upx = d * cam->unk64;
+    upy = d * cam->unk68;
+    upz = d * cam->unk6C;
     s = D_800D4740 - cam->eyeY;
-    dist = (d * r * 1.732f) / 320.0f;
+    dist = (d * D_800D4744 * 1.732f) / 320.0f;
 
-    e = cam->unk98 - hv;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) > 5.0f) {
-        a = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    e = cam->unk98 - h;
+    x = (cam->upX * e) + upx;
+    y = (cam->upY * e) + upy;
+    z = (cam->upZ * e) + upz;
+    if ((y + hiy) > 5.0f) {
+        do {} while (0); // FAKE: a block boundary with no code; moves the register allocation towards the original
+        a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    if ((ry + loy) > 5.0f) {
-        a = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((y + loy) > 5.0f) {
+        a = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    e = cam->unk98 + hv;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) > 5.0f) {
-        a = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    e = cam->unk98 + h;
+    x = (cam->upX * e) + upx;
+    y = (cam->upY * e) + upy;
+    z = (cam->upZ * e) + upz;
+    if ((y + hiy) > 5.0f) {
+        a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    if ((ry + loy) > 5.0f) {
-        a = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((y + loy) > 5.0f) {
+        a = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
         if (a < dist) {
             dist = a;
         }
     }
-    dist = (r * 0.866f) + dist;
-    px = cam->eyeX + (dist * cam->unkF0);
-    pz = cam->eyeZ + (dist * cam->unkF4);
-    k = r * D_800D4764;
+    dist = (D_800D4744 * 0.866f) + dist;
+    x = cam->eyeX + (dist * cam->unkF0);
+    z = cam->eyeZ + (dist * cam->unkF4);
+    k = D_800D4744 * D_800D4764;
 
-    vtx[6].v.ob[0] = SysUtils_Round(px - r);
-    vtx[1].v.ob[0] = vtx[5].v.ob[0] = SysUtils_Round(px - (D_800D4744 * 0.5f));
-    vtx[0].v.ob[0] = SysUtils_Round(px - (cam->unkF0 * k));
-    vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + px);
-    vtx[3].v.ob[0] = SysUtils_Round(px + D_800D4744);
+    vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
+    vtx[5].v.ob[0] = vtx[1].v.ob[0] =
+ SysUtils_Round(x - (D_800D4744 * 0.5f));
+    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * k));
+    vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
+    vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
     vtx[0].v.ob[1] = vtx[1].v.ob[1] = vtx[2].v.ob[1] = vtx[3].v.ob[1] = vtx[4].v.ob[1] = vtx[5].v.ob[1] =
         vtx[6].v.ob[1] = SysUtils_Round(D_800D4740);
-    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(pz - (D_800D4744 * 0.866f));
-    vtx[0].v.ob[2] = SysUtils_Round(pz - (cam->unkF4 * k));
-    vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(pz);
-    vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + pz);
+    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
+    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * k));
+    vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
+    vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
 
     if (gCourseID == DOLPHIN_PARK) {
         D_800D475C = D_800D4760 = 0;
@@ -232,9 +215,9 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     }
     for (i = 6; i >= 0; i--) {
         vp = &vtx[i];
-        px = vp->v.ob[0] - cam->eyeX;
-        pz = vp->v.ob[2] - cam->eyeZ;
-        a = (sqrtf((px * px) + (pz * pz)) * D_800D4738) + D_800D473C;
+        x = vp->v.ob[0] - cam->eyeX;
+        z = vp->v.ob[2] - cam->eyeZ;
+        a = (sqrtf((x * x) + (z * z)) * D_800D4738) + D_800D473C;
         if (a < 0.5f) {
             vp->v.cn[3] = 0;
         } else if (a > 254.5f) {
@@ -242,8 +225,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = a + 0.5f;
         }
-        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * px)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * pz)) / D_801924C8) + D_800D4760;
+        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
+        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;
     }
 }
 #else
@@ -1231,30 +1214,35 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 33384 of 60500: registers and stack (frame 0x90 here, 0x78 in the original) throughout; the row loops follow the original control flow
+// Score 10449 of 60500: frame, the row loops and the first skirt loop match in shape. Left: callee-saved register
+// choice (vtx, lo, sx and sz land in other s registers), and the second skirt loop ends on idx != &D_80192460[7]
+// (with < IDO unrolls it by two; the original compares with sltu and does not unroll)
 void func_80050204(s32 view, Vtx* arena) {
-    UnkStruct_80192420* w;
-    UnkStruct_80160A98* e;
-    UnkStruct_80160A98* end;
-    Vtx* vtx;
-    Vtx* c;
-    Vtx* v;
-    s32* idx;
-    s32 i;
-    s32 hA;
-    s32 hB;
-    s32 sx;
-    s32 sz;
-    s32 ox;
-    s32 oz;
-    f32 k;
-    f32 dx;
+    UnkStruct_80160A98* last;
     f32 dz;
+    f32 dx;
+    f32 k;
+    s32 oz;
+    s32 ox;
+    s32 sz;
+    s32 sx;
+    s32 hB;
+    s32 hA;
+    s32 i;
+    UnkStruct_80160A98* hi;
+    UnkStruct_80160A98* lo;
+    s32* idx;
+    Vtx* v;
+    Vtx* c;
+    Vtx* vtx;
+    UnkStruct_80160A98* end;
+    UnkStruct_80160A98* e;
+    UnkStruct_80192420* w;
 
     e = gWaterCellOffsets;
     vtx = arena;
     w = &gWaterWindow[view];
-    for (end = &gWaterCellOffsets[gWaterWindowN]; end >= e;) {
+    for (last = &gWaterCellOffsets[gWaterWindowN]; last >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
@@ -1267,9 +1255,12 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        for (end = e + ((gWaterWindowN * 2) + i - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + i + 1)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + ((gWaterWindowN * 2) + i + 1))->unk0)->unk0 >> 7;
+        end = e + ((gWaterWindowN * 2) + i - 2);
+        lo = e - ((gWaterWindowN * 2) + i + 1);
+        hi = e + ((gWaterWindowN * 2) + i + 1);
+        for (; end >= e; lo++, hi++) {
+            hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1317,9 +1308,12 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        for (end = e + ((gWaterWindowN * 2) - i - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) - i + 2)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + ((gWaterWindowN * 2) - i))->unk0)->unk0 >> 7;
+        end = e + ((gWaterWindowN * 2) - i - 2);
+        lo = (e - ((gWaterWindowN * 2) - i)) - 2;
+        hi = e + ((gWaterWindowN * 2) - i);
+        for (; end >= e; lo++, hi++) {
+            hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1348,9 +1342,12 @@ void func_80050204(s32 view, Vtx* arena) {
     for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
         c = &arena[D_80192460[0]];
         v = &arena[idx[6]];
-        arena[*idx].v.ob[0] = c->v.ob[0] + (s32) (k * (v->v.ob[0] - c->v.ob[0]));
-        arena[*idx].v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * (v->v.ob[2] - c->v.ob[2]));
-        arena[*idx].v.ob[1] = gWaterLevel;
+        ox = v->v.ob[0] - c->v.ob[0];
+        oz = v->v.ob[2] - c->v.ob[2];
+        v = &arena[*idx];
+        v->v.ob[0] = c->v.ob[0] + (s32) (k * ox);
+        v->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * oz);
+        v->v.ob[1] = gWaterLevel;
     }
     if (w != gWaterWindow) {
         dx = gCameraPerspective[1].unkF0;
@@ -1362,12 +1359,15 @@ void func_80050204(s32 view, Vtx* arena) {
     k = (f32) (D_800D4720 - D_80192498) * 0.866f;
     ox = SysUtils_Round(k * dx);
     oz = SysUtils_Round(k * dz);
-    for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
-        arena[*idx].v.ob[0] += ox;
-        arena[*idx].v.ob[2] += oz;
+    for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
+        v = &arena[*idx];
+        v->v.ob[0] += ox;
+        v->v.ob[2] += oz;
     }
-    w->unk8 = ((f32) (arena[D_80192460[4]].v.ob[0] + arena[D_80192460[1]].v.ob[0]) * 0.5f) - w->unk14;
-    w->unkC = ((f32) (arena[D_80192460[4]].v.ob[2] + arena[D_80192460[1]].v.ob[2]) * 0.5f) - w->unk18;
+    v = &arena[D_80192460[1]];
+    c = &arena[D_80192460[4]];
+    w->unk8 = ((f32) (c->v.ob[0] + v->v.ob[0]) * 0.5f) - w->unk14;
+    w->unkC = ((f32) (c->v.ob[2] + v->v.ob[2]) * 0.5f) - w->unk18;
     w->unk10 = D_800D4720 * D_800D4720;
 }
 #else
@@ -1381,92 +1381,83 @@ void func_80050204(s32 view, Vtx* arena) {
  */
 
 #ifdef NON_MATCHING
-// Score 18761 of 26100: float register allocation; the original keeps more of the corner products in stack slots (frame 0xC0, here 0xD0) and uses five saved FP registers, here six
+// Score 3440 of 26100: same frame (0xC0) and five saved FP registers; the up vector is read from cam (not copied to
+// locals, which lets IDO sink the ray sums into the branches) and cx/cy/cz serve both rays. Left: h and the up vector
+// take each other's saved registers, and the locals above h and around the up products sit a few slots off.
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     s32 angle;
     f32 d;
-    f32 s;
-    f32 ax;
-    f32 ay;
-    f32 az;
-    f32 bx;
-    f32 by;
-    f32 bz;
-    f32 cx;
-    f32 cy;
-    f32 cz;
     f32 h;
-    f32 w;
-    f32 e;
-    f32 rx;
-    f32 ry;
-    f32 rz;
-    f32 dist;
-    f32 t;
-    f32 upx;
-    f32 upy;
-    f32 upz;
     f32 lox;
     f32 loy;
     f32 loz;
     f32 hix;
     f32 hiy;
     f32 hiz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 upx;
+    f32 upy;
+    f32 upz;
+    f32 e;
+    f32 w;
+    f32 s;
+    f32 dist;
+    f32 t;
 
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
     h = (d * SIN(angle)) / COS(angle);
-    ax = cam->upX;
-    ay = cam->upY;
-    az = cam->upZ;
-    bx = cam->unk64;
-    by = cam->unk68;
-    bz = cam->unk6C;
-    cx = (ay * bz) - (az * by);
-    cy = (az * bx) - (ax * bz);
-    cz = (ax * by) - (ay * bx);
-    e = cam->unk94;
+    cx = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
+    cy = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C);
+    cz = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
     w = (h * 320.0f) / 240.0f;
-    hix = (e + w) * cx;
-    hiy = (e + w) * cy;
-    hiz = (e + w) * cz;
-    lox = (e - w) * cx;
-    loy = (e - w) * cy;
-    loz = (e - w) * cz;
-    upx = d * bx;
-    upy = d * by;
-    upz = d * bz;
-    s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
-    dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
+    e = cam->unk94 + w;
+    hix = e * cx;
+    hiy = e * cy;
+    hiz = e * cz;
+    e = cam->unk94 - w;
+    lox = e * cx;
+    loy = e * cy;
+    loz = e * cz;
+
+    upx = d * cam->unk64;
+    upy = d * cam->unk68;
+    upz = d * cam->unk6C;
+    do { // FAKE: a block boundary with no code; it moves the register allocation towards the original
+        s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
+        dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
+    } while (0);
 
     e = cam->unk98 - h;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) < -5.0f) {
-        t = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    cx = (cam->upX * e) + upx;
+    cy = (cam->upY * e) + upy;
+    cz = (cam->upZ * e) + upz;
+    if ((cy + hiy) < -5.0f) {
+        t = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
     }
-    if ((ry + loy) < -5.0f) {
-        t = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((cy + loy) < -5.0f) {
+        t = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
     }
     e = cam->unk98 + h;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) < -5.0f) {
-        t = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    cx = (cam->upX * e) + upx;
+    cy = (cam->upY * e) + upy;
+    cz = (cam->upZ * e) + upz;
+    if ((cy + hiy) < -5.0f) {
+        t = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
     }
-    if ((ry + loy) < -5.0f) {
-        t = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((cy + loy) < -5.0f) {
+        t = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }

@@ -625,9 +625,8 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #ifdef NON_MATCHING
-// Score 22584 of 36800: far off: the original keeps the 18 differences in stack homes (frame 0x88) with a different
-// register assignment. Control flow matches: the plane tests short-circuit in the same order, then the 12 points are
-// reset from D_800D4840 in the rider's basis.
+// Score 410 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (z and
+// the 0.0f constant swap $f20 and $f14; p and t take a1 and a0 where the original has a0 and a2).
 void func_80051EC0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* p = rider->unk90;
@@ -635,6 +634,11 @@ void func_80051EC0(s32 arg0) {
     f32 x;
     f32 y;
     f32 z;
+    f32 a;
+    f32 b;
+    f32 c;
+    f32 pad; // stack pad: puts the differences at sp+0x14..0x58
+    Vec3f* end;
     f32 dz2;
     f32 dx2;
     f32 dy2;
@@ -654,30 +658,84 @@ void func_80051EC0(s32 arg0) {
     f32 dx3;
     f32 dy3;
 
+    do {} while (0); // FAKE: a block boundary with no code; keeps p (rider + 0x90) in its own register
     z = rider->unk44.z;
     x = rider->unk44.x;
     y = rider->unk44.y;
-    if (((dz2 = p[2].unk8 - z, dx2 = p[2].unk0 - x, dy2 = p[2].unk4 - y), ((rider->unk84 * dx2) + (rider->unk88 * dy2) + (dz2 * rider->unk8C)) < 0.0f) ||
-        ((dz5 = p[5].unk8 - z, dx5 = p[5].unk0 - x, dy5 = p[5].unk4 - y), ((rider->unk84 * dx5) + (rider->unk88 * dy5) + (dz5 * rider->unk8C)) < 0.0f) ||
-        ((dz0 = p[0].unk8 - z, dx0 = p[0].unk0 - x, dy0 = p[0].unk4 - y), ((rider->unk84 * dx0) + (rider->unk88 * dy0) + (dz0 * rider->unk8C)) > 0.0f) ||
-        ((dz3 = p[3].unk8 - z, dx3 = p[3].unk0 - x, dy3 = p[3].unk4 - y), ((rider->unk84 * dx3) + (rider->unk88 * dy3) + (dz3 * rider->unk8C)) > 0.0f) ||
-        ((dz1 = p[1].unk8 - z, dx1 = p[1].unk0 - x, dy1 = p[1].unk4 - y), ((rider->unk78 * dx1) + (rider->unk7C * dy1) + (dz1 * rider->unk80)) < 0.0f) ||
-        ((dz4 = p[4].unk8 - z, dx4 = p[4].unk0 - x, dy4 = p[4].unk4 - y), ((rider->unk78 * dx4) + (rider->unk7C * dy4) + (dz4 * rider->unk80)) < 0.0f) ||
-        (((rider->unk78 * dx0) + (rider->unk7C * dy0) + (dz0 * rider->unk80)) > 0.0f) ||
-        (((rider->unk78 * dx2) + (rider->unk7C * dy2) + (dz2 * rider->unk80)) > 0.0f) ||
-        (((rider->unk78 * dx3) + (rider->unk7C * dy3) + (dz3 * rider->unk80)) > 0.0f) ||
-        (((rider->unk78 * dx5) + (rider->unk7C * dy5) + (dz5 * rider->unk80)) > 0.0f) ||
-        (((rider->unk6C * dx3) + (rider->unk70 * dy3) + (dz3 * rider->unk74)) < 0.0f) ||
-        (((rider->unk6C * dx4) + (rider->unk70 * dy4) + (dz4 * rider->unk74)) < 0.0f) ||
-        (((rider->unk6C * dx5) + (rider->unk70 * dy5) + (dz5 * rider->unk74)) < 0.0f) ||
-        (((rider->unk6C * dx0) + (rider->unk70 * dy0) + (dz0 * rider->unk74)) > 0.0f) ||
-        (((rider->unk6C * dx1) + (rider->unk70 * dy1) + (dz1 * rider->unk74)) > 0.0f) ||
-        (((rider->unk6C * dx2) + (rider->unk70 * dy2) + (dz2 * rider->unk74)) > 0.0f)) {
-        for (t = D_800D4840; t != &D_800D4840[12]; t++, p++) {
-            p->unk0 = (rider->unk84 * t->x) + (rider->unk78 * t->y) + (rider->unk6C * t->z) + x;
-            p->unk4 = (rider->unk88 * t->x) + (rider->unk7C * t->y) + (rider->unk70 * t->z) + y;
-            p->unk8 = (rider->unk8C * t->x) + (rider->unk80 * t->y) + (rider->unk74 * t->z) + z;
+    a = rider->unk84;
+    b = rider->unk88;
+    c = rider->unk8C;
+    t = D_800D4840;
+    dz2 = p[2].unk8 - z;
+    dx2 = p[2].unk0 - x;
+    dy2 = p[2].unk4 - y;
+    if (((dz2 * c) + ((a * dx2) + (b * dy2))) < 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz5 = p[5].unk8 - z;
+    dx5 = p[5].unk0 - x;
+    dy5 = p[5].unk4 - y;
+    if (((dz5 * c) + ((a * dx5) + (b * dy5))) < 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz0 = p[0].unk8 - z;
+    dx0 = p[0].unk0 - x;
+    dy0 = p[0].unk4 - y;
+    if (((dz0 * c) + ((a * dx0) + (b * dy0))) > 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz3 = p[3].unk8 - z;
+    dx3 = p[3].unk0 - x;
+    dy3 = p[3].unk4 - y;
+    if (((dz3 * c) + ((a * dx3) + (b * dy3))) > 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    a = rider->unk78;
+    b = rider->unk7C;
+    c = rider->unk80;
+    dz1 = p[1].unk8 - z;
+    dx1 = p[1].unk0 - x;
+    dy1 = p[1].unk4 - y;
+    if (((dz1 * c) + ((a * dx1) + (b * dy1))) < 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz4 = p[4].unk8 - z;
+    dx4 = p[4].unk0 - x;
+    dy4 = p[4].unk4 - y;
+    if ((((dz4 * c) + ((a * dx4) + (b * dy4))) < 0.0f) ||
+        (((dz0 * c) + ((a * dx0) + (b * dy0))) > 0.0f) ||
+        (((dz2 * c) + ((a * dx2) + (b * dy2))) > 0.0f) ||
+        (((dz3 * c) + ((a * dx3) + (b * dy3))) > 0.0f) ||
+        (((dz5 * c) + ((a * dx5) + (b * dy5))) > 0.0f)) {
+        goto reset; // goto: straight to the reset loop
+    }
+    a = rider->unk6C;
+    b = rider->unk70;
+    c = rider->unk74;
+    if ((((dz3 * c) + ((a * dx3) + (b * dy3))) < 0.0f) ||
+        (((dz4 * c) + ((a * dx4) + (b * dy4))) < 0.0f) ||
+        (((dz5 * c) + ((a * dx5) + (b * dy5))) < 0.0f) ||
+        (((dz0 * c) + ((a * dx0) + (b * dy0))) > 0.0f) ||
+        (((dz1 * c) + ((a * dx1) + (b * dy1))) > 0.0f) ||
+        (((dz2 * c) + ((a * dx2) + (b * dy2))) > 0.0f)) {
+    reset:
+        end = &D_800D4840[12];
+        for (; t != end; t += 2, p += 2) { // two points per pass, as in the original
+
+            a = t[0].x;
+            b = t[0].y;
+            c = t[0].z;
+            p[0].unk0 = (rider->unk84 * a) + (rider->unk78 * b) + (rider->unk6C * c) + x;
+            p[0].unk4 = (rider->unk88 * a) + (rider->unk7C * b) + (rider->unk70 * c) + y;
+            p[0].unk8 = (rider->unk8C * a) + (rider->unk80 * b) + (rider->unk74 * c) + z;
+            a = t[1].x;
+            b = t[1].y;
+            c = t[1].z;
+            p[1].unk0 = (rider->unk84 * a) + (rider->unk78 * b) + (rider->unk6C * c) + x;
+            p[1].unk4 = (rider->unk88 * a) + (rider->unk7C * b) + (rider->unk70 * c) + y;
+            p[1].unk8 = (rider->unk8C * a) + (rider->unk80 * b) + (rider->unk74 * c) + z;
         }
+
     }
 }
 #else
@@ -5951,14 +6009,16 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 41018 of 68700: far off: the original clears the state with long chained assignments in an order not yet
-// reproduced, and the register allocation differs. Control flow follows the original.
+// Score 17729 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
+// floats, an unsigned conversion into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by
+// index, and the C88 entry is re-read through the rider each time (the loop reloads unk1424 after every store, as in
+// the original). Left: the original keeps 0.0f in $f20 across the calls (here it is rematerialised, so the frame is 8
+// bytes smaller and f20 is not saved), and float registers and scheduling differ in the sphere code.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     MtxF mf;
     UnkStruct_8004B0F8_1* point;
     Vec3f* tmpl;
-    UnkStruct_80192690_C88* base;
     f32* lengths;
     f32 x;
     f32 y;
@@ -5970,7 +6030,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unkBE4 = rider->unk44.x;
         rider->unkBEC = rider->unk44.z;
     } else {
-        rider->unkBF4 = rider->unkBF0 = 0.0f;
+        rider->unkBF0 = rider->unkBF4 = 0.0f;
     }
     for (point = rider->unk30, tmpl = D_800D4840; tmpl < &D_800D4840[12]; tmpl++, point++) {
         point->unk0 = tmpl->x;
@@ -5989,35 +6049,22 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unkBF0 = rider->unk44.x - rider->unkBE4;
         rider->unkBF4 = rider->unk44.z - rider->unkBEC;
     }
-    for (point = &rider->unk90[11]; point >= rider->unk90; point--) {
-        x = point->unk0;
-        y = point->unk4;
-        z = point->unk8;
-        point->unk0 = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
-        point->unk4 = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
-        point->unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
+    for (i = 11; i >= 0; i--) {
+        x = rider->unk90[i].unk0;
+        y = rider->unk90[i].unk4;
+        z = rider->unk90[i].unk8;
+        rider->unk90[i].unk0 = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
+        rider->unk90[i].unk4 = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
+        rider->unk90[i].unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
     }
-    // The original assigns most of these in long chains.
-    rider->unk142C = rider->unkBFC = rider->unkB98 = 0.0f;
-    rider->unk1444 = 0;
-    rider->unk15FA = rider->unk15F8 = 0;
-    rider->unk1602 = 0;
-    rider->unk160A = 0;
-    rider->unk16E0 = rider->unk1608 = 0;
-    rider->unk16E2 = rider->unk1606 = 0;
-    rider->unk16F2 = rider->unk1604 = 0;
-    rider->unkB58 = rider->unkB56 = 0;
-    rider->unkB8C = rider->unkB88 = rider->unkB84 = 0.0f;
-    rider->unkB80 = rider->unkB7C = rider->unkB78 = 0.0f;
-    rider->unkB94 = rider->unkB90 = 0.0f;
-    rider->unkB5F = rider->unkB5E = 0;
-    rider->unk16E4 = rider->unk16D0 = rider->unk16B4 = rider->unk1574 = 0;
-    rider->unkC6C = rider->unkC58 = 0;
-    rider->unk16EC = rider->unk16E8 = 0;
-    rider->unkB60 = 0;
-    rider->unkC86 = rider->unkC84 = 0;
-    rider->unkB50.button = 0;
-    rider->unkB50.stick_y = rider->unkB50.stick_x = 0;
+    rider->unkB90 = rider->unkB94 = rider->unkB78 = rider->unkB7C = rider->unkB80 = rider->unkB84 = rider->unkB88 =
+        rider->unkB8C = rider->unkB5E = rider->unkB56 = rider->unkB58 = rider->unkB5F = rider->unkB50.stick_x =
+            rider->unkB50.stick_y = rider->unkB50.button = rider->unkC84 = rider->unkC86 = rider->unkB60 =
+                rider->unk16E8 = rider->unk16EC = rider->unkC58 = rider->unkC6C = rider->unk1574 = rider->unk16B4 =
+                    rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
+                        rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
+                            rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
+    rider->unk1604 = rider->unk16F2 = 0;
     rider->unk1446 = 10;
     rider->unk16C8 = -1;
     rider->unk15FC = 0x800;
@@ -6025,14 +6072,14 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk16F0 = rider->unk16F2;
     rider->unk16F4 = rider->unk1604;
     rider->unk15D8 = 1.0f;
-    rider->unkC74 = rider->unkC70 = rider->unk15B0 = -1;
+    rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
     rider->unkC7C = 1;
     rider->unkC82 = 1;
     rider->unkC78 = 8;
     rider->unk1578 = 1.0f;
-    rider->unk15F0 = rider->unk15A8 = rider->unk15A4 = rider->unk15A0 = rider->unk159C = gFrameCounter;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unkC54 = 22;
     rider->unkC00 = 34.11f;
     func_800624CC(rider);
@@ -6100,40 +6147,40 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
     rider->unkC0C = rider->unkC04 = 34.11f;
     rider->unkC10 = -27.300001f;
-    base = &RIDER_C88(rider)[rider->unk1424][7];
-    rider->unk1448[0].unkC.x = base->unkC.x;
-    rider->unk1448[0].unk0.x = (base->unkC.x * -2.1f) + (RIDER_PARTS(rider)[1].unk4.x + (2.0f * base->unk18.x));
-    rider->unk1448[0].unkC.y = base->unkC.y;
-    rider->unk1448[0].unk0.y = (base->unkC.y * -2.1f) + (RIDER_PARTS(rider)[1].unk4.y + (2.0f * base->unk18.y));
-    rider->unk1448[0].unkC.z = base->unkC.z;
-    rider->unk1448[0].unk0.z = (base->unkC.z * -2.1f) + (RIDER_PARTS(rider)[1].unk4.z + (2.0f * base->unk18.z));
+    rider->unk1448[0].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
+    rider->unk1448[0].unk0.x = (RIDER_C88(rider)[rider->unk1424][7].unkC.x * -2.1f) +
+                               (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
+    rider->unk1448[0].unkC.y = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
+    rider->unk1448[0].unk0.y = (RIDER_C88(rider)[rider->unk1424][7].unkC.y * -2.1f) +
+                               (RIDER_PARTS(rider)[1].unk4.y + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y));
+    rider->unk1448[0].unkC.z = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
+    rider->unk1448[0].unk0.z = (RIDER_C88(rider)[rider->unk1424][7].unkC.z * -2.1f) +
+                               (RIDER_PARTS(rider)[1].unk4.z + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z));
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
         } else {
             lengths = D_800D48E4;
         }
+    } else if (arg0 == gPlayer2Rider) {
+        if (D_801CE6F4[1] != 0) {
+            lengths = D_800D48F8;
+        } else {
+            lengths = D_800D48E4;
+        }
     } else {
         lengths = D_800D48E4;
-        if (arg0 == gPlayer2Rider) {
-            if (D_801CE6F4[1] != 0) {
-                lengths = D_800D48F8;
-            } else {
-                lengths = D_800D48E4;
-            }
-        }
     }
     for (i = 1; i < 6; i++) {
-        base = &RIDER_C88(rider)[rider->unk1424][7];
-        rider->unk1448[i].unkC.x = base->unkC.x;
-        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (base->unkC.x * lengths[i - 1]);
-        rider->unk1448[i].unkC.y = base->unkC.y;
-        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (base->unkC.y * lengths[i - 1]);
-        rider->unk1448[i].unkC.z = base->unkC.z;
-        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (base->unkC.z * lengths[i - 1]);
-        rider->unk1448[i].unk14.x = base->unk18.x;
-        rider->unk1448[i].unk14.y = base->unk18.y;
-        rider->unk1448[i].unk14.z = base->unk18.z;
+        rider->unk1448[i].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
+        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (rider->unk1448[i].unkC.x * lengths[i - 1]);
+        rider->unk1448[i].unkC.y = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
+        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (rider->unk1448[i].unkC.y * lengths[i - 1]);
+        rider->unk1448[i].unkC.z = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
+        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (rider->unk1448[i].unkC.z * lengths[i - 1]);
+        rider->unk1448[i].unk14.x = RIDER_C88(rider)[rider->unk1424][7].unk18.x;
+        rider->unk1448[i].unk14.y = RIDER_C88(rider)[rider->unk1424][7].unk18.y;
+        rider->unk1448[i].unk14.z = RIDER_C88(rider)[rider->unk1424][7].unk18.z;
         rider->unk1520[i].x = rider->unk1520[i].y = rider->unk1520[i].z = 0.0f;
     }
 }

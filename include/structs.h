@@ -301,13 +301,15 @@ struct UnkStruct_801C3C50 {
     /* 0x0090 */ char pad90[0xAC0]; /* maybe part of unk8C[0x2B1]? */
     /* 0x0B50 */ u16 unkB50;
     /* 0x0B52 */ s8 unkB52;
-    /* 0x0B53 */ u8 unkB53;
+    /* 0x0B53 */ s8 unkB53;
     /* 0x0B54 */ char padB54[0x10];
     /* 0x0B64 */ s32 unkB64;
     /* 0x0B68 */ s32 unkB68;
     /* 0x0B6C */ char padB6C[0x24];
     /* 0x0B90 */ f32 unkB90;
-    /* 0x0B94 */ char padB94[0xB0]; /* maybe part of unkB90[0x2D]? */
+    /* 0x0B94 */ char padB94[0x24];
+    /* 0x0BB8 */ f32 unkBB8;
+    /* 0x0BBC */ char padBBC[0x88];
     /* 0x0C44 */ f32 unkC44;
     /* 0x0C48 */ char padC48[4];
     /* 0x0C4C */ f32 unkC4C;
