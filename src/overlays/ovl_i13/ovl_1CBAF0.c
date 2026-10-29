@@ -686,11 +686,11 @@ void SaveLoad_UpdateMessageBox(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 330 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
+// Score 310 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
 // stored at its first use, reloaded for the second panel and for y + 3. Written plainly (y = 186)
 // IDO folds it (score 7011); the two FAKE lines below get most of it back. The rest is register
 // allocation: the D_i13_802C8DB4 load register ($a3 for the original's $t0), the first call's 186 ($a3, stored to y)
-// and two operand orders in the D_i13_802C8EB0 box.
+// and one hoisted lui t0, 0x600 the original keeps before a display-list block.
 Gfx* func_i13_802C711C(Gfx* gdl) {
     s32 i;
     s32 y;
@@ -902,8 +902,9 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
 
     if (D_i13_802C8DC8 != 0) {
         gdl = func_801E7E74(gdl, 0, 0, 0, 255);
-        gdl = func_801E7FD8(gdl, D_i13_802C8EB0, D_i13_802C8EB4, D_i13_802C8EB0 + D_i13_802C8EB8,
-                            D_i13_802C8EB4 + D_i13_802C8EBC);
+        // FAKE: the (u32) casts are no-ops on the u32 globals; they give the original's operand order
+        gdl = func_801E7FD8(gdl, D_i13_802C8EB0, D_i13_802C8EB4, (u32) D_i13_802C8EB0 + D_i13_802C8EB8,
+                            (u32) D_i13_802C8EB4 + D_i13_802C8EBC);
     }
 
     if (D_i13_802C8DD4 != 0) {
