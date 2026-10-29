@@ -527,11 +527,12 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 1232 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 1055 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
 // reused; the permuter found them, and with them the int registers match, except wasIn's). Left: the frame is 0x90,
 // not 0x88 (isHuman and rider spill to new slots below the declared ones, where the original spills them to slots of
-// their own among them), d is not stored, and the float registers of the nearest-record and Drake Lake blocks differ.
+// their own among them), the second distance (dxp, reused) is not stored, and the float registers of the
+// nearest-record and Drake Lake blocks differ. The Drake Lake deltas reuse dx0/dz0.
 void func_80076378(s32 arg0) {
     s32 prev;
     s32 next;
@@ -540,6 +541,7 @@ void func_80076378(s32 arg0) {
     f32 dxp;
     s32 cur;
     s32 best;
+    s32 isHuman;
     s32 zoneA;
     s32 zoneB;
     s32 zoneC;
@@ -551,13 +553,9 @@ void func_80076378(s32 arg0) {
     s32 wasIn;
     s32 player;
     UnkStruct_800D8204* rect;
-    f32 dx;
-    s32 isHuman;
     RiderStruct* rider;
     f32 x;
     f32 z;
-    f32 d;
-    f32 dz;
 
     rider = &gRiderRaceState[arg0];
     if (D_801CE638 == 2) {
@@ -574,20 +572,20 @@ void func_80076378(s32 arg0) {
         cur = rider->nearestRecord;
         best = cur;
         x = D_801C3780;
-        z = D_801C3788;
         prev = D_801AEE20[cur].unkA8;
         next = D_801AEE20[cur].unkA0;
         dx0 = D_801AEE20[cur].unk0 - x;
+        z = D_801C3788;
         dzp = D_801AEE20[prev].unk8 - z;
         dxp = D_801AEE20[prev].unk0 - x;
         dz0 = D_801AEE20[cur].unk8 - z;
         dxn = D_801AEE20[next].unk0 - x;
         dzn = D_801AEE20[next].unk8 - z;
         bestDist = (dx0 * dx0) + (dz0 * dz0);
-        d = (dxp * dxp) + (dzp * dzp);
-        if (d < bestDist) {
-            bestDist = d;
-            if (cur && cur && cur) {} // FAKE: keeps x, z and d on the stack, as in the original
+        dxp = (dxp * dxp) + (dzp * dzp);
+        if (dxp < bestDist) {
+            bestDist = dxp;
+            if (cur && cur && cur) {} // FAKE: keeps x, z and dxp on the stack, as in the original
             best = prev;
         }
         if (((dxn * dxn) + (dzn * dzn)) < bestDist) {
@@ -612,9 +610,9 @@ void func_80076378(s32 arg0) {
         }
         for (best = 0; best < wasIn; best++) {
             if (!(D_801C3784 > 40.0f)) {
-                dx = D_801C3780 - D_800D81D4[best].x;
-                dz = D_801C3788 - D_800D81D4[best].z;
-                if (((dx * dx) + (dz * dz)) <= 22500.0f) {
+                dz0 = D_801C3788 - D_800D81D4[best].z;
+                dx0 = D_801C3780 - D_800D81D4[best].x;
+                if (((dx0 * dx0) + (dz0 * dz0)) <= 22500.0f) {
                     rider->unk318 = 1;
                     break;
                 }

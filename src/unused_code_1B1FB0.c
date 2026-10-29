@@ -418,10 +418,9 @@ Gfx* func_1B1FB0_802C6FF8(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 410 of 8300: the first packet goes through a copy of gdl (move v1,a0 in the delay slot); the
-// original writes it at a0 and puts gdl + 8 in t0 there. The rest matches.
 Gfx* func_1B1FB0_802C71B8(Gfx* gdl, char c, s32 x, s32 y) {
+    s32 mask = G_TX_NOMASK; // FAKE: found by the permuter; with the masks in a local, gdl is not copied
+
     if (c < 16) {
         return gdl;
     }
@@ -429,16 +428,12 @@ Gfx* func_1B1FB0_802C71B8(Gfx* gdl, char c, s32 x, s32 y) {
         c = 0x3B;
     }
     c -= 16;
-    if (1) {} // FAKE: without it c is copied into v1 and the score is 2285
     gDPLoadTextureBlock(gdl++, &D_8000008[c << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                        G_TX_NOMIRROR | G_TX_CLAMP, mask, mask, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(gdl++, x << 2, y << 2, (x + 16) << 2, (y + 16) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
                         1 << 10);
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/unused_code_1B1FB0/func_1B1FB0_802C71B8.s")
-#endif
 
 s32 func_1B1FB0_802C7304(s32 arg0, s8* arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 s1 = arg3;

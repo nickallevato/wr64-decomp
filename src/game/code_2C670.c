@@ -897,10 +897,6 @@ void func_80071E70(void) {
 extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
-#ifdef NON_MATCHING
-// Score 570 of 54400: same loops, calls, stores and frame. Left: the n = arg1 - 1 of the third loop's link walk is
-// scheduled earlier here (the original puts it in a branch delay slot), the unkB0 lookup takes a1/a0 where the
-// original has v1/v0, and some float temps of the last statements are numbered differently.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     UnkStruct_801AEE20* e;
     s32 i;
@@ -938,7 +934,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     }
     for (i = 0; i < arg1; i++) {
         if (arg0[i].unkC0 < 2) {
-            for (k = arg0[i].unkB4, n = arg1 - 1; (arg0[k].unkC0 >= 2) && (n > 0); n--) {
+            for (k = arg0[i].unkB4, n = arg1; (arg0[k].unkC0 >= 2) && (--n > 0);) {
                 k = arg0[k].unkB4;
             }
             arg0[i].unkA0 = k;
@@ -947,7 +943,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     }
     for (i = 0; i < arg1; i++) {
         if (arg0[i].unkC0 != 1) {
-            for (k = arg0[i].unkB4, n = arg1 - 1; (arg0[k].unkC0 == 1) && (n > 0); n--) {
+            for (k = arg0[i].unkB4, n = arg1; (arg0[k].unkC0 == 1) && (--n > 0);) {
                 k = arg0[k].unkB4;
             }
             arg0[i].unkAC = k;
@@ -957,8 +953,8 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     for (path = 0; path < 4; path++) {
         for (i = 0; i < arg1; i++) {
             if ((arg0[i].unkC0 == 0) || (arg0[i].unkC0 == 2) || (arg0[i].unkC0 == path + 3)) {
-                for (k = arg0[i].unkB4, n = arg1 - 1;
-                     (arg0[k].unkC0 != 0) && (arg0[k].unkC0 != 2) && (arg0[k].unkC0 != path + 3) && (n > 0); n--) {
+                for (k = arg0[i].unkB4, n = arg1;
+                     (arg0[k].unkC0 != 0) && (arg0[k].unkC0 != 2) && (arg0[k].unkC0 != path + 3) && (--n > 0);) {
                     k = arg0[k].unkB4;
                 }
                 arg0[i].unkCC[path] = k;
@@ -1069,9 +1065,9 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
             angle = 360.0f - angle;
         }
         e->unk94 = angle;
-        k = arg0[i].unkB0;
-        ax = e->unk0 - arg0[k].unk0;
-        az = e->unk8 - arg0[k].unk8;
+        n = arg0[i].unkB0;
+        ax = e->unk0 - arg0[n].unk0;
+        az = e->unk8 - arg0[n].unk8;
         len = sqrtf((ax * ax) + (az * az));
         if (len > 0.0f) {
             ax /= len;
@@ -1081,8 +1077,8 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         e->unkE8 = az;
         switch (e->unk98) {
             case 0:
-                e->unkF0 = e->unkE4;
                 e->unkEC = -e->unkE8;
+                e->unkF0 = e->unkE4;
                 break;
             case 1:
                 e->unkEC = e->unkE8;
@@ -1102,20 +1098,17 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         e->unk10 = 0.0f;
         e->unk1C = 0.0f;
         e->unk14 = e->unk30 = e->unk8 + (dz * width);
-        e->unk68 = e->unk8 + oz;
         e->unk18 = e->unk34 = e->unk0 - (dx * width);
-        e->unk64 = 46.0f;
         e->unk20 = e->unk38 = e->unk8 - (dz * width);
         e->unk60 = e->unk0 + ox;
+        e->unk64 = 46.0f;
+        e->unk68 = e->unk8 + oz;
         if ((i == D_801BB12C) && (gCourseID == GLACIER_COAST)) {
             e->unk10 = -110.0f;
             e->unk1C = -160.0f;
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_800735EC.s")
-#endif
 
 void Course_BuildGrid(void) {
     s32 i;
