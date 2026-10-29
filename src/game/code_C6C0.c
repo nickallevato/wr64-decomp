@@ -1347,7 +1347,7 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
 }
 
 #ifdef NON_MATCHING
-// Score 65 of 82500: same instructions, frame and stack slots. The cross product written out in full (no locals for
+// Score 15 of 82500: same instructions, frame and stack slots. The cross product written out in full (no locals for
 // the two edge vectors) gives the original's evaluation order and spills (5359 to 698); the midpoint block stores
 // unk168 then unk1D4. A permuter FAKE (three empty ifs after dx *= s) gives mx, s and mz the original's $f14, $f12,
 // $f2 (65 to 15). Left: my takes $f0 where the original has $f16. Also tried: renaming s per block (using mz for the
