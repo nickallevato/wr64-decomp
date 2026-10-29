@@ -1312,12 +1312,15 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 66741 of 358000: same calls and branches (by a structure diff); the frame is 0x48 bytes smaller
-// than the original's (0x5A0 vs 0x5F0), table B's draw loops reload D_801C0840[i] for the env alpha where
-// the original reuses the loaded value, and registers differ throughout. One local (slot) also serves as
-// the search counter, as in the original. Statement order in a few straight-line runs is from a greedy
+// Score 44672 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
+// gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
+// table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
+// and constants (G_CULL_BACK, the gate lists) sit in other registers. One local (slot) also serves as the
+// search counter, as in the original. Statement order in a few straight-line runs is from a greedy
 // statement-move search.
 void func_8006E674(Gfx** gdl) {
+    s32 padA[2]; // stack pad
+    s32 slot;
     camera_unk_1* cam;
     UnkStruct_80192690* craft;
     UnkStruct_801AEE20* e;
@@ -1327,12 +1330,9 @@ void func_8006E674(Gfx** gdl) {
     UnkStruct_801BC940* o;
     s32 cur;
     s32 i;
-    s32 slot;
     s32 near;
     s32 far;
     s32 idx;
-    f32 dirX;
-    f32 dirZ;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -1343,13 +1343,20 @@ void func_8006E674(Gfx** gdl) {
     f32 angle;
     u8* tex;
     u8* tex2;
-    Gfx* dlA;
-    Gfx* dlA2;
+    Mtx* mtx;
+    s32 padB[7]; // stack pad
+    f32 dirX;
+    f32 dirZ;
+    s32 padC[4]; // stack pad
+    Gfx* gdlh;
     Gfx* dlB;
     Gfx* dlB2;
-    Mtx* mtx;
-    Gfx* gdlh;
+    Gfx* dlA;
+    Gfx* dlA2;
+    s32 padD[2]; // stack pad
     MtxF mf;
+    UnkStruct_801AEE20* rec;
+    s32 padE[4]; // stack pad
 
     gdlh = *gdl;
     if (D_800DAB2C == 0) {
@@ -1636,14 +1643,14 @@ void func_8006E674(Gfx** gdl) {
     // matrix for the arrow above them; gates sit between their posts and face along the course.
     gDPPipeSync(gdlh++);
     gDPSetTextureLUT(gdlh++, G_TT_RGBA16);
-    for (i = 0, slot = 0, e = D_801AEE20; i < D_801BB120; i++, e++) {
+    for (i = 0, slot = 0, rec = D_801AEE20; i < D_801BB120; i++, rec++) {
         if (D_801C0840[i] < 0) {
             continue;
         }
         if (D_801AEE20[i].unk9C == 0) {
-            dy = cam->eyeY - e->unk4;
-            dx = cam->eyeX - e->unk0;
-            dz = cam->eyeZ - e->unk8;
+            dy = cam->eyeY - rec->unk4;
+            dx = cam->eyeX - rec->unk0;
+            dz = cam->eyeZ - rec->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
                 upZ = 0.0f;
@@ -1651,11 +1658,11 @@ void func_8006E674(Gfx** gdl) {
                 upY = 0.0f;
                 upZ = 1.0f;
             }
-            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, e->unk0,
-                                  e->unk4, e->unk8);
-            dx = e->unk60 - e->unk0;
-            dy = (e->unk64 + gWaterLevel) - e->unk4;
-            dz = e->unk68 - e->unk8;
+            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, rec->unk0,
+                                  rec->unk4, rec->unk8);
+            dx = rec->unk60 - rec->unk0;
+            dy = (rec->unk64 + gWaterLevel) - rec->unk4;
+            dz = rec->unk68 - rec->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
                 upZ = 0.0f;
@@ -1663,18 +1670,18 @@ void func_8006E674(Gfx** gdl) {
                 upY = 0.0f;
                 upZ = 1.0f;
             }
-            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, e->unk0,
-                                  e->unk4, e->unk8);
+            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, rec->unk0,
+                                  rec->unk4, rec->unk8);
         } else {
-            e->unk0 = (e->unkC + e->unk18) * 0.5f;
+            rec->unk0 = (rec->unkC + rec->unk18) * 0.5f;
             if (gCourseID != GLACIER_COAST) {
-                e->unk4 = (e->unk10 + e->unk1C) * 0.5f;
+                rec->unk4 = (rec->unk10 + rec->unk1C) * 0.5f;
             } else {
-                e->unk4 = 0.0f;
+                rec->unk4 = 0.0f;
             }
-            e->unk8 = (e->unk14 + e->unk20) * 0.5f;
-            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, -e->unk70, 0.0f, -e->unk74, 0.0f, 1.0f,
-                                  0.0f, e->unk0, e->unk4, e->unk8);
+            rec->unk8 = (rec->unk14 + rec->unk20) * 0.5f;
+            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, -rec->unk70, 0.0f, -rec->unk74, 0.0f, 1.0f,
+                                  0.0f, rec->unk0, rec->unk4, rec->unk8);
         }
         D_801C0B40[i] = slot;
         if (++slot >= 12) {
