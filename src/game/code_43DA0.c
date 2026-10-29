@@ -390,9 +390,10 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 75435 of 181100, one instruction long: float register allocation and stack layout throughout (frame 0x2E0,
-// not 0x2C0; the original keeps the camera's unk70/unk74/unk78, the squared dot product and the direction on
-// the stack, and saves four FP registers).
+// Score 73721 of 181100: the direction is scaled in place after sqrtf and glare is squared four times before the
+// branch, both as in the original (glare then lives on the stack, as there). Left: float register allocation and
+// stack layout (frame 0x2E8 here, 0x2C0 in the original, which saves four FP registers and keeps alpha in $f22 and
+// the camera's upX/upY/upZ in stack homes), and cam->unk68 * 2.0f is an add.s here, a mul.s there.
 Gfx* func_8008A0E0(Gfx* gdl) {
     UnkStruct_801C43F8* p;
     camera_unk_1* cam;
@@ -443,13 +444,17 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     dy = D_800D98D0 - cam->eyeY;
     dz = D_800D98D4 - cam->eyeZ;
     inv = 1.0f / sqrtf((dx * dx) + (dy * dy) + (dz * dz));
-    dot = (cam->unk64 * (dx * inv)) + ((dy * inv) * cam->unk68) + ((dz * inv) * cam->unk6C);
+    dx *= inv;
+    dy *= inv;
+    dz *= inv;
+    dot = (cam->unk64 * dx) + (dy * cam->unk68) + (dz * cam->unk6C);
     glare = dot * dot;
+    glare = glare * glare;
     glare = glare * glare;
     glare = glare * glare;
     if (dot > 0.8f) {
         D_800D47E0[0] = 2;
-        gColorAlpha = 200.0f * (glare * glare);
+        gColorAlpha = 200.0f * glare;
         gColorRed = 0xF5;
         gColorGreen = 0xFF;
         gColorBlue = 0xD7;
@@ -461,16 +466,16 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     if (alpha < 15.0f) {
         alpha = 0.0f;
     }
+    rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     rx = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
     ry = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
-    rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     func_8004A3C0(&sp240, &sp200, cam->unk64, cam->unk68, cam->unk6C, angle);
-    vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
     vz = (sp200.mf[2][2] * rz) + ((sp200.mf[0][2] * rx) + (sp200.mf[1][2] * ry));
     cx = (cam->unk68 * vz) - (cam->unk6C * vy);
-    cy = (cam->unk6C * vx) - (cam->unk64 * vz);
+    vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     cz = (cam->unk64 * vy) - (cam->unk68 * vx);
+    cy = (cam->unk6C * vx) - (cam->unk64 * vz);
     o0x = (-1.0f * vx) - cx;
     o0y = (-1.0f * vy) - cy;
     o0z = (-1.0f * vz) - cz;
