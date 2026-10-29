@@ -625,9 +625,8 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #ifdef NON_MATCHING
-// Score 305 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (z,
-// x and y are in $f16/$f18/$f20, the original's $f20/$f16/$f18; p and t take a1 and a0 where the original has a0
-// and a2).
+// Score 170 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (p
+// and t take a1 and a0 where the original has a0 and a2). Reading x, y, z in that order gives their float registers.
 void func_80051EC0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* p = rider->unk90;
@@ -660,9 +659,9 @@ void func_80051EC0(s32 arg0) {
     f32 dy3;
 
     do {} while (0); // FAKE: a block boundary with no code; keeps p (rider + 0x90) in its own register
-    z = rider->unk44.z;
     x = rider->unk44.x;
     y = rider->unk44.y;
+    z = rider->unk44.z;
     a = rider->unk84;
     b = rider->unk88;
     c = rider->unk8C;
@@ -5442,7 +5441,7 @@ void func_800609EC(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 830 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
+// Score 560 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
 // (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), which shifts the t-register
 // rotation for the rest of the function; and it keeps the constant 1 of the UNACTIVE_MODE test in a2 for the
 // unk15DC store. btn and pad set at the top (not before first use) stop IDO folding their first access into arg0;
@@ -5466,7 +5465,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     if (d < -D_800D49DC) {
         d = -D_800D49DC;
     } else if (D_800D49DC < d) {
-        d = D_800D49DC;
+        d = D_800D49DC & 0xFFFFFFFFFFFFFFFFu; // FAKE (permuter): a no-op 64-bit mask that takes one more t-register
     }
     arg0->unkB60 += d;
     arg0->unkC66 = btn->held & 0xA000;
@@ -5509,8 +5508,8 @@ void func_80061184(UnkStruct_80192690* arg0) {
     }
     dirs = 0;
     if (pad->stick_x < -64) {
-        arg0->unk1600 = 1;
         dirs = 0x200;
+        arg0->unk1600 = 1;
     }
     if (pad->stick_x > 64) {
         dirs |= 0x100;

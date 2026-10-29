@@ -1287,8 +1287,8 @@ void func_80085408(void) {
  * Scratch: https://decomp.me/scratch/c7EJc
  * Score: 105 (99.62&)
  */
-// Score 200 of 27700: float registers only (sp48 is in $f12, the original's $f14; the dot product is in $f14, the
-// original's $f0; and others follow). Upstream's 105 above is decomp.me's scale.
+// Score 155 of 27700: float registers only (sp48, var_f0 and cross rotate: $f16/$f14/$f0 here for the original's
+// $f14/$f0/$f16, with the constants that reuse them). Upstream's 105 above is decomp.me's scale.
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;
@@ -1322,6 +1322,7 @@ void func_80085510(void) {
     Math_Normalize_VectorComponents(&sp44, &sp40);
 
     var_f0 = (sp4C * sp44) + (sp48 * sp40);
+    if (1) {} // FAKE: an empty block (from the permuter) that moves the float registers
     if (var_f0 < 0.15) {
         D_801C3C58->unk8C = 0;
         var_f0 = (sp4C * sp44) + (sp48 * sp40);
