@@ -2,7 +2,9 @@
 
 extern UnkStruct_menu_buffer_1 gPopupSlotInit;
 
-extern UnkStruct_menu_buffer_1 menu_buffer_1[];
+// This file's .bss, 0x80228930..0x80228A0B (yaml split): five 0x2C popup slots. Nothing names 0x80228A0C;
+// the object's 16-byte alignment puts wr64_fade's .bss at 0x80228A10.
+UnkStruct_menu_buffer_1 menu_buffer_1[5];
 
 void Popup_UpdateAll(void) {
     UnkStruct_menu_buffer_1* var_s0;

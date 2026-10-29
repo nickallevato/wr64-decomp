@@ -52,7 +52,8 @@ extern void Race_Leave(s32 arg0);
 extern UnkStruct_801CE658 D_801CE658[];
 extern s16 gCurrentPauseMenuOption;
 extern s16 D_801CE62C;
-extern s32 D_80228910;
+// This file's .bss, 0x80228910..0x80228913 (yaml split).
+s32 D_80228910;
 extern s16 D_801CE628;
 extern s32 D_800D817C;
 extern s16 gCurrentPauseMenuOptionCount;

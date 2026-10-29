@@ -32,6 +32,66 @@ typedef struct UnkStruct_80228B88 {
 
 void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 color);
 
+// This file's .bss, the end of codeseg's: 0x80228A90..0x80228E0F (yaml split). Sizes run to the next variable.
+// In-object addresses the code names are in resolve.txt: D_80228AFC, D_80228B18 and D_80228B34 (D_80228AE0[1..3]),
+// D_80228CE0, D_80228CE8, D_80228CEC and D_80228CF0 (D_80228CD8 + 8, + 0x10, + 0x14 and the end of its six digits),
+// D_80228CF7, D_80228CFC and D_80228CFD (D_80228CF8 - 1, + 4 and + 5: the number buffer's digit loops).
+s32 gStartCountdown;
+s32 D_80228A94;
+s32 D_80228A98;
+s32 D_80228A9C;
+s32 D_80228AA0;
+s32 D_80228AA4;
+s32 D_80228AA8;
+s32 D_80228AAC;
+s32 D_80228AB0;
+s32 D_80228AB4;
+s32 D_80228AB8;
+s32 D_80228ABC;
+s32 D_80228AC0;
+s32 D_80228AC4;
+s32 D_80228AC8;
+s32 D_80228ACC;
+s32 D_80228AD0;
+s32 D_80228AD4;
+s32 D_80228AD8;
+s32 D_80228ADC; // FAKE pad: no code names 0x80228ADC (splat sized D_80228AD8 0x8); keeps D_80228AE0 at its address
+UnkStruct_80228AE0 D_80228AE0[4];
+s32 D_80228B50;
+s32 D_80228B54;
+s8 D_80228B58[4];
+s32 D_80228B5C;
+s32 D_80228B60[2];
+s32 D_80228B68[2];
+s32 D_80228B70[2];
+s32 D_80228B78;
+s32 D_80228B7C;
+s32 D_80228B80;
+s32 D_80228B84; // FAKE pad: no code names 0x80228B84 (splat sized D_80228B80 0x8); keeps D_80228B88 at its address
+UnkStruct_80228B88 D_80228B88[2][4];
+s32 gHudMarkerColorFrame;
+s32 gHudMarkerColorStep;
+UnkStruct_80228C30 gHudMarkers[2];
+s32 D_80228CD8[8];
+s8 D_80228CF8[16];
+s32 gStartLightsState;
+s32 gStartLightsOffset;
+s32 gStartLightsOffsetMax;
+s32 D_80228D14;
+s32 D_80228D18;
+s32 gHudColorStep;
+s32 gHudColorFrame;
+u16 gHudPerspNorm;
+PortraitPos gPortraitPos[2][4];
+s32 D_80228DC8[4];
+s32 D_80228DD8[4];
+s32 D_80228DE8[4];
+s32 D_80228DF8;
+s32 D_80228DFC;
+s32 D_80228E00[2];
+s32 D_80228E08[2];
+
+
 extern Gfx D_1014708[];
 extern Gfx D_1014760[];
 extern Gfx D_1014790[];
@@ -68,24 +128,6 @@ extern s32 D_801C1FE8;
 extern RiderStruct gRiderRaceState[];
 extern u8* gPortraitFaces[];
 extern f32 gPortraitBob[];
-extern s32 D_80228A9C;
-extern s32 D_80228AAC;
-extern s32 D_80228AB0;
-extern s32 D_80228AB4;
-extern s32 D_80228AB8;
-extern s32 D_80228ABC;
-extern s32 D_80228AC0;
-extern s32 D_80228B50;
-extern s32 D_80228B54;
-extern UnkStruct_80228B88 D_80228B88[2][4];
-extern s32 gHudMarkerColorFrame;
-extern s32 gHudMarkerColorStep;
-extern UnkStruct_80228C30 gHudMarkers[];
-extern s8 D_80228CF8[5];
-extern u16 gHudPerspNorm;
-extern PortraitPos gPortraitPos[2][4];
-extern s32 D_80228DC8[];
-extern s32 D_80228DF8;
 
 // The asm names this word D_801CE6FC + 8; its symbol is in linker_scripts/us/rev1/resolve.txt.
 extern s32 D_801CE704;
@@ -113,14 +155,6 @@ extern s32 D_80227888[][3];
 extern s32 D_802278C4[][3];
 extern s32 D_80227900[][3];
 extern s32 D_8022793C[][3];
-extern s32 D_80228AC4;
-extern s32 D_80228AC8;
-extern s32 D_80228ACC;
-extern s32 D_80228AD0;
-extern s32 D_80228AD4;
-extern s32 D_80228AD8;
-extern s32 gHudColorStep;
-extern s32 gHudColorFrame;
 
 // Blend the HUD colour sets between the current palette step and the next (two frames a step while unpaused).
 void Hud_BlendColorSets(void) {
@@ -1296,7 +1330,6 @@ extern s32 D_80228ACC;
 extern s32 D_80228AD0;
 extern s32 D_80228AD4;
 extern s32 D_80228AD8;
-extern s32 D_80228CD8[6];
 
 #define HUD_LOAD8(gdl, img, w, h)                                                                     \
     gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, h, 0, G_TX_NOMIRROR | G_TX_CLAMP, \
@@ -2330,10 +2363,13 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 1800 of 32800: the side offset's numerator is computed before the sqrt and func_801ED090 is called before the
-// distance test, as in the original; the forward dot product passes through dist, and the zero tests of a use their
-// own zeros. Left: the saved FP registers are still coloured partly differently and some statements are scheduled
-// elsewhere.
+// Score 120 of 32800: side is computed first, then the forward dot product (copied to fwd); the direction is
+// normalised in place (dx /= dist); dot holds side / scale once the angle test is done, and a holds the clamped fwd
+// before it holds the angle (with these the saved FP registers are coloured as in the original). The zero tests of
+// a use the integer literal 0. A differently spelled zero is a separate constant here (0.f, 0.00f and 0e0f all
+// work; 0.0F does not): sgn's 0.f is its own, while written 0.0f it shares aa > 0.0f's zero, which is then loaded in
+// both arms of sgn instead of once at the top. Left: the
+// lui of gRiders' address is scheduled two instructions later than in the original (after the b->unk4 store).
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2390,29 +2426,31 @@ void func_801F9EA0(void) {
                 p = &D_80192690[j];
                 dx = p->unk44.x - camX;
                 dz = p->unk44.z - camZ;
-                dist = dx * dirX + dz * dirZ;
-                fwd = dot = dist;
                 side = dx * dirZ + dz * -dirX;
+                dot = dx * dirX + dz * dirZ;
+                fwd = dot;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
-                    dot = (dx / dist) * dirX + (dz / dist) * dirZ;
+                    dx /= dist;
+                    dz /= dist;
+                    dot = dx * dirX + dz * dirZ;
                 }
                 dot = func_801ED090(dot);
                 if ((dist > 1024.0f) || (dot > 135.0f)) {
                     continue;
                 }
-                sx = fwd;
+                a = fwd;
                 if (fwd < 0.0f) {
-                    sx = 0.0f;
+                    a = 0.0f;
                 }
-                scale = sx * 0.0009765625f * 1024.0f + 60.0f;
-                side /= scale;
-                sx = side;
-                if (side > 1.0f) {
-                    a = func_801ED154(side - 1.0f, fwd / scale);
+                scale = a * 0.0009765625f * 1024.0f + 60.0f;
+                dot = side / scale;
+                sx = dot;
+                if (dot > 1.0f) {
+                    a = func_801ED154(dot - 1.0f, fwd / scale);
                     sx = 1.0f;
-                } else if (side < -1.0f) {
-                    a = func_801ED154(side + 1.0f, fwd / scale);
+                } else if (dot < -1.0f) {
+                    a = func_801ED154(dot + 1.0f, fwd / scale);
                     sx = -1.0f;
                 } else {
                     a = 0; // integer literal: with 0.0f the zero is shared with the other tests
@@ -2420,8 +2458,8 @@ void func_801F9EA0(void) {
                 if (a > 180.0f) {
                     a -= 360.0f;
                 }
-                aa = (a >= 0.0f * 1.0f) ? a : -a; // FAKE: 0.0f * 1.0f, a zero of its own for the original's FP registers
-                sgn = (a == 0) ? 0.0f : ((a > 0) ? 1 : -1); // integer literals, as above
+                aa = (a >= 0) ? a : -a;
+                sgn = (a == 0) ? 0.f : ((a > 0) ? 1 : -1); // odd literal: 0.f, not 0.0f (see the note)
                 if (aa > 0.0f) {
                     aa *= 0.6666667f;
                     if (aa > 90.0f) {
@@ -2675,6 +2713,7 @@ void func_801FAEB8(Gfx** gdlp) {
     s32 y;
     s32 w;
     f32 scale;
+    s32 next;
 
     gdl = *gdlp;
     for (i = 0; i < gPlayers; i++) {
@@ -2694,13 +2733,13 @@ void func_801FAEB8(Gfx** gdlp) {
             f = (3 - D_80228B70[i]) / 3.0f;
             g = 1.0f - f;
             step = D_80228B68[i];
-            r0 = D_80227744[step][0] * f + D_80227744[step + 1][0] * g;
-            scale = f; // FAKE: found by the permuter; the colour terms after r0 use the copy
-            g0 = D_80227744[step][1] * scale + D_80227744[step + 1][1] * g;
-            b0 = D_80227744[step][2] * scale + D_80227744[step + 1][2] * g;
-            r1 = D_80227754[step][0] * scale + D_80227754[step + 1][0] * g;
-            g1 = D_80227754[step][1] * scale + D_80227754[step + 1][1] * g;
-            b1 = D_80227754[step][2] * scale + D_80227754[step + 1][2] * g;
+            next = step + 1;
+            r0 = D_80227744[step][0] * f + D_80227744[next][0] * g;
+            g0 = D_80227744[step][1] * f + D_80227744[next][1] * g;
+            b0 = D_80227744[step][2] * f + D_80227744[next][2] * g;
+            r1 = D_80227754[step][0] * f + D_80227754[next][0] * g;
+            g1 = D_80227754[step][1] * f + D_80227754[next][1] * g;
+            b1 = D_80227754[step][2] * f + D_80227754[next][2] * g;
             D_80228B70[i]++;
             if (D_80228B70[i] >= 3) {
                 D_80228B68[i]++;
