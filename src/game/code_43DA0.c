@@ -390,7 +390,7 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 73721 of 181100: the direction is scaled in place after sqrtf and glare is squared four times before the
+// Score 70673 of 181100: the direction is scaled in place after sqrtf and glare is squared four times before the
 // branch, both as in the original (glare then lives on the stack, as there). Left: float register allocation and
 // stack layout (frame 0x2E8 here, 0x2C0 in the original, which saves four FP registers and keeps alpha in $f22 and
 // the camera's upX/upY/upZ in stack homes), and cam->unk68 * 2.0f is an add.s here, a mul.s there.
@@ -466,27 +466,27 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     if (alpha < 15.0f) {
         alpha = 0.0f;
     }
-    rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     rx = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
     ry = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
+    rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     func_8004A3C0(&sp240, &sp200, cam->unk64, cam->unk68, cam->unk6C, angle);
-    vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
     vz = (sp200.mf[2][2] * rz) + ((sp200.mf[0][2] * rx) + (sp200.mf[1][2] * ry));
-    cx = (cam->unk68 * vz) - (cam->unk6C * vy);
+    vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
     vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     cz = (cam->unk64 * vy) - (cam->unk68 * vx);
     cy = (cam->unk6C * vx) - (cam->unk64 * vz);
-    o0x = (-1.0f * vx) - cx;
-    o0y = (-1.0f * vy) - cy;
     o0z = (-1.0f * vz) - cz;
-    o1x = vx - cx;
-    o1y = vy - cy;
-    o1z = vz - cz;
+    o0y = (-1.0f * vy) - cy;
+    cx = (cam->unk68 * vz) - (cam->unk6C * vy);
     o2x = (-1.0f * vx) + cx;
-    o2y = (-1.0f * vy) + cy;
-    o2z = (-1.0f * vz) + cz;
+    o0x = (-1.0f * vx) - cx;
     o3x = vx + cx;
     o3y = vy + cy;
+    o1z = vz - cz;
+    o1y = vy - cy;
+    o2z = (-1.0f * vz) + cz;
+    o2y = (-1.0f * vy) + cy;
+    o1x = vx - cx;
     o3z = vz + cz;
     p->unk350[0][0].v.ob[0] = (s16) (s32) (32.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * o0x);
     p->unk350[0][0].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * o0y);
