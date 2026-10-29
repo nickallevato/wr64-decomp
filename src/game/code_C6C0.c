@@ -2110,10 +2110,10 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 60511 of 246800: same calls and branches as the original (by a structure diff); registers differ and
-// the frame is 0x3B0 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
+// Score 60452 of 246800: same calls and branches as the original (by a structure diff); registers differ and
+// the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
-// them; sp80, sp84, sp8C and spA0 are compiler spills in the original and still variables here. Named
+// them; sp84 and sp8C are compiler spills in the original and still variables here. Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry.
@@ -2142,10 +2142,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 spB0;
     f32 spAC;
     f32 spA8;
-    f32 sp80;
     f32 sp84;
     f32 sp8C;
-    f32 spA0;
     f32 temp_fs4;
     f32 temp_fv0;
     f32 temp_fv0_2;
@@ -2331,11 +2329,10 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs2 = (spAC * temp_fs1) - (temp_fv0 * temp_fs3);
     arg1->unk18C.unkC.z = temp_fs2;
     spA8 = temp_fa0;
-    spA0 = temp_fs3;
     arg1->unk120.unkC.z = temp_fs2;
     temp_fv0 = (f32) ((f64) arg1->unk21C.unk0.z - ((f64) temp_fs2 * 5.367542));
     temp_fa0 = (f32) ((f64) temp_fs1 * 10.135);
-    temp_fs1 = (f32) ((f64) spA0 * 10.135);
+    temp_fs1 = (f32) ((f64) temp_fs3 * 10.135);
     temp_fs2 = (f32) ((f64) spA8 * 10.135);
     arg1->unk120.unk0.x = var_fv0 + temp_fa0;
     arg1->unk120.unk0.y = temp_fs0 + temp_fs1;
@@ -2372,9 +2369,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs0 = (f32) ((f64) temp_fa0 + (12.546404 * (f64) temp_fv0));
     spAC = arg1->unk1F8.unk14.y;
     temp_fa0 = arg1->unk1F8.unk14.z;
-    sp80 = spB4f;
     spA8 = arg1->unk1F8.unk14.x;
-    sp80 = spAC;
     temp_fs3 = (f32) ((f64) ((temp_fa0 * spB4f) - (spA8 * temp_fv0)) * 7.0);
     var_fv0 = (f32) ((f64) ((spAC * temp_fv0) - (temp_fa0 * spB0)) * 7.0);
     arg1->unk168.unk0.x = temp_fs1 - var_fv0;
