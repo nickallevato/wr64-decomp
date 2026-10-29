@@ -171,7 +171,7 @@ s32 func_800ADC8C(s32);
 void func_800ADD14(void);
 void func_800A2B24(s32);
 // File declarations
-f32 func_8004D30C(f32, f32);
+f32 Water_GetHeight(f32, f32);
 void func_8009A97C(UnkStruct_801CF060* arg0);
 void func_8009A4DC(UnkStruct_801CF060* arg0);
 void func_8009A9FC(UnkStruct_801CF060* arg0);

@@ -58,7 +58,7 @@ extern UnkStruct_801BB138 gCoursePoints[];
 
 extern struct UnkStruct_801BC940 D_801BC940[];
 
-f32 func_8004D30C(f32, f32);
+f32 Water_GetHeight(f32, f32);
 extern s32 D_801BB120;
 extern s32 D_801BFA40;
 void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
@@ -104,7 +104,7 @@ void func_8007DBC0(void) {
 
         var_s0->unk40 = (f32) (((f64) var_s0->unk40 * 0.9) - 3.0);
 
-        var_f2 = (func_8004D30C(temp_f12, temp_f14) + 40.0f) - var_s0->unk4;
+        var_f2 = (Water_GetHeight(temp_f12, temp_f14) + 40.0f) - var_s0->unk4;
         if (var_f2 > 0.0f) {
             if (var_f2 > 30.0f) {
                 var_f2 = 30.0f;
@@ -127,7 +127,7 @@ void func_8007DBC0(void) {
         var_s0->unk18 = (f32) (((f64) var_s0->unk18 * 0.9) + (0.001 * (f64) (var_s0->unk24 - temp_f12)));
         var_s0->unk20 = (f32) (((f64) var_s0->unk20 * 0.9) + (0.001 * (f64) (var_s0->unk2C - temp_f14)));
         var_s0->unk1C = (f32) (((f64) var_s0->unk1C * 0.8) - 4.0);
-        var_f2 = func_8004D30C(temp_f12, temp_f14) - var_s0->unk4;
+        var_f2 = Water_GetHeight(temp_f12, temp_f14) - var_s0->unk4;
 
         if (var_f2 > 0.0f) {
             if (var_f2 > 30.0f) {

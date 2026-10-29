@@ -424,7 +424,7 @@ void Water_StampDiagonalSine(f32 x, f32 z, s32 amplitude, s32 period, s32 step) 
 // stack slots
 #define CU (((s32) ((INV_SQRT3 * z) + x) % 24576) >> 6)
 #define CV (((s32) (TWO_OVER_SQRT_3 * z) % 24576) >> 6)
-f32 func_8004D30C(f32 x, f32 z) {
+f32 Water_GetHeight(f32 x, f32 z) {
     s32 du;
     s32 h00;
     s32 dv;
@@ -451,7 +451,7 @@ f32 func_8004D30C(f32 x, f32 z) {
 #undef CU
 #undef CV
 
-void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
+void Water_PushPoints(struct UnkStruct_8004B0F8* arg0) {
     f32 max;
     f32 inv;
     f32 nx;
@@ -473,7 +473,7 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     max = arg0->unk1C * arg0->unk40 * arg0->unk18;
     for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
         x = pt->unk0;
-        nx = pt->unk8; // nx holds the point's z until the normal is computed, as in func_8004E0A4
+        nx = pt->unk8; // nx holds the point's z until the normal is computed, as in Water_PushPointsAtLevel
         u = (s32) ((INV_SQRT3 * nx) + x) % 24576;
         cu = u >> 6;
         fu = (cu << 6) - u;
@@ -526,7 +526,7 @@ void func_8004D628(struct UnkStruct_8004B0F8* arg0) {
     (pt)->unk10 *= body->unk10;                                               \
     (pt)->unk14 = (d * dz * k) + (body->unk14 * vz);
 
-void func_8004DAF0(void* arg0) {
+void Water_DampPoints(void* arg0) {
     UnkStruct_80192690* body = arg0;
     f32 vx;
     UnkStruct_8004B0F8_1* pt2;
@@ -611,7 +611,7 @@ void func_8004DAF0(void* arg0) {
     }
 }
 
-void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
+void Water_PushPointsAtLevel(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
     f32 max;
     f32 inv;
     f32 nx;
@@ -668,7 +668,7 @@ void func_8004E0A4(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
             pt->unk1C &= 0xFFFE;
         }
     }
-    func_8004DAF0(arg0);
+    Water_DampPoints(arg0);
 }
 
 void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
@@ -692,7 +692,7 @@ void func_8004E548(struct UnkStruct_8004B0F8* arg0, f32 arg1) {
             var_v0->unk1C &= 0xFFFE;
         }
     }
-    func_8004DAF0(arg0);
+    Water_DampPoints(arg0);
 }
 
 extern s32 gWaterWindowN;

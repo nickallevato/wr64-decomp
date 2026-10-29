@@ -68,8 +68,8 @@ extern u8 D_806AA78[];
 extern u8 D_806C880[];
 
 s32 Save_EepromReset(void);
-s32 func_8007D2D4(s32);
-s32 func_8007D614(s32);
+s32 Save_PfsRead(s32);
+s32 Save_PfsWrite(s32);
 void func_800C3010(u32);
 void func_800C3E6C(s32);
 void SaveLoad_Update(void);
@@ -563,7 +563,7 @@ s32 SaveLoad_PakTransfer(void) {
         if (D_i13_802C8DC4 != 0) {
             var_a0 += 0x80;
         }
-        D_i13_802C8D74 = func_8007D2D4(var_a0);
+        D_i13_802C8D74 = Save_PfsRead(var_a0);
         if (D_i13_802C8D74 == 0) {
             D_801CE640 = 0;
             D_i13_802C8D7C = 3;
@@ -575,7 +575,7 @@ s32 SaveLoad_PakTransfer(void) {
         D_i13_802C8DD4 = 0;
         D_i13_802C8DD0 = 0;
     } else {
-        D_i13_802C8D74 = func_8007D614(D_i13_802C8D60[D_i13_802C8DE0[D_i13_802C8D5C]]);
+        D_i13_802C8D74 = Save_PfsWrite(D_i13_802C8D60[D_i13_802C8DE0[D_i13_802C8D5C]]);
         if (D_i13_802C8D74 == 0) {
             D_801CE640 = 0;
             D_i13_802C8D7C = 3;
@@ -599,9 +599,9 @@ s32 SaveLoad_PakTransferRecords(void) {
     D_i13_802C8D80 = 0;
     D_i13_802C8D84 = 0;
     if (D_i13_802C8D54 == 0) {
-        D_i13_802C8D74 = func_8007D2D4(5);
+        D_i13_802C8D74 = Save_PfsRead(5);
     } else {
-        D_i13_802C8D74 = func_8007D614(5);
+        D_i13_802C8D74 = Save_PfsWrite(5);
     }
     if (D_i13_802C8D74 == 0) {
         D_801CE640 = 1;

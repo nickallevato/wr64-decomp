@@ -245,7 +245,7 @@ Gfx* func_8008BD2C(Gfx*);
 Gfx* func_800933C4(Gfx*);                    
 void func_801FC4D4(Gfx**);        
 void GameState_EnterCourseSelect(void);
-void func_8004DAF0(void*);
+void Water_DampPoints(void*);
 s32 SysUtils_Round(f32 x);
 void func_801EE97C(Mtx*, f32, f32, f32); 
 Gfx* func_801E5554(Gfx*);

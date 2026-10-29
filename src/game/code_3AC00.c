@@ -22,7 +22,7 @@ struct UnkStruct_801C4000 {
     f32 unk14;
 };
 
-f32 func_8004D30C(f32 arg0, f32 arg1);
+f32 Water_GetHeight(f32 arg0, f32 arg1);
 s32 func_80087134(f32, f32);
 void func_80087444(void);
 s32 Math_TwoLineSegmentsIntersect(f32 ax, f32 ay, f32 bx, f32 by, f32 cx, f32 cy);
@@ -179,9 +179,9 @@ void func_80080864(void) {
 
     sp28 = D_800D9854;
 
-    D_801C3C58->unk48 = (func_8004D30C(D_801C3C50->unk44, D_801C3C50->unk4C) - (f32) gWaterLevel);
+    D_801C3C58->unk48 = (Water_GetHeight(D_801C3C50->unk44, D_801C3C50->unk4C) - (f32) gWaterLevel);
 
-    D_801C3C58->unk4C = (func_8004D30C(D_801C3C50->unk44 + (512.0f * D_801C3C50->unk6C),
+    D_801C3C58->unk4C = (Water_GetHeight(D_801C3C50->unk44 + (512.0f * D_801C3C50->unk6C),
                                        D_801C3C50->unk4C + (512.0f * D_801C3C50->unk74)) -
                          gWaterLevel);
 

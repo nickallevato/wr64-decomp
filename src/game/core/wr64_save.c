@@ -125,9 +125,9 @@ void func_8007BBF0(void);
 s32 Save_EepromReset(void);
 s32 Save_PfsIsPlug(void);
 void Save_BuildDefaultImage(UnkStruct_8007CB68_2* arg);
-void func_8007B630(void);
+void Save_UnpackImage(void);
 void Libc_strncpy(); // defined in code_24270.c; callers pass s8 arrays and name structs
-void func_8007B930(void);
+void Save_PackImage(void);
 s32 Save_EepromWriteAll(void);
 
 // Encode?
@@ -416,7 +416,7 @@ extern UnkStruct_func_8007AF78_1 gBestLaps[];
 extern s32 gBestCheckpointTimes[][9];
 
 // Unpacks the EEPROM image into the records (courses 1-8 and the gStuntRecords table), the four names and the options.
-void func_8007B630(void) {
+void Save_UnpackImage(void) {
     s32 i;
     s32 j;
     s32 k;
@@ -461,8 +461,8 @@ void func_8007B630(void) {
     }
 }
 
-// Packs the records, the names and the options (Save_PackOptions) into the EEPROM image; the inverse of func_8007B630.
-void func_8007B930(void) {
+// Packs the records, the names and the options (Save_PackOptions) into the EEPROM image; the inverse of Save_UnpackImage.
+void Save_PackImage(void) {
     s32 i;
     s32 j;
     s32 k;
@@ -582,7 +582,7 @@ s32 Save_EepromReset(void) {
         return 1;
     }
     Save_BuildDefaultImage(&gSaveImage);
-    func_8007B630();
+    Save_UnpackImage();
     return Save_EepromWrite();
 }
 
@@ -591,14 +591,14 @@ s32 Save_EepromLoad(void) {
 
     if (gSaveEepromPresent == 0) {
         Save_BuildDefaultImage(&gSaveImage);
-        func_8007B630();
+        Save_UnpackImage();
         return 1;
     }
     temp_v0 = Save_EepromRead();
     if (temp_v0 != 0) {
         return temp_v0;
     }
-    func_8007B630();
+    Save_UnpackImage();
     return 0;
 }
 
@@ -606,7 +606,7 @@ s32 Save_EepromWriteAll(void) {
     if (gSaveEepromPresent == 0) {
         return 1;
     }
-    func_8007B930();
+    Save_PackImage();
     return Save_EepromWrite();
 }
 
@@ -1113,7 +1113,7 @@ typedef struct SaveBlock {
 // merged records (Save_MergePakImage). The result is written to the EEPROM.
 extern u8 D_801AEA78[];
 
-s32 func_8007D2D4(s32 mode) {
+s32 Save_PfsRead(s32 mode) {
     s32 n;
     s32 ret;
     s32 i;
@@ -1143,12 +1143,12 @@ s32 func_8007D2D4(s32 mode) {
                 if (Save_GenCheckSum((u8*) &gSavePakImage) != gSavePakImage.unk2) {
                     return 6;
                 }
-                func_8007B930();
+                Save_PackImage();
                 switch (mode) {
                     case 0:
                         // FAKE: UnkStruct_8007CB68_2 is only 2-byte aligned, so a plain struct copy uses lwl/lwr
                         *(SaveBlock*) gSaveImage = *(SaveBlock*) &gSavePakImage;
-                        func_8007B630();
+                        Save_UnpackImage();
                         if (Save_EepromWrite() != 0) {
                             return 5;
                         }
@@ -1164,14 +1164,14 @@ s32 func_8007D2D4(s32 mode) {
                         for (i = 0; i < 3; i++) {
                             gSaveImage->unk38[second][n][i] = gSavePakImage.unk38[0][n][i];
                         }
-                        func_8007B630();
+                        Save_UnpackImage();
                         if (Save_EepromWriteNames() != 0) {
                             return 5;
                         }
                         break;
                     case 5:
                         Save_MergePakImage();
-                        func_8007B630();
+                        Save_UnpackImage();
                         Save_PackOptions();
                         gSaveImage->unk2 = Save_GenCheckSum((u8*) gSaveImage);
                         if (gSaveEepromPresent != 0) {
@@ -1205,7 +1205,7 @@ s32 func_8007D2D4(s32 mode) {
 // starts from the defaults (Save_BuildDefaultImage).
 // The new-file and error cases sit inside the read switch, ahead of its case labels (reached only by goto), so
 // the code after the find switch follows its case 0 directly, as in the original.
-s32 func_8007D614(s32 mode) {
+s32 Save_PfsWrite(s32 mode) {
     s32 i;
     s32 n;
     s32 ret;
@@ -1235,7 +1235,7 @@ s32 func_8007D614(s32 mode) {
             goto fail; // goto: its return sits in the read switch below
     }
 found: // goto target: a new file rejoins here
-    func_8007B930();
+    Save_PackImage();
     if ((mode != 0) && (fresh == 0)) {
         switch (osPfsReadWriteFile(&D_801C3AD0, fileNo, PFS_READ, 0, 0x200, (u8*) &gSavePakImage)) {
             invalid: // goto target, ahead of the case labels

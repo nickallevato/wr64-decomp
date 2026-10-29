@@ -176,7 +176,7 @@ extern UnkStruct_801AE948 D_80198368[];
 // External functions
 f32 Math_FloatRand(f32);
 void func_801EE97C(Mtx*, f32, f32, f32);
-f32 func_8004D30C(f32 arg0, f32 arg1);
+f32 Water_GetHeight(f32 arg0, f32 arg1);
 
 // File functions
 void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5);
@@ -234,7 +234,7 @@ void func_800AE210(s32 rider) {
         D_801D79F8 = temp_v0_2->unkBF0;
         D_801D79FC = temp_v0_2->unkBF4;
         if ((D_801D7A14 != 0) && (temp_v0_2->unkC4C > 0.0f) &&
-            (((func_8004D30C(D_801D79BC, D_801D79C4) + 4.0f) < D_801D79C0))) {
+            (((Water_GetHeight(D_801D79BC, D_801D79C4) + 4.0f) < D_801D79C0))) {
             D_801D0798[rider].unk1C54 = 1;
         } else {
             D_801D0798[rider].unk1C54 = 0;
@@ -247,7 +247,7 @@ void func_800AE210(s32 rider) {
 
     D_801D79D4 = sqrtf(SQ(D_801D79C8) + SQ(D_801D79CC) + SQ(D_801D79D0));
     if (D_801D0798[rider].unk1C54 == 0) {
-        D_801D7A00 = func_8004D30C(D_801D79BC, D_801D79C4);
+        D_801D7A00 = Water_GetHeight(D_801D79BC, D_801D79C4);
         if (D_801D79C0 <= D_801D7A00) {
             D_801D0798[rider].unk1C58 = 0;
         }
