@@ -1213,9 +1213,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 12999 of 60500: frame and the row loops' shape match; left: callee-saved register choice (vtx, lo, sx and sz
-// land in other s registers), and the skirt loops end on idx != &D_80192460[7] (with < IDO unrolls them by two; the
-// original compares with sltu against a separately loaded end address and does not unroll)
+// Score 10449 of 60500: frame, the row loops and the first skirt loop match in shape. Left: callee-saved register
+// choice (vtx, lo, sx and sz land in other s registers), and the second skirt loop ends on idx != &D_80192460[7]
+// (with < IDO unrolls it by two; the original compares with sltu and does not unroll)
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
     f32 dz;
@@ -1338,12 +1338,15 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx++;
     }
     k = (f32) D_800D4720 / (f32) D_80192498;
-    for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
+    for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
         c = &arena[D_80192460[0]];
         v = &arena[idx[6]];
-        arena[*idx].v.ob[0] = c->v.ob[0] + (s32) (k * (v->v.ob[0] - c->v.ob[0]));
-        arena[*idx].v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * (v->v.ob[2] - c->v.ob[2]));
-        arena[*idx].v.ob[1] = gWaterLevel;
+        ox = v->v.ob[0] - c->v.ob[0];
+        oz = v->v.ob[2] - c->v.ob[2];
+        v = &arena[*idx];
+        v->v.ob[0] = c->v.ob[0] + (s32) (k * ox);
+        v->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * oz);
+        v->v.ob[1] = gWaterLevel;
     }
     if (w != gWaterWindow) {
         dx = gCameraPerspective[1].unkF0;
@@ -1356,11 +1359,14 @@ void func_80050204(s32 view, Vtx* arena) {
     ox = SysUtils_Round(k * dx);
     oz = SysUtils_Round(k * dz);
     for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
-        arena[*idx].v.ob[0] += ox;
-        arena[*idx].v.ob[2] += oz;
+        v = &arena[*idx];
+        v->v.ob[0] += ox;
+        v->v.ob[2] += oz;
     }
-    w->unk8 = ((f32) (arena[D_80192460[4]].v.ob[0] + arena[D_80192460[1]].v.ob[0]) * 0.5f) - w->unk14;
-    w->unkC = ((f32) (arena[D_80192460[4]].v.ob[2] + arena[D_80192460[1]].v.ob[2]) * 0.5f) - w->unk18;
+    v = &arena[D_80192460[1]];
+    c = &arena[D_80192460[4]];
+    w->unk8 = ((f32) (c->v.ob[0] + v->v.ob[0]) * 0.5f) - w->unk14;
+    w->unkC = ((f32) (c->v.ob[2] + v->v.ob[2]) * 0.5f) - w->unk18;
     w->unk10 = D_800D4720 * D_800D4720;
 }
 #else
