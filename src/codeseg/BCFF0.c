@@ -2326,10 +2326,10 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 3660 of 32800: the side offset's numerator is computed before the sqrt and func_801ED090 is called before the
-// distance test, as in the original, but the saved FP registers are coloured differently (the numerator takes f28 and
-// dist f30; the original has them the other way round, and dot/fwd in f24/f26), and 0.0f is hoisted into f18 across
-// blocks where the original rematerialises it at each use.
+// Score 1800 of 32800: the side offset's numerator is computed before the sqrt and func_801ED090 is called before the
+// distance test, as in the original; the forward dot product passes through dist, and the zero tests of a use their
+// own zeros. Left: the saved FP registers are still coloured partly differently and some statements are scheduled
+// elsewhere.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2386,8 +2386,9 @@ void func_801F9EA0(void) {
                 p = &D_80192690[j];
                 dx = p->unk44.x - camX;
                 dz = p->unk44.z - camZ;
+                dist = dx * dirX + dz * dirZ;
+                fwd = dot = dist;
                 side = dx * dirZ + dz * -dirX;
-                fwd = dot = dx * dirX + dz * dirZ;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
                     dot = (dx / dist) * dirX + (dz / dist) * dirZ;
@@ -2404,19 +2405,19 @@ void func_801F9EA0(void) {
                 side /= scale;
                 sx = side;
                 if (side > 1.0f) {
-                    sx = 1.0f;
                     a = func_801ED154(side - 1.0f, fwd / scale);
+                    sx = 1.0f;
                 } else if (side < -1.0f) {
-                    sx = -1.0f;
                     a = func_801ED154(side + 1.0f, fwd / scale);
+                    sx = -1.0f;
                 } else {
                     a = 0; // integer literal: with 0.0f the zero is shared with the other tests
                 }
                 if (a > 180.0f) {
                     a -= 360.0f;
                 }
-                aa = (a >= 0.0f) ? a : -a;
-                sgn = (a == 0.0f) ? 0.0f : ((a > 0) ? 1 : -1); // integer literal, as above
+                aa = (a >= 0.0f * 1.0f) ? a : -a; // FAKE: 0.0f * 1.0f, a zero of its own for the original's FP registers
+                sgn = (a == 0) ? 0.0f : ((a > 0) ? 1 : -1); // integer literals, as above
                 if (aa > 0.0f) {
                     aa *= 0.6666667f;
                     if (aa > 90.0f) {
@@ -2429,8 +2430,8 @@ void func_801F9EA0(void) {
                     oy = 0.0f;
                     ox = 0.0f;
                 }
-                b->unk10 = 1;
                 b->unk4 = oy;
+                b->unk10 = 1;
                 b->unk8 = sgn * aa;
                 b->unk0 = sx * 94.0f + ox;
             }
