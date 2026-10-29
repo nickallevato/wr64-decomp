@@ -6008,8 +6008,10 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 41018 of 68700: far off: the original clears the state with long chained assignments in an order not yet
-// reproduced, and the register allocation differs. Control flow follows the original.
+// Score 27680 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
+// floats, an unsigned conversion into unk15FA, then the s16 and s8 narrowings), and the twelve points are transformed
+// by index. Left: the original keeps 0.0f in $f20 across the calls (here it is rematerialised, so the frame is 8 bytes
+// smaller and f20 is not saved), and float registers and scheduling differ in the sphere and C88 code.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     MtxF mf;
@@ -6027,7 +6029,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unkBE4 = rider->unk44.x;
         rider->unkBEC = rider->unk44.z;
     } else {
-        rider->unkBF4 = rider->unkBF0 = 0.0f;
+        rider->unkBF0 = rider->unkBF4 = 0.0f;
     }
     for (point = rider->unk30, tmpl = D_800D4840; tmpl < &D_800D4840[12]; tmpl++, point++) {
         point->unk0 = tmpl->x;
@@ -6046,35 +6048,22 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unkBF0 = rider->unk44.x - rider->unkBE4;
         rider->unkBF4 = rider->unk44.z - rider->unkBEC;
     }
-    for (point = &rider->unk90[11]; point >= rider->unk90; point--) {
-        x = point->unk0;
-        y = point->unk4;
-        z = point->unk8;
-        point->unk0 = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
-        point->unk4 = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
-        point->unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
+    for (i = 11; i >= 0; i--) {
+        x = rider->unk90[i].unk0;
+        y = rider->unk90[i].unk4;
+        z = rider->unk90[i].unk8;
+        rider->unk90[i].unk0 = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
+        rider->unk90[i].unk4 = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
+        rider->unk90[i].unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
     }
-    // The original assigns most of these in long chains.
-    rider->unk142C = rider->unkBFC = rider->unkB98 = 0.0f;
-    rider->unk1444 = 0;
-    rider->unk15FA = rider->unk15F8 = 0;
-    rider->unk1602 = 0;
-    rider->unk160A = 0;
-    rider->unk16E0 = rider->unk1608 = 0;
-    rider->unk16E2 = rider->unk1606 = 0;
-    rider->unk16F2 = rider->unk1604 = 0;
-    rider->unkB58 = rider->unkB56 = 0;
-    rider->unkB8C = rider->unkB88 = rider->unkB84 = 0.0f;
-    rider->unkB80 = rider->unkB7C = rider->unkB78 = 0.0f;
-    rider->unkB94 = rider->unkB90 = 0.0f;
-    rider->unkB5F = rider->unkB5E = 0;
-    rider->unk16E4 = rider->unk16D0 = rider->unk16B4 = rider->unk1574 = 0;
-    rider->unkC6C = rider->unkC58 = 0;
-    rider->unk16EC = rider->unk16E8 = 0;
-    rider->unkB60 = 0;
-    rider->unkC86 = rider->unkC84 = 0;
-    rider->unkB50.button = 0;
-    rider->unkB50.stick_y = rider->unkB50.stick_x = 0;
+    rider->unkB90 = rider->unkB94 = rider->unkB78 = rider->unkB7C = rider->unkB80 = rider->unkB84 = rider->unkB88 =
+        rider->unkB8C = rider->unkB5E = rider->unkB56 = rider->unkB58 = rider->unkB5F = rider->unkB50.stick_x =
+            rider->unkB50.stick_y = rider->unkB50.button = rider->unkC84 = rider->unkC86 = rider->unkB60 =
+                rider->unk16E8 = rider->unk16EC = rider->unkC58 = rider->unkC6C = rider->unk1574 = rider->unk16B4 =
+                    rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
+                        rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
+                            rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
+    rider->unk1604 = rider->unk16F2 = 0;
     rider->unk1446 = 10;
     rider->unk16C8 = -1;
     rider->unk15FC = 0x800;
@@ -6082,14 +6071,14 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk16F0 = rider->unk16F2;
     rider->unk16F4 = rider->unk1604;
     rider->unk15D8 = 1.0f;
-    rider->unkC74 = rider->unkC70 = rider->unk15B0 = -1;
+    rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
     rider->unkC7C = 1;
     rider->unkC82 = 1;
     rider->unkC78 = 8;
     rider->unk1578 = 1.0f;
-    rider->unk15F0 = rider->unk15A8 = rider->unk15A4 = rider->unk15A0 = rider->unk159C = gFrameCounter;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unkC54 = 22;
     rider->unkC00 = 34.11f;
     func_800624CC(rider);
