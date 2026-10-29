@@ -1349,8 +1349,9 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
 #ifdef NON_MATCHING
 // Score 65 of 82500: same instructions, frame and stack slots. The cross product written out in full (no locals for
 // the two edge vectors) gives the original's evaluation order and spills (5359 to 698); the midpoint block stores
-// unk168 then unk1D4. Left: in the midpoint block mx, s, my and mz take $f12, $f2, $f14, $f16 where the original
-// has $f14, $f12, $f16, $f2.
+// unk168 then unk1D4. A permuter FAKE (three empty ifs after dx *= s) gives mx, s and mz the original's $f14, $f12,
+// $f2 (65 to 15). Left: my takes $f0 where the original has $f16. Also tried: renaming s per block (using mz for the
+// first squared distance gives 50 without the FAKE, 30 with it), declaration order, line joins in the midpoint block.
 s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     UnkStruct_80192690* rider;
     s32 pad[1]; // stack pad: the original's spill slots
@@ -1437,6 +1438,7 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
         s = 7.0 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
         mx = (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5;
         dx *= s;
+        if (1) {} if (1) {} if (1) {} // FAKE (permuter): midpoint registers
         arg1->unk168.unk0.x = dx + mx;
         my = (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5;
         dy *= s;
