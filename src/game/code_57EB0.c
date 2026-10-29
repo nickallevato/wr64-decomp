@@ -2068,26 +2068,28 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 16348 of 259500: registers and scheduling; locals sit higher in the frame than in the original. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
+// Score 9875 of 259500: registers and scheduling. cam declared after five locals and sp4C/sp48 last put them at
+// 0x58/0x4C/0x48 as in the original; D_801D0774's offset is stored before it is scaled; statement order from a move
+// search. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
-    camera_unk_1* cam;
-    f32 sp4C;
-    f32 sp48;
-    StructVarS0* lead;
-    s32 t;
     UnkStruct_801CE780_unk4_unk4* node;
     s32 angle;
     s32 i;
     s32 best;
     UnkStruct_801AEE20* p;
+    camera_unk_1* cam;
+    StructVarS0* lead;
+    s32 t;
+    f32 sp4C;
+    f32 sp48;
 
     cam = &gCameraPerspective[D_80223930];
     node = (UnkStruct_801CE780_unk4_unk4*) func_8009D6B0(D_801CF060[arg0].unk0, D_801CF060[arg0].unk74,
                                                          D_801CF060[arg0].unk78);
-    D_801CF060[arg0].unk64 = D_801CF060[arg0].unkC;
     D_801CF060[arg0].unk28 = (D_801CF060[arg0].unk10 + (node->unk2 * 0.1)) - D_801CF060[arg0].unk68;
     D_801CF060[arg0].unk6C = D_801CF060[arg0].unk14;
     D_801CF060[arg0].unk68 = D_801CF060[arg0].unk10 + (node->unk2 * 0.1);
+    D_801CF060[arg0].unk64 = D_801CF060[arg0].unkC;
     if (func_8004D30C(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) < D_801CF060[arg0].unk68) {
         D_801D0668.unk_5 = 0;
     } else {
@@ -2232,8 +2234,8 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk1C = -45.0f;
             }
             D_801CF060[arg0].unk1C = func_8009D564(D_801CF060[arg0].unk1C);
-            D_801CF060[arg0].unk10 += 0.03 * (D_801D0758 - D_801CF060[arg0].unk10);
             D_801D076C = 0.2f;
+            D_801CF060[arg0].unk10 += 0.03 * (D_801D0758 - D_801CF060[arg0].unk10);
             D_801D0770 = func_8009D4A8(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4);
             if (D_801D0770 < 1000.0f) {
                 D_801D076C =
@@ -2354,9 +2356,9 @@ void func_800A68A4(s32 arg0) {
             D_801D0764 = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
             angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
             D_801D0754 = (COS(angle) * 600.0f) + D_801D06BC;
-            D_801D0760 = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
-            D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
             D_801D0758 = (SIN(angle) * 600.0f) + D_801D06C4;
+            D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
+            D_801D0760 = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
             if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D075C = 7000.0f;
                 D_801D0760 = -2650.0f;
@@ -2481,28 +2483,27 @@ void func_800A68A4(s32 arg0) {
                     ((((D_801CF060[arg0].unk30 * 500.0f) + D_801CF060[arg0].unkC) - D_801D0754) * 0.125f * (f32) i) +
                     D_801D0754;
                 D_801D0770 = D_801CF060[arg0].unk10 - 10.0f;
-                D_801D0774 =
-                    ((((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C) * 0.125f * (f32) i) +
-                    D_801D075C;
+                D_801D0774 = ((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C;
+                D_801D0774 = (D_801D0774 * 0.125f * (f32) i) + D_801D075C;
                 sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
-                    D_801CF060[arg0].unkC = D_801D0754;
-                    D_801CF060[arg0].unk10 = D_801D0758;
-                    D_801CF060[arg0].unk24 = 0.0f;
                     D_801CF060[arg0].unk14 = D_801D075C;
+                    D_801CF060[arg0].unkC = D_801D0754;
+                    D_801CF060[arg0].unk24 = 0.0f;
+                    D_801CF060[arg0].unk10 = D_801D0758;
                     D_801CF060[arg0].unk28 = 0.0f;
                     D_801CF060[arg0].unk2C = 0.0f;
                 }
             }
             func_800A2B24(arg0);
+            best = -1;
             D_801D0754 = func_8009D4A8(D_801CF060[arg0].unkC - D_801B2F20[D_801CF060[arg0].unk9C].unk0,
                                        D_801CF060[arg0].unk14 - D_801B2F20[D_801CF060[arg0].unk9C].unk8);
-            best = -1;
             if ((D_801D0754 < 1000.0f) && (D_801D06D4 > 11.0f)) {
                 D_801CF060[arg0].unk8 = 1;
-                D_801CF060[arg0].unk50 = 0;
                 D_801CF060[arg0].unk9C = D_801B2F20[D_801CF060[arg0].unk9C].unkA0;
+                D_801CF060[arg0].unk50 = 0;
             }
             if (D_801D0754 > 3000.0f) {
                 D_801D0754 = 2e9f;
@@ -3473,9 +3474,11 @@ extern s32 D_800E62D4;
 extern s32 D_801CB340;
 
 #ifdef NON_MATCHING
-// Score 1500 of 116800: scheduling and float temporaries in the SUNNY_BEACH and GLACIER_COAST record loops,
-// and the SUNSET_BAY loop loads its constants in another order (f20 and f0 swap roles). Statement order
-// inside the cases was found by search; it decides which constants stay in saved registers.
+// Score 960 of 116800: the SUNNY_BEACH loop's statements follow the GLACIER_COAST loop's order, then a move search
+// on both loops. Left: GLACIER_COAST computes the SIN term before the COS one (the original's s1/s2 and float
+// temporaries are the other way round), one unk74 store in each loop is scheduled elsewhere, and the SUNSET_BAY loop
+// loads its constants in another order (f20 and f0 swap roles). Statement order inside the cases decides which
+// constants stay in saved registers.
 void func_800AC184(void) {
     s32 pad[5]; // stack pad
     UnkStruct_80192690* rider;
@@ -3651,16 +3654,16 @@ void func_800AC184(void) {
                         D_801CF060[i].unk0 = 9;
                     }
                     D_801CF060[i].unk78 = D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk7C = 0xFF;
                 }
                 for (i = 6; i < 11; i++) {
-                    D_801CF060[i].unk18 = 90.0f;
                     D_801CF060[i].unk0 = 3;
-                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk8 = 1;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 3000.0f;
                     D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + 1100.0f;
-                    D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk10 = (i - 4) * 50;
-                    D_801CF060[i].unk8 = 1;
+                    D_801CF060[i].unk18 = 90.0f;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
@@ -3809,9 +3812,9 @@ void func_800AC184(void) {
                     }
                 }
                 for (i = 3; i < 8; i++) {
-                    D_801CF060[i].unk74 = 0;
-                    D_801CF060[i].unk7C = 0xFF;
                     D_801CF060[i].unk0 = 3;
+                    D_801CF060[i].unk7C = 0xFF;
+                    D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
                     D_801CF060[i].unk8 = 1;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 5000.0f;

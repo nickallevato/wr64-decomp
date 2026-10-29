@@ -1095,9 +1095,7 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
-#ifdef NON_MATCHING
-// Score 28 of 12200: only stack offsets differ. The spills of y*y and t sit at 0x38/0x3C, the original's at
-// 0x3C/0x40 (it leaves 0x38 unused). Same shape as func_801EE274 (guRotateF), plus the FAKE copy of x.
+// Same shape as func_801EE274 (guRotateF), plus the FAKE copy of x; t also holds the length.
 void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
     f32 sine;
     f32 cosine;
@@ -1109,14 +1107,13 @@ void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
     f32 nx;
     f32 ys;
     f32 zs;
-    f32 len;
     s32 angle;
 
-    len = sqrtf(SQ(x) + SQ(y) + SQ(z));
-    if (len > 0) {
-        x /= len;
-        y /= len;
-        z /= len;
+    t = sqrtf(SQ(x) + SQ(y) + SQ(z));
+    if (t > 0) {
+        x /= t;
+        y /= t;
+        z /= t;
     }
     nx = x; // FAKE: a copy of x after the normalisation, for the original's registers
     angle = ANGLE_TO_CUSTOM_UNITS(arg1);
@@ -1147,9 +1144,6 @@ void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
     arg0[1][0] = ab - zs;
     arg0[0][1] = zs + ab;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B97B0/func_801EE040.s")
-#endif
 
 void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
     MtxF mtx;
