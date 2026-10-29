@@ -541,7 +541,6 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
     f32 dx;
     f32 dy;
     f32 dz;
-    f32 d;
     f32 depth;
     f32 push;
 
@@ -572,12 +571,12 @@ void func_8007F030(UnkStruct_80192690* arg0, UnkStruct_80192690* arg1) {
             if (((tri->unk24 * dx) + (dy * tri->unk28) + (dz * tri->unk2C)) < 0.0f) {
                 continue;
             }
-            d = (tri->unk30 * dx) + (dy * tri->unk34) + (dz * tri->unk38);
-            if (d >= 0.0f || d < tri->unk3C) {
+            // one local holds both plane distances, as temp_f18 does in func_8007F448
+            depth = (tri->unk30 * dx) + (dy * tri->unk34) + (dz * tri->unk38);
+            if (depth >= 0.0f || depth < tri->unk3C) {
                 continue;
             }
             depth = (tri->unkC * dx) + (dy * tri->unk10) + (dz * tri->unk14);
-            if (tri->unkC > 0.0f) {} // FAKE: found by trying every spot; moves the float registers closer
             if (depth < 0.0f || depth > 16.0f) {
                 continue;
             }
