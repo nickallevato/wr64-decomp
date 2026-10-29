@@ -30,3 +30,21 @@ taught. Read it before matching anything. This file holds the standing rules for
 - Never commit or push the ROM or anything extracted from it. Never run the game here.
 - Push `main` to `origin` and `github`; batch branches to `origin`. Never push to, or open PRs against,
   upstream (LLONSIT/Wave-Race-64): it refuses AI-generated code.
+
+## Long-tail practice (milestone 5, after "The long tail of LLM-assisted decompilation", Chris Lewis)
+
+- **Start from a sibling.** Before working a set-aside, run `tools/fork/similar.py <func>` and read the C of
+  the closest matched functions (opcode similarity, as ethteck/coddog measures it). Twins have matched in
+  minutes once one of the pair matched. `similar.py --unmatched` lists every function still in assembly with
+  its nearest matched ones: use it to order a batch.
+- **Permuter last.** Its finds are often FAKEs (`do {} while (0)`, `if (t && t && t) {}`, dead reads, odd
+  variable reuse) that match without explaining the code, and later workers copy them as if they were real.
+  Try semantic shapes first (sibling C, declaration and statement order, literals, chained stores); use the
+  permuter only for the last few registers, and list every permuter-found FAKE in the report.
+- **Reorder only independent statements.** A greedy statement-move search must not swap two statements that
+  share a variable, a call, a display-list command or a store through a pointer; check each kept move.
+- **Matched code is reference material.** Prefer idiomatic C (array indexing over pointer arithmetic, real
+  names over temporaries) when it still matches: the next worker learns from it.
+- **Guardrails.** In the coordinator's session a PreToolUse hook denies pattern kills (`pkill -f`,
+  `killall`), `pgrep -f` wait loops (they match themselves), a local `check.sh`, pushes to upstream, and
+  edits to `*.sha1` or to `asm/`, `build/`, `bin/`, `mio0/`, `expected/`. The rules hold without it too.
