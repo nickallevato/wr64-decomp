@@ -6860,12 +6860,14 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 6359 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
-// so their moves to a1/a3 are hoisted; the C14..C34 block; frame 0x48, not 0x50). The zero literals written as 0 and
+// Score 6141 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
+// so their moves to a1/a3 are hoisted; the C14..C34 block, where the original also spills the middle y to sp+0x20).
+// An 8-byte pad gives the original's frame (0x50); unkC80 is stored before unkC7E. The zero literals written as 0 and
 // .0f give the original's separate zero loads in three of the compares.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     camera_unk_1* cam;
+    s32 pad[2]; // stack pad: the frame is 0x50 as in the original
     UnkStruct_8004B0F8_1* point;
     f32 dx;
     f32 dz;
@@ -6954,8 +6956,8 @@ void func_80065C18(s32 arg0) {
         rider->unkC7C = 0;
     }
     rider->unkC78 = count;
-    rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
     rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
+    rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
     if ((rider->unkC7C == 0) &&
         ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
         rider->unk16D0++;
