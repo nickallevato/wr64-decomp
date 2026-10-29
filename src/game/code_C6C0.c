@@ -2112,7 +2112,8 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 83692 of 246800: far off (frame, registers, 0x68 bytes longer); this is the m2c structure with named
+// Score 71397 of 246800: far off (frame 0x738 here, 0x388 in the original; registers; 0x50 bytes longer); this is the
+// m2c structure with named
 // skeleton entries and rider parts, kept for reading. Control flow follows the original: the lean side (unk16B8),
 // the per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame counters
 // and the water-level checks that pick the D_802238DC entry.
@@ -2396,8 +2397,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         RIDER_PARTS(rider)[9].unk0 = 4;
         RIDER_PARTS(rider)[10].unk0 = 4;
     }
-    temp_v1 = var_s3->unk20;
     temp_v0 = var_s3->unk4;
+    temp_v1 = var_s3->unk20;
     spB4 = var_t0 * 2;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, &arg1->unkD8, &temp_v0[*temp_v1], &temp_v0[temp_v1[var_t0]], sp360);
     temp_fa1 = rider->unk44.x;
@@ -2405,10 +2406,10 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fa0 = rider->unk84;
     temp_fs1 = arg1->unkD8.unk0.y - rider->unk44.y;
     temp_fs2 = arg1->unkD8.unk0.z - rider->unk44.z;
-    var_fv0 = rider->unk16C0;
     spB0 = rider->unk78;
-    temp_fs4 = (temp_fa0 * temp_fs0) + (temp_fs1 * rider->unk88) + (temp_fs2 * rider->unk8C);
     temp_fs3 = rider->unk16BC * ((temp_fs0 * spB0) + (temp_fs1 * rider->unk7C) + (temp_fs2 * rider->unk80));
+    var_fv0 = rider->unk16C0;
+    temp_fs4 = (temp_fa0 * temp_fs0) + (temp_fs1 * rider->unk88) + (temp_fs2 * rider->unk8C);
     if (var_fv0 > 1.0f) {
         var_fv0 = 1.0f;
     }
@@ -2417,44 +2418,44 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fv0_2 = var_fv0 * ((temp_fs0 * temp_fv1) + (temp_fs1 * rider->unk70) + (temp_fs2 * rider->unk74));
     arg1->unkD8.unk0.x = temp_fa1 + (temp_fs4 * temp_fa0) + (temp_fs3 * spB0) + (temp_fv0_2 * temp_fv1);
     arg1->unkD8.unk0.y = rider->unk44.y + (temp_fs4 * rider->unk88) + (temp_fs3 * rider->unk7C) + (temp_fv0_2 * rider->unk70);
-    arg1->unkD8.unk0.z = rider->unk44.z + (temp_fs4 * rider->unk8C) + (temp_fs3 * rider->unk80) + (temp_fv0_2 * rider->unk74);
-    temp_v1_2 = var_s3->unk10;
     temp_v0_2 = var_s3->unk4;
+    temp_v1_2 = var_s3->unk10;
+    arg1->unkD8.unk0.z = rider->unk44.z + (temp_fs4 * rider->unk8C) + (temp_fs3 * rider->unk80) + (temp_fv0_2 * rider->unk74);
     limb48 = temp_a1;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, temp_a1, &temp_v0_2[*temp_v1_2], &temp_v0_2[*(temp_v1_2 + spB4)], sp360);
-    temp_v1_3 = var_s3->unkC;
     temp_v0_3 = var_s3->unk4;
+    temp_v1_3 = var_s3->unkC;
     temp_a1_2 = &arg1->unk24;
     limb24 = temp_a1_2;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, temp_a1_2, &temp_v0_3[*temp_v1_3], &temp_v0_3[*(temp_v1_3 + spB4)], sp360);
-    temp_v1_4 = var_s3->unk8;
     temp_v0_4 = var_s3->unk4;
+    temp_v1_4 = var_s3->unk8;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, &arg1->unk0, &temp_v0_4[*temp_v1_4], &temp_v0_4[*(temp_v1_4 + spB4)], sp360);
-    temp_v1_5 = var_s3->unk1C;
     temp_v0_5 = var_s3->unk4;
+    temp_v1_5 = var_s3->unk1C;
     temp_a1_3 = &arg1->unkB4;
     limbB4 = temp_a1_3;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, temp_a1_3, &temp_v0_5[*temp_v1_5], &temp_v0_5[*(temp_v1_5 + spB4)], sp360);
-    temp_v1_6 = var_s3->unk18;
     temp_v0_6 = var_s3->unk4;
+    temp_v1_6 = var_s3->unk18;
     temp_s2 = &arg1->unk90;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, temp_s2, &temp_v0_6[*temp_v1_6], &temp_v0_6[*(temp_v1_6 + spB4)], sp360);
-    temp_v1_7 = var_s3->unk14;
     temp_v0_7 = var_s3->unk4;
+    temp_v1_7 = var_s3->unk14;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, &arg1->unk6C, &temp_v0_7[*temp_v1_7], &temp_v0_7[*(temp_v1_7 + spB4)], sp360);
-    temp_fv0_3 = arg1->unkD8.unkC.x;
     temp_fv1_2 = arg1->unkD8.unkC.y;
+    temp_fv0_3 = arg1->unkD8.unkC.x;
     temp_fa0_2 = arg1->unkD8.unkC.z;
-    temp_fs4_2 = arg1->unkD8.unk14.y;
     temp_fs5 = arg1->unkD8.unk14.z;
-    temp_fs0_2 = (f32) ((f64) arg1->unkD8.unk0.x + (2.729486 * (f64) temp_fv0_3));
     temp_fs1_2 = (f32) ((f64) arg1->unkD8.unk0.y + (2.729486 * (f64) temp_fv1_2));
+    temp_fs0_2 = (f32) ((f64) arg1->unkD8.unk0.x + (2.729486 * (f64) temp_fv0_3));
     temp_fs2_2 = (f32) ((f64) arg1->unkD8.unk0.z + (2.729486 * (f64) temp_fa0_2));
+    temp_fs4_2 = arg1->unkD8.unk14.y;
     sp8C = arg1->unkD8.unk14.x;
-    temp_ft4 = (f32) ((f64) ((temp_fs4_2 * temp_fa0_2) - (temp_fs5 * temp_fv1_2)) * 3.133);
     temp_ft5 = (f32) ((f64) ((temp_fs5 * temp_fv0_3) - (sp8C * temp_fa0_2)) * 3.133);
-    temp_fv0_4 = temp_fs1_2 + temp_ft5;
     sp364 = (f32) ((f64) ((sp8C * temp_fv1_2) - (temp_fs4_2 * temp_fv0_3)) * 3.133);
+    temp_fv0_4 = temp_fs1_2 + temp_ft5;
+    temp_ft4 = (f32) ((f64) ((temp_fs4_2 * temp_fa0_2) - (temp_fs5 * temp_fv1_2)) * 3.133);
     arg1->unk48.unk0.x = temp_fs0_2 + temp_ft4;
     arg1->unk48.unk0.y = temp_fv0_4;
     arg1->unkB4.unk0.x = temp_fs0_2 - temp_ft4;
@@ -2463,8 +2464,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unkB4.unk0.y = temp_fs1_2 - temp_ft5;
     arg1->unk48.unk0.z = temp_fv1_3;
     arg1->unkB4.unk0.z = temp_fs2_2 - sp364;
-    temp_fa1_2 = arg1->unk0.unk0.x;
     temp_fs3_2 = arg1->unk0.unk0.y;
+    temp_fa1_2 = arg1->unk0.unk0.x;
     temp_fs4_3 = arg1->unk0.unk0.z;
     func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fa0_3, temp_fv0_4, temp_fv1_3, temp_fa1_2, temp_fs3_2, temp_fs4_3, 298.01123f, 355.76913f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fa0_3 + temp_fa1_2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fv0_4 + temp_fs3_2))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fv1_3 + temp_fs4_3))));
     func_800534AC(temp_s2, &arg1->unk90.unk0.y, &arg1->unk90.unk0.z, arg1->unkB4.unk0.x, arg1->unkB4.unk0.y, arg1->unkB4.unk0.z, arg1->unk6C.unk0.x, arg1->unk6C.unk0.y, arg1->unk6C.unk0.z, 298.01123f, 355.76913f, arg1->unk6C.unkC.x, arg1->unk6C.unkC.y, arg1->unk6C.unkC.z);
@@ -2484,11 +2485,11 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unk90.unkC.y = arg1->unk6C.unk0.y - arg1->unk90.unk0.y;
     arg1->unk90.unkC.z = arg1->unk6C.unk0.z - arg1->unk90.unk0.z;
     func_80052A20(temp_s2);
-    temp_v1_8 = var_s3->unk4C;
     temp_v0_8 = var_s3->unk4;
+    temp_v1_8 = var_s3->unk4C;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, &arg1->unk264, &temp_v0_8[*temp_v1_8], &temp_v0_8[*(temp_v1_8 + spB4)], sp360);
-    temp_v1_9 = var_s3->unk48;
     temp_v0_9 = var_s3->unk4;
+    temp_v1_9 = var_s3->unk48;
     temp_s2_2 = &arg1->unk240;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, temp_s2_2, &temp_v0_9[*temp_v1_9], &temp_v0_9[*(temp_v1_9 + spB4)], sp360);
     temp_fv1_4 = arg1->unk240.unkC.x;
@@ -2518,19 +2519,19 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unk21C.unk0.x = (f32) ((f64) arg1->unk240.unk0.x + (41.070999 * (f64) arg1->unk240.unkC.x));
     arg1->unk21C.unk0.y = (f32) ((f64) arg1->unk240.unk0.y + (41.070999 * (f64) arg1->unk240.unkC.y));
     arg1->unk21C.unk0.z = (f32) ((f64) arg1->unk240.unk0.z + (41.070999 * (f64) arg1->unk240.unkC.z));
-    temp_fv1_5 = rider->unk80;
-    temp_fs3_4 = rider->unk7C;
-    temp_fs2_3 = rider->unk78;
-    spB0 = temp_fs2_3;
     temp_ft4_2 = (rider->unkBAC * D_800D49E4) - rider->unkBA0;
     temp_ft5_2 = (rider->unkBB0 * D_800D49E4) - rider->unkBA4;
+    temp_fv1_5 = rider->unk80;
     temp_fa0_5 = (rider->unkBB4 * D_800D49E4) - rider->unkBA8;
+    temp_fs2_3 = rider->unk78;
+    temp_fs3_4 = rider->unk7C;
     temp_fs0_3 = (temp_fv1_5 * temp_ft5_2) - (temp_fs3_4 * temp_fa0_5);
-    temp_fs1_3 = (temp_fs2_3 * temp_fa0_5) - (temp_fv1_5 * temp_ft4_2);
+    spB0 = temp_fs2_3;
     temp_fs2_4 = (temp_fs3_4 * temp_ft4_2) - (spB0 * temp_ft5_2);
+    temp_fs1_3 = (temp_fs2_3 * temp_fa0_5) - (temp_fv1_5 * temp_ft4_2);
     temp_fa0_6 = 1.0f / sqrtf((temp_fs0_3 * temp_fs0_3) + (temp_fs1_3 * temp_fs1_3) + (temp_fs2_4 * temp_fs2_4));
-    temp_ft4_3 = temp_fa0_6 * temp_fs1_3;
     temp_ft5_3 = temp_fa0_6 * temp_fs2_4;
+    temp_ft4_3 = temp_fa0_6 * temp_fs1_3;
     arg1->unk21C.unkC.x = temp_fa0_6 * temp_fs0_3;
     arg1->unk21C.unkC.y = temp_ft4_3;
     arg1->unk21C.unkC.z = temp_ft5_3;
@@ -2576,9 +2577,9 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fv1_10 = arg1->unk21C.unk14.z;
     arg1->unk18C.unk0.z = temp_fs2_5 - sp364;
     arg1->unk18C.unk14.z = temp_fv1_10;
+    temp_v0_10 = var_s3->unk4;
     arg1->unk120.unk14.z = temp_fv1_10;
     temp_v1_10 = var_s3->unk40;
-    temp_v0_10 = var_s3->unk4;
     func_800574E4((UnkStruct_80052E90_arg1_s *) rider, &arg1->unk1F8, &temp_v0_10[*temp_v1_10], &temp_v0_10[*(temp_v1_10 + spB4)], sp360);
     temp_fa0_8 = arg1->unkD8.unk0.x;
     temp_fa1_6 = arg1->unkD8.unk0.y;
@@ -2590,17 +2591,17 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     var_s2 = 3;
     temp_fs0_5 = (f32) ((f64) temp_fa0_8 + (12.546404 * (f64) spB4f));
     spB0 = arg1->unk1F8.unkC.y;
+    sp84 = spB0;
     temp_fv0_7 = arg1->unk1F8.unkC.z;
     temp_fs1_5 = (f32) ((f64) temp_fa1_6 + (12.546404 * (f64) spB0));
     temp_fs2_6 = (f32) ((f64) temp_fs3_6 + (12.546404 * (f64) temp_fv0_7));
     spAC = arg1->unk1F8.unk14.y;
     temp_fs4_5 = arg1->unk1F8.unk14.z;
     sp80 = spB4f;
-    sp84 = spB0;
     spA8 = arg1->unk1F8.unk14.x;
-    temp_ft4_6 = (f32) ((f64) ((spAC * temp_fv0_7) - (temp_fs4_5 * spB0)) * 7.0);
     sp80 = spAC;
     temp_ft5_6 = (f32) ((f64) ((temp_fs4_5 * spB4f) - (spA8 * temp_fv0_7)) * 7.0);
+    temp_ft4_6 = (f32) ((f64) ((spAC * temp_fv0_7) - (temp_fs4_5 * spB0)) * 7.0);
     arg1->unk168.unk0.x = temp_fs0_5 - temp_ft4_6;
     arg1->unk168.unk0.y = temp_fs1_5 - temp_ft5_6;
     temp_fv0_8 = (f32) ((f64) ((spA8 * sp84) - (spAC * spB4f)) * 7.0);
@@ -2629,9 +2630,9 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
             arg1->unk1D4.unk0.y = arg1->unk18C.unk0.y + (temp_fv1_12 * temp_fs1_7);
             arg1->unk1D4.unk0.z = arg1->unk18C.unk0.z + (temp_fv1_12 * temp_fs2_8);
         }
+        temp_fs2_9 = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
         temp_fs0_8 = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
         temp_fs1_8 = arg1->unk168.unk0.y - arg1->unk1F8.unk0.y;
-        temp_fs2_9 = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
         temp_fa1_7 = arg1->unk1F8.unk0.x;
         temp_ft4_7 = arg1->unk1F8.unk0.y;
         temp_fv1_13 = 14.367054f / sqrtf((temp_fs0_8 * temp_fs0_8) + (temp_fs1_8 * temp_fs1_8) + (temp_fs2_9 * temp_fs2_9));
@@ -2640,8 +2641,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk168.unk0.y = temp_ft4_7 + (temp_fv1_13 * temp_fs1_8);
         temp_fs0_9 = arg1->unk1D4.unk0.x - temp_fa1_7;
         arg1->unk168.unk0.z = temp_ft5_7 + (temp_fv1_13 * temp_fs2_9);
-        temp_fs1_9 = arg1->unk1D4.unk0.y - temp_ft4_7;
         temp_fs2_10 = arg1->unk1D4.unk0.z - temp_ft5_7;
+        temp_fs1_9 = arg1->unk1D4.unk0.y - temp_ft4_7;
         temp_fv1_14 = 14.367054f / sqrtf((temp_fs0_9 * temp_fs0_9) + (temp_fs1_9 * temp_fs1_9) + (temp_fs2_10 * temp_fs2_10));
         temp_fa1_8 = arg1->unk1F8.unk0.x + (temp_fv1_14 * temp_fs0_9);
         arg1->unk1D4.unk0.x = temp_fa1_8;
@@ -2650,18 +2651,18 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk1D4.unk0.y = temp_ft4_8;
         temp_fs0_10 = arg1->unk168.unk0.x - temp_fa1_8;
         arg1->unk1D4.unk0.z = temp_ft5_8;
-        temp_fs1_10 = arg1->unk168.unk0.y - temp_ft4_8;
         temp_fs2_11 = arg1->unk168.unk0.z - temp_ft5_8;
         var_s2 -= 1;
         temp_ft4_9 = (f32) ((f64) (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5);
+        temp_fs1_10 = arg1->unk168.unk0.y - temp_ft4_8;
         temp_fa0_11 = (f32) (7.0 / (f64) sqrtf((temp_fs0_10 * temp_fs0_10) + (temp_fs1_10 * temp_fs1_10) + (temp_fs2_11 * temp_fs2_11)));
+        temp_fs2_12 = temp_fs2_11 * temp_fa0_11;
         temp_fs0_11 = temp_fs0_10 * temp_fa0_11;
         arg1->unk168.unk0.x = temp_fs0_11 + temp_ft4_9;
         temp_fs1_11 = temp_fs1_10 * temp_fa0_11;
         temp_ft5_9 = (f32) ((f64) (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5);
         arg1->unk168.unk0.y = temp_fs1_11 + temp_ft5_9;
         arg1->unk1D4.unk0.x = temp_ft4_9 - temp_fs0_11;
-        temp_fs2_12 = temp_fs2_11 * temp_fa0_11;
         arg1->unk1D4.unk0.y = temp_ft5_9 - temp_fs1_11;
         temp_fv1_15 = (f32) ((f64) (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5);
         arg1->unk168.unk0.z = temp_fs2_12 + temp_fv1_15;
@@ -2678,13 +2679,13 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unk1F8.unkC.y = temp_fa0_12 * temp_fs1_12;
     temp_fs5_2 = arg1->unk168.unk0.y - temp_ft4_10;
     arg1->unk1F8.unkC.z = temp_fa0_12 * temp_fs2_13;
-    spA8 = arg1->unk1D4.unk0.y - temp_ft4_10;
-    temp_fa1_9 = arg1->unk1F8.unk0.x;
     temp_fv1_16 = arg1->unk168.unk0.z - temp_ft5_10;
-    temp_fs0_13 = (temp_fs3_7 * temp_fs5_2) - (spA8 * temp_fv1_16);
-    spAC = arg1->unk1D4.unk0.x - temp_fa1_9;
+    temp_fa1_9 = arg1->unk1F8.unk0.x;
     temp_fs4_6 = arg1->unk168.unk0.x - temp_fa1_9;
+    spAC = arg1->unk1D4.unk0.x - temp_fa1_9;
+    spA8 = arg1->unk1D4.unk0.y - temp_ft4_10;
     temp_fs1_13 = (spAC * temp_fv1_16) - (temp_fs3_7 * temp_fs4_6);
+    temp_fs0_13 = (temp_fs3_7 * temp_fs5_2) - (spA8 * temp_fv1_16);
     temp_fs2_14 = (spA8 * temp_fs4_6) - (spAC * temp_fs5_2);
     temp_fa0_13 = 1.0f / sqrtf((temp_fs0_13 * temp_fs0_13) + (temp_fs1_13 * temp_fs1_13) + (temp_fs2_14 * temp_fs2_14));
     arg1->unk1F8.unk14.x = temp_fa0_13 * temp_fs0_13;
@@ -2753,10 +2754,10 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         temp_fs2_15 = (f32) temp_v0_11->unk4 * 0.1f;
         temp_ft4_11 = arg1->unk168.unk0.x - ((temp_fa0_14 * temp_fs0_14) + (temp_fv0_9 * temp_fs1_14) + (temp_fv1_17 * temp_fs2_15));
         spB0 = temp_fv0_9;
-        temp_ft5_11 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs0_14) + (rider->unk7C * temp_fs1_14) + (rider->unk70 * temp_fs2_15));
         sp364 = arg1->unk168.unk0.z - ((rider->unk8C * temp_fs0_14) + (rider->unk80 * temp_fs1_14) + (rider->unk74 * temp_fs2_15));
-        temp_fs0_15 = (f32) temp_v0_11->unk6 * 0.00787402f;
+        temp_ft5_11 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs0_14) + (rider->unk7C * temp_fs1_14) + (rider->unk70 * temp_fs2_15));
         temp_fs1_15 = (f32) temp_v0_11->unk7 * 0.00787402f;
+        temp_fs0_15 = (f32) temp_v0_11->unk6 * 0.00787402f;
         temp_fs2_16 = (f32) temp_v0_11->unk8 * 0.00787402f;
         arg1->unk168.unkC.x = (temp_fa0_14 * temp_fs0_15) + (spB0 * temp_fs1_15) + (temp_fv1_17 * temp_fs2_16);
         arg1->unk168.unkC.y = (rider->unk88 * temp_fs0_15) + (rider->unk7C * temp_fs1_15) + (rider->unk70 * temp_fs2_16);
@@ -2768,8 +2769,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk168.unk14.y = (rider->unk88 * temp_fs0_16) + (rider->unk7C * temp_fs1_16) + (rider->unk70 * temp_fs2_17);
         arg1->unk168.unk14.z = (rider->unk8C * temp_fs0_16) + (rider->unk80 * temp_fs1_16) + (rider->unk74 * temp_fs2_17);
         temp_v0_12 = &var_s3->unk4[var_s3->unk2C[rider->unkC70]];
-        temp_fs0_17 = (f32) temp_v0_12->unk0 * 0.1f;
         temp_fs1_17 = (f32) temp_v0_12->unk2 * 0.1f;
+        temp_fs0_17 = (f32) temp_v0_12->unk0 * 0.1f;
         temp_fs2_18 = (f32) temp_v0_12->unk4 * 0.1f;
         arg1->unk144.unk0.x = (rider->unk84 * temp_fs0_17) + temp_ft4_11 + (rider->unk78 * temp_fs1_17) + (rider->unk6C * temp_fs2_18);
         arg1->unk144.unk0.y = (rider->unk88 * temp_fs0_17) + temp_ft5_11 + (rider->unk7C * temp_fs1_17) + (rider->unk70 * temp_fs2_18);
@@ -2780,8 +2781,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk144.unkC.x = (rider->unk84 * temp_fs0_18) + (rider->unk78 * temp_fs1_18) + (rider->unk6C * temp_fs2_19);
         arg1->unk144.unkC.y = (rider->unk88 * temp_fs0_18) + (rider->unk7C * temp_fs1_18) + (rider->unk70 * temp_fs2_19);
         arg1->unk144.unkC.z = (rider->unk8C * temp_fs0_18) + (rider->unk80 * temp_fs1_18) + (rider->unk74 * temp_fs2_19);
-        temp_fs0_19 = (f32) temp_v0_12->unk9 * 0.00787402f;
         temp_fs1_19 = (f32) temp_v0_12->unkA * 0.00787402f;
+        temp_fs0_19 = (f32) temp_v0_12->unk9 * 0.00787402f;
         temp_fs2_20 = (f32) temp_v0_12->unkB * 0.00787402f;
         arg1->unk144.unk14.x = (rider->unk84 * temp_fs0_19) + (rider->unk78 * temp_fs1_19) + (rider->unk6C * temp_fs2_20);
         arg1->unk144.unk14.y = (rider->unk88 * temp_fs0_19) + (rider->unk7C * temp_fs1_19) + (rider->unk70 * temp_fs2_20);
@@ -2819,10 +2820,10 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         temp_fs2_24 = (f32) temp_v0_14->unk4 * 0.1f;
         temp_ft4_12 = arg1->unk168.unk0.x - ((temp_fa0_15 * temp_fs0_23) + (temp_fv0_10 * temp_fs1_23) + (temp_fv1_18 * temp_fs2_24));
         spB0 = temp_fv0_10;
-        temp_ft5_12 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs0_23) + (rider->unk7C * temp_fs1_23) + (rider->unk70 * temp_fs2_24));
         sp364 = arg1->unk168.unk0.z - ((rider->unk8C * temp_fs0_23) + (rider->unk80 * temp_fs1_23) + (rider->unk74 * temp_fs2_24));
-        temp_fs0_24 = (f32) temp_v0_14->unk6 * 0.00787402f;
+        temp_ft5_12 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs0_23) + (rider->unk7C * temp_fs1_23) + (rider->unk70 * temp_fs2_24));
         temp_fs1_24 = (f32) temp_v0_14->unk7 * 0.00787402f;
+        temp_fs0_24 = (f32) temp_v0_14->unk6 * 0.00787402f;
         temp_fs2_25 = (f32) temp_v0_14->unk8 * 0.00787402f;
         arg1->unk168.unkC.x = (temp_fa0_15 * temp_fs0_24) + (spB0 * temp_fs1_24) + (temp_fv1_18 * temp_fs2_25);
         arg1->unk168.unkC.y = (rider->unk88 * temp_fs0_24) + (rider->unk7C * temp_fs1_24) + (rider->unk70 * temp_fs2_25);
@@ -2834,8 +2835,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk168.unk14.y = (rider->unk88 * temp_fs0_25) + (rider->unk7C * temp_fs1_25) + (rider->unk70 * temp_fs2_26);
         arg1->unk168.unk14.z = (rider->unk8C * temp_fs0_25) + (rider->unk80 * temp_fs1_25) + (rider->unk74 * temp_fs2_26);
         temp_v0_15 = &var_s3->unk4[var_s3->unk2C[rider->unk15B0]];
-        temp_fs0_26 = (f32) temp_v0_15->unk0 * 0.1f;
         temp_fs1_26 = (f32) temp_v0_15->unk2 * 0.1f;
+        temp_fs0_26 = (f32) temp_v0_15->unk0 * 0.1f;
         temp_fs2_27 = (f32) temp_v0_15->unk4 * 0.1f;
         arg1->unk144.unk0.x = (rider->unk84 * temp_fs0_26) + temp_ft4_12 + (rider->unk78 * temp_fs1_26) + (rider->unk6C * temp_fs2_27);
         arg1->unk144.unk0.y = (rider->unk88 * temp_fs0_26) + temp_ft5_12 + (rider->unk7C * temp_fs1_26) + (rider->unk70 * temp_fs2_27);
@@ -2846,8 +2847,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk144.unkC.x = (rider->unk84 * temp_fs0_27) + (rider->unk78 * temp_fs1_27) + (rider->unk6C * temp_fs2_28);
         arg1->unk144.unkC.y = (rider->unk88 * temp_fs0_27) + (rider->unk7C * temp_fs1_27) + (rider->unk70 * temp_fs2_28);
         arg1->unk144.unkC.z = (rider->unk8C * temp_fs0_27) + (rider->unk80 * temp_fs1_27) + (rider->unk74 * temp_fs2_28);
-        temp_fs0_28 = (f32) temp_v0_15->unk9 * 0.00787402f;
         temp_fs1_28 = (f32) temp_v0_15->unkA * 0.00787402f;
+        temp_fs0_28 = (f32) temp_v0_15->unk9 * 0.00787402f;
         temp_fs2_29 = (f32) temp_v0_15->unkB * 0.00787402f;
         arg1->unk144.unk14.x = (rider->unk84 * temp_fs0_28) + (rider->unk78 * temp_fs1_28) + (rider->unk6C * temp_fs2_29);
         arg1->unk144.unk14.y = (rider->unk88 * temp_fs0_28) + (rider->unk7C * temp_fs1_28) + (rider->unk70 * temp_fs2_29);
@@ -2912,18 +2913,18 @@ block_45: // m2c label name
     arg1->unkFC.unk0.x = (f32) ((f64) arg1->unk1F8.unk0.x + (14.483002 * (f64) arg1->unk1F8.unkC.x));
     arg1->unkFC.unk0.y = (f32) ((f64) arg1->unk1F8.unk0.y + (14.483002 * (f64) arg1->unk1F8.unkC.y));
     arg1->unkFC.unk0.z = (f32) ((f64) arg1->unk1F8.unk0.z + (14.483002 * (f64) arg1->unk1F8.unkC.z));
-    temp_fv1_19 = rider->unk6C;
-    temp_fv0_11 = rider->unk74;
-    temp_fa0_16 = rider->unk84;
-    temp_fa1_10 = rider->unk8C;
     temp_s2_5 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
+    temp_fv0_11 = rider->unk74;
+    temp_fv1_19 = rider->unk6C;
+    temp_fa1_10 = rider->unk8C;
+    temp_fa0_16 = rider->unk84;
     temp_fs4_7 = (temp_fv1_19 * temp_fv1_19) + (temp_fv0_11 * temp_fv0_11);
     temp_fs3_8 = (temp_fa0_16 * temp_fa0_16) + (temp_fa1_10 * temp_fa1_10);
     if ((temp_fs4_7 != 0.0f) && (temp_fs3_8 != 0.0f)) {
         temp_fs4_8 = gSinTable[temp_s2_5 & 0xFFF] / sqrtf(temp_fs4_7);
         temp_fs3_9 = gSinTable[(temp_s2_5 + 0x400) & 0xFFF] / sqrtf(temp_fs3_8);
-        temp_ft3 = temp_fs3_9 * rider->unk84;
         arg1->unkFC.unkC.y = 0.0f;
+        temp_ft3 = temp_fs3_9 * rider->unk84;
         arg1->unkFC.unkC.x = (rider->unk6C * temp_fs4_8) + temp_ft3;
         arg1->unkFC.unk14.x = 0.0f;
         arg1->unkFC.unkC.z = (rider->unk74 * temp_fs4_8) + (temp_fs3_9 * rider->unk8C);
