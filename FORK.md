@@ -742,19 +742,20 @@ Measured at `f40b21d` and at this branch's tip: the same except `func_8007687C` 
   coordinates from `unk0`; `ViewRecords_DrawRecordsPanel` draws kind 3's lap dashes at y + 302 and
   passes an unused argument to `sprintf(buf, "-", ...)`.
 
-## Milestone 5 (in progress, paused at `6698635`)
+## Milestone 5 (in progress)
 
 Goal: the 124 functions still in assembly at `a0a7efa`: the closest set-asides first, then `src/sys`,
 `src/audio`, the unused segment and `seg_1C3D00` (never attempted), then the remaining set-asides by
 score band, largest last; names and a final review at the end. Plan:
 `docs/superpowers/plans/2026-10-25-decomp-milestone-5.md` in the wr_64_exe repo. Batches ran 2026-10-25
-to 27, one worker at a time, each reviewed and merged by the coordinator. Done so far: the closest and
-near set-asides (Tasks 1-3), sys and audio (Task 4), the unused segment and `seg_1C3D00` (Task 5), the
-first band's float data (Task 6, Step 1) and two short near-miss batches. Next: the 1360-1845 band.
+to 29, each reviewed and merged by the coordinator; from 2026-10-28 the workers ran at medium effort. Done
+so far: Tasks 1-13 (every set-aside band has had at least one pass), codeseg's `.bss` split per file, and an
+audit of the greedy statement moves. Next: Task 14 (names, a sweep of the FAKEs, the final review) and
+further passes on the largest set-asides.
 
 ### Count
 
-**`tools/progress.py`: 1224 / 1348 -> 1255 / 1348 (90.8% -> 93.1%); matched bytes 64.5% -> 68.5%.**
+**`tools/progress.py`: 1224 / 1348 -> 1286 / 1348 (90.8% -> 95.4%); matched bytes 64.5% -> 74.2%.**
 
 | After merge | Matched / total | Batch |
 |---|--:|---|
@@ -768,10 +769,23 @@ first band's float data (Task 6, Step 1) and two short near-miss batches. Next: 
 | `4602b20` | 1252 / 1348 | nine of eleven in `segment_1B1FB0` and `seg_1C3D00` |
 | `afe8f66` | 1253 / 1348 | `AudioGeneral_PlaySound`; `C94E0.c` merged into `BCFF0.c` |
 | `6698635` | 1255 / 1348 | `func_8004DAF0`, `func_8007D2D4` |
+| `9a8ca79` | 1259 / 1348 | `func_i15_802C602C`, `func_800AC098`, `func_800A9D48`, `func_i4_802C6778` |
+| `c49e3d0` | 1262 / 1348 | `func_801E1BA8`, `func_80067E40`, `func_80064C0C` |
+| `3ccb48c` | 1266 / 1348 | `func_8004E0A4`, `func_8004D628`, `func_801E4FE8`, `func_801E3698` |
+| `11f3e63` | 1268 / 1348 | `func_801DC274`, `func_800629A8` |
+| `399a76b` | 1274 / 1348 | `func_80079528` (`code_2FB10`'s `.bss` split), `func_8007D614`, `func_8007B630`, `func_8007B930`, `func_800AB95C`, `func_801EE274` |
+| `db1da95` | 1277 / 1348 | `func_801DCD34`, `func_800609EC`, `func_800624CC` |
+| `eaa7c97` | 1279 / 1348 | `func_801F0E7C`, `func_8006390C` |
+| `0d71cd8` | 1280 / 1348 | `func_801EE040` |
+| `76a9347` | 1281 / 1348 | `func_8008BD2C` (`code_43DA0`'s `.bss` split) |
+| `c3972fa` | 1283 / 1348 | `func_800735EC`, `func_1B1FB0_802C71B8` |
+| `6c6864c` | 1283 / 1348 | codeseg's `.bss` split per file (with `3e014f5`) |
+| `5f6f0c2` | 1285 / 1348 | `func_1B1FB0_802C6C1C`, `func_800B2ABC` |
+| `e55e6c2` | 1286 / 1348 | `func_8007FFA8` |
 
 No batch changed the set of sized `F` symbols (each data move was checked with a sized-`F`-symbol diff of
 the ELF before and after); `SysMain_Thread`'s size went 1744 -> 1732 when its trailing `nop` padding left
-the symbol.
+the symbol; `func_80079528`'s went 4136 -> 4132 the same way.
 
 ### Matched and moved, by batch
 
@@ -803,6 +817,13 @@ the symbol.
 - **Nearest leftovers**: `func_8004DAF0` (water damping of a body's points; two old FAKEs gone) and
   `func_8007D2D4` (the Controller Pak save read).
 
+- **2026-10-28/29** (Opus at medium effort, about 90k tokens per match): 31 functions matched (1255 -> 1286)
+  and most of the rest came closer; the unused segment is complete. Two game objects (`code_2FB10` at
+  0x801C3A00, `code_43DA0` at 0x801C4170) and then all of codeseg (0x80227A60-0x80228E0F) got their `.bss`
+  split per file, replacing FAKE definitions and pads; `resolve.txt` names the in-object addresses the code
+  uses. A greedy statement-move search was the biggest single gain on large functions; an audit found and
+  undid the one move that swapped dependent statements (`func_800B305C`).
+
 ### What we learned
 
 **Process**
@@ -822,6 +843,14 @@ the symbol.
 
 **IDO 5.3**
 
+- **Differently spelled float zeros are separate constants:** `0.f`, `0.00f` and `0e0f` are not `0.0f`
+  (`0.0F` is), and that decides where a zero is loaded and which saved registers hold what
+  (`func_801F9EA0`, 1800 -> 120). Likewise `0` vs `0.0f` and `100000.0` vs `100000.0f`.
+- **`--n` in a loop condition** puts the counter's first decrement in the delay slot; **stores in
+  struct-field order** fixed a float-register swap no single statement move could.
+- **Pass a value through a local or a global:** the right edge as `x = 560 - i * 18`, or a loop reading back
+  through the global it just set, matched two functions with no FAKE.
+- **Matched siblings are the best start** (`tools/fork/similar.py`); twins matched in minutes once one did.
 - **Source lines steer scheduling.** Two statements on one line let a constant load move ahead of a stack
   reload. The permuter's import reformats the source and loses such joins, so its base score can be worse
   than the local one.
@@ -843,10 +872,11 @@ the symbol.
 
 ### Open follow-ups
 
-- Nearest set-asides: `func_801F2060` 10 (shared prototype is `s32` only for its FAKE; ugen renames the
-  `lw`'s target but not the `lui`'s), `func_800890B4` 55, `func_1B1FB0_802C6C1C` 85, `func_801DC274` 265
-  (needs codeseg's `.bss` split: defining `D_80228190` in `A95D0.c` plus an `s32 index` parameter matches
-  it in a scratch build), `func_80049A94` 268, `unk_game_load` 270 (one `lui at`).
+- Nearest set-asides: `func_801F2060` 10, `func_80054130` 15, `func_801F8DD0` 30, `func_80063C88` 40,
+  `func_800890B4` 55, `func_8008D454` 70, `func_801F9EA0` 120, `func_801E4C60` 130. Most have had three or
+  more tries.
+- Many recent closer attempts rely on permuter FAKEs (`do {} while (0)`, `while ((u64) 0)`, empty `if (1)`,
+  line joins); a sweep should replace them with real shapes where it can.
 - Give 0x80045650 a symbol (now written `&gAudioGlobalsEndMarker + 3`, splat's naming of an unnamed
   address).
-- The remaining bands (Tasks 7-13), names (Task 14) and the final review.
+- Names (Task 14) and the final review.
