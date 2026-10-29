@@ -85,7 +85,7 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 14838 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
+// Score 12816 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
 // registers. Left: three locals short between hiz and upx, so most stack slots are off by a word, and float registers
 // differ (k stays in $f24 here; the original spills k to sp+0xE4 and keeps 0.866f in $f24)
 void func_8004C1D0(s32 view, Vtx* vtx) {
@@ -150,6 +150,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     y = (cam->upY * e) + upy;
     z = (cam->upZ * e) + upz;
     if ((y + hiy) > 5.0f) {
+        do {} while (0); // FAKE: a block boundary with no code; moves the register allocation towards the original
         a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
         if (a < dist) {
             dist = a;
