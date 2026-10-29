@@ -32,6 +32,66 @@ typedef struct UnkStruct_80228B88 {
 
 void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 color);
 
+// This file's .bss, the end of codeseg's: 0x80228A90..0x80228E0F (yaml split). Sizes run to the next variable.
+// In-object addresses the code names are in resolve.txt: D_80228AFC, D_80228B18 and D_80228B34 (D_80228AE0[1..3]),
+// D_80228CE0, D_80228CE8, D_80228CEC and D_80228CF0 (D_80228CD8 + 8, + 0x10, + 0x14 and the end of its six digits),
+// D_80228CF7, D_80228CFC and D_80228CFD (D_80228CF8 - 1, + 4 and + 5: the number buffer's digit loops).
+s32 gStartCountdown;
+s32 D_80228A94;
+s32 D_80228A98;
+s32 D_80228A9C;
+s32 D_80228AA0;
+s32 D_80228AA4;
+s32 D_80228AA8;
+s32 D_80228AAC;
+s32 D_80228AB0;
+s32 D_80228AB4;
+s32 D_80228AB8;
+s32 D_80228ABC;
+s32 D_80228AC0;
+s32 D_80228AC4;
+s32 D_80228AC8;
+s32 D_80228ACC;
+s32 D_80228AD0;
+s32 D_80228AD4;
+s32 D_80228AD8;
+s32 D_80228ADC; // FAKE pad: no code names 0x80228ADC (splat sized D_80228AD8 0x8); keeps D_80228AE0 at its address
+UnkStruct_80228AE0 D_80228AE0[4];
+s32 D_80228B50;
+s32 D_80228B54;
+s8 D_80228B58[4];
+s32 D_80228B5C;
+s32 D_80228B60[2];
+s32 D_80228B68[2];
+s32 D_80228B70[2];
+s32 D_80228B78;
+s32 D_80228B7C;
+s32 D_80228B80;
+s32 D_80228B84; // FAKE pad: no code names 0x80228B84 (splat sized D_80228B80 0x8); keeps D_80228B88 at its address
+UnkStruct_80228B88 D_80228B88[2][4];
+s32 gHudMarkerColorFrame;
+s32 gHudMarkerColorStep;
+UnkStruct_80228C30 gHudMarkers[2];
+s32 D_80228CD8[8];
+s8 D_80228CF8[16];
+s32 gStartLightsState;
+s32 gStartLightsOffset;
+s32 gStartLightsOffsetMax;
+s32 D_80228D14;
+s32 D_80228D18;
+s32 gHudColorStep;
+s32 gHudColorFrame;
+u16 gHudPerspNorm;
+PortraitPos gPortraitPos[2][4];
+s32 D_80228DC8[4];
+s32 D_80228DD8[4];
+s32 D_80228DE8[4];
+s32 D_80228DF8;
+s32 D_80228DFC;
+s32 D_80228E00[2];
+s32 D_80228E08[2];
+
+
 extern Gfx D_1014708[];
 extern Gfx D_1014760[];
 extern Gfx D_1014790[];
@@ -68,24 +128,6 @@ extern s32 D_801C1FE8;
 extern RiderStruct gRiderRaceState[];
 extern u8* gPortraitFaces[];
 extern f32 gPortraitBob[];
-extern s32 D_80228A9C;
-extern s32 D_80228AAC;
-extern s32 D_80228AB0;
-extern s32 D_80228AB4;
-extern s32 D_80228AB8;
-extern s32 D_80228ABC;
-extern s32 D_80228AC0;
-extern s32 D_80228B50;
-extern s32 D_80228B54;
-extern UnkStruct_80228B88 D_80228B88[2][4];
-extern s32 gHudMarkerColorFrame;
-extern s32 gHudMarkerColorStep;
-extern UnkStruct_80228C30 gHudMarkers[];
-extern s8 D_80228CF8[5];
-extern u16 gHudPerspNorm;
-extern PortraitPos gPortraitPos[2][4];
-extern s32 D_80228DC8[];
-extern s32 D_80228DF8;
 
 // The asm names this word D_801CE6FC + 8; its symbol is in linker_scripts/us/rev1/resolve.txt.
 extern s32 D_801CE704;
@@ -113,14 +155,6 @@ extern s32 D_80227888[][3];
 extern s32 D_802278C4[][3];
 extern s32 D_80227900[][3];
 extern s32 D_8022793C[][3];
-extern s32 D_80228AC4;
-extern s32 D_80228AC8;
-extern s32 D_80228ACC;
-extern s32 D_80228AD0;
-extern s32 D_80228AD4;
-extern s32 D_80228AD8;
-extern s32 gHudColorStep;
-extern s32 gHudColorFrame;
 
 // Blend the HUD colour sets between the current palette step and the next (two frames a step while unpaused).
 void Hud_BlendColorSets(void) {
@@ -1296,7 +1330,6 @@ extern s32 D_80228ACC;
 extern s32 D_80228AD0;
 extern s32 D_80228AD4;
 extern s32 D_80228AD8;
-extern s32 D_80228CD8[6];
 
 #define HUD_LOAD8(gdl, img, w, h)                                                                     \
     gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, h, 0, G_TX_NOMIRROR | G_TX_CLAMP, \

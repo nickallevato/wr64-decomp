@@ -408,8 +408,8 @@ segments:
     - [0xF5D40, .rodata, codeseg/B97B0]
     - [0xF5D70, data, codeseg/BCFF0]
     - [0xF6000, .rodata, codeseg/BCFF0]
-    # codeseg's .bss, 0x80227A60..0x80228E0F (the game loader clears D_80227A60 up to D_80228E10), split per file
-    # (B2510 has none); B66E0..BCFF0's are still the bss_ block
+    # codeseg's .bss, 0x80227A60..0x80228E0F (the game loader clears D_80227A60 up to D_80228E10), split per file.
+    # B2510 and B97B0 have none.
     - { type: .bss, start: 0xF6090, vram: 0x80227A60, name: codeseg/A95D0 }
     - { type: .bss, start: 0xF6090, vram: 0x802287E0, name: codeseg/AF8C0 }
     - { type: .bss, start: 0xF6090, vram: 0x802288F0, name: codeseg/B17D0 }
@@ -417,7 +417,8 @@ segments:
     - { type: .bss, start: 0xF6090, vram: 0x80228920, name: codeseg/B3290 }
     - { type: .bss, start: 0xF6090, vram: 0x80228930, name: codeseg/B3AA0 }
     - { type: .bss, start: 0xF6090, vram: 0x80228A10, name: codeseg/wr64_fade }
-    - { type: bss, start: 0xF6090, vram: 0x80228A40, name: codeseg/bss_80228A40 }
+    - { type: .bss, start: 0xF6090, vram: 0x80228A40, name: codeseg/B66E0 }
+    - { type: .bss, start: 0xF6090, vram: 0x80228A90, name: codeseg/BCFF0 }
 
   - name: segment_F6090 # looks like a bunch of uncompressed assets (Dlists and Textures)
     type: bin

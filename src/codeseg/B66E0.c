@@ -23,11 +23,13 @@ extern u8 gPrinterWidthsFont4[]; /* glyph widths, font 4 */
 extern u8 gPrinterWidthsFont5[]; /* glyph widths, font 5 */
 extern u8 gPrinterWidthsFont6[]; /* glyph widths, font 6 */
 
-extern s32 gPrinterNextQuadVtx;         /* next free vertex in D_801CE5F8->unk40 */
-extern s32 gPrinterMode;       /* printer mode, set by Printer_SetMode */
-extern s32 gPrinterCornerR[4]; /* corner colours, set by Printer_SetMode: red */
-extern s32 gPrinterCornerG[4]; /* green */
-extern s32 gPrinterCornerB[4]; /* blue */
+/* This file's .bss, 0x80228A40..0x80228A8B (yaml split), runs through gPrinterColorCycle below; the object's
+   16-byte alignment puts BCFF0's (B97B0 has none) at 0x80228A90. */
+s32 gPrinterNextQuadVtx; /* next free vertex in D_801CE5F8->unk40 */
+s32 gPrinterMode;        /* printer mode, set by Printer_SetMode */
+s32 gPrinterCornerR[4];  /* corner colours, set by Printer_SetMode: red */
+s32 gPrinterCornerG[4];  /* green */
+s32 gPrinterCornerB[4];  /* blue */
 extern u8 D_7000000[];
 extern u8 D_2000A40[];
 extern Gfx D_106F030[];
@@ -39,7 +41,7 @@ extern u8 D_1039248[];       /* font 2 (IA8, 16x12) */
 extern u32 D_103B4D0[];      /* fonts 3 and 4 (RGBA32, 12x16) */
 extern u32 D_103D8D8[];      /* font 5 (RGBA32, 16x20) */
 
-extern PrinterColorCycle gPrinterColorCycle;
+PrinterColorCycle gPrinterColorCycle;
 extern PrinterColorCycle gPrinterColorCycleInit; /* initial value, copied by Printer_ResetColorCycle */
 
 /* Draws glyph of font at (x, y): culls it off screen, loads its texture (IA8 fonts 0-2, RGBA32 fonts 3-5), then a
