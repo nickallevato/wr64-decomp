@@ -588,6 +588,7 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x5:
         case 0x6:
             D_801CE62A = 0;
+            // The loaded segment's function at 0x802C5BA4, here segment_1B1FB0's PakNotes_Draw.
             dList = func_802C5BA4(dList);
             break;
 

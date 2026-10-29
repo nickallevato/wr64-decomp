@@ -610,3 +610,17 @@ Ceremony_Leave = 0x802C6CAC; //segment:ovl_i15
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
 //   Ceremony_Draw 0x802C5F50
+
+// segment_1B1FB0, the boot-time Controller Pak note manager (GAME_STATE_BOOT_UP, GAME_STATE_6)
+PakNotes_OverlayUpdate = 0x802C5800; //segment:segment_1B1FB0
+PakNotes_Input = 0x802C5DF4; //segment:segment_1B1FB0
+PakNotes_DrawList = 0x802C62E4; //segment:segment_1B1FB0
+PakNotes_DrawRow = 0x802C67BC; //segment:segment_1B1FB0
+PakNotes_DrawMessage = 0x802C6970; //segment:segment_1B1FB0
+PakNotes_DrawFreePages = 0x802C6C1C; //segment:segment_1B1FB0
+PakNotes_DrawChoiceCursor = 0x802C6E40; //segment:segment_1B1FB0
+PakNotes_DrawRowCursor = 0x802C6FF8; //segment:segment_1B1FB0
+PakNotes_DrawChar = 0x802C71B8; //segment:segment_1B1FB0
+// Not listed, because main code calls this address as a raw func_802Cxxxx symbol and an entry
+// here would make splat rename that reference:
+//   PakNotes_Draw 0x802C5BA4

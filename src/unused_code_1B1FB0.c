@@ -2,14 +2,14 @@
 
 extern s32 D_800D45DC[]; // array pointing to some mio0 adresses
 
-void func_1B1FB0_802C5DF4(void);
-Gfx* func_1B1FB0_802C62E4(Gfx*);
-Gfx* func_1B1FB0_802C67BC(Gfx*, s32, s32);
-Gfx* func_1B1FB0_802C6970(Gfx*);
-Gfx* func_1B1FB0_802C6C1C(Gfx*);
-Gfx* func_1B1FB0_802C6E40(Gfx*, s32, s32);
-Gfx* func_1B1FB0_802C6FF8(Gfx*);
-Gfx* func_1B1FB0_802C71B8(Gfx*, char, s32, s32);
+void PakNotes_Input(void);
+Gfx* PakNotes_DrawList(Gfx*);
+Gfx* PakNotes_DrawRow(Gfx*, s32, s32);
+Gfx* PakNotes_DrawMessage(Gfx*);
+Gfx* PakNotes_DrawFreePages(Gfx*);
+Gfx* PakNotes_DrawChoiceCursor(Gfx*, s32, s32);
+Gfx* PakNotes_DrawRowCursor(Gfx*);
+Gfx* PakNotes_DrawChar(Gfx*, char, s32, s32);
 s32 func_1B1FB0_802C7304(s32, s8*, s32, s32, s32);
 Gfx* func_1B1FB0_802C73B0(Gfx*);
 void func_1B1FB0_802C7510(void);
@@ -45,7 +45,7 @@ extern Gfx D_80671B8[];
 extern Gfx D_80675B8[];
 extern Gfx D_80675E8[];
 
-void func_1B1FB0_802C5800(void) {
+void PakNotes_OverlayUpdate(void) {
     s32 i;
 
     if (D_1B1FB0_802C76BC == 0) {
@@ -93,7 +93,7 @@ void func_1B1FB0_802C5800(void) {
     }
 }
 
-Gfx* func_1B1FB0_802C5BA4(Gfx* gdl) {
+Gfx* PakNotes_Draw(Gfx* gdl) {
     if (D_801CE63C != 0) {
         D_801CE63C = 0;
         if (gGameState == GAME_STATE_BOOT_UP) {
@@ -105,21 +105,21 @@ Gfx* func_1B1FB0_802C5BA4(Gfx* gdl) {
     gDPPipeSync(gdl++);
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 0, 0, 639, 479);
     gSPDisplayList(gdl++, D_80661F8);
-    gdl = func_1B1FB0_802C62E4(gdl);
+    gdl = PakNotes_DrawList(gdl);
     gSPDisplayList(gdl++, D_8066A80);
     gSPDisplayList(gdl++, D_80671B8);
-    gdl = func_1B1FB0_802C6970(gdl);
-    gdl = func_1B1FB0_802C6C1C(gdl);
+    gdl = PakNotes_DrawMessage(gdl);
+    gdl = PakNotes_DrawFreePages(gdl);
     gDPSetPrimColor(gdl++, 0, 0, 255, D_802C7710, 0, 255);
-    gdl = func_1B1FB0_802C6E40(gdl, D_1B1FB0_802C76B4[D_1B1FB0_802C76A8], 134);
+    gdl = PakNotes_DrawChoiceCursor(gdl, D_1B1FB0_802C76B4[D_1B1FB0_802C76A8], 134);
     if (D_1B1FB0_802C76A4 == 2) {
-        gdl = func_1B1FB0_802C6E40(gdl, D_1B1FB0_802C76B4[D_1B1FB0_802C76AC], 394);
+        gdl = PakNotes_DrawChoiceCursor(gdl, D_1B1FB0_802C76B4[D_1B1FB0_802C76AC], 394);
     }
     if (gGameState == GAME_STATE_6) {
         gdl = func_1B1FB0_802C7578(gdl, 64, 50, 576, 432, D_1B1FB0_802C76F0);
     }
     if (gGameState == GAME_STATE_BOOT_UP) {
-        func_1B1FB0_802C5DF4();
+        PakNotes_Input();
     } else {
         D_1B1FB0_802C76F0 = D_1B1FB0_802C76F4 * 255 / 10;
         if (D_1B1FB0_802C76F0 > 255) {
@@ -136,7 +136,7 @@ Gfx* func_1B1FB0_802C5BA4(Gfx* gdl) {
     return gdl;
 }
 
-void func_1B1FB0_802C5DF4(void) {
+void PakNotes_Input(void) {
     s32 pad; // stack pad: puts note at 0x20(sp), as in the original
     OSPfsState* note;
 
@@ -272,7 +272,7 @@ void func_1B1FB0_802C5DF4(void) {
     }
 }
 
-Gfx* func_1B1FB0_802C62E4(Gfx* gdl) {
+Gfx* PakNotes_DrawList(Gfx* gdl) {
     s32 i;
     OSPfsState* note;
     s32 d;
@@ -282,43 +282,43 @@ Gfx* func_1B1FB0_802C62E4(Gfx* gdl) {
     gDPSetScissor(gdl++, G_SC_NON_INTERLACE, 0, 0, 639, 389);
     for (i = 0; i < 9; i++) {
         if (D_1B1FB0_802C76E8 != 0 || (i != 0 && i != 8)) {
-            gdl = func_1B1FB0_802C67BC(gdl, 64, i * 20 + D_1B1FB0_802C76EC);
+            gdl = PakNotes_DrawRow(gdl, 64, i * 20 + D_1B1FB0_802C76EC);
         }
     }
     gSPDisplayList(gdl++, D_80675E8);
     gDPSetPrimColor(gdl++, 0, 0, 255, D_802C7710, 0, 255);
     if (D_1B1FB0_802C76A4 != 0) {
-        gdl = func_1B1FB0_802C6FF8(gdl);
+        gdl = PakNotes_DrawRowCursor(gdl);
     }
     gDPPipeSync(gdl++);
     gDPSetPrimColor(gdl++, 0, 0, 0, 0, 50, 255);
     for (i = 0; i < 9; i++) {
         if (D_1B1FB0_802C76C4[i] != 0) {
             if (D_1B1FB0_802C76C4[i] < 10) {
-                gdl = func_1B1FB0_802C71B8(gdl, (char) D_1B1FB0_802C76C4[i] + 16, 101, i * 20 + D_1B1FB0_802C76EC + 2);
+                gdl = PakNotes_DrawChar(gdl, (char) D_1B1FB0_802C76C4[i] + 16, 101, i * 20 + D_1B1FB0_802C76EC + 2);
             } else {
                 d = D_1B1FB0_802C76C4[i] % 10;
-                gdl = func_1B1FB0_802C71B8(gdl, (char) d + 16, 106, i * 20 + D_1B1FB0_802C76EC + 2);
-                gdl = func_1B1FB0_802C71B8(gdl, 17, 96, i * 20 + D_1B1FB0_802C76EC + 2);
+                gdl = PakNotes_DrawChar(gdl, (char) d + 16, 106, i * 20 + D_1B1FB0_802C76EC + 2);
+                gdl = PakNotes_DrawChar(gdl, 17, 96, i * 20 + D_1B1FB0_802C76EC + 2);
             }
             if (D_801CB618[D_1B1FB0_802C76C4[i] - 1] == 0) {
                 note = (OSPfsState*) D_801CB418 + D_1B1FB0_802C76C4[i] - 1;
                 gdl = (Gfx*) func_1B1FB0_802C7304((s32) gdl, (s8*) note->game_name, 16, 159,
                                                   i * 20 + D_1B1FB0_802C76EC + 2);
                 if ((s8) note->ext_name[0] != 0) { // tested with lb, passed with lbu
-                    gdl = func_1B1FB0_802C71B8(gdl, 60, D_802C7718 * 16 + 159, i * 20 + D_1B1FB0_802C76EC + 2);
-                    gdl = func_1B1FB0_802C71B8(gdl, note->ext_name[0], D_802C7718 * 16 + 175,
+                    gdl = PakNotes_DrawChar(gdl, 60, D_802C7718 * 16 + 159, i * 20 + D_1B1FB0_802C76EC + 2);
+                    gdl = PakNotes_DrawChar(gdl, note->ext_name[0], D_802C7718 * 16 + 175,
                                                i * 20 + D_1B1FB0_802C76EC + 2);
                 }
                 pages = (note->file_size + 255) >> 8;
-                gdl = func_1B1FB0_802C71B8(gdl, (char) (pages % 10) + 16, 538, i * 20 + D_1B1FB0_802C76EC + 2);
+                gdl = PakNotes_DrawChar(gdl, (char) (pages % 10) + 16, 538, i * 20 + D_1B1FB0_802C76EC + 2);
                 if (pages >= 10) {
                     d = pages / 10;
-                    gdl = func_1B1FB0_802C71B8(gdl, (char) (d % 10) + 16, 522, i * 20 + D_1B1FB0_802C76EC + 2);
+                    gdl = PakNotes_DrawChar(gdl, (char) (d % 10) + 16, 522, i * 20 + D_1B1FB0_802C76EC + 2);
                 }
                 if (pages >= 100) {
                     d /= 10;
-                    gdl = func_1B1FB0_802C71B8(gdl, (char) (d % 10) + 16, 506, i * 20 + D_1B1FB0_802C76EC + 2);
+                    gdl = PakNotes_DrawChar(gdl, (char) (d % 10) + 16, 506, i * 20 + D_1B1FB0_802C76EC + 2);
                 }
             }
         }
@@ -328,7 +328,7 @@ Gfx* func_1B1FB0_802C62E4(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_1B1FB0_802C67BC(Gfx* gdl, s32 x, s32 y) {
+Gfx* PakNotes_DrawRow(Gfx* gdl, s32 x, s32 y) {
     s32 i;
 
     for (i = 0; i < 5; i++) {
@@ -341,7 +341,7 @@ Gfx* func_1B1FB0_802C67BC(Gfx* gdl, s32 x, s32 y) {
     return gdl;
 }
 
-Gfx* func_1B1FB0_802C6970(Gfx* gdl) {
+Gfx* PakNotes_DrawMessage(Gfx* gdl) {
     u8* tex;
     s32 i;
 
@@ -356,7 +356,7 @@ Gfx* func_1B1FB0_802C6970(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
+Gfx* PakNotes_DrawFreePages(Gfx* gdl) {
     s32 n;
     s32 digits;
     s32 i;
@@ -384,7 +384,7 @@ Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_1B1FB0_802C6E40(Gfx* gdl, s32 x, s32 y) {
+Gfx* PakNotes_DrawChoiceCursor(Gfx* gdl, s32 x, s32 y) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -397,7 +397,7 @@ Gfx* func_1B1FB0_802C6E40(Gfx* gdl, s32 x, s32 y) {
     return gdl;
 }
 
-Gfx* func_1B1FB0_802C6FF8(Gfx* gdl) {
+Gfx* PakNotes_DrawRowCursor(Gfx* gdl) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -410,7 +410,7 @@ Gfx* func_1B1FB0_802C6FF8(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_1B1FB0_802C71B8(Gfx* gdl, char c, s32 x, s32 y) {
+Gfx* PakNotes_DrawChar(Gfx* gdl, char c, s32 x, s32 y) {
     s32 mask = G_TX_NOMASK; // FAKE: found by the permuter; with the masks in a local, gdl is not copied
 
     if (c < 16) {
@@ -436,7 +436,7 @@ s32 func_1B1FB0_802C7304(s32 arg0, s8* arg1, s32 arg2, s32 arg3, s32 arg4) {
         if (*arg1 != 0) {
             D_802C7718++;
         }
-        arg0 = (s32) func_1B1FB0_802C71B8((Gfx*) arg0, *(arg1++), s1, arg4);
+        arg0 = (s32) PakNotes_DrawChar((Gfx*) arg0, *(arg1++), s1, arg4);
         arg2--;
         s1 += 0x10;
     }
