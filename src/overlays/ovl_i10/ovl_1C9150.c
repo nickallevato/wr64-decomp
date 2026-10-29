@@ -354,7 +354,7 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
     }
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 16, 38, 39, 0);
+    gdl = TexLabel_Draw(gdl, 2, 16, 38, 39, 0);
 
     sel = D_i10_802C6B34 * 3 + D_i10_802C6B30;
     for (i = 0, item = D_i10_802C6AA0; i < 5; i++, item++) {
@@ -367,11 +367,11 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
         }
         gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
         if (i == 4) {
-            gdl = func_801E3EE0(gdl, 1, item->texture, 193, 93, 0);
+            gdl = TexLabel_Draw(gdl, 1, item->texture, 193, 93, 0);
         } else if (i == 3) {
-            gdl = func_801E3EE0(gdl, 1, item->texture, 80, 93, 0);
+            gdl = TexLabel_Draw(gdl, 1, item->texture, 80, 93, 0);
         } else {
-            gdl = func_801E3EE0(gdl, 1, item->texture, i * 97 + item->x + 44, 72, 0);
+            gdl = TexLabel_Draw(gdl, 1, item->texture, i * 97 + item->x + 44, 72, 0);
         }
     }
 
@@ -393,7 +393,7 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
                 mode = 0;
             }
             gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-            gdl = func_801E3EE0(gdl, 1, D_i10_802C6AC8[i], 41, i * 20 + 128, 0);
+            gdl = TexLabel_Draw(gdl, 1, D_i10_802C6AC8[i], 41, i * 20 + 128, 0);
             gdl = Printer_DrawString(gdl, 2, ">", 167, i * 20 + 127);
 
             if (D_801CE640 != 0) {
@@ -450,7 +450,7 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
 
             gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
             if (!useString) {
-                gdl = func_801E3EE0(gdl, 1, texture, 198, i * 20 + 127, 0);
+                gdl = TexLabel_Draw(gdl, 1, texture, 198, i * 20 + 127, 0);
             } else {
                 gdl = Printer_DrawString(gdl, 2, buf, 198, i * 20 + 127);
             }
@@ -462,8 +462,8 @@ Gfx* func_i10_802C6200(Gfx* gdl) {
         }
         if (changed) {
             gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-            gdl = func_801E3EE0(gdl, 1, 65, 28, 202, 0);
-            gdl = func_801E3EE0(gdl, 1, 68, 98, 202, 0);
+            gdl = TexLabel_Draw(gdl, 1, 65, 28, 202, 0);
+            gdl = TexLabel_Draw(gdl, 1, 68, 98, 202, 0);
         }
     }
     return gdl;

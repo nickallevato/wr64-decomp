@@ -47,7 +47,7 @@ Gfx* AudioOptions_Draw(Gfx* gdl) {
     gdl = func_80094338(gdl, 0, 106, 163, 107, 16);
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 19, 122, 50, 0);
+    gdl = TexLabel_Draw(gdl, 2, 19, 122, 50, 0);
 
     for (i = 0, item = D_i11_802C6160, value = D_800DA9EC; i < 3; i++, item++, value++) {
         if (i == D_i11_802C6150) {
@@ -56,7 +56,7 @@ Gfx* AudioOptions_Draw(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, item->texture, item->x + 38, i * 21 + 103, 0);
+        gdl = TexLabel_Draw(gdl, 1, item->texture, item->x + 38, i * 21 + 103, 0);
         gdl = Printer_DrawString(gdl, 2, ">", 158, i * 21 + 102);
 
         if (i == D_i11_802C6150) {
@@ -84,7 +84,7 @@ Gfx* AudioOptions_Draw(Gfx* gdl) {
         }
 
         if (!useString) {
-            gdl = func_801E3EE0(gdl, 1, texture, 188, i * 21 + 103, 0);
+            gdl = TexLabel_Draw(gdl, 1, texture, 188, i * 21 + 103, 0);
         } else {
             gdl = Printer_DrawString(gdl, 2, buf, 188, i * 21 + 102);
         }
@@ -96,7 +96,7 @@ Gfx* AudioOptions_Draw(Gfx* gdl) {
         mode = 0;
     }
     gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 1, 63, 144, 166, 0);
+    gdl = TexLabel_Draw(gdl, 1, 63, 144, 166, 0);
 
     if (gGameState == 0x48) {
         AudioOptions_Input();

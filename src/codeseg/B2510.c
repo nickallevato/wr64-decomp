@@ -7,7 +7,7 @@ extern TexEntry D_80226568[];
 extern TexEntry D_80226890[];
 extern TexEntry D_80226A48[];
 
-Gfx* func_801E3EE0(Gfx* gdl, s32 kind, s32 index, s32 x, s32 y, s32 arg5) {
+Gfx* TexLabel_Draw(Gfx* gdl, s32 kind, s32 index, s32 x, s32 y, s32 arg5) {
     s32 i;
     s32 height;
     s32 isBlock;

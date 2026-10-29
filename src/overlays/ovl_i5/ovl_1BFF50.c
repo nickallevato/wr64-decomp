@@ -215,15 +215,15 @@ Gfx* RaceResults_DrawTable(Gfx* gdl) {
     placeX = 0;
     gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     if (showPoints == 0) {
-        gdl = func_801E3EE0(gdl, 2, 20, D_i5_802C7A00 + 53, 28, 0);
-        gdl = func_801E3EE0(gdl, 1, 79, D_i5_802C7A00 + 24, 202, 0);
+        gdl = TexLabel_Draw(gdl, 2, 20, D_i5_802C7A00 + 53, 28, 0);
+        gdl = TexLabel_Draw(gdl, 1, 79, D_i5_802C7A00 + 24, 202, 0);
     } else {
-        gdl = func_801E3EE0(gdl, 2, 21, D_i5_802C7A00 + 41, 28, 0);
-        gdl = func_801E3EE0(gdl, 1, 6, D_i5_802C7A00 + 24, 202, 0);
+        gdl = TexLabel_Draw(gdl, 2, 21, D_i5_802C7A00 + 41, 28, 0);
+        gdl = TexLabel_Draw(gdl, 1, 6, D_i5_802C7A00 + 24, 202, 0);
     }
-    gdl = func_801E3EE0(gdl, 1, 31, D_i5_802C7B04 + 13, 55, 0);
-    gdl = func_801E3EE0(gdl, 1, 32, D_i5_802C7B04 + 109, 55, 0);
-    gdl = func_801E3EE0(gdl, 1, 58, D_i5_802C7B04 + 215, 55, 0);
+    gdl = TexLabel_Draw(gdl, 1, 31, D_i5_802C7B04 + 13, 55, 0);
+    gdl = TexLabel_Draw(gdl, 1, 32, D_i5_802C7B04 + 109, 55, 0);
+    gdl = TexLabel_Draw(gdl, 1, 58, D_i5_802C7B04 + 215, 55, 0);
 
     gdl = func_801E7E74(gdl, 0, 0, 0, 255);
     for (i = 0; i < 4; i++) {
@@ -331,7 +331,7 @@ Gfx* RaceResults_DrawTable(Gfx* gdl) {
             if (gRiderRaceState[D_801CE718[i]].finishState != 0) {
                 gdl =
                     Printer_SetMode(gdl, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-                gdl = func_801E3EE0(gdl, 0, 27, x + 92, 88 + i * 32, 0);
+                gdl = TexLabel_Draw(gdl, 0, 27, x + 92, 88 + i * 32, 0);
             } else {
                 gdl = Printer_PrintTime(gdl, 1, gRiderRaceState[D_801CE718[i]].raceTime, x + 92, 88 + i * 32, timeMode,
                                         0xFF, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -339,7 +339,7 @@ Gfx* RaceResults_DrawTable(Gfx* gdl) {
         } else {
             gdl =
                 Printer_SetMode(gdl, valueMode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-            gdl = func_801E3EE0(gdl, 0, 24, x + 92, 88 + i * 32, 0);
+            gdl = TexLabel_Draw(gdl, 0, 24, x + 92, 88 + i * 32, 0);
             if (gDifficulty == DIFFICULTY_NORMAL) {
                 start = 1;
             } else {
@@ -365,7 +365,7 @@ Gfx* RaceResults_DrawTable(Gfx* gdl) {
             mode = 4;
         }
         gdl = Printer_SetMode(gdl, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-        gdl = func_801E3EE0(gdl, 1, D_i5_802C7A18[D_801CE704], D_i5_802C7A00 + 160, 202, 0);
+        gdl = TexLabel_Draw(gdl, 1, D_i5_802C7A18[D_801CE704], D_i5_802C7A00 + 160, 202, 0);
     } else {
         if (D_801CE640 < 6) {
             mode = 0;

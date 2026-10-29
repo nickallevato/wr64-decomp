@@ -852,12 +852,12 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     }
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 0, 66, 22, 0);
-    gdl = func_801E3EE0(gdl, 4, 12, 87, 206, 0);
-    gdl = func_801E3EE0(gdl, 4, 13, 169, 206, 0);
-    gdl = func_801E3EE0(gdl, 1, D_i13_802C8D9C[D_i13_802C8D50].texture, D_i13_802C8DB4[D_i13_802C8D50] + 139, 82, 0);
-    gdl = func_801E3EE0(gdl, 0, 0, 67, 95, 0);
-    gdl = func_801E3EE0(gdl, 0, 1, 161, 95, 0);
+    gdl = TexLabel_Draw(gdl, 2, 0, 66, 22, 0);
+    gdl = TexLabel_Draw(gdl, 4, 12, 87, 206, 0);
+    gdl = TexLabel_Draw(gdl, 4, 13, 169, 206, 0);
+    gdl = TexLabel_Draw(gdl, 1, D_i13_802C8D9C[D_i13_802C8D50].texture, D_i13_802C8DB4[D_i13_802C8D50] + 139, 82, 0);
+    gdl = TexLabel_Draw(gdl, 0, 0, 67, 95, 0);
+    gdl = TexLabel_Draw(gdl, 0, 1, 161, 95, 0);
     tab = D_i13_802C8D9C;
     for (i = 0; i < 3; i++, tab++) {
         if (i == D_i13_802C8D50) {
@@ -866,7 +866,7 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, tab->texture, i * 89 + tab->x + 53, 51, 0);
+        gdl = TexLabel_Draw(gdl, 1, tab->texture, i * 89 + tab->x + 53, 51, 0);
     }
 
     if (drawRow1) {
@@ -878,9 +878,9 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
             mode2 = 6;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, 2, 68, 115, 0);
+        gdl = TexLabel_Draw(gdl, 1, 2, 68, 115, 0);
         gdl = Printer_SetMode(gdl, mode2, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, 64, 170, 115, 0);
+        gdl = TexLabel_Draw(gdl, 1, 64, 170, 115, 0);
     }
 
     if (drawRow2) {
@@ -896,9 +896,9 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
         mode = 7;
     }
     gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 1, 4, 76, y + 3, 0);
+    gdl = TexLabel_Draw(gdl, 1, 4, 76, y + 3, 0);
     gdl = Printer_SetMode(gdl, mode2, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 1, 5, 187, y + 3, 0);
+    gdl = TexLabel_Draw(gdl, 1, 5, 187, y + 3, 0);
 
     if (D_i13_802C8DC8 != 0) {
         gdl = func_801E7E74(gdl, 0, 0, 0, 255);
@@ -919,9 +919,9 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
             mode3 = 6;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, 38, 84, 150, 0);
+        gdl = TexLabel_Draw(gdl, 1, 38, 84, 150, 0);
         gdl = Printer_SetMode(gdl, mode3, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, 39, 192, 150, 0);
+        gdl = TexLabel_Draw(gdl, 1, 39, 192, 150, 0);
     }
 
     switch (D_i13_802C8D84) {
@@ -1070,11 +1070,11 @@ Gfx* SaveLoad_DrawMessage(Gfx* gdl, s32 arg1) {
             break;
 
         case 1:
-            gdl = func_801E3EE0(gdl, 3, 7, 72, 80, 2);
+            gdl = TexLabel_Draw(gdl, 3, 7, 72, 80, 2);
             break;
 
         case 3:
-            gdl = func_801E3EE0(gdl, 3, 9, 68, 80, 2);
+            gdl = TexLabel_Draw(gdl, 3, 9, 68, 80, 2);
             break;
 
         case 2:
@@ -1114,11 +1114,11 @@ Gfx* SaveLoad_DrawMessage(Gfx* gdl, s32 arg1) {
             break;
 
         case 7:
-            gdl = func_801E3EE0(gdl, 3, 15, 119, 80, 2);
+            gdl = TexLabel_Draw(gdl, 3, 15, 119, 80, 2);
             break;
 
         case 8:
-            gdl = func_801E3EE0(gdl, 3, 16, 120, 80, 2);
+            gdl = TexLabel_Draw(gdl, 3, 16, 120, 80, 2);
             break;
     }
     return gdl;

@@ -152,7 +152,7 @@ Gfx* PostRaceMenu_DrawMenu(Gfx* gdl) {
         } else {
             x = D_i14_802C61E8;
         }
-        gdl = func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
+        gdl = TexLabel_Draw(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
     }
 
     i = D_i14_802C60F0;
@@ -167,7 +167,7 @@ Gfx* PostRaceMenu_DrawMenu(Gfx* gdl) {
         item = &D_i14_802C60F4[i];
     }
     gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    return func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
+    return TexLabel_Draw(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
 }
 
 void PostRaceMenu_Leave(s32 arg0) {

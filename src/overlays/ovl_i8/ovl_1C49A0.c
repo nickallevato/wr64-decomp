@@ -344,7 +344,7 @@ Gfx* ChangeNames_DrawScreen(Gfx* gdl) {
     gSPTextureRectangle(gdl++, (D_i8_802C74F0[D_i8_802C7040] + 8) << 2, 48 << 2,
                         (D_i8_802C74F0[D_i8_802C7040] + 71) << 2, 88 << 2, 0, 0, 0, 1 << 10, 1 << 10);
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 6, 67, 24, 0);
+    gdl = TexLabel_Draw(gdl, 2, 6, 67, 24, 0);
     gdl = Printer_DrawString(gdl, 1, gPlayerNames[D_i8_802C74F8[D_i8_802C7040]].unk_0, 180, 203);
     gdl = Printer_DrawString(gdl, 2, D_i8_802C7548, 31, 98);
 
@@ -366,7 +366,7 @@ Gfx* ChangeNames_DrawScreen(Gfx* gdl) {
             y = key->unk6 + (i / 7) * 15 + 116;
         }
         if (key->unk0 & 4) {
-            gdl = func_801E3EE0(gdl, 0, key->unk18, x, y, 0);
+            gdl = TexLabel_Draw(gdl, 0, key->unk18, x, y, 0);
         } else {
             gdl = Printer_DrawString(gdl, key->unk2, key->unkC, x, y);
         }
@@ -384,7 +384,7 @@ Gfx* ChangeNames_DrawScreen(Gfx* gdl) {
             y = key->unk6 + (sel / 7) * 15 + 116;
         }
         if (key->unk0 & 4) {
-            gdl = func_801E3EE0(gdl, 0, key->unk18, x, y, 0);
+            gdl = TexLabel_Draw(gdl, 0, key->unk18, x, y, 0);
         } else {
             gdl = Printer_DrawString(gdl, key->unk2, key->unkC, x, y);
         }

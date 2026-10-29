@@ -165,7 +165,7 @@ Gfx* Race_Draw(Gfx* dList) {
 
     dList = func_8009328C(dList);
     if (GAME_NOT_PAUSED) {
-        dList = func_801E5554(dList);
+        dList = Popup_DrawAll(dList);
     }
     if (gPlayers == TWO_PLAYERS) {
         dList = func_i1_802C6B38(dList);
@@ -578,7 +578,7 @@ Gfx* func_i1_802C6BD8(Gfx* dList) {
                 if (GAME_NOT_PAUSED) {
                     D_i1_802C96A8.unk_C[i] -= 2;
                 }
-                dList = func_801E3EE0(dList, 3, D_i1_802C96A8.unk_18[i], D_i1_802C96A8.unk_C[i], 200, 0);
+                dList = TexLabel_Draw(dList, 3, D_i1_802C96A8.unk_18[i], D_i1_802C96A8.unk_C[i], 200, 0);
             }
         }
         if (scroll->unk_C[0] < -scroll->unk_8) {
@@ -1072,12 +1072,12 @@ Gfx* RaceStandings_DrawTable(Gfx* dList) {
     placeX = 0;
     if (showPoints == 0) {
         dList = Printer_SetMode(dList, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-        dList = func_801E3EE0(dList, 2, 20, D_i1_802C9524 + 53, 28, 0);
-        dList = func_801E3EE0(dList, 1, 79, D_i1_802C9524 + 24, 202, 0);
+        dList = TexLabel_Draw(dList, 2, 20, D_i1_802C9524 + 53, 28, 0);
+        dList = TexLabel_Draw(dList, 1, 79, D_i1_802C9524 + 24, 202, 0);
     } else {
         dList = Printer_SetMode(dList, 10, D_i1_802C952B, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-        dList = func_801E3EE0(dList, 2, 21, 61, 28, 0);
-        dList = func_801E3EE0(dList, 1, 6, 44, 202, 0);
+        dList = TexLabel_Draw(dList, 2, 21, 61, 28, 0);
+        dList = TexLabel_Draw(dList, 1, 6, 44, 202, 0);
     }
 
     if (showPoints == 0) {
@@ -1085,9 +1085,9 @@ Gfx* RaceStandings_DrawTable(Gfx* dList) {
     } else {
         headerX = 20;
     }
-    dList = func_801E3EE0(dList, 1, 31, headerX + 13, 55, 0);
-    dList = func_801E3EE0(dList, 1, 32, headerX + 109, 55, 0);
-    dList = func_801E3EE0(dList, 1, 58, headerX + 215, 55, 0);
+    dList = TexLabel_Draw(dList, 1, 31, headerX + 13, 55, 0);
+    dList = TexLabel_Draw(dList, 1, 32, headerX + 109, 55, 0);
+    dList = TexLabel_Draw(dList, 1, 58, headerX + 215, 55, 0);
 
     dList = func_801E7E74(dList, 0, 0, 0, 255);
     for (i = 0; i < 4; i++) {
@@ -1197,14 +1197,14 @@ Gfx* RaceStandings_DrawTable(Gfx* dList) {
             if (gRiderRaceState[D_801CE718[i]].finishState != 0) {
                 dList = Printer_SetMode(dList, mode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                         0xFF);
-                dList = func_801E3EE0(dList, 0, 27, x + 92, 88 + i * 32, 0);
+                dList = TexLabel_Draw(dList, 0, 27, x + 92, 88 + i * 32, 0);
             } else {
                 dList = Printer_PrintTime(dList, 1, gRiderRaceState[D_801CE718[i]].raceTime, x + 92, 88 + i * 32, timeMode, 0xFF,
                                           0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
             }
         } else {
             dList = Printer_SetMode(dList, valueMode, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-            dList = func_801E3EE0(dList, 0, 24, x + 92, 88 + i * 32, 0);
+            dList = TexLabel_Draw(dList, 0, 24, x + 92, 88 + i * 32, 0);
             if (gDifficulty == DIFFICULTY_NORMAL) {
                 start = 1;
             } else {
@@ -1225,7 +1225,7 @@ Gfx* RaceStandings_DrawTable(Gfx* dList) {
 
     if (showPoints == 0) {
         dList = Printer_SetMode(dList, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-        dList = func_801E3EE0(dList, 1, D_i1_802C9544[D_801CE704], D_i1_802C9524 + 160, 202, 0);
+        dList = TexLabel_Draw(dList, 1, D_i1_802C9544[D_801CE704], D_i1_802C9524 + 160, 202, 0);
     } else {
         if (D_i1_802C9558 == 0) {
             mode = 10;

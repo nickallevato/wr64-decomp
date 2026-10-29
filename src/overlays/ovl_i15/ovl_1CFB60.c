@@ -292,10 +292,10 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                 if (D_i15_802C6E7C == thing->unk4) {
                     race = 8;
                 }
-                gdl = func_801E3EE0(gdl, 1, D_i15_802C6D9C[race], thing->unk8 + 24, thing->unkC + 4, 1);
+                gdl = TexLabel_Draw(gdl, 1, D_i15_802C6D9C[race], thing->unk8 + 24, thing->unkC + 4, 1);
                 idx = D_i15_802C6F20[thing->unk4];
                 place = &D_i15_802C6DC0[idx];
-                gdl = func_801E3EE0(gdl, 1, *place, thing->unk8 + 39, thing->unkC + 16, 0);
+                gdl = TexLabel_Draw(gdl, 1, *place, thing->unk8 + 39, thing->unkC + 16, 0);
                 // The last place texture (index 4) is a separate symbol in the asm.
                 if (place != &D_i15_802C6DD0) {
                     gdl = Printer_DrawTime(gdl, 2, D_801CB3D0[thing->unk4], thing->unk8 + 147, thing->unkC + 16);
@@ -303,11 +303,11 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                     gdl = Printer_DrawString(gdl, 2, "-'--@---", thing->unk8 + 147, thing->unkC + 16);
                 }
                 course = D_800EAC14[gDifficulty][thing->unk4];
-                gdl = func_801E3EE0(gdl, 1, D_800DAA10[course], D_i15_802C6DFC[course] + thing->unk8 + 137,
+                gdl = TexLabel_Draw(gdl, 1, D_800DAA10[course], D_i15_802C6DFC[course] + thing->unk8 + 137,
                                     thing->unkC + 4, 0);
                 if (D_801C2660[course] == 1) {
                     gdl = Printer_SetMode(gdl, 4, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-                    gdl = func_801E3EE0(gdl, 1, 98, thing->unk8 + 109, thing->unkC + 16, 2);
+                    gdl = TexLabel_Draw(gdl, 1, 98, thing->unk8 + 109, thing->unkC + 16, 2);
                 }
                 break;
 
@@ -337,10 +337,10 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                     }
                 }
                 gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-                gdl = func_801E3EE0(gdl, 2, 38, thing->unk8 + 12, thing->unkC + 3, 0);
-                gdl = func_801E3EE0(gdl, 1, 31, thing->unk8 + 5, thing->unkC + 30, 0);
-                gdl = func_801E3EE0(gdl, 1, 32, thing->unk8 + 101, thing->unkC + 30, 0);
-                gdl = func_801E3EE0(gdl, 1, 58, thing->unk8 + 207, thing->unkC + 30, 0);
+                gdl = TexLabel_Draw(gdl, 2, 38, thing->unk8 + 12, thing->unkC + 3, 0);
+                gdl = TexLabel_Draw(gdl, 1, 31, thing->unk8 + 5, thing->unkC + 30, 0);
+                gdl = TexLabel_Draw(gdl, 1, 32, thing->unk8 + 101, thing->unkC + 30, 0);
+                gdl = TexLabel_Draw(gdl, 1, 58, thing->unk8 + 207, thing->unkC + 30, 0);
                 if (D_800DAB68 == 0) {
                     if (gDifficulty == DIFFICULTY_EXPERT) {
                         if (gRiderRaceState[gPlayer1Rider].unk338 == 0) {
@@ -354,7 +354,7 @@ Gfx* func_i15_802C602C(Gfx* gdl) {
                     if (show) {
                         gdl = Printer_SetMode(gdl, 10, D_i15_802C6DD4, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
                                               255);
-                        gdl = func_801E3EE0(gdl, 1, 99, thing->unk8 + 36, thing->unkC + 177, 0);
+                        gdl = TexLabel_Draw(gdl, 1, 99, thing->unk8 + 36, thing->unkC + 177, 0);
                     }
                 }
                 gdl = func_801E7E74(gdl, 0, 0, 0, 255);

@@ -246,13 +246,13 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
     }
 
     dList = Printer_SetMode(dList, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    dList = func_801E3EE0(dList, 2, 4, 64, 27, 0);
+    dList = TexLabel_Draw(dList, 2, 4, 64, 27, 0);
     if (D_801CE608.gameMode == 11) {
-        dList = func_801E3EE0(dList, 0, 30, 191, 186, 0);
+        dList = TexLabel_Draw(dList, 0, 30, 191, 186, 0);
         dList = func_80094200(dList, 2, gStuntRecords[D_800DAAD8[D_800DA9D0]][0].unk0, 191, 200);
     } else {
-        dList = func_801E3EE0(dList, 0, 14, 195, 163, 0);
-        dList = func_801E3EE0(dList, 0, 13, 197, 190, 0);
+        dList = TexLabel_Draw(dList, 0, 14, 195, 163, 0);
+        dList = TexLabel_Draw(dList, 0, 13, 197, 190, 0);
         if ((D_i4_802C754C == 3) && (D_i4_802C7548 != 0)) {
             dList = Printer_DrawTime(dList, 1, D_801C23B0[D_800DAAD8[D_800DA9D0]].unk0, 195, 176);
             dList = Printer_DrawString(dList, 1, "-'--@---", 195, 203);
@@ -271,7 +271,7 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
             mode = 7;
         }
         dList = Printer_SetMode(dList, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        dList = func_801E3EE0(dList, 1, D_800DAA10[D_800DAAD8[i]], D_i4_802C7660[D_800DAAD8[i]] + 48, i * 18 + 56, 0);
+        dList = TexLabel_Draw(dList, 1, D_800DAA10[D_800DAAD8[i]], D_i4_802C7660[D_800DAAD8[i]] + 48, i * 18 + 56, 0);
     }
 
     if (D_i4_802C7548 != 0) {
@@ -287,7 +287,7 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
             }
             y = 47;
             dList = Printer_SetMode(dList, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-            dList = func_801E3EE0(dList, 0, 32, 195, 128, 0);
+            dList = TexLabel_Draw(dList, 0, 32, 195, 128, 0);
             for (i = 0, item = D_i4_802C7650; i < 2; i++, item++) {
                 if (D_i4_802C7554 != 0) {
                     if (i == D_800DAA04) {
@@ -299,7 +299,7 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
                     mode = 0;
                 }
                 dList = Printer_SetMode(dList, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-                dList = func_801E3EE0(dList, 1, item->texture, item->x + 193, 143 - i, 0); // y 143 - i as in the asm
+                dList = TexLabel_Draw(dList, 1, item->texture, item->x + 193, 143 - i, 0); // y 143 - i as in the asm
             }
         }
         for (i = 0, item = D_i4_802C7630; i < D_i4_802C76D0; i++, item++) {
@@ -317,7 +317,7 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
                 mode = 0;
             }
             dList = Printer_SetMode(dList, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-            dList = func_801E3EE0(dList, 1, item->texture, item->x + 194, y + yOffset + 20 + i * 15, 0);
+            dList = TexLabel_Draw(dList, 1, item->texture, item->x + 194, y + yOffset + 20 + i * 15, 0);
         }
     }
     return dList;

@@ -48,22 +48,22 @@ Gfx* func_1C3D00_802C58DC(Gfx* gdl) {
         gdl = func_80094338(gdl, 0, 73, i * 18 + 140, 174, 16);
     }
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 18, 70, 42, 0);
+    gdl = TexLabel_Draw(gdl, 2, 18, 70, 42, 0);
     gdl = Printer_DrawString(gdl, 2, "1P", 99, 75);
     gdl = Printer_DrawString(gdl, 2, "2P", 202, 75);
     gdl = Printer_DrawString(gdl, 2, "-", 153, 95);
-    gdl = func_801E3EE0(gdl, 0, 21, 144, 77, 0);
+    gdl = TexLabel_Draw(gdl, 0, 21, 144, 77, 0);
     gdl = Printer_DrawNumber(gdl, 0, D_801CB3F0[0], 99, 92);
     sprintf(buf, "%d", D_801CB3F0[1]);
     gdl = Printer_DrawString(gdl, 0, buf, 193, 92);
     for (i = 0, item = D_1C3D00_802C5EB0; i < 4; i++, item++) {
         if (i != D_802C5EF0) {
-            gdl = func_801E3EE0(gdl, 1, item->texture, item->x + 138, i * 18 + 143, 0);
+            gdl = TexLabel_Draw(gdl, 1, item->texture, item->x + 138, i * 18 + 143, 0);
         }
     }
     gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     item = &D_1C3D00_802C5EB0[D_802C5EF0];
-    return func_801E3EE0(gdl, 1, item->texture, item->x + 138, D_802C5EF0 * 18 + 143, 0);
+    return TexLabel_Draw(gdl, 1, item->texture, item->x + 138, D_802C5EF0 * 18 + 143, 0);
 }
 
 void func_1C3D00_802C5C4C(s32 arg0) {

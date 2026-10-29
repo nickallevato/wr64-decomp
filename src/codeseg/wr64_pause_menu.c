@@ -262,11 +262,11 @@ Gfx* PauseMenu_Update(Gfx* gdl) {
 
             pad2 = i == gCurrentPauseMenuOption ? 6 : 0;
 
-            gdl = func_801E3EE0(
+            gdl = TexLabel_Draw(
                 Printer_SetMode(gdl, pad2, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF), 1,
                 option->unk4, option->unk2 + 0x80, yOffset[0] + (i * 15) + 0x1E, 0);
         }
-        gdl = func_801E5554(gdl);
+        gdl = Popup_DrawAll(gdl);
     }
     return gdl;
 }

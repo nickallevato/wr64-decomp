@@ -472,7 +472,7 @@ typedef struct TexEntry {
     /* 0x4 */ u32 width;
 } TexEntry; /* size = 0x8 */
 
-// A label drawn with func_801E3EE0: an x offset and a texture index (menu rows, tabs and titles of
+// A label drawn with TexLabel_Draw: an x offset and a texture index (menu rows, tabs and titles of
 // the overlay screens: ovl_i3, i4, i7, i10, i11, i13, i14).
 typedef struct TexLabel {
     /* 0x0 */ s16 x;
@@ -1327,7 +1327,7 @@ typedef struct UnkStruct_menu_buffer_1_s {
     /* 0x00 */ u16 type;                            /* 0 free, 1 and 2 cards, 3 spinning cursor, 4 eight-strip card */
     /* 0x02 */ u16 state;                           /* 0 sliding in, 1 settled (2 for type 4) */
     /* 0x04 */ s16 index;                           /* own slot number; picks the card's matrix */
-    /* 0x06 */ u16 active;                          /* set by Popup_UpdateAll each frame; func_801E5554 draws only these */
+    /* 0x06 */ u16 active;                          /* set by Popup_UpdateAll each frame; Popup_DrawAll draws only these */
     /* 0x08 */ s32 x;
     /* 0x0C */ s32 y;
     /* 0x10 */ char pad10[4];

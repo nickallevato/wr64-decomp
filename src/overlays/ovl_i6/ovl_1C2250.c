@@ -178,15 +178,15 @@ Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
     }
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, D_800DAA34[gCourseID], D_i6_802C6C8C[gCourseID] + D_i6_802C6D34 + 56, 33, 0);
-    gdl = func_801E3EE0(gdl, 1, 31, D_i6_802C6D38 + 23, 71, 0);
-    gdl = func_801E3EE0(gdl, 1, 17, D_i6_802C6D38 + 75, 71, 0);
-    gdl = func_801E3EE0(gdl, 1, 32, D_i6_802C6D38 + 135, 71, 0);
-    gdl = func_801E3EE0(gdl, 1, 3, D_i6_802C6D38 + 218, 71, 0);
+    gdl = TexLabel_Draw(gdl, 2, D_800DAA34[gCourseID], D_i6_802C6C8C[gCourseID] + D_i6_802C6D34 + 56, 33, 0);
+    gdl = TexLabel_Draw(gdl, 1, 31, D_i6_802C6D38 + 23, 71, 0);
+    gdl = TexLabel_Draw(gdl, 1, 17, D_i6_802C6D38 + 75, 71, 0);
+    gdl = TexLabel_Draw(gdl, 1, 32, D_i6_802C6D38 + 135, 71, 0);
+    gdl = TexLabel_Draw(gdl, 1, 3, D_i6_802C6D38 + 218, 71, 0);
     if (D_801C2650 == 0) {
-        gdl = func_801E3EE0(gdl, 0, 25, D_i6_802C6D38 + 18, 148, 0);
+        gdl = TexLabel_Draw(gdl, 0, 25, D_i6_802C6D38 + 18, 148, 0);
     }
-    gdl = func_801E3EE0(gdl, 0, 13, lapX + 18, 184, 0);
+    gdl = TexLabel_Draw(gdl, 0, 13, lapX + 18, 184, 0);
 
     for (i = 0; i < 3; i++) {
         if (D_800DAB68 != 0) {
@@ -241,7 +241,7 @@ Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
                 gdl = Printer_DrawString(gdl, 2, "---", x + 135, 92 + i * 18);
                 gdl = Printer_DrawString(gdl, 2, "-'--@---", x + 198, 92 + i * 18);
             }
-            gdl = func_801E3EE0(gdl, 0, 36, x + 75, 93 + i * 18, 0);
+            gdl = TexLabel_Draw(gdl, 0, 36, x + 75, 93 + i * 18, 0);
         } else {
             if (rec->unk8 == 0) {
                 sprintf(buf, "%s", "N");
@@ -251,7 +251,7 @@ Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
             gdl = Printer_DrawString(gdl, 1, buf, x + 59, 92 + i * 18);
             gdl = Printer_DrawString(gdl, 2, rec->unk10, x + 135, 92 + i * 18);
             gdl = Printer_DrawTime(gdl, 2, rec->unk0, x + 198, 92 + i * 18);
-            gdl = func_801E3EE0(gdl, 0, D_i6_802C6C80[rec->unkC], x + 75, 93 + i * 18, 0);
+            gdl = TexLabel_Draw(gdl, 0, D_i6_802C6C80[rec->unkC], x + 75, 93 + i * 18, 0);
         }
     }
 
@@ -265,9 +265,9 @@ Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
         gdl = Printer_DrawString(gdl, 1, buf, D_i6_802C6D38 + 59, 160);
         gdl = Printer_DrawTime(gdl, 2, D_801C2948[gPlayer1Rider].lapTimes[5], D_i6_802C6D38 + 198, 160);
         if (D_800DAB68 != 0) {
-            gdl = func_801E3EE0(gdl, 0, 36, D_i6_802C6D38 + 75, 160, 0);
+            gdl = TexLabel_Draw(gdl, 0, 36, D_i6_802C6D38 + 75, 160, 0);
         } else {
-            gdl = func_801E3EE0(gdl, 0, D_i6_802C6C80[gDifficulty], D_i6_802C6D38 + 75, 161, 0);
+            gdl = TexLabel_Draw(gdl, 0, D_i6_802C6C80[gDifficulty], D_i6_802C6D38 + 75, 161, 0);
         }
     }
 
@@ -275,7 +275,7 @@ Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
         gdl = Printer_SetMode(gdl, 7, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
         gdl = Printer_DrawString(gdl, 2, "---", lapX + 135, 196);
         gdl = Printer_DrawString(gdl, 2, "-'--@---", lapX + 198, 196);
-        gdl = func_801E3EE0(gdl, 0, 36, lapX + 75, 197, 0);
+        gdl = TexLabel_Draw(gdl, 0, 36, lapX + 75, 197, 0);
     } else {
         if (D_801C2654 != 0) {
             gdl = Printer_SetMode(gdl, 4, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
@@ -291,7 +291,7 @@ Gfx* TimeTrialsResults_DrawPanel(Gfx* gdl) {
         gdl = Printer_DrawString(gdl, 1, buf, lapX + 59, 196);
         gdl = Printer_DrawString(gdl, 2, rec->unk10, lapX + 135, 196);
         gdl = Printer_DrawTime(gdl, 2, rec->unk0, lapX + 198, 196);
-        gdl = func_801E3EE0(gdl, 0, D_i6_802C6C80[rec->unkC], lapX + 75, 197, 0);
+        gdl = TexLabel_Draw(gdl, 0, D_i6_802C6C80[rec->unkC], lapX + 75, 197, 0);
     }
     return gdl;
 }

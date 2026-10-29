@@ -101,7 +101,7 @@ Gfx* Draw_WaterEffects(Gfx*);
 Gfx* CourseSelect_DrawScreen(Gfx*);
 Gfx* func_800949B8(Gfx*, int courseId);
 void func_801E355C(void);
-Gfx* func_801E3698(Gfx*);
+Gfx* StuntRecords_Draw(Gfx*);
 Gfx* func_801E34F8(Gfx* gdl);
 void Save_PackOptions(void);
 void Popup_UpdateAll(void);
@@ -166,7 +166,7 @@ Gfx* func_80093C44(Gfx*);
 Gfx* func_i10_802C6200(Gfx*);
 Gfx* func_80094200(Gfx*, s32, s32, s32, s32);
 Gfx* func_80094338(Gfx*, s32, s32, s32, s32, s32);
-Gfx* func_801E3EE0(Gfx*, s32, s32, s32, s32, s32);
+Gfx* TexLabel_Draw(Gfx*, s32, s32, s32, s32, s32);
 Gfx* Printer_DrawQuad(Gfx*, u32, u32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, f32);
 Gfx* Printer_PrintTime(Gfx*, s32, s32, s32, s32, s32, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8);
 Gfx* Printer_DrawTime(Gfx*, s32, s32, s32, s32);
@@ -248,7 +248,7 @@ void GameState_EnterCourseSelect(void);
 void Water_DampPoints(void*);
 s32 SysUtils_Round(f32 x);
 void func_801EE97C(Mtx*, f32, f32, f32); 
-Gfx* func_801E5554(Gfx*);
+Gfx* Popup_DrawAll(Gfx*);
 
 // audio_general.c
 void func_800C3DE0(void);
