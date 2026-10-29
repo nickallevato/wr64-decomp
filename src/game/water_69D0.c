@@ -85,11 +85,10 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 12816 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
+// Score 12708 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
 // registers. Left: three locals short between hiz and upx, so most stack slots are off by a word, and float registers
 // differ (k stays in $f24 here; the original spills k to sp+0xE4 and keeps 0.866f in $f24)
 void func_8004C1D0(s32 view, Vtx* vtx) {
-    camera_unk_1* cam;
     s32 angle;
     f32 k;
     s32 i;
@@ -104,6 +103,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 hix;
     f32 hiy;
     f32 hiz;
+    camera_unk_1* cam;
     f32 x;
     f32 y;
     f32 z;
