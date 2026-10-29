@@ -1381,11 +1381,14 @@ void func_80050204(s32 view, Vtx* arena) {
  */
 
 #ifdef NON_MATCHING
-// Score 3440 of 26100: same frame (0xC0) and five saved FP registers; the up vector is read from cam (not copied to
-// locals, which lets IDO sink the ray sums into the branches) and cx/cy/cz serve both rays. Left: h and the up vector
-// take each other's saved registers, and the locals above h and around the up products sit a few slots off.
+// Score 618 of 26100: same instructions, frame (0xC0) and five saved FP registers; the up vector is read from cam
+// (not copied to locals, which lets IDO sink the ray sums into the branches) and cx/cy/cz serve both rays. cam->unk98
+// is read once into c98 inside the block (the original loads it there and spills it), and the end point goes through
+// t rather than dist. Left: the saved FP registers are rotated (the original has h and dist in $f20, the up vector in
+// $f22-$f26 and s in $f28; here the up vector takes $f20-$f24 and h $f26), and a few stack slots sit 4-0x10 off.
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     s32 angle;
+    s32 pad[2]; // stack pad: the frame is 0xC0 as in the original
     f32 d;
     f32 h;
     f32 lox;
@@ -1405,6 +1408,7 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     f32 s;
     f32 dist;
     f32 t;
+    f32 c98;
 
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
@@ -1428,9 +1432,10 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     do { // FAKE: a block boundary with no code; it moves the register allocation towards the original
         s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
         dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
+        c98 = cam->unk98;
     } while (0);
 
-    e = cam->unk98 - h;
+    e = c98 - h;
     cx = (cam->upX * e) + upx;
     cy = (cam->upY * e) + upy;
     cz = (cam->upZ * e) + upz;
@@ -1446,7 +1451,7 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
             dist = t;
         }
     }
-    e = cam->unk98 + h;
+    e = c98 + h;
     cx = (cam->upX * e) + upx;
     cy = (cam->upY * e) + upy;
     cz = (cam->upZ * e) + upz;
@@ -1462,9 +1467,9 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
             dist = t;
         }
     }
-    dist = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
-    *x = cam->eyeX + (dist * cam->unkF0);
-    *z = cam->eyeZ + (dist * cam->unkF4);
+    t = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
+    *x = cam->eyeX + (t * cam->unkF0);
+    *z = cam->eyeZ + (t * cam->unkF4);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")
