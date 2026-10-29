@@ -977,9 +977,10 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 2396 of 134600: the original stores D_801CE740[0..3].unk2 in case 2 through lui/%lo of each element (here
+// Score 2191 of 134600: the original stores D_801CE740[0..3].unk2 in case 2 through lui/%lo of each element (here
 // through one base register), schedules the first loop's pointer step later, spills arg0 at 0x1C (here 0x18), and
-// colours a few temporaries differently. Reading alts[i] through the pointer ap gives the display-list loop's
+// colours a few temporaries differently (the `1` loaded for the alts stores in cases 0, 2 and 4). The chained
+// D_801CE760 store shares one -1 as in the original. Reading alts[i] through the pointer ap gives the display-list loop's
 // reload after each store, and alts declared after dl puts it at 0x40 as in the original.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
@@ -999,8 +1000,7 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     for (i = 0; i < 8; i++) {
         D_801CE740[i].unk2 = 1;
     }
-    D_801CE760[1] = -1;
-    D_801CE760[0] = -1;
+    D_801CE760[0] = D_801CE760[1] = -1;
     D_801CE73C = arg0;
     switch (D_801CE73C) {
         case 0:
