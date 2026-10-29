@@ -2713,6 +2713,7 @@ void func_801FAEB8(Gfx** gdlp) {
     s32 y;
     s32 w;
     f32 scale;
+    s32 next;
 
     gdl = *gdlp;
     for (i = 0; i < gPlayers; i++) {
@@ -2732,13 +2733,13 @@ void func_801FAEB8(Gfx** gdlp) {
             f = (3 - D_80228B70[i]) / 3.0f;
             g = 1.0f - f;
             step = D_80228B68[i];
-            r0 = D_80227744[step][0] * f + D_80227744[step + 1][0] * g;
-            scale = f; // FAKE: found by the permuter; the colour terms after r0 use the copy
-            g0 = D_80227744[step][1] * scale + D_80227744[step + 1][1] * g;
-            b0 = D_80227744[step][2] * scale + D_80227744[step + 1][2] * g;
-            r1 = D_80227754[step][0] * scale + D_80227754[step + 1][0] * g;
-            g1 = D_80227754[step][1] * scale + D_80227754[step + 1][1] * g;
-            b1 = D_80227754[step][2] * scale + D_80227754[step + 1][2] * g;
+            next = step + 1;
+            r0 = D_80227744[step][0] * f + D_80227744[next][0] * g;
+            g0 = D_80227744[step][1] * f + D_80227744[next][1] * g;
+            b0 = D_80227744[step][2] * f + D_80227744[next][2] * g;
+            r1 = D_80227754[step][0] * f + D_80227754[next][0] * g;
+            g1 = D_80227754[step][1] * f + D_80227754[next][1] * g;
+            b1 = D_80227754[step][2] * f + D_80227754[next][2] * g;
             D_80228B70[i]++;
             if (D_80228B70[i] >= 3) {
                 D_80228B68[i]++;
