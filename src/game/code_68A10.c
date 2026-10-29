@@ -1440,10 +1440,8 @@ void func_801EDBD4(f32, f32, f32, f32*, f32*, f32*);
 void func_800AFBD0(s32);
 void func_800B08F8(s32);
 
-#ifdef NON_MATCHING
-// Score 165 of 36000: D_801D796C and D_801D7970 are always the cameras of D_80223930 and D_80223934; only
-// D_801D7968 depends on the rider. Left: two saved registers swapped, &D_801D7968 in s2 here (s3 in the original)
-// and D_801D7984, D_801D79A8 and D_800E6D60 in s3 (s2).
+// D_801D796C and D_801D7970 are always the cameras of D_80223930 and D_80223934; only D_801D7968 depends on the
+// rider.
 void func_800B2ABC(void) {
     s32 i;
     UnkStruct_801D0798* e;
@@ -1485,10 +1483,10 @@ void func_800B2ABC(void) {
     }
     for (i = 0, e = D_801D0798; i < D_801D0790; i++, e++) {
         D_800E6D60 = e;
-        D_800E6D68 = e->unk0;
-        D_800E6D70 = e->unk1000;
-        D_800E6D78 = e->unk1A00;
-        D_800E6D80 = e->unk1AA0;
+        D_800E6D68 = D_800E6D60->unk0;
+        D_800E6D70 = D_800E6D60->unk1000;
+        D_800E6D78 = D_800E6D60->unk1A00;
+        D_800E6D80 = D_800E6D60->unk1AA0;
         func_800AE210(i);
         if ((gPlayers == ONE_PLAYER) || ((gPlayers == TWO_PLAYERS) && (i != gPlayer2Rider))) {
             D_801D7968 = &gCameraPerspective[D_80223930];
@@ -1510,9 +1508,6 @@ void func_800B2ABC(void) {
     }
     func_800AF51C();
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B2ABC.s")
-#endif
 
 extern Gfx* D_801AE94C;
 extern u8 D_1047458[];
