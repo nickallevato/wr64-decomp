@@ -651,8 +651,9 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 13057 of 45800.
-// Register allocation differs: the original keeps center on the stack and gSinTable and D_80228190 in s7/fp.
+// Score 12642 of 45800: the two SysUtils_Rand calls now come before sqrtf, as in the original. Left: register
+// allocation; the original keeps center on the stack, gSinTable and D_80228190 in s7/fp, and one local (in s4) for the
+// step index, frame - 30 and the loop counter.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Payload1* center;
     s32 i;
@@ -697,7 +698,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                 ((f32*) D_80228120)[i] = 17.0f;
             } else {
                 ((f32*) D_80228120)[i] =
-                    15.0f + (f32) (SysUtils_Rand() & 3) + sqrtf(g) * (f32) ((SysUtils_Rand() & 3) + 1);
+                    15.0f + (f32) (SysUtils_Rand() & 3) + (f32) ((SysUtils_Rand() & 3) + 1) * sqrtf(g);
             }
         }
     } else if (t >= 0) {

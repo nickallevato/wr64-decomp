@@ -161,7 +161,10 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 10726 of 40500: the original keeps several globals' addresses in registers (sw zero,0(reg)) and stores before incrementing in the copy loop; frame 0x40, not 0x28.
+// Score 8141 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// addresses in registers as in the original. Left: the original stores before incrementing in the Vtx copy loop and
+// rebuilds the 0xB240.. offsets inside it, keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and
+// B50/B54 at the top also go through registers there.
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -259,14 +262,8 @@ void func_801EED70(void) {
     } else {
         gStartLightsOffset = gStartLightsOffsetMax;
     }
-    gHudColorFrame = 0;
-    gHudMarkerColorFrame = 0;
-    gHudMarkerColorStep = 0;
-    gHudColorStep = 0;
-    D_80228B80 = 0;
-    D_80228B7C = 0;
-    D_80228B78 = 0;
-    D_80228A98 = 0;
+    gHudColorStep = gHudMarkerColorStep = gHudMarkerColorFrame = gHudColorFrame = 0;
+    D_80228A98 = D_80228B78 = D_80228B7C = D_80228B80 = 0;
     for (i = 0; i < 2; i++) {
         D_80228B70[i] = 0;
         D_80228B68[i] = 0;
@@ -346,8 +343,10 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 11233 of 69300: &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not
-// 0xB8, and the saved registers shift; the rest differs in register allocation.
+// Score 10063 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows. Left:
+// &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not 0xB8, and the
+// saved registers shift; and IDO folds `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps
+// the sub.s and compares with 0.0f.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -398,12 +397,16 @@ void func_801EF504(void) {
             node = &D_801AEE20[rider->unkC];
         } else if ((rider->unkC == rider->nearestRecord) && (rider->lapCount == rider->unk320)) {
             node = &D_801AEE20[rider->unkC];
-            if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > 0.0f) {
+            dx = p->unk44.x - node->unk0;
+            dz = p->unk44.z - node->unk8;
+            if (dx * node->unk70 + dz * node->unk74 > 0.0f) {
                 node = &D_801AEE20[node->unkA0];
             }
         } else {
             node = &D_801AEE20[rider->nearestRecord];
-            if ((p->unk44.x - node->unk0) * node->unk70 + (p->unk44.z - node->unk8) * node->unk74 > -256.0f) {
+            dx = p->unk44.x - node->unk0;
+            dz = p->unk44.z - node->unk8;
+            if (dx * node->unk70 + dz * node->unk74 > -256.0f) {
                 node = &D_801AEE20[node->unkA0];
             }
         }
@@ -803,9 +806,6 @@ void Hud_DrawStartLights(Gfx** gdlp) {
     *gdlp = gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 4701 of 39800: the hoisted float constants match; the original loads gPlayers into a0 (its address in a3) and keeps
-// &D_80228C28 in a1 for one store, so most temps here are one register higher, and a few blocks schedule differently.
 extern s32 gHudMarkerColorFrame;
 extern s32 gHudMarkerColorStep;
 
@@ -817,6 +817,7 @@ void func_801F0E7C(void) {
     UnkStruct_80228C30_sub* e;
     s32 tx;
     s32 ty;
+    s32 pad; // stack pad
 
     for (i = 0; i < gPlayers; i++) {
         if (i == 0) {
@@ -826,14 +827,14 @@ void func_801F0E7C(void) {
         }
         if ((rider->unk28 != 0) && (((m = &gHudMarkers[i])->unk0[0].unk18 == 0) || (rider->unk13C == 0))) {
             gHudMarkerColorFrame = 0;
-            gHudMarkerColorStep = 0;
+            gHudMarkerColorStep = gHudMarkerColorFrame; // reading it back keeps its address in a register
             if ((rider->unk28 == 1) && ((rider->unk314 != 0) || (m->unk0[1].unk18 == 3))) {
                 e = &m->unk0[2];
                 if (m->unk0[1].unk18 == 3) {
                     m->unk0[1].unk18 = 0;
                     rider->power = 1;
                 }
-                m->unk0[2].unk18 = 2;
+                gHudMarkers[i].unk0[2].unk18 = 2;
                 if (gPlayers == ONE_PLAYER) {
                     e->unk10 = 1.0f;
                 } else {
@@ -842,6 +843,7 @@ void func_801F0E7C(void) {
                 e->unk8 = e->unk10 * 64.0f;
                 e->unkC = e->unk10 * 10.0f;
                 if (gPlayers == ONE_PLAYER) {
+                    if (1) {} // FAKE: without this block the stores schedule differently
                     e->unk0 = 300.0f;
                     e->unk4 = 206.0f;
                 } else if (i == 0) {
@@ -857,9 +859,9 @@ void func_801F0E7C(void) {
                     e->unk14 = 0;
                 }
             } else if ((rider->unk28 == 2) && (gBuoyMisses >= rider->unk134)) {
-                m->unk0[0].unk18 = 1;
+                gHudMarkers[i].unk0[0].unk18 = 1;
                 if (rider->power >= 5) {
-                    m->unk0[2].unk18 = 0;
+                    gHudMarkers[i].unk0[2].unk18 = 0;
                 }
                 if (gPlayers == ONE_PLAYER) {
                     m->unk0[0].unk0 = 160.0f;
@@ -883,6 +885,7 @@ void func_801F0E7C(void) {
                 if ((rider->power > 0) && (m->unk0[1].unk18 != 3)) {
                     m->unk0[1].unk18 = 3;
                     e = &m->unk0[1];
+                    tx = 198;
                     if (gPlayers == ONE_PLAYER) {
                         e->unk0 = 160.0f;
                         ty = 211;
@@ -896,7 +899,6 @@ void func_801F0E7C(void) {
                         ty = 220;
                         e->unk4 = 188.0f;
                     }
-                    tx = 198;
                     e->unk14 = 16;
                     e->unk10 = 1.0f;
                     e->unk8 = (tx - e->unk0) / 8;
@@ -906,64 +908,59 @@ void func_801F0E7C(void) {
         }
         for (j = 0; j < 3; j++) {
             e = &gHudMarkers[i].unk0[j];
-            switch (e->unk18) {
-                case 1:
-                    if (e->unk14 < 9) {
-                        e->unk0 += e->unk8;
-                        e->unk4 += e->unkC;
+            if (e->unk18 == 0) {
+                // nothing to update
+            } else if (e->unk18 == 1) {
+                if (e->unk14 < 9) {
+                    e->unk0 += e->unk8;
+                    e->unk4 += e->unkC;
+                }
+                e->unk10 = (e->unk14 + 0.5f) / 8.5f;
+                if (e->unk10 > 1.0f) {
+                    e->unk10 = 1.0f;
+                }
+                e->unk14--;
+                if (e->unk14 < 0) {
+                    e->unk18 = 0;
+                    if (rider->unk13C != 0) {
+                        Rider_SetFinishState((struct_800762D0*) rider);
                     }
-                    e->unk10 = (e->unk14 + 0.5f) / 8.5f;
-                    if (e->unk10 > 1.0f) {
-                        e->unk10 = 1.0f;
-                    }
+                }
+            } else if (e->unk18 == 3) {
+                if (e->unk14 < 9) {
+                    e->unk0 += e->unk8;
+                    e->unk4 += e->unkC;
+                }
+                e->unk10 = (e->unk14 + 0.5f) / 8.5f;
+                if (e->unk10 > 1.0f) {
+                    e->unk10 = 1.0f;
+                }
+                e->unk14--;
+                if (e->unk14 < 0) {
+                    e->unk18 = 0;
+                    rider->power = 0;
+                }
+            } else if (e->unk18 == 2) {
+                if (rider->power < 5) {
                     e->unk14--;
                     if (e->unk14 < 0) {
                         e->unk18 = 0;
-                        if (rider->unk13C != 0) {
-                            Rider_SetFinishState((struct_800762D0*) rider);
+                    }
+                } else {
+                    if (e->unk14 < 255) {
+                        e->unk14++;
+                    }
+                    if (e->unk14 >= 20) {
+                        e->unk10 -= 0.08f;
+                        if (e->unk10 < 0.7f) {
+                            e->unk10 = 0.7f;
                         }
                     }
-                    break;
-                case 3:
-                    if (e->unk14 < 9) {
-                        e->unk0 += e->unk8;
-                        e->unk4 += e->unkC;
-                    }
-                    e->unk10 = (e->unk14 + 0.5f) / 8.5f;
-                    if (e->unk10 > 1.0f) {
-                        e->unk10 = 1.0f;
-                    }
-                    e->unk14--;
-                    if (e->unk14 < 0) {
-                        e->unk18 = 0;
-                        rider->power = 0;
-                    }
-                    break;
-                case 2:
-                    if (rider->power < 5) {
-                        e->unk14--;
-                        if (e->unk14 < 0) {
-                            e->unk18 = 0;
-                        }
-                    } else {
-                        if (e->unk14 < 255) {
-                            e->unk14++;
-                        }
-                        if (e->unk14 >= 20) {
-                            e->unk10 -= 0.08f;
-                            if (e->unk10 < 0.7f) {
-                                e->unk10 = 0.7f;
-                            }
-                        }
-                    }
-                    break;
+                }
             }
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F0E7C.s")
-#endif
 
 extern Gfx D_1014820[];
 extern Gfx D_1014870[];
@@ -1277,7 +1274,10 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 12816 of 174400: same instructions, but the frame is 0x18 smaller and y is not kept in s0, so registers and stack offsets differ; the original has more locals.
+// Score 6415 of 174400: y is copied into a local (py), which the original keeps in s0 (the big-digit loop still reads
+// y, which orders its hoisted y << 2 terms as in the original), a stack pad gives the original's 0x2C8 frame, sec is
+// reduced mod 60 before ms is taken, and the paired digit stores are chained assignments. Left: temp registers numbered
+// differently from the style 0/2 branch on.
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1315,8 +1315,11 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
     s32 skip;
     s32 ix;
     RiderStruct* rider;
+    s32 py;
+    s32 pad[2]; // stack pad
 
     gdl = *gdlp;
+    py = y;
     if (time < 0) {
         time = 0;
     }
@@ -1324,21 +1327,20 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         time = 599999;
     }
     sec = time / 1000;
-    ms = time % 1000;
     min = sec / 60;
+    sec %= 60;
+    ms = time % 1000;
     D_80228CD8[0] = min;
-    D_80228CD8[1] = (sec % 60) / 10;
-    D_80228CD8[2] = (sec % 60) % 10;
+    D_80228CD8[1] = sec / 10;
+    D_80228CD8[2] = sec % 10;
     D_80228CD8[3] = ms / 100;
     if ((style != 1) || (arg5 != 1)) {
         D_80228CD8[4] = (ms % 100) / 10;
         D_80228CD8[5] = ms % 10;
     } else if (time == 0) {
-        D_80228CD8[5] = 0;
-        D_80228CD8[4] = 0;
+        D_80228CD8[4] = D_80228CD8[5] = 0;
     } else if (time == 599999) {
-        D_80228CD8[5] = 9;
-        D_80228CD8[4] = 9;
+        D_80228CD8[4] = D_80228CD8[5] = 9;
     } else {
         D_80228CD8[4] = (color + 5) % 10;
         D_80228CD8[5] = color % 10;
@@ -1367,8 +1369,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 px += 7;
             }
         }
-        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, y);
-        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, y);
+        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, py);
+        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, py);
     } else if ((style == 0) || (style == 2)) {
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
@@ -1400,12 +1402,12 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
             } else {
                 ix = x + 10;
             }
-            HUD_SCISRECT(gdl, ix, y, 8, 8);
+            HUD_SCISRECT(gdl, ix, py, 8, 8);
         }
         for (i = 0; i < 6; i++) {
             if ((skip == 0) || (i >= skip)) {
                 HUD_LOAD8(gdl, &D_10387C0[D_80228CD8[i] << 6], 8, 8);
-                HUD_SCISRECT(gdl, px, y, 8, 8);
+                HUD_SCISRECT(gdl, px, py, 8, 8);
             }
             px += 7;
             if ((i == 0) || (i == 2)) {
@@ -1414,15 +1416,15 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         }
         if (skip == 0) {
             HUD_LOAD8(gdl, D_1039100, 8, 8);
-            HUD_SCISRECT(gdl, x + 6, y, 8, 8);
+            HUD_SCISRECT(gdl, x + 6, py, 8, 8);
         }
         HUD_LOAD8(gdl, D_1039140, 8, 8);
-        HUD_SCISRECT(gdl, x + 25, y, 8, 8);
+        HUD_SCISRECT(gdl, x + 25, py, 8, 8);
         if (style == 0) {
             HUD_LOAD8(gdl, D_1038D00, 8, 8);
-            HUD_SCISRECT(gdl, x + 60, y, 8, 8);
+            HUD_SCISRECT(gdl, x + 60, py, 8, 8);
             HUD_LOAD8(gdl, &D_10387C0[arg5 << 6], 8, 8);
-            HUD_SCISRECT(gdl, x + 66, y, 8, 8);
+            HUD_SCISRECT(gdl, x + 66, py, 8, 8);
         }
     } else if (style == 3) {
         gDPPipeSync(gdl++);
@@ -1446,12 +1448,12 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
             } else {
                 ix = x + 16;
             }
-            HUD_RECT(gdl, ix, y, 16, 12);
+            HUD_RECT(gdl, ix, py, 16, 12);
         }
         for (i = 0; i < 6; i++) {
             if ((skip == 0) || (i >= skip)) {
                 HUD_LOAD8(gdl, &D_1039248[D_80228CD8[i] * 0xC0], 16, 12);
-                HUD_RECT(gdl, px, y, 16, 12);
+                HUD_RECT(gdl, px, py, 16, 12);
             }
             px += 11;
             if ((i == 0) || (i == 2)) {
@@ -1460,10 +1462,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         }
         if (skip == 0) {
             HUD_LOAD8(gdl, D_103AEC8, 16, 12);
-            HUD_RECT(gdl, x + 10, y, 16, 12);
+            HUD_RECT(gdl, x + 10, py, 16, 12);
         }
         HUD_LOAD8(gdl, D_103AF88, 16, 12);
-        HUD_RECT(gdl, x + 36, y, 16, 12);
+        HUD_RECT(gdl, x + 36, py, 16, 12);
     }
     *gdlp = gdl;
 }
@@ -2324,8 +2326,10 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 10398 of 32800: 1.0f and 0.0f are hoisted into f30/f28 here; the original keeps the camera position and direction
-// on the stack instead; frame 0x90, not 0x98.
+// Score 3660 of 32800: the side offset's numerator is computed before the sqrt and func_801ED090 is called before the
+// distance test, as in the original, but the saved FP registers are coloured differently (the numerator takes f28 and
+// dist f30; the original has them the other way round, and dot/fwd in f24/f26), and 0.0f is hoisted into f18 across
+// blocks where the original rematerialises it at each use.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2334,6 +2338,7 @@ f32 func_801ED154(f32 arg0, f32 arg1);
 
 // Place each rider ahead of the player on the radar: side offset, distance and heading.
 void func_801F9EA0(void) {
+    s32 pad; // stack pad
     s32 i;
     s32 j;
     s32 me;
@@ -2381,16 +2386,22 @@ void func_801F9EA0(void) {
                 p = &D_80192690[j];
                 dx = p->unk44.x - camX;
                 dz = p->unk44.z - camZ;
+                side = dx * dirZ + dz * -dirX;
                 fwd = dot = dx * dirX + dz * dirZ;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
                     dot = (dx / dist) * dirX + (dz / dist) * dirZ;
                 }
-                if ((dist > 1024.0f) || (func_801ED090(dot) > 135.0f)) {
+                dot = func_801ED090(dot);
+                if ((dist > 1024.0f) || (dot > 135.0f)) {
                     continue;
                 }
-                scale = ((fwd < 0.0f) ? 0.0f : fwd) * 0.0009765625f * 1024.0f + 60.0f;
-                side = (dx * dirZ + dz * -dirX) / scale;
+                sx = fwd;
+                if (fwd < 0.0f) {
+                    sx = 0.0f;
+                }
+                scale = sx * 0.0009765625f * 1024.0f + 60.0f;
+                side /= scale;
                 sx = side;
                 if (side > 1.0f) {
                     sx = 1.0f;
@@ -2399,13 +2410,13 @@ void func_801F9EA0(void) {
                     sx = -1.0f;
                     a = func_801ED154(side + 1.0f, fwd / scale);
                 } else {
-                    a = 0.0f;
+                    a = 0; // integer literal: with 0.0f the zero is shared with the other tests
                 }
                 if (a > 180.0f) {
                     a -= 360.0f;
                 }
                 aa = (a >= 0.0f) ? a : -a;
-                sgn = (a == 0.0f) ? 0.0f : ((a > 0.0f) ? 1 : -1);
+                sgn = (a == 0.0f) ? 0.0f : ((a > 0) ? 1 : -1); // integer literal, as above
                 if (aa > 0.0f) {
                     aa *= 0.6666667f;
                     if (aa > 90.0f) {

@@ -958,63 +958,53 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 14660 of 16800: float register allocation differs: the original keeps arg9/arg13 (later px/py/pz) in fs0-fs2
-// and has a 0x70 frame; this version spills more (frame 0x88). Control flow and arithmetic order match.
+// Score 9765 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// are laid out) and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the original's frame is 0x70
+// (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 cx;
-    f32 cy;
-    f32 cz;
-    f32 mx;
-    f32 my;
-    f32 mz;
-    f32 ex;
-    f32 ey;
-    f32 ez;
-    f32 px;
-    f32 py;
-    f32 pz;
+    f32 d[3];
+    f32 c[3];
+    f32 m[3];
+    f32 e[3];
     f32 len;
     f32 t;
 
-    dx = arg6 - arg3;
-    dy = arg7 - arg4;
-    dz = arg8 - arg5;
-    len = SQ(dx) + SQ(dy) + SQ(dz);
+    d[2] = arg6 - arg3;
+    d[1] = arg7 - arg4;
+    d[0] = arg8 - arg5;
+    len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
         t = (0.5 / len) * ((arg9 - arg10) + len);
-        mx = (t * dx) + arg3;
-        ex = mx - arg3;
-        my = (t * dy) + arg4;
-        ey = my - arg4;
-        mz = (t * dz) + arg5;
-        ez = mz - arg5;
-        t = ((arg9 - SQ(ex)) - SQ(ey)) - SQ(ez);
+        m[2] = (t * d[2]) + arg3;
+        e[2] = m[2] - arg3;
+        m[1] = (t * d[1]) + arg4;
+        e[1] = m[1] - arg4;
+        m[0] = (t * d[0]) + arg5;
+        e[0] = m[0] - arg5;
+        t = ((arg9 - SQ(e[2])) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
-            cx = (arg12 * dz) - (arg13 * dy);
-            cy = (arg13 * dx) - (arg11 * dz);
-            cz = (arg11 * dy) - (arg12 * dx);
-            px = (dy * cz) - (dz * cy);
-            py = (dz * cx) - (dx * cz);
-            pz = (dx * cy) - (dy * cx);
-            len = SQ(px) + SQ(py) + SQ(pz);
+            c[2] = (arg12 * d[0]) - (arg13 * d[1]);
+            c[1] = (arg13 * d[2]) - (arg11 * d[0]);
+            c[0] = (arg11 * d[1]) - (arg12 * d[2]);
+            arg11 = (d[1] * c[0]) - (d[0] * c[1]);
+            arg12 = (d[0] * c[2]) - (d[2] * c[0]);
+            arg13 = (d[2] * c[1]) - (d[1] * c[2]);
+            len = SQ(arg11) + SQ(arg12) + SQ(arg13);
             if (len != 0.0f) {
                 t = sqrtf(t / len);
-                arg0->unk0.x = (t * px) + mx;
-                *arg1 = (t * py) + my;
-                *arg2 = (t * pz) + mz;
+                arg0->unk0.x = (t * arg11) + m[2];
+                *arg1 = (t * arg12) + m[1];
+                *arg2 = (t * arg13) + m[0];
                 return;
             }
         }
     }
     arg9 = sqrtf(arg9);
     t = arg9 / (arg9 + sqrtf(arg10));
-    arg0->unk0.x = (t * dx) + arg3;
-    *arg1 = (t * dy) + arg4;
-    *arg2 = (t * dz) + arg5;
+    arg0->unk0.x = (t * d[2]) + arg3;
+    *arg1 = (t * d[1]) + arg4;
+    *arg2 = (t * d[0]) + arg5;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800534AC.s")
@@ -6151,15 +6141,10 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80062E50.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 11133 of 22300: the original's unkA48 loop is unrolled by 2 (first entry peeled); IDO does not unroll this
-// pointer loop, and unrolls the indexed forms by 4. Before the loop only the stack slot of `first` differs (sp20,
-// original sp24).
 void func_8006390C(s32 arg0, void* arg1) {
     UnkStruct_80192690* rider;
-    UnkStruct_8004B0F8_1* first;
-    UnkStruct_80192690_A48* e;
-    s8 (*t)[4];
+    s32 i;
+    RiderLink* link;
 
     rider = &D_80192690[arg0];
     if ((gCourseID == DOLPHIN_PARK) && (D_800DAB60 != 0) && (gGameModes != GMODE_STUNT) &&
@@ -6182,7 +6167,7 @@ void func_8006390C(s32 arg0, void* arg1) {
     rider->unk24 = D_800D4AE4;
     rider->unk28 = 11;
     rider->unk2C = 65;
-    rider->unk30 = first = &rider->unk90[0];
+    rider->unk30 = &rider->unk90[0];
     rider->unk34 = (UnkStruct_8004B0F8_unk34*) &rider->unk90[12];
     rider->unk38 = rider->unk528;
     func_80062E50(arg0, arg1, 0);
@@ -6199,25 +6184,22 @@ void func_8006390C(s32 arg0, void* arg1) {
     RIDER_SPHERES(rider)[2].unk20 = &rider->unk90[9];
     RIDER_SPHERES(rider)[3].unk18 = &rider->unk90[1];
     RIDER_SPHERES(rider)[3].unk1C = &rider->unk90[2];
-    RIDER_SPHERES(rider)[3].unk20 = first;
+    RIDER_SPHERES(rider)[3].unk20 = &rider->unk90[0];
     func_800629A8(rider);
-    for (e = rider->unkA48, t = D_800D4A3C; t != &D_800D4A3C[11]; e++, t++) {
-        e->unk0 = &RIDER_PARTS(rider)[(*t)[0]];
-        e->unk4 = &RIDER_PARTS(rider)[(*t)[1]];
-        e->unkC = &RIDER_PARTS(rider)[(*t)[2]];
-        e->unk10 = &RIDER_PARTS(rider)[(*t)[3]];
+    // D_800D4A3C read as 22 pairs of entry indices, one per link; the byte offset (index * 0x28) gives the original's
+    // operand order
+    for (i = 0, link = RIDER_LINKS(rider); i < 22; i++, link++) {
+        link->unk0 = (RiderPart*) &rider->unk660[((s8*) D_800D4A3C)[i * 2] * 0x28];
+        link->unk4 = (RiderPart*) &rider->unk660[((s8*) D_800D4A3C)[i * 2 + 1] * 0x28];
     }
     func_80062918((Vec3f*) rider);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_8006390C.s")
-#endif
 
 #ifdef NON_MATCHING
-// Score 235 of 99300: same instructions; stats is in a2 and the constant 1 in a3 in the original (v1 and a2 here),
-// gSinTable's address and the angle swap v0/v1, and float temps around unk15CC/unk15D4 are numbered differently.
-// Integer literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads; f, d and speed
-// are each reused for a second value, as the original's stack homes show.
+// Score 40 of 99300: only gSinTable's address and the angle swap v0/v1 (seven instructions). The FAKE c54 temp moves
+// stats and the constant 1 to a2/a3 as in the original, and tbl gives the original's extra stack slot; f, d and speed
+// are each reused for a second value, as the original's stack homes show (f also holds 1 - speed / 16.666668f); integer
+// literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
     if ((r)->unk16E2 == 0) {    \
@@ -6232,8 +6214,9 @@ void func_80063C88(s32 arg0) {
     f32 f;
     struct UnkStruct_801C2938* stats;
     f32 speed;
+    u32 c54; // FAKE: a temp for one compare of unkC54, moves stats and the constant 1 to a2/a3
     f32 d;
-    s32 pad[6]; // stack pad: the original's frame is 0x50
+    s32 pad[4]; // stack pad: the original's frame is 0x50
 
     if (D_801CE638 == 4) {
         D_80192690[arg0].unkB64 = D_80192690[arg0].unkB68;
@@ -6269,7 +6252,7 @@ void func_80063C88(s32 arg0) {
         f = 0.1f;
     } else if (rider->unkC54 == 9) {
         f = 0.15f;
-    } else if (rider->unkC54 == 17) {
+    } else if ((c54 = rider->unkC54) == 17) {
         f = 0.2f;
     } else {
         f = 1;
@@ -6355,9 +6338,10 @@ void func_80063C88(s32 arg0) {
         }
     }
     {
+        f32* tbl = gSinTable;
         s32 ang = DEG_TO_BINANG((((f32) rider->unkB5E * rider->unk1588) / 70.0f));
-        rider->unk15E4 = SIN(ang);
-        rider->unk15E0 = COS(ang);
+        rider->unk15E4 = tbl[ang & 0xFFF];
+        rider->unk15E0 = tbl[(ang + 0x400) & 0xFFF];
     }
     if (rider->unk1598 != 0) {
         rider->unk15E4 = 0.0f;
@@ -6397,7 +6381,8 @@ void func_80063C88(s32 arg0) {
         }
     }
     if (speed < 16.666668f) {
-        rider->unk15CC = D_800D494C * (1.0f - (speed / 16.666668f)) * (f32) rider->unkB5E;
+        f = 1.0f - (speed / 16.666668f);
+        rider->unk15CC = D_800D494C * f * (f32) rider->unkB5E;
     } else {
         rider->unk15CC = 0.0f;
     }
@@ -6405,8 +6390,7 @@ void func_80063C88(s32 arg0) {
         rider->unk15D4 = (f32) gWaterLevel - 10.0f;
     } else {
         if (speed < 33.333336f) {
-            // FAKE: the comma expression renumbers the float temps
-            rider->unk15D4 = (f32) gWaterLevel + ((0, D_800D4954) * (speed / 33.333336f));
+            rider->unk15D4 = (f32) gWaterLevel + (D_800D4954 * (speed / 33.333336f));
         } else {
             rider->unk15D4 = (f32) gWaterLevel + D_800D4954;
         }
