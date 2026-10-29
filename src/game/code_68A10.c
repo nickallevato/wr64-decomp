@@ -859,10 +859,10 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 51543 of 216100: same blocks, loops and calls, a few instructions longer; register allocation and
-// scheduling differ throughout.
+// Score 32185 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
+// s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
+// into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
 void func_800B08F8(s32 arg0) {
-    s32 isHuman;
     s32 twoViews;
     s32 special;
     s32 lod;
@@ -875,43 +875,45 @@ void func_800B08F8(s32 arg0) {
     s32 alpha;
     f32 dx;
     f32 dy;
+    s32 isHuman;
     f32 dz;
     f32 dist;
-    f32 sideX;
-    f32 sideY;
-    f32 sideZ;
-    f32 fwdX;
-    f32 fwdZ;
-    f32 fwdLen;
     f32 velLen;
-    f32 cosA;
-    f32 lean;
-    f32 absCos;
+    f32 fwdLen[1]; // FAKE: keeps fwdLen in its stack slot across sqrtf, as the original does
     f32 base;
     f32 tilt;
     f32 delta;
-    f32 rate;
     f32 sinA;
-    f32 split;
-    f32 other;
-    f32 left;
-    f32 right;
-    f32 strength;
-    f32 angle;
-    f32 step;
     f32 f;
-    f32 g;
-    f32 h;
-    f32 r;
-    f32 sx;
-    f32 sz;
-    f32 height;
-    f32 vy;
     f32 depth;
+    f32 cosA;
+    f32 r;
+    f32 absCos;
+    f32 lean;
+    f32 sx;
+    f32 split;
+    f32 sz;
+    f32 vy;
+    f32 height;
     f32 width;
     f32 len;
+    f32 rate;
+    f32 left;
+    f32 right;
+    f32 heading;
+    f32 angle;
+    f32 step;
+    f32 g;
     s32 a;
-
+    s32 pad1[3]; // stack pad
+    f32 h;
+    s32 pad2[2]; // stack pad
+    f32 fwdX;
+    f32 fwdZ;
+    s32 pad3[2]; // stack pad
+    f32 sideX;
+    f32 sideY;
+    f32 sideZ;
     isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
     twoViews = (gPlayers == TWO_PLAYERS) && (D_801CE638 == 1);
     special = (D_801CE638 == 4) || (D_801CE638 == 10);
@@ -919,16 +921,16 @@ void func_800B08F8(s32 arg0) {
     dx = D_801D79BC - D_801D7968->eyeX;
     dy = D_801D79C0 - D_801D7968->eyeY;
     dz = D_801D79C4 - D_801D7968->eyeZ;
-    dist = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
     lod = 0;
+    dist = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
     D_800E6D60->unk1C4C = 0;
     if (twoViews) {
         lod = 1;
         D_800E6D60->unk1C4C = 1;
     } else if ((dist < 800.0f) && (dist > 16.0f)) {
-        dx /= dist;
         dy /= dist;
         dz /= dist;
+        dx /= dist;
         if ((gPlayers == TWO_PLAYERS) ||
             (((dx * D_801D7974) + (dy * D_801D7978) + (dz * D_801D797C)) > 0.707107f)) {
             D_800E6D60->unk1C4C = 1;
@@ -955,24 +957,24 @@ void func_800B08F8(s32 arg0) {
     }
     // The side vector of the velocity, the heading, and how far the velocity turns from it.
     if ((D_801D79C8 != 0.0f) || (D_801D79D0 != 0.0f)) {
-        func_801EDAE0(D_801D79C8, D_801D79CC, D_801D79D0, 0, 1.0f, 0.0f, &sideX, &sideY, &sideZ);
+        func_801EDAE0(D_801D79C8, D_801D79CC, D_801D79D0, 0.0f, 1.0f, 0.0f, &sideX, &sideY, &sideZ);
     } else {
         sideZ = 0.0f;
         sideY = 0.0f;
         sideX = 1.0f;
     }
     sqrtf((D_801D79EC * D_801D79EC) + (D_801D79F4 * D_801D79F4));
-    fwdLen = sqrtf((D_801D79E0 * D_801D79E0) + (D_801D79E8 * D_801D79E8));
-    if (fwdLen > 0.0f) {
-        fwdX = D_801D79E0 / fwdLen;
-        fwdZ = D_801D79E8 / fwdLen;
+    fwdLen[0] = sqrtf((D_801D79E0 * D_801D79E0) + (D_801D79E8 * D_801D79E8));
+    if (fwdLen[0] > 0.0f) {
+        fwdX = D_801D79E0 / fwdLen[0];
+        fwdZ = D_801D79E8 / fwdLen[0];
     } else {
         fwdZ = 0.0f;
         fwdX = 0.0f;
     }
     velLen = sqrtf((D_801D79C8 * D_801D79C8) + (D_801D79D0 * D_801D79D0));
-    if ((fwdLen > 0.0f) && (velLen > 0.0f)) {
-        cosA = (((D_801D79E0 * D_801D79C8) + (D_801D79E8 * D_801D79D0)) / fwdLen) / velLen;
+    if ((fwdLen[0] > 0.0f) && (velLen > 0.0f)) {
+        cosA = (((D_801D79E0 * D_801D79C8) + (D_801D79E8 * D_801D79D0)) / fwdLen[0]) / velLen;
     } else {
         cosA = 1.0f;
     }
@@ -1016,8 +1018,8 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk30 = 128.0f;
             }
             D_800E6D64->unk20 += D_800E6D64->unk2C;
-            D_800E6D64->unk0 = (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
             D_800E6D64->unk8 = (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
+            D_800E6D64->unk0 = (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
             D_800E6D64->unkC = (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
             D_800E6D64->unk14 = (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.5f * D_801D79E8);
             if (D_800E6D60->unk1C54 != 0) {
@@ -1066,7 +1068,7 @@ void func_800B08F8(s32 arg0) {
         D_800E6D7C->unk14 += D_800E6D7C->unk20;
     }
 
-    // The spray strength (unk1C64) from the speed, the change of speed and the turn.
+    // The spray rate (unk1C64) from the speed, the change of speed and the turn.
     if (special) {
         if (D_801D79D4 < 10.0f) {
             base = D_801D79D4 * 5.0f;
@@ -1092,11 +1094,11 @@ void func_800B08F8(s32 arg0) {
         delta = -(D_801D79D4 - D_800E6D60->unk1C68);
     }
     D_800E6D60->unk1C64 = (delta * 1.5f) + base + (2.0f * D_801D79D8) + tilt;
-    D_800E6D60->unk1C68 = D_801D79D4;
     rate = (D_800E6D60->unk1C64 / 50.0f) * 4.0f;
+    D_800E6D60->unk1C68 = D_801D79D4;
     if ((D_800E6D60->unk1C2C == 0) || (D_800E6D60->unk1C4C == 0)) {
-        D_800E6D60->unk1C44 = 0;
         rate = 0.0f;
+        D_800E6D60->unk1C44 = 0;
     } else if ((D_800E6D60->unk1C34 != 0) && (((D_801D79CC >= 0.0f) ? D_801D79CC : -D_801D79CC) > 1.0f)) {
         // Landing: a splash (unk1C44 frames of unk1A00 records).
         D_800E6D60->unk1C40 = 0;
@@ -1109,8 +1111,8 @@ void func_800B08F8(s32 arg0) {
     } else if ((D_800E6D60->unk1C70 < 0.0f) && (D_801D79CC > 0.0f)) {
         D_800E6D60->unk1C40 = 2;
     } else if ((D_800E6D60->unk1C70 > 0.0f) && (D_801D79CC < 0.0f)) {
-        D_800E6D60->unk1C40 = 0;
         rate *= 1.2f;
+        D_800E6D60->unk1C40 = 0;
     }
     if (D_800E6D60->unk1C54 != 0) {
         rate *= 1.2f;
@@ -1145,28 +1147,26 @@ void func_800B08F8(s32 arg0) {
     } else {
         split = 0.5f - (sinA * 0.5f);
     }
-    other = 1.0f - split;
     left = 2.0f * (rate * split);
-    right = 2.0f * (rate * other);
-    strength = rate;
-    if ((strength > 0.1f) && spawn && (lod != 0)) {
+    right = 2.0f * (rate * (1.0f - split));
+    if ((rate > 0.1f) && spawn && (lod != 0)) {
         if (!twoViews && (lod == 3)) {
             count = 6;
         } else {
             count = 4;
         }
-        if (isHuman) {
+        if ((arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider))) {
             if (left > 4.0f) {
-                D_800E6D60->unk1C5C = left * 0.125f * 127.0f;
-                if (D_800E6D60->unk1C5C >= 0x80) {
+                D_800E6D60->unk1C5C = a = left * 0.125f * 127.0f;
+                if (a >= 0x80) {
                     D_800E6D60->unk1C5C = 0x7F;
                 }
             } else {
                 D_800E6D60->unk1C5C = 0;
             }
             if (right > 4.0f) {
-                D_800E6D60->unk1C60 = right * 0.125f * 127.0f;
-                if (D_800E6D60->unk1C60 >= 0x80) {
+                D_800E6D60->unk1C60 = a = right * 0.125f * 127.0f;
+                if (a >= 0x80) {
                     D_800E6D60->unk1C60 = 0x7F;
                 }
             } else {
@@ -1186,7 +1186,7 @@ void func_800B08F8(s32 arg0) {
         }
         n = 0;
         angle += Math_FloatRand(32.0f) - 16.0f;
-        strength = left;
+        rate = left;
         // New unk0 records: count streaks fanned out on both sides.
         for (i = 63, D_800E6D64 = &D_800E6D68[63]; i >= 0; i--, D_800E6D64--) {
             if (D_800E6D64->unk38 == 0) {
@@ -1194,19 +1194,19 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk3C = 0;
                 half = count / 2;
                 f = 1.0f - lean;
-                h = (strength / 1.6f) * 3.2f;
-                g = strength / 1.5f;
-                r = (1.0f - absCos) * strength * 0.5f;
+                h = (rate / 1.6f) * 3.2f;
                 vy = (f * 8.0f * 0.5f) + -6.0f;
+                r = (1.0f - absCos) * rate * 0.5f;
+                g = rate / 1.5f;
                 if (n < half) {
                     a = (half - n) - 1;
                 } else {
                     a = n - half;
                 }
-                len = (split < other) ? split : other;
+                len = (split < (1.0f - split)) ? split : (1.0f - split);
                 len = (2.0f * ((((f32) a / (half - 1)) - 1.0f) * len)) + 1.0f;
-                D_800E6D64->unk30 = ((len + 0.5f) * strength) + 2.0f;
-                D_800E6D64->unk34 = strength * 1.2f;
+                D_800E6D64->unk30 = ((len + 0.5f) * rate) + 2.0f;
+                D_800E6D64->unk34 = rate * 1.2f;
                 depth = (32.0f - (len * 16.0f)) - (f * 16.0f * 0.5f);
                 if (n < half) {
                     side = -1;
@@ -1218,14 +1218,14 @@ void func_800B08F8(s32 arg0) {
                     vy += 2.0f;
                 }
                 if (D_800E6D60->unk1C54 != 0) {
-                    height /= 6.0f;
                     h *= 0.03125f;
+                    height /= 6.0f;
                     vy /= 3.0f;
                 }
                 if (special) {
                     D_800E6D64->unk30 += 14.0f;
+                    D_800E6D64->unk34 = rate;
                     depth -= 4.0f;
-                    D_800E6D64->unk34 = strength;
                 }
                 D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk20 = depth;
@@ -1233,21 +1233,21 @@ void func_800B08F8(s32 arg0) {
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
                 D_800E6D64->unk8 =
                     (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
-                D_800E6D64->unk4 = (D_801D79C0 + 4.0f) - strength;
+                D_800E6D64->unk4 = (D_801D79C0 + 4.0f) - rate;
                 D_800E6D64->unk24 = h * side;
                 D_800E6D64->unk2C = vy * 1.2f;
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
                 D_800E6D64->unk14 =
                     (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.5f * D_801D79E8);
-                n++;
                 D_800E6D64->unk10 = (Math_FloatRand(0.5f) + 1.0f) * height;
+                n++;
                 if (n >= count) {
                     break;
                 }
                 if (n == half) {
+                    rate = right;
                     angle += 90.0f;
-                    strength = right;
                     if (count == 2) {
                         angle += 45.0f;
                     }
@@ -1258,19 +1258,19 @@ void func_800B08F8(s32 arg0) {
         }
         // New unk1000 records for the human with one player: eight drops a side.
         if ((arg0 == gPlayer1Rider) && (gPlayers == ONE_PLAYER)) {
-            g = func_801ED154(D_801D79E8, D_801D79E0);
-            h = 7;
+            heading = func_801ED154(D_801D79E8, D_801D79E0);
+            half = 7; // half reused for the drop count
             for (side = 0; side != 2; side++) {
                 if (side == 0) {
-                    strength = left;
-                    angle = g - 90.0f;
-                    step = 45.0f / h;
+                    rate = left;
+                    angle = heading - 90.0f;
+                    step = 45.0f / half;
                 } else {
-                    strength = right;
-                    angle = g + 90.0f;
-                    step = -45.0f / h;
+                    rate = right;
+                    angle = heading + 90.0f;
+                    step = -45.0f / half;
                 }
-                spawn = strength >= 3.0f;
+                spawn = rate >= 3.0f;
                 if (spawn && ((absCos >= 0.94f) || (D_800E6D60->unk1C50 == 0))) {
                     spawn = D_800E6D60->unk1C34 != 0;
                 }
@@ -1290,26 +1290,26 @@ void func_800B08F8(s32 arg0) {
                         if (D_800E6D6C->unk20 == 0) {
                             D_800E6D6C->unk20 = 1;
                             D_800E6D6C->unk24 = 0;
-                            width = 32.0f + strength;
-                            r = strength * 0.5f;
+                            width = 32.0f + rate;
+                            r = rate * 0.5f;
+                            D_800E6D6C->unk18 = Math_FloatRand(rate / 3.0f) + 1.0f;
                             sz = fwdZ * width;
-                            D_800E6D6C->unk18 = Math_FloatRand(strength / 3.0f) + 1.0f;
                             D_800E6D6C->unk1C = 0.0f;
                             if (n < 4) {
                                 f = 3 - n;
                             } else {
                                 f = n - 4;
                             }
-                            len = (split < other) ? split : other;
+                            len = (split < (1.0f - split)) ? split : (1.0f - split);
                             len = (2.0f * (((f / 3) - 1.0f) * len)) + 1.0f;
-                            sx = (24.0f + strength) - (len * 8.0f);
+                            sx = (24.0f + rate) - (len * 8.0f);
                             a = (angle / 360.0f) * 4096.0f;
                             D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
-                            D_800E6D6C->unk4 = Math_FloatRand(strength) + (D_801D79C0 + 8.0f) + (2.0f * strength);
+                            D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2.0f * rate);
                             D_800E6D6C->unk8 = (gSinTable[a & 0xFFF] * sx) + (D_801D79C4 - sz);
                             f = Math_FloatRand(r);
                             n++;
-                            vy = Math_FloatRand(r) + (strength / 1.2);
+                            vy = Math_FloatRand(r) + (rate / 1.2);
                             D_800E6D6C->unkC = (gSinTable[(a + 0x400) & 0xFFF] * f) + (D_801D79C8 * 0.8);
                             D_800E6D6C->unk10 = vy;
                             D_800E6D6C->unk14 = (gSinTable[a & 0xFFF] * f) + (D_801D79D0 * 0.8);
@@ -1324,12 +1324,12 @@ void func_800B08F8(s32 arg0) {
         }
     }
     // A splash record (unk1A00) for each frame of unk1C44.
-    if ((D_800E6D60->unk1C44 != 0) && (strength > 1.0f) && (D_800E6D60->unk1C4C != 0)) {
+    if ((D_800E6D60->unk1C44 != 0) && (rate > 1.0f) && (D_800E6D60->unk1C4C != 0)) {
         D_800E6D60->unk1C44--;
         n = D_800E6D60->unk1C48++;
         D_800E6D60->unk1C48 %= 4;
         if ((D_800E6D78[n].unk20 == 0) && ((D_800E6D60->unk1C54 == 0) || (D_801D7A10 == 0))) {
-            f = (strength - 1.0f) * 0.25f;
+            f = (rate - 1.0f) * 0.25f;
             D_800E6D74 = &D_800E6D78[n];
             D_800E6D74->unk20 = 1;
             D_800E6D74->unk24 = 0;
@@ -1339,17 +1339,17 @@ void func_800B08F8(s32 arg0) {
             D_800E6D74->unk1C = f;
             D_800E6D74->unk18 = Math_FloatRand(8.0f * f) + (48.0f * f);
             if (D_800E6D60->unk1C54 != 0) {
+                width = (Math_FloatRand(16.0f) + -8.0f) * f;
                 depth = -36.0f;
                 height = 4.0f;
-                width = (Math_FloatRand(16.0f) + -8.0f) * f;
             } else {
                 g = Math_FloatRand(12.0f);
                 width = (Math_FloatRand(4.0f) + (12.0f + ((8.0f - g) * f))) - 2.0f;
                 if (n >= 2) {
                     width = -width;
                 }
-                g = Math_FloatRand(16.0f);
                 height = (f * 12.0f) + 4.0f;
+                g = Math_FloatRand(16.0f);
                 depth = (Math_FloatRand(4.0f) + (-16.0f - ((8.0f + g) * f))) - 2.0f;
             }
             D_800E6D74->unk0 = (width * D_801D79EC) + D_801D79BC + (depth * D_801D79E0);
@@ -1360,8 +1360,8 @@ void func_800B08F8(s32 arg0) {
             D_800E6D74->unk14 = D_801D79D0 * 0.85f;
         }
     }
-    // The wake (unk1AA0): its width eases toward the strength while in the water.
-    f = ((strength - 1.0f) / 5.0f) * 32.0f;
+    // The wake (unk1AA0): its width eases toward the rate while in the water.
+    f = ((rate - 1.0f) / 5.0f) * 32.0f;
     if (f > 32.0f) {
         f = 32.0f;
     }

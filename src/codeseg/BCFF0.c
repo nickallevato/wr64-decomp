@@ -1474,8 +1474,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Same control flow and stack frame; register allocation and scheduling differ throughout
-// (asm-differ score 58563 of 490800), and the 1.8f below is D_80227A4C in the original.
+// Score 56488 of 490800: same control flow and stack frame; register allocation and scheduling differ throughout:
+// IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
+// lap-split loop, the constant 1 in the lap-split popup), so the saved and temporary registers of every display-list
+// block differ. The 1.8f below is D_80227A4C in the original.
 // Draw the race HUD: lap splits and total time, the TIME, LAP, RANK and SPEED readouts, the missed-buoy
 // marks, the boost meter, the stunt score and the best times.
 void func_801F4120(Gfx** gdlp) {
@@ -1485,10 +1487,10 @@ void func_801F4120(Gfx** gdlp) {
     s32 x;
     s32 y;
     s32 n;
+    PortraitPos* pos;
     s32 value;
     s32 color;
     RiderStruct* rider;
-    PortraitPos* pos;
     UnkStruct_80228C30* boost;
     s8* digit;
     s32 x2;
@@ -1555,12 +1557,13 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gRiders; i++) {
             rider = &gRiderRaceState[i];
             if (D_801C1FDC >= (rider->racePosition * 10) + 0x28) {
-                color = 1;
                 pos = &gPortraitPos[0][i];
                 x = pos->x + 0xB0;
                 y = pos->y + 0x3F;
                 if (i == gPlayer1Rider) {
                     color = 2;
+                } else {
+                    color = 1;
                 }
                 if (i == k) {
                     func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, color);
@@ -1583,7 +1586,6 @@ void func_801F4120(Gfx** gdlp) {
             }
             if (rider->gapTimer != 0) {
                 value = rider->checkpointGap;
-                color = 2;
                 if (value < 10000) {
                     x = -0xF;
                 } else if (value < 60000) {
@@ -1593,6 +1595,8 @@ void func_801F4120(Gfx** gdlp) {
                 }
                 if (rider->gapRequest == 1) {
                     color = 1;
+                } else {
+                    color = 2;
                 }
                 func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, color);
             }
@@ -1874,8 +1878,8 @@ void func_801F4120(Gfx** gdlp) {
     // marks D_102E620 over the right end of the row (one fewer while gHudMarkers[player].unk0[0].unk18 == 1).
     if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
         if (gPlayers == ONE_PLAYER) {
-            HUD_LOAD32(gdl, D_102DF50, 24, 12);
             x = D_80228B54 + 0x18;
+            HUD_LOAD32(gdl, D_102DF50, 24, 12);
             y = 0xCD;
             HUD_SCISRECT(gdl, x, y, 24, 12);
         }
@@ -1936,8 +1940,8 @@ void func_801F4120(Gfx** gdlp) {
     // animating (color: the chevron's image, 0-3).
     if ((gCourseID != DOLPHIN_PARK) && (gGameModes != GMODE_STUNT)) {
         if (gPlayers == ONE_PLAYER) {
-            HUD_LOAD32(gdl, D_102E868, 32, 12);
             x = D_80228B54 + 0x94;
+            HUD_LOAD32(gdl, D_102E868, 32, 12);
             y = 0xCD;
             HUD_SCISRECT(gdl, x, y, 32, 12);
         }
