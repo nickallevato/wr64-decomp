@@ -1145,13 +1145,12 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 17178 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
+// Score 15264 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
 // 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
 // original keeps the camera direction on the stack across sqrtf (five saved FP registers, frame 0xC8; four and 0xB8
 // here), and in the D_800D988C == 1 loop it reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
     f32 dirX;
-    f32 dirZ;
     camera_unk_1* cam;
     UnkStruct_801C43F8* p;
     Vtx* arena;
@@ -1162,6 +1161,7 @@ void func_8008E794(void) {
     UnkStruct_801CB058* e;
     f32 dx;
     f32 dz;
+    f32 dirZ;
     f32 c;
     f32 s;
 
@@ -1174,8 +1174,8 @@ void func_8008E794(void) {
     len = sqrtf((dirX * dirX) + (dirZ * dirZ));
     if (len != 0.0f) {
         len = 4000.0f / len;
-        dirX *= len;
         dirZ *= len;
+        dirX *= len;
     }
     vtx = p->unkE0;
     vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[0].unk14;
@@ -1206,8 +1206,8 @@ void func_8008E794(void) {
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
         len = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
-        dirX *= len;
         dirZ *= len;
+        dirX *= len;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
         vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
@@ -1252,8 +1252,8 @@ void func_8008E794(void) {
             e->unkB0 = SIN(angle) * 64.0f;
             e->unkB4 = COS(angle) * 64.0f;
             D_801C4160 = e->unkAC;
-            D_801C4164 = e->unkB0;
             D_801C4168 = e->unkB4;
+            D_801C4164 = e->unkB0;
             len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
             if (len == 0.0f) {
                 D_801C4168 = 120;
@@ -1332,8 +1332,8 @@ void func_8008E794(void) {
                 case SOUTHERN_ISLAND:
                     angle = (e->unk10C << 12) / 360;
                     e->unkB4 = 0.0f;
-                    e->unkAC = -64.0f;
                     e->unkFC = (COS(angle) * cam->unk64) - (SIN(angle) * cam->unk6C);
+                    e->unkAC = -64.0f;
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
                     e->unkD4 = e->unkEC;
@@ -1377,8 +1377,8 @@ void func_8008E794(void) {
             e->unkFC *= 64.0f;
             e->unk104 *= 64.0f;
             D_801C4160 = e->unkAC;
-            D_801C4164 = e->unkB0;
             D_801C4168 = e->unkB4;
+            D_801C4164 = e->unkB0;
         }
     }
 }
