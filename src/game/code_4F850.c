@@ -785,7 +785,7 @@ u32* func_800961B8(s32 arg0, s32 arg1) {
 }
 
 u32* func_800962F0(s32 arg0) {
-    s32 pad[2];
+    s32 pad[2]; // stack pad
     u32* sp34;
     u32* var_s2;
     u32* temp_ptr;
@@ -843,7 +843,7 @@ void func_800964C4(void) {
 }
 
 u32* func_800964CC(s32 arg0) {
-    s32 pad[2];
+    s32 pad[2]; // stack pad
     u32* sp34;
     u32* var_s2;
     u32 temp_s0;
@@ -871,7 +871,7 @@ u32* func_800964CC(s32 arg0) {
 }
 
 u32* func_800965B8(s32 arg0) {
-    s32 pad[2];
+    s32 pad[2]; // stack pad
     u32* sp34;
     s32 var_s3;
     u32* temp_s0;
@@ -1321,7 +1321,7 @@ void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes) {
 }
 
 void func_80097F74(uintptr_t devAddr, s32 vAddr, u32 arg2) {
-    s32 pad[0x2];
+    s32 pad[0x2]; // stack pad
     u32 sp2C;
     s32 temp_v0;
     u8* var_s0;

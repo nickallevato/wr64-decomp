@@ -176,13 +176,13 @@ Gfx* MainMenu_Draw(Gfx* gdl) {
             } else {
                 y = 140;
             }
-            gdl = func_801E3EE0(gdl, 1, 88, 95, y + 20, 2);
+            gdl = TexLabel_Draw(gdl, 1, 88, 95, y + 20, 2);
             gDPLoadTextureBlock(gdl++, D_803D610, G_IM_FMT_IA, G_IM_SIZ_8b, 256, 6, 0, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0,
                                 0);
             gSPTextureRectangle(gdl++, 32 << 2, (y + 44) << 2, 288 << 2, (y + 50) << 2, 0, 0, 0, 1 << 10, 1 << 10);
             if ((D_i0_802C6BEC == 0) && (D_i0_802C6BE8 == 20)) {
                 if ((D_i0_802C6BE4 % 30) < 20) {
-                    gdl = func_801E3EE0(
+                    gdl = TexLabel_Draw(
                         Printer_SetMode(gdl, 7, 0xFF, 0xFF, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF), 1,
                         86, 94, 166, 2);
                 }
@@ -263,11 +263,11 @@ Gfx* MainMenu_DrawRows(Gfx* gdl) {
             gdl = Printer_SetMode(gdl, D_i0_802C6BD4[i] ? 0 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                   0xFF, 0xFF, 0xFF);
         }
-        gdl = func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + i * 20, 0);
+        gdl = TexLabel_Draw(gdl, 1, item->unk8, item->unkC + x, y + 1 + i * 20, 0);
     }
     gdl = Printer_SetMode(gdl, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     item = &items[D_i0_802C6EE4];
-    return func_801E5554(func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + D_i0_802C6EE4 * 20, 0));
+    return Popup_DrawAll(TexLabel_Draw(gdl, 1, item->unk8, item->unkC + x, y + 1 + D_i0_802C6EE4 * 20, 0));
 }
 
 extern s32 D_801CB308[][3];
@@ -523,7 +523,7 @@ Gfx* TitleScreen_DrawScroller(Gfx* gdl) {
     for (i = 0, item = D_i0_802C6BF0; i < 2; i++, item++) {
         item->x -= 2;
         if (item->x >= 8 - item->width) {
-            gdl = func_801E3EE0(gdl, 3, item->id, item->x, 196, 6);
+            gdl = TexLabel_Draw(gdl, 3, item->id, item->x, 196, 6);
         } else {
             gone++;
         }

@@ -37,11 +37,11 @@ Gfx* func_1C3780_802C58F4(Gfx* gDisplayListHead) {
         func_80094200(
             func_80094200(
                 func_80094200(
-                    func_801E3EE0(
-                        func_801E3EE0(
-                            func_801E3EE0(
-                                func_801E3EE0(
-                                    func_801E3EE0(
+                    TexLabel_Draw(
+                        TexLabel_Draw(
+                            TexLabel_Draw(
+                                TexLabel_Draw(
+                                    TexLabel_Draw(
                                         Printer_SetMode(
                                             func_80094338(
                                                 func_80094338(

@@ -431,7 +431,7 @@ Gfx* ViewRecords_DrawPanels(Gfx* gdl) {
                 gSPDisplayList(gdl++, D_106F628);
                 gdl = func_80094338(gdl, 0, x + 28, y + 30, 264, 24);
                 gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-                gdl = func_801E3EE0(gdl, 2, D_800DAA34[D_i9_802C8104[j].unk8],
+                gdl = TexLabel_Draw(gdl, 2, D_800DAA34[D_i9_802C8104[j].unk8],
                                     D_i9_802C8174[D_i9_802C8104[j].unk8] + x + 76, y + 33, 0);
                 gDPLoadTextureBlock(gdl++, D_8060008, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                     G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -481,12 +481,12 @@ Gfx* ViewRecords_DrawCourseList(Gfx* gdl, s32 x) {
     gdl = func_80094338(gdl, 0, x + 117, 68, 87, 16);
     gdl = func_80094338(gdl, 0, x + 206, 68, 87, 16);
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 7, x + 72, 29, 0);
+    gdl = TexLabel_Draw(gdl, 2, 7, x + 72, 29, 0);
 
     for (i = 0; i < 3; i++) {
         gdl = Printer_SetMode(gdl, (i == D_i9_802C80C4) ? 6 : 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
                               255);
-        gdl = func_801E3EE0(gdl, 1, D_i9_802C8138[i], D_i9_802C8144[i] + x + i * 89 + 52, 71, 0);
+        gdl = TexLabel_Draw(gdl, 1, D_i9_802C8138[i], D_i9_802C8144[i] + x + i * 89 + 52, 71, 0);
     }
 
     for (i = 0; i < 9; i++) {
@@ -514,7 +514,7 @@ Gfx* ViewRecords_DrawCourseList(Gfx* gdl, s32 x) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, D_800DAA10[D_800DAAD8[i]], D_i9_802C8150[D_800DAAD8[i]] + x + (i / 5) * 133 + 55,
+        gdl = TexLabel_Draw(gdl, 1, D_800DAA10[D_800DAAD8[i]], D_i9_802C8150[D_800DAAD8[i]] + x + (i / 5) * 133 + 55,
                             (i % 5) * 18 + 98, 0);
     }
     return gdl;
@@ -597,23 +597,23 @@ Gfx* ViewRecords_DrawRecordsPanel(Gfx* gdl, s32 panel, s32 course, s32 kind, s32
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     if (kind == 1) {
-        gdl = func_801E3EE0(gdl, 3, 5, x + 61, y + 74, 2);
+        gdl = TexLabel_Draw(gdl, 3, 5, x + 61, y + 74, 2);
     } else if (kind == 3) {
-        gdl = func_801E3EE0(gdl, 3, 32, x + 51, y + 74, 2);
+        gdl = TexLabel_Draw(gdl, 3, 32, x + 51, y + 74, 2);
     } else {
-        gdl = func_801E3EE0(gdl, 3, 4, x + 51, y + 74, 2);
+        gdl = TexLabel_Draw(gdl, 3, 4, x + 51, y + 74, 2);
     }
-    gdl = func_801E3EE0(gdl, 1, 31, x + 43, y + 107, 0);
+    gdl = TexLabel_Draw(gdl, 1, 31, x + 43, y + 107, 0);
     if (kind == 1 || kind == 3) {
         tex = 3;
-        gdl = func_801E3EE0(gdl, 1, 17, x + 95, y + 107, 0);
-        gdl = func_801E3EE0(gdl, 1, 32, x + 160, y + 107, 0);
-        gdl = func_801E3EE0(gdl, 0, 13, x + 38, y + 184, 0);
+        gdl = TexLabel_Draw(gdl, 1, 17, x + 95, y + 107, 0);
+        gdl = TexLabel_Draw(gdl, 1, 32, x + 160, y + 107, 0);
+        gdl = TexLabel_Draw(gdl, 0, 13, x + 38, y + 184, 0);
     } else {
         tex = 62;
-        gdl = func_801E3EE0(gdl, 1, 32, x + 139, y + 107, 0);
+        gdl = TexLabel_Draw(gdl, 1, 32, x + 139, y + 107, 0);
     }
-    gdl = func_801E3EE0(gdl, 1, tex, x + 238, y + 107, 0);
+    gdl = TexLabel_Draw(gdl, 1, tex, x + 238, y + 107, 0);
 
     for (i = 0; i < 3; i++) {
         if (D_i9_802C81A4 != 0) {
@@ -644,7 +644,7 @@ Gfx* ViewRecords_DrawRecordsPanel(Gfx* gdl, s32 panel, s32 course, s32 kind, s32
             flag = rec->unk8;
             gdl = Printer_DrawTime(gdl, 2, rec->unk0, x + 215, y + 128 + i * 18);
             gdl = Printer_DrawString(gdl, 2, name, x + 160, y + 128 + i * 18);
-            gdl = func_801E3EE0(gdl, 0, D_i9_802C8198[rec->unkC], x + 95, y + 129 + i * 18, 0);
+            gdl = TexLabel_Draw(gdl, 0, D_i9_802C8198[rec->unkC], x + 95, y + 129 + i * 18, 0);
         } else if (kind == 3) {
             rec = &D_801C23B0[course];
             flag = rec->unk8;
@@ -655,7 +655,7 @@ Gfx* ViewRecords_DrawRecordsPanel(Gfx* gdl, s32 panel, s32 course, s32 kind, s32
                 gdl = Printer_DrawString(gdl, 2, "-'--@---", x + 215, y + 128 + i * 18);
                 gdl = Printer_DrawString(gdl, 2, "---", x + 160, y + 128 + i * 18);
             }
-            gdl = func_801E3EE0(gdl, 0, 36, x + 95, y + 129 + i * 18, 0);
+            gdl = TexLabel_Draw(gdl, 0, 36, x + 95, y + 129 + i * 18, 0);
         } else {
             stunt = &gStuntRecords[course][i];
             flag = stunt->unk8;
@@ -709,12 +709,12 @@ Gfx* ViewRecords_DrawRecordsPanel(Gfx* gdl, s32 panel, s32 course, s32 kind, s32
         gdl = Printer_DrawString(gdl, 1, buf, x + 79, y + 196);
         gdl = Printer_DrawString(gdl, 2, rec->unk10, x + 160, y + 196);
         gdl = Printer_DrawTime(gdl, 2, rec->unk0, x + 215, y + 196);
-        gdl = func_801E3EE0(gdl, 0, D_i9_802C8198[rec->unkC], x + 95, y + 197, 0);
+        gdl = TexLabel_Draw(gdl, 0, D_i9_802C8198[rec->unkC], x + 95, y + 197, 0);
     } else if (kind == 3) {
         gdl = Printer_SetMode(gdl, 7, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
         gdl = Printer_DrawString(gdl, 2, "---", x + 155, y + 302); // y + 302 as in the asm (off screen)
         gdl = Printer_DrawString(gdl, 2, "-'--@---", x + 215, y + 196);
-        gdl = func_801E3EE0(gdl, 0, 36, x + 95, y + 197, 0);
+        gdl = TexLabel_Draw(gdl, 0, 36, x + 95, y + 197, 0);
     }
 
     gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);

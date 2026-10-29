@@ -22,7 +22,7 @@ struct UnkStruct_801C4000 {
     f32 unk14;
 };
 
-f32 func_8004D30C(f32 arg0, f32 arg1);
+f32 Water_GetHeight(f32 arg0, f32 arg1);
 s32 func_80087134(f32, f32);
 void func_80087444(void);
 s32 Math_TwoLineSegmentsIntersect(f32 ax, f32 ay, f32 bx, f32 by, f32 cx, f32 cy);
@@ -179,9 +179,9 @@ void func_80080864(void) {
 
     sp28 = D_800D9854;
 
-    D_801C3C58->unk48 = (func_8004D30C(D_801C3C50->unk44, D_801C3C50->unk4C) - (f32) gWaterLevel);
+    D_801C3C58->unk48 = (Water_GetHeight(D_801C3C50->unk44, D_801C3C50->unk4C) - (f32) gWaterLevel);
 
-    D_801C3C58->unk4C = (func_8004D30C(D_801C3C50->unk44 + (512.0f * D_801C3C50->unk6C),
+    D_801C3C58->unk4C = (Water_GetHeight(D_801C3C50->unk44 + (512.0f * D_801C3C50->unk6C),
                                        D_801C3C50->unk4C + (512.0f * D_801C3C50->unk74)) -
                          gWaterLevel);
 
@@ -1431,7 +1431,7 @@ void func_80085B78(void) {
         if (D_800D98C8 != 2) {
             if (D_800D98C8 == 0) {
                 D_801C3C54 = &D_801B2F20;
-                goto exit;
+                goto exit; // goto: returns through the label below
             }
             D_801C3C54 = &D_801AEE20;
         exit:
@@ -1536,6 +1536,7 @@ void func_800861AC(void) {
                 D_801C3C58->unk10 = D_801C3C54[D_801C3C58->unk10].unkCC[D_801C3C58->currentRider];
                 func_800859F4();
             } else {
+                // FAKE: the (0, <float>) commas in this switch's calls (reason not recorded)
                 switch (D_801C3C58->unk20) {
                     case 1:
                     case 4: {
@@ -1818,7 +1819,7 @@ void func_80086DA8(void) {
     D_801C3C58->unkC8 = (D_801C3C50->unk60);
     D_801C3C58->unkCC = D_801C3C50->unk64;
 
-    // wtf
+    // FAKE: empty if over three reads (reason not recorded)
     temp = D_801C3C50;
     if (temp->unk15B4 && D_801C3C50->unk15B4 && D_801C3C50->unkC54) {}
 
@@ -2071,6 +2072,7 @@ void func_800875B8(s32 arg0, s32 arg1) {
         } else {
             temp_f2_2 = temp_f0 - 1441.0f;
             temp_f14_2 = temp_f12 - 3619.0f;
+            // FAKE: the (0, 4000000.0f) comma (reason not recorded)
             if ((((temp_f2_2 * temp_f2_2) + (temp_f14_2 * temp_f14_2)) < ((0, 4000000.0f))) && (arg1 != 0)) {
                 switch (arg1) {
                     case 1:
@@ -2093,7 +2095,7 @@ void func_800875B8(s32 arg0, s32 arg1) {
                                     D_801C3C50->unkB52 = 0;
                                     D_801C3C50->unkB53 = 0;
 
-                                    // Wtf
+                                    // FAKE: empty if (true) (reason not recorded)
                                     if (true) {}
                                     return;
                                 }

@@ -160,8 +160,8 @@ Gfx* NotQualified_DrawPanels(Gfx* gdl) {
     gdl = func_80094338(gdl, 0, D_i5_802C7ACC, 145, 208, 15);
     gdl = func_80094338(gdl, 0, D_i5_802C7AD0, 166, 208, 15);
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 1, 6, D_i5_802C7ACC + 10, 147, 0);
-    gdl = func_801E3EE0(gdl, 1, 7, D_i5_802C7AD0 + 10, 168, 0);
+    gdl = TexLabel_Draw(gdl, 1, 6, D_i5_802C7ACC + 10, 147, 0);
+    gdl = TexLabel_Draw(gdl, 1, 7, D_i5_802C7AD0 + 10, 168, 0);
     gdl = Printer_DrawNumber(gdl, 2, D_i5_802C7B34, D_i5_802C7ACC + 186, 147);
     gdl = Printer_DrawNumber(gdl, 2, D_i5_802C7B30, D_i5_802C7AD0 + 186, 168);
     return gdl;

@@ -171,7 +171,7 @@ s32 func_800ADC8C(s32);
 void func_800ADD14(void);
 void func_800A2B24(s32);
 // File declarations
-f32 func_8004D30C(f32, f32);
+f32 Water_GetHeight(f32, f32);
 void func_8009A97C(UnkStruct_801CF060* arg0);
 void func_8009A4DC(UnkStruct_801CF060* arg0);
 void func_8009A9FC(UnkStruct_801CF060* arg0);
@@ -467,7 +467,7 @@ typedef struct UnkStruct_801CE798 {
 extern UnkStruct_801CE798 D_801CE798[];
 
 Gfx* func_8009DB90(Gfx* dl, s32 arg1) {
-    UNUSED s32 pad;
+    UNUSED s32 pad; // stack pad
     s32 sp18;
 
     sp18 = D_801CE774;
@@ -558,7 +558,7 @@ Gfx* func_8009DC10(Gfx* gdl, s32 arg1) {
 }
 
 Gfx* func_8009E794(Gfx* dl, s32 arg1) {
-    UNUSED s32 pad;
+    UNUSED s32 pad; // stack pad
     s32 sp18;
 
     sp18 = D_801CE76E;
@@ -1086,7 +1086,7 @@ Gfx* func_800A28F4(Gfx* gdl, s32 arg1) {
     s32 sp68;
     StructVarS0* temp_t0_2;
     UnkStruct_801CE780* temp_a2;
-    s32 pad;
+    s32 pad; // stack pad
 
     if (gCurrentPauseMenuOption == -1) {
         D_801CF060[arg1].unk78 = (s32) (D_801CF060[arg1].unk78 + 1) % 2;
@@ -1123,18 +1123,18 @@ void func_800A2B24(s32 arg0) {
     cam = &gCameraPerspective[D_80223930];
     switch (D_801CF060[arg0].unk50) {
         case 0:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1153,18 +1153,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
             break;
         case 1:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1188,18 +1188,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 2:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1224,18 +1224,18 @@ void func_800A2B24(s32 arg0) {
             }
             break;
         case 3:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 3.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 1.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 3.0f;
             } else {
@@ -1262,18 +1262,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 4:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 3.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 1.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1305,18 +1305,18 @@ void func_800A2B24(s32 arg0) {
             }
             break;
         case 5:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1340,18 +1340,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 6:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.5;
                 } else {
                     D_801CF060[arg0].unk5C += 1.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 7.5;
             } else {
@@ -1377,18 +1377,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 7:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1402,18 +1402,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 80;
             break;
         case 8:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 3.5f;
                 } else {
                     D_801CF060[arg0].unk5C += 1.5f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 0.5f;
             } else {
@@ -1513,18 +1513,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
             break;
         case 14:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 7.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 1.0f;
             } else {
@@ -1548,18 +1548,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 15:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 8.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 0.3f;
             } else {
@@ -1593,18 +1593,18 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 16:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 8.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 3.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 20.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 0.3f;
             } else {
@@ -1641,18 +1641,18 @@ void func_800A2B24(s32 arg0) {
             }
             break;
         case 17:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 40.0f) < D_801CF060[arg0].unk10) {
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 40.0f) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 3.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 1.0f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 40.0f) <
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) - 40.0f) <
                        D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 3.0f;
             } else {
@@ -1676,19 +1676,19 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk54 = (D_801CF060[arg0].unk54 + 1) % 65535;
             break;
         case 18:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
                      ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 70.0f)) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 3.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 1.5f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
                         ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 70.0f)) < D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 0.5f;
             } else {
@@ -1700,19 +1700,19 @@ void func_800A2B24(s32 arg0) {
             D_801CF060[arg0].unk10 += D_801CF060[arg0].unk5C;
             break;
         case 19:
-            if (func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
-                D_801D0758 = D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
+            if (Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) <= D_801CF060[arg0].unk10) {
+                D_801D0758 = D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14);
             } else {
-                D_801D0758 = -(D_801CF060[arg0].unk10 - func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
+                D_801D0758 = -(D_801CF060[arg0].unk10 - Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14));
             }
             if (D_801D0758 > 40.0f) {
-                if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+                if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
                      ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 200.0f)) < D_801CF060[arg0].unk10) {
                     D_801CF060[arg0].unk5C -= 3.0f;
                 } else {
                     D_801CF060[arg0].unk5C += 1.5f;
                 }
-            } else if ((func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
+            } else if ((Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) -
                         ((gSinTable[(D_800E62C4 * 200) & 0xFFF] * 20.0f) + 200.0f)) < D_801CF060[arg0].unk10) {
                 D_801CF060[arg0].unk5C -= 0.5f;
             } else {
@@ -2091,7 +2091,7 @@ void func_800A68A4(s32 arg0) {
     D_801CF060[arg0].unk6C = D_801CF060[arg0].unk14;
     D_801CF060[arg0].unk68 = D_801CF060[arg0].unk10 + (node->unk2 * 0.1);
     D_801CF060[arg0].unk64 = D_801CF060[arg0].unkC;
-    if (func_8004D30C(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) < D_801CF060[arg0].unk68) {
+    if (Water_GetHeight(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) < D_801CF060[arg0].unk68) {
         D_801D0668.unk_5 = 0;
     } else {
         D_801D0668.unk_5 = 1;
@@ -2173,38 +2173,38 @@ void func_800A68A4(s32 arg0) {
         }
         if (D_801CF060[arg0].unk8 == 1) {
             D_801D0754 = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
-            D_801D0758 = func_8004D30C(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) +
+            D_801D0758 = Water_GetHeight(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) +
                          (D_801B2F20[D_801CF060[arg0].unk9C].unk4 - 20.0f);
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
             if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = 7000.0f;
                 D_801D075C = -2650.0f;
-                D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+                D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             }
             if ((D_801D06BC <= 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = -7000.0f;
                 D_801D075C = -2650.0f;
-                D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+                D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             }
             if ((D_801D06BC > 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
                 D_801D0754 = 5600.0f;
                 D_801D075C = 0.0f;
-                D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+                D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             }
             if ((D_801D06BC <= 0.0f) && (D_801D06C4 > -4000.0f) && (D_801D06C4 < -1300.0f)) {
                 D_801D0754 = -5600.0f;
                 D_801D075C = 2000.0f;
-                D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+                D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             }
             if ((D_801D06BC > 3300.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 1000.0f)) {
                 D_801D0754 = 5000.0f;
                 D_801D075C = 1000.0f;
-                D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+                D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             }
             if ((D_801D06BC <= -3700.0f) && (D_801D06C4 > -1300.0f) && (D_801D06C4 < 2000.0f)) {
                 D_801D0754 = -5000.0f;
                 D_801D075C = 2500.0f;
-                D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+                D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             }
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
@@ -2253,7 +2253,7 @@ void func_800A68A4(s32 arg0) {
                 (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.0f) * D_801D0724 * D_801D076C) - D_801D0768) *
                         0.15) +
                        (f64) D_801D0768);
-            if (D_801CF060[arg0].unk68 < func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
+            if (D_801CF060[arg0].unk68 < Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
                 angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
                 D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
                 D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
@@ -2398,7 +2398,7 @@ void func_800A68A4(s32 arg0) {
             angle = (s32) ((D_801D0760 / 360.0f) * 4096.0f);
             D_801D0754 += COS(angle) * D_801D0768;
             D_801D075C = (SIN(angle) * D_801D0768) + D_801D0758;
-            D_801D0758 = func_8004D30C(D_801D0754, D_801D075C) - 20.0f;
+            D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
                 D_801CF060[arg0].unk18);
@@ -2471,7 +2471,7 @@ void func_800A68A4(s32 arg0) {
             D_801D0754 = D_801CF060[arg0].unkC;
             D_801D0758 = D_801CF060[arg0].unk10;
             D_801D075C = D_801CF060[arg0].unk14;
-            if (D_801CF060[arg0].unk68 < func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
+            if (D_801CF060[arg0].unk68 < Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
                 angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
                 D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
                 D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
@@ -2592,7 +2592,7 @@ void func_800A68A4(s32 arg0) {
 // TODO: Migrate rodata
 
 void func_800A9130(s32 arg0) {
-    char pad[0x8];
+    char pad[0x8]; // stack pad
 
     if ((gGameModeState == 3) && (gCurrentPauseMenuOption == -1)) {
         if (D_801CF060[arg0].unk8 == 1) {
@@ -3051,7 +3051,7 @@ void func_800AAAC8(s32 arg0) {
         if (D_801CF060[arg0].unk8 == 2) {
             D_801CF060[arg0].unkC = D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unk8 + D_801CF060[arg0].unk80;
             D_801CF060[arg0].unk14 = D_800E6C78[gCourseID][D_801CF060[arg0].unk9C].unkC + D_801CF060[arg0].unk88;
-            D_801CF060[arg0].unk10 = func_8004D30C(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) + 20.0f;
+            D_801CF060[arg0].unk10 = Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14) + 20.0f;
             D_801CF060[arg0].unk1C = 0.0f;
             D_801D0754 = func_8009D4DC(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4);
             if (D_801D0754 < SQ(D_801CF060[arg0].unk70)) {

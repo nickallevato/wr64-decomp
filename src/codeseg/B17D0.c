@@ -87,7 +87,7 @@ Gfx* func_801E34F8(Gfx* gdl) {
         D_801CE63C = 0;
     }
     D_800DAB2C = 0;
-    gdl = func_801E3698(Draw_WaterEffects(func_800949B8(func_8008FB74(gdl), gCourseID)));
+    gdl = StuntRecords_Draw(Draw_WaterEffects(func_800949B8(func_8008FB74(gdl), gCourseID)));
     func_801E355C();
     return gdl;
 }
@@ -156,7 +156,7 @@ Gfx* func_801E7FD8(Gfx* dList, s32 ulx, s32 uly, s32 lrx, s32 lry);
 Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
 // Draw the course records screen.
-Gfx* func_801E3698(Gfx* gdl) {
+Gfx* StuntRecords_Draw(Gfx* gdl) {
     s32 i;
     s32 mode;
     CourseRecord* rec;
@@ -207,12 +207,12 @@ Gfx* func_801E3698(Gfx* gdl) {
         gdl = func_801E4FE8(gdl, D_800DA9B0[gPlayer1Rider], 0, 0, D_801CE5F8->unkC80[i]);
     }
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, D_800DAA34[gCourseID], D_80226350[gCourseID] + D_802288F8 + 56, 33, 0);
-    gdl = func_801E3EE0(gdl, 1, 31, D_802288FC + 23, 91, 0);
-    gdl = func_801E3EE0(gdl, 1, 32, D_802288FC + 119, 91, 0);
-    gdl = func_801E3EE0(gdl, 1, 62, D_802288FC + 218, 91, 0);
+    gdl = TexLabel_Draw(gdl, 2, D_800DAA34[gCourseID], D_80226350[gCourseID] + D_802288F8 + 56, 33, 0);
+    gdl = TexLabel_Draw(gdl, 1, 31, D_802288FC + 23, 91, 0);
+    gdl = TexLabel_Draw(gdl, 1, 32, D_802288FC + 119, 91, 0);
+    gdl = TexLabel_Draw(gdl, 1, 62, D_802288FC + 218, 91, 0);
     if (D_801C2928 == 0) {
-        gdl = func_801E3EE0(gdl, 0, 26, D_802288FC + 18, 184, 0);
+        gdl = TexLabel_Draw(gdl, 0, 26, D_802288FC + 18, 184, 0);
     }
     for (i = 0; i < 3; i++) {
         if (D_801C2928 != 0) {

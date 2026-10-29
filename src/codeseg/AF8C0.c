@@ -47,7 +47,7 @@ void func_801E2B8C(s32);
 void Initials_SaveToRecords(void);
 void GameState_EnterTimeTrialsResults(void);
 f32 func_801E31A0(void);
-void func_801E1BA8(void);
+void Initials_Init(void);
 void func_80049A94(Mtx*, MtxF*, f32, f32, f32, f32, f32, f32);
 void Water_StampPoint(f32, f32, s32);
 void Water_StampPointTimed(f32, f32, s32, s32);
@@ -112,7 +112,7 @@ void Initials_Update(void) {
 
     active = 0;
     if ((D_801CE63C != 0) && (gGameState == GAME_STATE_64)) {
-        func_801E1BA8();
+        Initials_Init();
     }
     switch (gInitialsState) {
         case 0:
@@ -290,7 +290,7 @@ void Initials_Update(void) {
     }
 }
 
-void func_801E1BA8(void) {
+void Initials_Init(void) {
     s32 i;
     s32 j;
     s32 first;
@@ -469,7 +469,7 @@ Gfx* Initials_DrawPanel(Gfx* gdl) {
         gSPDisplayList(gdl++, D_802261EC[i]);
     }
     gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-    gdl = func_801E3EE0(gdl, 2, 0x1D, 0x48, 0x23, 0);
+    gdl = TexLabel_Draw(gdl, 2, 0x1D, 0x48, 0x23, 0);
     for (i = 0; i < 3; i++) {
         str[1] = 0;
         str[0] = gInitialsEntered[i];

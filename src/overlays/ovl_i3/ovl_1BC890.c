@@ -58,7 +58,7 @@ Gfx* func_i3_802C6344(Gfx*);
 void GameState_EnterCourseOverview(void);
 void CourseOverview_Leave(void);
 
-void func_i3_802C5800(void) {
+void CourseOverview_OverlayUpdate(void) {
     s32 i;
     s32 j;
 
@@ -277,14 +277,14 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
     gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, D_i3_802C6F7C);
     gdl = func_80094338(gdl, 0, 32, 133, 256, 32);
     gdl = Printer_SetMode(gdl, 10, D_i3_802C6F6C, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 34, 72, 81, 0);
+    gdl = TexLabel_Draw(gdl, 2, 34, 72, 81, 0);
     gdl = Printer_SetMode(gdl, 10, D_i3_802C6F78, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     if (D_800DAB68 != 0) {
         label = &D_i3_802C6FCC;
     } else {
         label = &D_i3_802C6FB4[gDifficulty];
     }
-    return func_801E3EE0(gdl, 2, label->texture, label->x + 50, 139, 0);
+    return TexLabel_Draw(gdl, 2, label->texture, label->x + 50, 139, 0);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i3/ovl_1BC890/func_i3_802C5D54.s")
@@ -354,16 +354,16 @@ Gfx* func_i3_802C6344(Gfx* gdl) {
         } else {
             xOffset = 0;
         }
-        gdl = func_801E3EE0(gdl, 1, D_i3_802C6F90[race], 37, 37, 1);
+        gdl = TexLabel_Draw(gdl, 1, D_i3_802C6F90[race], 37, 37, 1);
     }
-    gdl = func_801E3EE0(gdl, 2, D_800DAA34[D_801CB330], xOffset + 103, 33, 0);
-    gdl = func_801E3EE0(gdl, 0, 22, 195, 62, 0);
-    gdl = func_801E3EE0(gdl, 0, 14, 212, 88, 0);
-    gdl = func_801E3EE0(gdl, 0, 13, 212, 136, 0);
+    gdl = TexLabel_Draw(gdl, 2, D_800DAA34[D_801CB330], xOffset + 103, 33, 0);
+    gdl = TexLabel_Draw(gdl, 0, 22, 195, 62, 0);
+    gdl = TexLabel_Draw(gdl, 0, 14, 212, 88, 0);
+    gdl = TexLabel_Draw(gdl, 0, 13, 212, 136, 0);
     if (1) {} // FAKE: the original stores this call's arguments in another order
-    gdl = func_801E3EE0(gdl, 1, 6, 34, 181, 0);
+    gdl = TexLabel_Draw(gdl, 1, 6, 34, 181, 0);
     if (1) {} // FAKE: as above
-    gdl = func_801E3EE0(gdl, 1, 7, 34, 194, 0);
+    gdl = TexLabel_Draw(gdl, 1, 7, 34, 194, 0);
     if (D_801CB330 == 0) {
         gdl = Printer_DrawString(gdl, 2, "-'--@---", 203, 105);
         gdl = Printer_DrawString(gdl, 2, "-'--@---", 203, 153);

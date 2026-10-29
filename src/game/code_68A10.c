@@ -176,7 +176,7 @@ extern UnkStruct_801AE948 D_80198368[];
 // External functions
 f32 Math_FloatRand(f32);
 void func_801EE97C(Mtx*, f32, f32, f32);
-f32 func_8004D30C(f32 arg0, f32 arg1);
+f32 Water_GetHeight(f32 arg0, f32 arg1);
 
 // File functions
 void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5);
@@ -234,7 +234,7 @@ void func_800AE210(s32 rider) {
         D_801D79F8 = temp_v0_2->unkBF0;
         D_801D79FC = temp_v0_2->unkBF4;
         if ((D_801D7A14 != 0) && (temp_v0_2->unkC4C > 0.0f) &&
-            (((func_8004D30C(D_801D79BC, D_801D79C4) + 4.0f) < D_801D79C0))) {
+            (((Water_GetHeight(D_801D79BC, D_801D79C4) + 4.0f) < D_801D79C0))) {
             D_801D0798[rider].unk1C54 = 1;
         } else {
             D_801D0798[rider].unk1C54 = 0;
@@ -247,7 +247,7 @@ void func_800AE210(s32 rider) {
 
     D_801D79D4 = sqrtf(SQ(D_801D79C8) + SQ(D_801D79CC) + SQ(D_801D79D0));
     if (D_801D0798[rider].unk1C54 == 0) {
-        D_801D7A00 = func_8004D30C(D_801D79BC, D_801D79C4);
+        D_801D7A00 = Water_GetHeight(D_801D79BC, D_801D79C4);
         if (D_801D79C0 <= D_801D7A00) {
             D_801D0798[rider].unk1C58 = 0;
         }
@@ -505,6 +505,7 @@ void func_800AF51C(void) {
         temp_f24 = Math_FloatRand(32.0f);
         temp_f20 = Math_FloatRand(4.0f);
 
+        // FAKE: the (0, temp_f24) and (0, temp_f20) commas (reason not recorded)
         func_800AF4A0((0, temp_f24) + (D_801D7AE0 - 16.0f), (0, temp_f20) + (D_801D7AE4 - 2.0f),
                       Math_FloatRand(32.0f) + (D_801D7AE8 - 16.0f), ((f32) D_801D7ADC * 0.2f) + 1.2f);
     }
@@ -569,7 +570,7 @@ void func_800AF798(Gfx** gdl) {
         temp_fs2 = var_s3->eyeY - D_801D7A18[i].unkC;
         temp_fa1 = var_s3->eyeZ - D_801D7A18[i].unk10;
 
-        // fake match
+        // FAKE: two empty ifs (reason not recorded)
         if (temp_fa0 == temp_fa1) {}
         if (temp_fa0 == temp_fa1) {}
 
@@ -1748,7 +1749,7 @@ void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5) 
     s32* var_a3;
     f32 other;
     Gfx* gdlh;
-    char pad[0x4];
+    char pad[0x4]; // stack pad
     MtxF sp74;
 
     gdlh = *gdl;

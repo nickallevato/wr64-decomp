@@ -22,9 +22,9 @@ extern UnkStruct_800DB568 D_800DB58C[];
 void func_8004A208(void);
 void func_8009684C(s32 arg0, s32 arg1, s32 arg2);
 void func_800C4998(s32 arg0, s32 arg1);
-void func_801EE040(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
-void func_801EE274(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
-void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
+void MtxF_Rotate(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4);
+void MtxF_RotateTranslate(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
+void MtxF_RotateRPYTranslate(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
 void func_801EE6F4(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 
@@ -1095,8 +1095,8 @@ void func_801EDFFC(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3) {
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
-// Same shape as func_801EE274 (guRotateF), plus the FAKE copy of x; t also holds the length.
-void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
+// Same shape as MtxF_RotateTranslate (guRotateF), plus the FAKE copy of x; t also holds the length.
+void MtxF_Rotate(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
     f32 sine;
     f32 cosine;
     f32 ab;
@@ -1148,12 +1148,12 @@ void func_801EE040(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z) {
 void func_801EE228(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
     MtxF mtx;
 
-    func_801EE040((float (*)[4]) & mtx, arg1, arg2, arg3, arg4);
+    MtxF_Rotate((float (*)[4]) & mtx, arg1, arg2, arg3, arg4);
 
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
-void func_801EE274(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z, f32 arg5, f32 arg6, f32 arg7) {
+void MtxF_RotateTranslate(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z, f32 arg5, f32 arg6, f32 arg7) {
     f32 sine;
     f32 cosine;
     f32 ab;
@@ -1200,12 +1200,12 @@ void func_801EE274(MtxF_t arg0, f32 arg1, f32 x, f32 y, f32 z, f32 arg5, f32 arg
 void func_801EE46C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     MtxF mtx;
 
-    func_801EE274((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    MtxF_RotateTranslate((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 
     _MtxF_to_Mtx(&mtx, arg0);
 }
 
-void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
+void MtxF_RotateRPYTranslate(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     f32 sx;
     f32 sy;
     f32 sz;
@@ -1243,7 +1243,7 @@ void func_801EE4D0(MtxF_t arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 void func_801EE698(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
     MtxF mtx;
 
-    func_801EE4D0((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6);
+    MtxF_RotateRPYTranslate((float (*)[4]) & mtx, arg1, arg2, arg3, arg4, arg5, arg6);
 
     _MtxF_to_Mtx(&mtx, arg0);
 }

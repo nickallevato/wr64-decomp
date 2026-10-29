@@ -56,9 +56,9 @@ Gfx* EraseCourseRecords_DrawScreen(Gfx* gdl) {
     gdl = func_80094338(gdl, 0, 164, 181, 90, 16);
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 17, 32, 29, 0);
-    gdl = func_801E3EE0(gdl, 4, 12, 87, 206, 0);
-    gdl = func_801E3EE0(gdl, 4, 13, 169, 206, 0);
+    gdl = TexLabel_Draw(gdl, 2, 17, 32, 29, 0);
+    gdl = TexLabel_Draw(gdl, 4, 12, 87, 206, 0);
+    gdl = TexLabel_Draw(gdl, 4, 13, 169, 206, 0);
 
     for (i = 0; i < 3; i++) {
         if (i == D_i12_802C6460) {
@@ -67,7 +67,7 @@ Gfx* EraseCourseRecords_DrawScreen(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, D_i12_802C646C[i], D_i12_802C6480[i] + i * 89 + 52, 61, 0);
+        gdl = TexLabel_Draw(gdl, 1, D_i12_802C646C[i], D_i12_802C6480[i] + i * 89 + 52, 61, 0);
     }
 
     for (i = 0; i < 9; i++) {
@@ -95,7 +95,7 @@ Gfx* EraseCourseRecords_DrawScreen(Gfx* gdl) {
             mode = 0;
         }
         gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, D_800DAA10[D_800DAAD8[i]], D_i12_802C648C[D_800DAAD8[i]] + (i / 5) * 133 + 55,
+        gdl = TexLabel_Draw(gdl, 1, D_800DAA10[D_800DAAD8[i]], D_i12_802C648C[D_800DAAD8[i]] + (i / 5) * 133 + 55,
                             (i % 5) * 18 + 88, 0);
     }
 
@@ -110,7 +110,7 @@ Gfx* EraseCourseRecords_DrawScreen(Gfx* gdl) {
             mode = 7;
         }
         gdl = Printer_SetMode(gdl, mode, 128, 128, 128, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-        gdl = func_801E3EE0(gdl, 1, D_i12_802C6478[i], i * 97 + 82, 184, 0);
+        gdl = TexLabel_Draw(gdl, 1, D_i12_802C6478[i], i * 97 + 82, 184, 0);
     }
     return gdl;
 }

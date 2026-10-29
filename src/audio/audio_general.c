@@ -28,7 +28,7 @@ extern s32 D_800E7CF4;
 extern s8 D_801D7DFA;
 
 void func_800BF370(void) {
-    UNUSED s32 pad;
+    UNUSED s32 pad; // stack pad
     s32 temp_v1;
 
     if (D_800E7C94 == 0xB) {
@@ -872,7 +872,7 @@ void func_800C1268(unkStruct_func_800C1268* arg0) {
 }
 
 void func_800C13AC(s32 arg0) {
-    s32 pad;
+    s32 pad; // stack pad
     OSMesg msg;
 
     D_8003FCCF = arg0;

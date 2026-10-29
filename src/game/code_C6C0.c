@@ -559,7 +559,7 @@ extern f32 D_800D93B0[];
 extern f32 D_800D93C0[];
 
 void func_80098048(s32, s32);
-f32 func_8004D30C(f32, f32);
+f32 Water_GetHeight(f32, f32);
 void func_80052C6C(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStruct_80052C6C_2* arg2);
 s32 func_80052E90(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3);
 s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3);
@@ -585,7 +585,7 @@ void func_80061184(UnkStruct_80192690*);
 void func_80080400(void);
 Gfx* func_800694B8(Gfx*, s32);
 Gfx* Rider_DrawParts(Gfx*, s32, s32);
-void func_8004E0A4(UnkStruct_80192690*, f32);
+void Water_PushPointsAtLevel(UnkStruct_80192690*, f32);
 void func_8004E548(struct UnkStruct_8004B0F8*, f32);
 void func_80051740(struct UnkStruct_801C3C50*, struct UnkStruct_8004B0F8*);
 void func_8007F030(UnkStruct_80192690*, UnkStruct_80192690*);
@@ -782,7 +782,7 @@ void func_80052480(s32 arg0, struct UnkStruct_80052480* arg1) {
     ft2 = (D_80192690[arg0].unk90[2].unk0 + D_80192690[arg0].unk90[0].unk0) * 0.5f;
     sp28 = ((D_80192690[arg0].unk90[2].unk4 + D_80192690[arg0].unk90[0].unk4) * 0.5f);
     var_v0 =
-        (func_8004D30C(ft2, (D_80192690[arg0].unk90[2].unk8 + D_80192690[arg0].unk90[0].unk8) * 0.5f) - sp28 - 7.0f) *
+        (Water_GetHeight(ft2, (D_80192690[arg0].unk90[2].unk8 + D_80192690[arg0].unk90[0].unk8) * 0.5f) - sp28 - 7.0f) *
         20;
 
     if (var_v0 < 0) {
@@ -6826,7 +6826,7 @@ void func_80064C0C(s32 arg0) {
         }
     }
     if (D_801C3D14[arg0].unk0 != 0) {
-        func_8004E0A4(rider, rider->unk15D4);
+        Water_PushPointsAtLevel(rider, rider->unk15D4);
     } else {
         func_8004E548((struct UnkStruct_8004B0F8*) rider, rider->unk15D4);
     }
@@ -6924,6 +6924,7 @@ void func_80065C18(s32 arg0) {
             rider->unkB94 = rider->unkB90;
         }
     }
+    // FAKE: .0f, not 0.0f: IDO keeps the two zero constants apart (FORK.md m5)
     if (((rider->unkC4C != 0) || (rider->unkC48 != .0f)) && (rider->unkC66 != 0)) {
         if ((rider->unk16B4 < 40) && (rider->unkB90 < 2.777778f)) {
             rider->unk16B4++;
@@ -6963,6 +6964,7 @@ void func_80065C18(s32 arg0) {
     rider->unkC78 = count;
     rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
     rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
+    // FAKE: .0f, not 0.0f, as above
     if ((rider->unkC7C == 0) &&
         ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
         rider->unk16D0++;
@@ -7011,7 +7013,7 @@ void func_80065C18(s32 arg0) {
     }
     rider->unkC84 = rider->unkC86;
     if ((rider->unkC54 == 23) || (rider->unkC54 == 5)) {
-        if (RIDER_PARTS(rider)[2].unk4.y < func_8004D30C(RIDER_PARTS(rider)[2].unk4.x, RIDER_PARTS(rider)[2].unk4.z)) {
+        if (RIDER_PARTS(rider)[2].unk4.y < Water_GetHeight(RIDER_PARTS(rider)[2].unk4.x, RIDER_PARTS(rider)[2].unk4.z)) {
             rider->unkC86 = 1;
         } else {
             rider->unkC86 = 0;
@@ -7740,7 +7742,7 @@ s32 func_8006931C(UnkStruct_80192690* arg0, Mtx* arg1) {
     sp30.mf[1][0] = sp30.mf[3][3] * sp30.mf[3][0];
     sp30.mf[1][2] = sp30.mf[3][3] * sp30.mf[3][2];
     sp30.mf[3][0] = arg0->unk44.x;
-    sp30.mf[3][1] = func_8004D30C(arg0->unk44.x, arg0->unk44.z);
+    sp30.mf[3][1] = Water_GetHeight(arg0->unk44.x, arg0->unk44.z);
     sp30.mf[3][2] = arg0->unk44.z;
     sp30.mf[0][1] = sp30.mf[1][1] = sp30.mf[2][1] = sp30.mf[0][3] = sp30.mf[1][3] = sp30.mf[2][3] = 0;
     sp30.mf[3][3] = 1.0f;

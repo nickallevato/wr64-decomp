@@ -13,7 +13,7 @@ extern Gfx D_E010F28[];
 extern Mtx D_2000A40[];
 extern u8 D_3000000[];
 
-f32 func_8004D30C(f32, f32);
+f32 Water_GetHeight(f32, f32);
 
 // Places D_801C3B90 at D_800D9640's sixteen positions with random angles, and sets the texture coordinates of the
 // vertices at GfxPool + 0x185E8 in both pools (eight per entry).
@@ -41,7 +41,7 @@ void func_8007FD80(void) {
 }
 
 // In Port Blue, draws each D_801C3B90 entry inside the water window (gWaterWindow[0]) as eight vertices at its angle,
-// on the water height (func_8004D30C), and six triangles.
+// on the water height (Water_GetHeight), and six triangles.
 Gfx* func_8007FFA8(Gfx* gdl) {
     UnkStruct_801C3B90* p;
     Vtx* v;
@@ -77,28 +77,28 @@ Gfx* func_8007FFA8(Gfx* gdl) {
         v = &gGfxPool->unk170D8[0x151 + i];
         v[3].v.ob[0] = x = p->unk0 - ax;
         v[3].v.ob[2] = z = p->unk4 - az;
-        v[3].v.ob[1] = func_8004D30C(x, z);
+        v[3].v.ob[1] = Water_GetHeight(x, z);
         v[0].v.ob[0] = dx = x - bx;
         v[0].v.ob[2] = dz = z - bz;
-        v[0].v.ob[1] = func_8004D30C(dx, dz);
+        v[0].v.ob[1] = Water_GetHeight(dx, dz);
         v[5].v.ob[0] = dx = x + bx;
         v[5].v.ob[2] = dz = z + bz;
-        v[5].v.ob[1] = func_8004D30C(dx, dz);
+        v[5].v.ob[1] = Water_GetHeight(dx, dz);
         v[1].v.ob[0] = dx = p->unk0 - bx;
         v[1].v.ob[2] = dz = p->unk4 - bz;
-        v[1].v.ob[1] = func_8004D30C(dx, dz);
+        v[1].v.ob[1] = Water_GetHeight(dx, dz);
         v[6].v.ob[0] = dx = p->unk0 + bx;
         v[6].v.ob[2] = dz = p->unk4 + bz;
-        v[6].v.ob[1] = func_8004D30C(dx, dz);
+        v[6].v.ob[1] = Water_GetHeight(dx, dz);
         v[4].v.ob[0] = x = p->unk0 + ax;
         v[4].v.ob[2] = z = p->unk4 + az;
-        v[4].v.ob[1] = func_8004D30C(x, z);
+        v[4].v.ob[1] = Water_GetHeight(x, z);
         v[2].v.ob[0] = dx = x - bx;
         v[2].v.ob[2] = dz = z - bz;
-        v[2].v.ob[1] = func_8004D30C(dx, dz);
+        v[2].v.ob[1] = Water_GetHeight(dx, dz);
         v[7].v.ob[0] = dx = x + bx;
         v[7].v.ob[2] = dz = z + bz;
-        v[7].v.ob[1] = func_8004D30C(dx, dz);
+        v[7].v.ob[1] = Water_GetHeight(dx, dz);
         gSPVertex(gdl++, &((GfxPool*) D_3000000)->unk170D8[0x151 + i], 8, 0);
         gSP1Triangle(gdl++, 0, 3, 1, 0);
         gSP1Triangle(gdl++, 1, 3, 6, 0);

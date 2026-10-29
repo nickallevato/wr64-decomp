@@ -88,18 +88,18 @@ Gfx* OptionsMenu_DrawItems(Gfx* gdl) {
     }
 
     gdl = Printer_SetMode(gdl, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
-    gdl = func_801E3EE0(gdl, 2, 5, 107, 34, 0);
+    gdl = TexLabel_Draw(gdl, 2, 5, 107, 34, 0);
 
     for (i = 0, item = D_i7_802C5D3C; i < 7; i++, item++) {
         if (i != gCurrentOptionsMenuItem) {
             if (1) {} // FAKE: gives the original's i * 19 (shifts, not a multu by a hoisted 19)
-            gdl = func_801E3EE0(gdl, 1, item->texture, item->x + 109, i * 19 + 76, 0);
+            gdl = TexLabel_Draw(gdl, 1, item->texture, item->x + 109, i * 19 + 76, 0);
         }
     }
 
     gdl = Printer_SetMode(gdl, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
     item = &D_i7_802C5D3C[gCurrentOptionsMenuItem];
-    return func_801E3EE0(gdl, 1, item->texture, item->x + 109, gCurrentOptionsMenuItem * 19 + 76, 0);
+    return TexLabel_Draw(gdl, 1, item->texture, item->x + 109, gCurrentOptionsMenuItem * 19 + 76, 0);
 }
 
 void OptionsMenu_Leave(s32 arg0) {

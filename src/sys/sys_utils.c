@@ -165,7 +165,7 @@ void func_800481E0(Mtx* arg0, u16* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5,
     f32 sp4C;
     f32 sp48;
     s32 sp44;
-    s32 pad[2];
+    s32 pad[2]; // stack pad
 
     temp_v0 = SysUtils_Round((arg2 / 720.0f) * 4096.0f);
 

@@ -43,7 +43,7 @@ extern u32 D_8058008[];
 extern u32 D_8071008[];
 extern RiderStruct gRiderRaceState[];
 
-Gfx* func_801E5554(Gfx* gdl) {
+Gfx* Popup_DrawAll(Gfx* gdl) {
     s32 off;
     u32 width;
     s32 j;
