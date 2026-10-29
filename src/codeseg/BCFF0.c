@@ -2990,7 +2990,8 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5865 of 25000: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
+// Score 5485 of 25000: x * 4 (an int literal, a separate constant to IDO; from a literal search) in the first
+// rectangle coordinate. Left: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
 // D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
 // IDO here hoists it. A 12-byte pad gives the original's frame (0xE0) and spill slots.
 extern Gfx D_10146B0[];
@@ -3055,7 +3056,7 @@ void func_801FBFB4(Gfx** gdlp) {
             gDPLoadTextureTile(gdl++, &tex[j * w * 8], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
+            gSPTextureRectangle(gdl++, (s32) (x * 4), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f), // odd literal: int 4
                                 (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
                                 (s32) (32768.0f / height));
             y = nextY;
