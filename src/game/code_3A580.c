@@ -43,10 +43,10 @@ void func_8007FD80(void) {
 // In Port Blue, draws each D_801C3B90 entry inside the water window (gWaterWindow[0]) as eight vertices at its angle,
 // on the water height (func_8004D30C), and six triangles.
 #ifdef NON_MATCHING
-// Score 110 of 27500: same instructions and FP registers. dx/dz serve as the distance, the cosine and sine, and the
+// Score 60 of 27500: same instructions and FP registers. dx/dz serve as the distance, the cosine and sine, and the
 // corner points beside x/z (v[0], v[5], v[1], v[6], v[2], v[7]); that one change took the score from 4945 to 120.
-// Left: the saved registers for i, gWaterWindow and the gSPVertex address come out as s4/s5/s6 where the original
-// has s6/s4/s5.
+// A permuter FAKE (i = 0 in its own block) put i, gWaterWindow and the gSPVertex address in the original's s6/s4/s5
+// (110 to 60). Left: the original sets up p's address (s2) after the other three loop-invariant addresses.
 Gfx* func_8007FFA8(Gfx* gdl) {
     UnkStruct_801C3B90* p;
     Vtx* v;
@@ -66,7 +66,9 @@ Gfx* func_8007FFA8(Gfx* gdl) {
     }
     gSPDisplayList(gdl++, D_E010F28);
     gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    i = 0;
+    do { // FAKE (permuter): moves i to the original's saved register
+        i = 0;
+    } while (0);
     p = D_801C3B90;
     do {
         dx = p->unk0 - gWaterWindow[0].unk8;
