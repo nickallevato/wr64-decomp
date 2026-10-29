@@ -7773,18 +7773,16 @@ Gfx* func_80069594(Gfx* arg0) {
     }
     arg0 = func_800694B8(arg0, gPlayer1Rider);
     for (var_s0 = 0; var_s0 < gRiders; var_s0++) {
-        if (var_s0 != gPlayer1Rider) {
-            temp_v0 = &gCameraPerspective[D_80223930];
-            temp_v1 = &D_80192690[var_s0];
-            temp_f0 = (temp_v0->unk6C * (temp_v1->unk44.z - temp_v0->eyeZ)) +
-                      (((temp_v1->unk44.x - temp_v0->eyeX) * temp_v0->unk64) +
-                       ((temp_v1->unk44.y - temp_v0->eyeY) * temp_v0->unk68));
-            if ((temp_f0 > 0.0f) && (temp_f0 < 1000.0f)) {
-                arg0 = func_800694B8(arg0, var_s0);
-            }
+        if (var_s0 == gPlayer1Rider) {
+            continue;
         }
-        if (1) {
-            ; // FAKE
+        temp_v0 = &gCameraPerspective[D_80223930];
+        temp_v1 = &D_80192690[var_s0];
+        temp_f0 = (temp_v0->unk6C * (temp_v1->unk44.z - temp_v0->eyeZ)) +
+                  (((temp_v1->unk44.x - temp_v0->eyeX) * temp_v0->unk64) +
+                   ((temp_v1->unk44.y - temp_v0->eyeY) * temp_v0->unk68));
+        if ((temp_f0 > 0.0f) && (temp_f0 < 1000.0f)) {
+            arg0 = func_800694B8(arg0, var_s0);
         }
     }
     return arg0;
