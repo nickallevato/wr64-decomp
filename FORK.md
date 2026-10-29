@@ -823,6 +823,24 @@ the symbol; `func_80079528`'s went 4136 -> 4132 the same way.
   split per file, replacing FAKE definitions and pads; `resolve.txt` names the in-object addresses the code
   uses. A greedy statement-move search was the biggest single gain on large functions; an audit found and
   undid the one move that swapped dependent statements (`func_800B305C`).
+- **FAKEs in matched code**: 14 permuter and hand FAKEs became real C in two batches (0e9af81). Most empty
+  blocks inside loops stood for a lost `continue` (`if (i == selected) continue;` instead of wrapping the body in
+  `if (i != selected)`); others were a `default:` that ends without `break`, one local serving two roles as in a
+  matched sibling, and a `for` loop for a `do`-while. About 20 remain; each costs 15 to several thousand points
+  without its FAKE.
+- **Names** (50c3b1a): code_4C750.c's calls into whichever overlay is loaded at 0x802C5800 use two neutral
+  symbols in `resolve.txt`, `LoadedOverlay_Update` and `LoadedOverlay_Draw` (no `symbol_addrs.txt` entry, so
+  splat's naming is unchanged), and ovl_i3's entry is `CourseOverview_OverlayUpdate`. 31 of the milestone's
+  matched functions got names from their code (each commit body gives the evidence): `Water_GetHeight`,
+  `Water_PushPoints`, `Water_DampPoints`, `Water_PushPointsAtLevel`, `Save_UnpackImage`, `Save_PackImage`,
+  `Save_PfsRead`, `Save_PfsWrite`, `Popup_DrawAll`, `TexLabel_Draw`, `StuntRecords_Draw`, `Initials_Init`,
+  `MtxF_Rotate`, `MtxF_RotateTranslate`, `MtxF_RotateRPYTranslate`, `Race_DrawScroller`, `RiderSelect_Input`,
+  `ChangeConditions_DrawPanel`, `Ceremony_OverlayUpdate`, `Ceremony_DrawEntries` and ten `PakNotes_` functions
+  for the Controller Pak note manager (`PakNotes_Draw` has no `symbol_addrs.txt` entry: main code calls its
+  address as `func_802C5BA4`). 29 keep `func_` names. Every unmarked stack pad, hack and `goto` in the
+  milestone's files got a comment.
+- **Progress map**: `tools/fork/progress_map.py` draws `docs/progress-map.svg` (and `-dark`) from a full build,
+  every function sized by bytes, grouped by area and file; the README shows it.
 
 ### What we learned
 
@@ -875,8 +893,10 @@ the symbol; `func_80079528`'s went 4136 -> 4132 the same way.
 - Nearest set-asides: `func_801F2060` 10, `func_80054130` 15, `func_801F8DD0` 30, `func_80063C88` 40,
   `func_800890B4` 55, `func_8008D454` 70, `func_801F9EA0` 120, `func_801E4C60` 130. Most have had three or
   more tries.
-- Many recent closer attempts rely on permuter FAKEs (`do {} while (0)`, `while ((u64) 0)`, empty `if (1)`,
-  line joins); a sweep should replace them with real shapes where it can.
+- About 20 FAKEs in matched code have no real shape yet (the batch reports list each with its score
+  without it); set-asides' closer attempts still carry permuter FAKEs too.
+- `make NON_MATCHING=1` compiles every set-aside but still fails its link on `__osThreadTail_fix`
+  (upstream's `libultra_internal.h`), so no ROM with the set-asides has been booted.
 - Give 0x80045650 a symbol (now written `&gAudioGlobalsEndMarker + 3`, splat's naming of an unnamed
   address).
-- Names (Task 14) and the final review.
+- Names for the 29 milestone functions without evidence yet; the final review.
