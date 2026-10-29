@@ -201,9 +201,10 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 4465 of 38000. The control flow and arithmetic match, but the original keeps the addresses of
-// D_i3_802C6F78 and D_i3_802C6F7C in registers (base-register stores in every case) where IDO here stores
-// through `lui at`, so the C is 0x20 bytes shorter and the overlay's data after it moves.
+// Score 3550 of 38000. The control flow and arithmetic match. Storing the 170 value (D_i3_802C6F70/7C) before the
+// 255 value (D_i3_802C6F6C/78) in case 1, case 2 and case 3's else gained about 900. Left: the original keeps the
+// addresses of D_i3_802C6F70 and D_i3_802C6F7C in registers and stores D_i3_802C6F6C through `lui at`; IDO here
+// keeps D_i3_802C6F6C's address in a register and stores D_i3_802C6F7C through `lui at`.
 Gfx* func_i3_802C5D54(Gfx* gdl) {
     TexLabel* label;
 
@@ -225,20 +226,20 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F6C = 255;
                 D_i3_802C6F70 = 170;
             } else {
-                D_i3_802C6F6C = D_i3_802C6F68 * 255 / 10;
                 D_i3_802C6F70 = D_i3_802C6F68 * 170 / 10;
+                D_i3_802C6F6C = D_i3_802C6F68 * 255 / 10;
             }
             if (D_i3_802C6F74 >= 10) {
-                D_i3_802C6F78 = 255;
                 D_i3_802C6F7C = 170;
+                D_i3_802C6F78 = 255;
             } else {
                 D_i3_802C6F78 = D_i3_802C6F74 * 255 / 10;
                 D_i3_802C6F7C = D_i3_802C6F74 * 170 / 10;
             }
             if ((D_i3_802C6F68 >= 10) && (D_i3_802C6F74 >= 10)) {
                 D_i3_802C6F64 = 2;
-                D_i3_802C6F6C = D_i3_802C6F78 = 255;
                 D_i3_802C6F7C = D_i3_802C6F70 = 170;
+                D_i3_802C6F6C = D_i3_802C6F78 = 255;
                 D_i3_802C6F68 = 0;
                 D_i3_802C6F74 = 0;
             }
@@ -250,8 +251,8 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F74 = 0;
                 D_i3_802C6F68 = 0;
             }
-            D_i3_802C6F6C = D_i3_802C6F78 = 255;
             D_i3_802C6F7C = D_i3_802C6F70 = 170;
+            D_i3_802C6F6C = D_i3_802C6F78 = 255;
             break;
 
         case 3:
@@ -262,8 +263,8 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F70 = 0;
                 D_i3_802C7028 = 1;
             } else {
-                D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
                 D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
+                D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
             }
             D_i3_802C6F78 = D_i3_802C6F6C;
             D_i3_802C6F7C = D_i3_802C6F70;
