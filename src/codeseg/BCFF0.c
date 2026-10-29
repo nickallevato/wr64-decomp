@@ -195,7 +195,7 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 7046 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// Score 7041 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
 // addresses in registers as in the original; the Vtx copy pointers are set up in the order found by a move search.
 // Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
 // keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
@@ -338,8 +338,8 @@ void func_801EED70(void) {
     D_80228AE0[1].unk0 = 0;
     D_80228AE0[2].unk0 = 0;
     D_80228AE0[3].unk0 = 0;
-    D_80228A94 = 0;
     D_80228A9C = 0;
+    D_80228A94 = 0;
     D_80228DFC = 0;
     D_80228DF8 = 0;
     for (i = 0; i < gPlayers; i++) {
