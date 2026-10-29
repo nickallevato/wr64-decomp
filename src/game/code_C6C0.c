@@ -1347,11 +1347,13 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
 }
 
 #ifdef NON_MATCHING
-// Score 5359 of 82500: same instructions in the loop but float registers differ (the original also keeps the double
-// 19.000002 in $f30 across the loop); in the cross product the original spills ay, bx and by (sp+0x9C..0x94) where
-// this version spills others. The midpoint block follows the original's statement order; s holds len, mx holds ax.
+// Score 65 of 82500: same instructions, frame and stack slots. The cross product written out in full (no locals for
+// the two edge vectors) gives the original's evaluation order and spills (5359 to 698); the midpoint block stores
+// unk168 then unk1D4. Left: in the midpoint block mx, s, my and mz take $f12, $f2, $f14, $f16 where the original
+// has $f14, $f12, $f16, $f2.
 s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     UnkStruct_80192690* rider;
+    s32 pad[1]; // stack pad: the original's spill slots
     UnkStruct_802238DC* anim;
     s32 i;
     f32 dx;
@@ -1361,11 +1363,6 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
     f32 mx;
     f32 my;
     f32 mz;
-    f32 ay;
-    f32 az;
-    f32 bx;
-    f32 by;
-    f32 bz;
 
     anim = D_802238DC[arg2];
     if (arg3 >= anim->unk0) {
@@ -1445,10 +1442,10 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
         dy *= s;
         arg1->unk168.unk0.y = dy + my;
         mz = (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5;
-        arg1->unk1D4.unk0.x = mx - dx;
-        arg1->unk1D4.unk0.y = my - dy;
         dz *= s;
         arg1->unk168.unk0.z = dz + mz;
+        arg1->unk1D4.unk0.x = mx - dx;
+        arg1->unk1D4.unk0.y = my - dy;
         arg1->unk1D4.unk0.z = mz - dz;
     }
     dx = ((arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5) - arg1->unk1F8.unk0.x;
@@ -1458,15 +1455,12 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
     arg1->unk1F8.unkC.x = s * dx;
     arg1->unk1F8.unkC.y = s * dy;
     arg1->unk1F8.unkC.z = s * dz;
-    mx = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
-    ay = arg1->unk168.unk0.y - arg1->unk1F8.unk0.y;
-    az = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
-    bx = arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x;
-    by = arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y;
-    bz = arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z;
-    dx = (bz * ay) - (by * az);
-    dy = (bx * az) - (bz * mx);
-    dz = (by * mx) - (bx * ay);
+    dx = ((arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z) * (arg1->unk168.unk0.y - arg1->unk1F8.unk0.y)) -
+         ((arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y) * (arg1->unk168.unk0.z - arg1->unk1F8.unk0.z));
+    dy = ((arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x) * (arg1->unk168.unk0.z - arg1->unk1F8.unk0.z)) -
+         ((arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z) * (arg1->unk168.unk0.x - arg1->unk1F8.unk0.x));
+    dz = ((arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y) * (arg1->unk168.unk0.x - arg1->unk1F8.unk0.x)) -
+         ((arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x) * (arg1->unk168.unk0.y - arg1->unk1F8.unk0.y));
     s = 1.0f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
     arg1->unk1F8.unk14.x = s * dx;
     arg1->unk1F8.unk14.y = s * dy;
