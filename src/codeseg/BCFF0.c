@@ -2989,9 +2989,9 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 6046 of 25000: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
+// Score 5865 of 25000: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
 // D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
-// IDO here hoists it; frame 0xD0, not 0xE0.
+// IDO here hoists it. A 12-byte pad gives the original's frame (0xE0) and spill slots.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
@@ -3000,6 +3000,7 @@ extern u32 D_8052018[];
 void func_801FBFB4(Gfx** gdlp) {
     Gfx* gdl;
     s32 i;
+    s32 pad[3]; // stack pad: the frame is 0xE0 as in the original
     s32 j;
     s32 cx;
     s32 cy;
