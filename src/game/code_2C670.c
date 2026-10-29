@@ -279,7 +279,7 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 45579 of 150300: same lists, switches and stores; register allocation and scheduling differ throughout (the
+// Score 45284 of 150300: same lists, switches and stores; register allocation and scheduling differ throughout (the
 // original keeps &gCourseID in ra in places, and reloads D_800DAB68 and D_800D8250 by absolute address inside the
 // src2 loop where IDO here hoists their addresses), and this C is shorter (the frame is 0x90, not 0xA0). The first
 // list is walked with its own pointer (p1), as the original copies src1 into a1.
@@ -314,11 +314,11 @@ void func_80071E70(void) {
 
     if (D_801CE638 == 21) {
         D_801C1CD0 = D_D01AD10;
-        D_801C1CD4 = D_D019AC8;
         D_801C1CD8 = NULL;
         D_801C1CDC = NULL;
         D_801C1CE0 = NULL;
         D_801C1CE4 = NULL;
+        D_801C1CD4 = D_D019AC8;
     } else if (gPlayers == ONE_PLAYER) {
         D_801C1CD0 = D_800D5470[gCourseID];
         D_801C1CD4 = D_800D54A0[gCourseID];
@@ -451,10 +451,10 @@ void func_80071E70(void) {
     }
     D_801BC938 = 0;
     D_801BB128 = 0;
-    D_801BB130 = 0;
     D_801BB12C = 0;
     D_801BB124 = 0;
     D_801BB120 = 0;
+    D_801BB130 = 0;
 
     D_801BFA40 = 0;
     D_801BB134 = 0;
@@ -507,8 +507,8 @@ void func_80071E70(void) {
         } else {
             list0 = D_800D64EC[gCourseID];
         }
-        objects = D_800D667C[gCourseID];
         buoys = D_800D671C[gCourseID];
+        objects = D_800D667C[gCourseID];
         if (gCourseID == RIDER_SELECTION) {
             list1 = D_800D5700;
         } else {
