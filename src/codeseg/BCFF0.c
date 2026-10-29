@@ -2486,9 +2486,10 @@ void func_801F9EA0(void) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5900 of 61800: the first two rider loops count by 1, where the original counts a second induction variable in
-// 0x14-byte steps against gRiders * 20 (written that way, the frame and loop tests match but the guards and registers
-// do not). Each loop with its own counter is closest; the original keeps the first two counters in s3.
+// Score 5665 of 61800: face is zeroed after the position is set (inside the drawn-rider branch). Left: the first
+// two rider loops count by 1, where the original counts a second induction variable in 0x14-byte steps against
+// gRiders * 20 (written that way, the frame and loop tests match but the guards and registers do not). Each loop with
+// its own counter is closest; the original keeps the first two counters in s3.
 extern Gfx D_10147C8[];
 extern Gfx D_10149F8[];
 extern u8 D_10448D0[];
@@ -2567,7 +2568,6 @@ void func_801FA3C0(Gfx** gdlp) {
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
             b = &D_80228B88[i][j];
-            face = 0;
             if (b->unk10 != 0) {
                 if (gPlayers == ONE_PLAYER) {
                     x = b->unk0 + 160.0f;
@@ -2579,6 +2579,7 @@ void func_801FA3C0(Gfx** gdlp) {
                     x = b->unk0 + 160.0f;
                     y = b->unk4 + 206.0f;
                 }
+                face = 0;
                 if ((gPlayers == TWO_PLAYERS) &&
                     (((j == gPlayer1Rider) && (D_801CE6F4[0] != 0)) || ((j == gPlayer2Rider) && (D_801CE6F4[1] != 0)))) {
                     face = 4;
