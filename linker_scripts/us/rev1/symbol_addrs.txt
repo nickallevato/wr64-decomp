@@ -96,7 +96,6 @@ Math_Vec3f_Substract = 0x80098E3C;
 Math_Normalize_Angle = 0x8009D4F0;
 _MtxF_to_Mtx = 0x801EDD90;
 D_800D47FC = 0x800D47FC; // ignore:true
-func_i3_802C5800 = 0x802C5800; //size:0x2E8 segment:ovl_i3
 
 sFadeTransitionDefaultProps = 0x80226CC0;
 sCurrentFadeTransitionProps = 0x80228A10;
@@ -471,6 +470,7 @@ RiderSelect_DrawBackground = 0x802C88DC; //segment:ovl_i2
 //   RiderSelect_Draw 0x802C5B4C
 
 // ovl_i3, the course overview (GAME_SATE_COURSE_OVERVIEW, GAME_SATE_1F)
+CourseOverview_OverlayUpdate = 0x802C5800; //size:0x2E8 segment:ovl_i3
 CourseOverview_SetCamera = 0x802C5AF0; //segment:ovl_i3
 CourseOverview_Leave = 0x802C6E9C; //segment:ovl_i3
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry

@@ -58,7 +58,7 @@ Gfx* func_i3_802C6344(Gfx*);
 void GameState_EnterCourseOverview(void);
 void CourseOverview_Leave(void);
 
-void func_i3_802C5800(void) {
+void CourseOverview_OverlayUpdate(void) {
     s32 i;
     s32 j;
 
