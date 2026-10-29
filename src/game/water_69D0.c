@@ -1231,30 +1231,35 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 33384 of 60500: registers and stack (frame 0x90 here, 0x78 in the original) throughout; the row loops follow the original control flow
+// Score 12999 of 60500: frame and the row loops' shape match; left: callee-saved register choice (vtx, lo, sx and sz
+// land in other s registers), and the skirt loops end on idx != &D_80192460[7] (with < IDO unrolls them by two; the
+// original compares with sltu against a separately loaded end address and does not unroll)
 void func_80050204(s32 view, Vtx* arena) {
-    UnkStruct_80192420* w;
-    UnkStruct_80160A98* e;
-    UnkStruct_80160A98* end;
-    Vtx* vtx;
-    Vtx* c;
-    Vtx* v;
-    s32* idx;
-    s32 i;
-    s32 hA;
-    s32 hB;
-    s32 sx;
-    s32 sz;
-    s32 ox;
-    s32 oz;
-    f32 k;
-    f32 dx;
+    UnkStruct_80160A98* last;
     f32 dz;
+    f32 dx;
+    f32 k;
+    s32 oz;
+    s32 ox;
+    s32 sz;
+    s32 sx;
+    s32 hB;
+    s32 hA;
+    s32 i;
+    UnkStruct_80160A98* hi;
+    UnkStruct_80160A98* lo;
+    s32* idx;
+    Vtx* v;
+    Vtx* c;
+    Vtx* vtx;
+    UnkStruct_80160A98* end;
+    UnkStruct_80160A98* e;
+    UnkStruct_80192420* w;
 
     e = gWaterCellOffsets;
     vtx = arena;
     w = &gWaterWindow[view];
-    for (end = &gWaterCellOffsets[gWaterWindowN]; end >= e;) {
+    for (last = &gWaterCellOffsets[gWaterWindowN]; last >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
@@ -1267,9 +1272,12 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        for (end = e + ((gWaterWindowN * 2) + i - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + i + 1)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + ((gWaterWindowN * 2) + i + 1))->unk0)->unk0 >> 7;
+        end = e + ((gWaterWindowN * 2) + i - 2);
+        lo = e - ((gWaterWindowN * 2) + i + 1);
+        hi = e + ((gWaterWindowN * 2) + i + 1);
+        for (; end >= e; lo++, hi++) {
+            hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1317,9 +1325,12 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        for (end = e + ((gWaterWindowN * 2) - i - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) - i + 2)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + ((gWaterWindowN * 2) - i))->unk0)->unk0 >> 7;
+        end = e + ((gWaterWindowN * 2) - i - 2);
+        lo = (e - ((gWaterWindowN * 2) - i)) - 2;
+        hi = e + ((gWaterWindowN * 2) - i);
+        for (; end >= e; lo++, hi++) {
+            hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
+            hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
             sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (hA - hB) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
@@ -1345,7 +1356,7 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx++;
     }
     k = (f32) D_800D4720 / (f32) D_80192498;
-    for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
+    for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
         c = &arena[D_80192460[0]];
         v = &arena[idx[6]];
         arena[*idx].v.ob[0] = c->v.ob[0] + (s32) (k * (v->v.ob[0] - c->v.ob[0]));
@@ -1362,7 +1373,7 @@ void func_80050204(s32 view, Vtx* arena) {
     k = (f32) (D_800D4720 - D_80192498) * 0.866f;
     ox = SysUtils_Round(k * dx);
     oz = SysUtils_Round(k * dz);
-    for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
+    for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
         arena[*idx].v.ob[0] += ox;
         arena[*idx].v.ob[2] += oz;
     }
