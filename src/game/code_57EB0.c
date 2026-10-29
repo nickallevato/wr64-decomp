@@ -1775,14 +1775,14 @@ void func_800A52D8(s32 arg0, f32 arg1) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 5.0f);
             }
         }
-        if (FABS(D_801D0760) < 2.0f) {
+        temp = FABS(D_801D0760);
+        if (temp < 2.0f) {
             D_801CF060[arg0].unk18 = func_8009D564(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
         }
     } else {
         if (D_801D0760 >= 0.5) {
-            temp = 0.5f; // FAKE: a float local for the 0.5f (found with the permuter)
-            D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + temp);
+            D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 0.5f);
             if (D_801D0760 > 45.0f) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 + 2.0f);
             }
@@ -1793,7 +1793,8 @@ void func_800A52D8(s32 arg0, f32 arg1) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 2.0f);
             }
         }
-        if (FABS(D_801D0760) < 0.5) {
+        temp = FABS(D_801D0760);
+        if (temp < 0.5) {
             D_801CF060[arg0].unk18 = func_8009D564(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
         }
