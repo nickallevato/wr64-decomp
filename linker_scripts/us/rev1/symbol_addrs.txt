@@ -446,6 +446,7 @@ Race_UpdateInRace = 0x802C5DF4; //segment:ovl_i1
 Race_UpdateState29 = 0x802C63B4; //segment:ovl_i1
 Race_UpdateState2A = 0x802C6550; //segment:ovl_i1
 Race_UpdateState2C = 0x802C6B00; //segment:ovl_i1
+Race_DrawScroller = 0x802C6BD8; //segment:ovl_i1
 Race_EnterState29 = 0x802C6DCC; //segment:ovl_i1
 Race_EnterState2A = 0x802C6FE0; //segment:ovl_i1
 Race_EnterState2C = 0x802C7394; //segment:ovl_i1
@@ -463,6 +464,7 @@ Demo_Leave = 0x802C9380; //segment:ovl_i1
 
 // ovl_i2, rider select (GAME_STATE_RIDER_SELECT, GAME_STATE_B)
 RiderSelect_OverlayUpdate = 0x802C5800; //segment:ovl_i2
+RiderSelect_Input = 0x802C5E28; //segment:ovl_i2
 RiderSelect_DecrementStat = 0x802C676C; //segment:ovl_i2
 RiderSelect_IncrementStat = 0x802C67E4; //segment:ovl_i2
 RiderSelect_Confirm = 0x802C6864; //segment:ovl_i2
@@ -551,6 +553,7 @@ ViewRecords_Leave = 0x802C802C; //segment:ovl_i9
 // ovl_i10, change conditions (GAME_STATE_OPTIONS_CHANGE_CONDITIONS, 0x45)
 ChangeConditions_OverlayUpdate = 0x802C5800; //segment:ovl_i10
 ChangeConditions_Input = 0x802C5A10; //segment:ovl_i10
+ChangeConditions_DrawPanel = 0x802C6200; //segment:ovl_i10
 ChangeConditions_Leave = 0x802C6A00; //segment:ovl_i10
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry
 // here would make splat rename those references:
@@ -598,8 +601,10 @@ PostRaceMenu_Input = 0x802C5F60; //segment:ovl_i14
 //   PostRaceMenu_Draw 0x802C5924
 
 // ovl_i15, the ceremony (GAME_STATE_CEREMONY, GAME_STATE_67)
+Ceremony_OverlayUpdate = 0x802C5800; //segment:ovl_i15
 Ceremony_Init = 0x802C5CE8; //segment:ovl_i15
 Ceremony_AddEntry = 0x802C5EE4; //segment:ovl_i15
+Ceremony_DrawEntries = 0x802C602C; //segment:ovl_i15
 Ceremony_Input = 0x802C6C1C; //segment:ovl_i15
 Ceremony_Leave = 0x802C6CAC; //segment:ovl_i15
 // Not listed, because main code calls these addresses as raw func_802Cxxxx symbols and an entry

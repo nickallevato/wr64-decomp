@@ -75,7 +75,7 @@ Gfx* ChangeConditions_Draw(Gfx* gfxP) {
 
     D_800DAB2C = 0;
 
-    gfxP = func_i10_802C6200(gfxP);
+    gfxP = ChangeConditions_DrawPanel(gfxP);
 
     if (gGameState == 68) {
         ChangeConditions_Input();
@@ -324,7 +324,7 @@ void ChangeConditions_Input(void) {
 }
 
 // The `conds != &gDifficulty` test is the asm's (gDifficulty follows D_801CB308[4][3]); its source is unknown.
-Gfx* func_i10_802C6200(Gfx* gdl) {
+Gfx* ChangeConditions_DrawPanel(Gfx* gdl) {
     s32 i;
     s32 mode;
     s32 useString;

@@ -67,7 +67,7 @@ void GameState_EnterTimeTrialsResults(void);
 void GameState_EnterStuntModeResults(void);
 void Camera_HandleCButtons(void);
 Gfx* func_i1_802C6B38(Gfx* dList);
-Gfx* func_i1_802C6BD8(Gfx* dList);
+Gfx* Race_DrawScroller(Gfx* dList);
 void Race_UpdateInRace(void);
 void Race_UpdateState2A(void);
 void Race_UpdateState29(void);
@@ -171,7 +171,7 @@ Gfx* Race_Draw(Gfx* dList) {
         dList = func_i1_802C6B38(dList);
     }
     if ((gCourseID == DOLPHIN_PARK) && (D_801CE608.gameMode == 4) && (D_800DAB64 == 0)) {
-        dList = func_i1_802C6BD8(dList);
+        dList = Race_DrawScroller(dList);
     }
     if (gPlayers == ONE_PLAYER) {
         gSPDisplayList(dList++, D_106F168);
@@ -562,7 +562,7 @@ Gfx* func_i1_802C6B38(Gfx* dList) {
     return dList;
 }
 
-Gfx* func_i1_802C6BD8(Gfx* dList) {
+Gfx* Race_DrawScroller(Gfx* dList) {
     UnkStruct_802C96A8* scroll;
     s32 i;
 

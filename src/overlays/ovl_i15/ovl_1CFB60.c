@@ -43,13 +43,13 @@ Gfx* func_801E4FE8(Gfx* gdl, s32 arg1, s32 arg2, s32 arg3, Mtx* mtx);
 
 Gfx* func_80091DBC(Gfx*);
 Gfx* func_80093DBC(Gfx*, u16, u16, u16);
-Gfx* func_i15_802C602C(Gfx*);
+Gfx* Ceremony_DrawEntries(Gfx*);
 void Ceremony_Input(void);
 void Ceremony_Init(void);
 void Ceremony_AddEntry(s32);
 void func_800C489C(void);
 
-void func_i15_802C5800(void) {
+void Ceremony_OverlayUpdate(void) {
     s32 i;
     s32 j;
     s32 course;
@@ -234,7 +234,7 @@ Gfx* Ceremony_Draw(Gfx* gdl) {
     D_800DAB2C = 0;
     gdl = func_80091DBC(gdl);
     gdl = func_8009328C(gdl);
-    gdl = func_i15_802C602C(gdl);
+    gdl = Ceremony_DrawEntries(gdl);
 
     if (gGameState == 0x66) {
         Ceremony_Input();
@@ -248,7 +248,7 @@ Gfx* Ceremony_Draw(Gfx* gdl) {
     return gdl;
 }
 
-Gfx* func_i15_802C602C(Gfx* gdl) {
+Gfx* Ceremony_DrawEntries(Gfx* gdl) {
     s32 i;
     s32 race;
     s32 course;

@@ -163,7 +163,7 @@ void func_800C30F8(void);
 Gfx* func_1C3780_802C58F4(Gfx*);
 void func_1C3780_802C5BD8(void);
 Gfx* func_80093C44(Gfx*);
-Gfx* func_i10_802C6200(Gfx*);
+Gfx* ChangeConditions_DrawPanel(Gfx*);
 Gfx* func_80094200(Gfx*, s32, s32, s32, s32);
 Gfx* func_80094338(Gfx*, s32, s32, s32, s32, s32);
 Gfx* TexLabel_Draw(Gfx*, s32, s32, s32, s32, s32);

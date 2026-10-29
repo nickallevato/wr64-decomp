@@ -88,7 +88,7 @@ void RiderSelect_Init(void) {
 
 void* Save_EepromWriteNames();
 void* GameState_EnterCourseOverview();
-void func_i2_802C5E28(void);
+void RiderSelect_Input(void);
 Gfx* RiderSelect_Draw1P(Gfx*);
 Gfx* RiderSelect_Draw2P(Gfx*);
 Gfx* RiderSelect_DrawBackground(Gfx*);
@@ -152,7 +152,7 @@ Gfx* RiderSelect_Draw(Gfx* gdl) {
         }
     }
     if (gGameState == GAME_STATE_RIDER_SELECT) {
-        func_i2_802C5E28();
+        RiderSelect_Input();
         if (D_80228A16 == 1) {
             D_i2_802C8BC0 = 1;
         }
@@ -180,7 +180,7 @@ extern s32 D_i2_802C8BB0[];
 extern s32 D_i2_802C8BB8[];
 extern s16 D_80228A32;
 
-void func_i2_802C5E28(void) {
+void RiderSelect_Input(void) {
     s32 i;
     s32 ctrl;
     u32 allowMove; // FAKE (maybe): u32 gives li 1, not move from s3; also holds the rider index (one temp)
