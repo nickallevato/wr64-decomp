@@ -142,14 +142,14 @@ void func_i15_802C5800(void) {
                     draw = 1;
                     break;
             }
-            if (draw) {
-                for (j = 0; j < 4; j++) {
-                    SysUtils_MtxFToMtx(&spFC, &D_801CE5F8->unkA80[j]);
-                    D_801CE5F8->unk1280[j] = D_i15_802C6DE0;
-                    D_801CE5F8->unk1280[j].vp.vtrans[0] = (thing->unk8 + 58) << 2;
-                    D_801CE5F8->unk1280[j].vp.vtrans[1] = (thing->unkC + j * 32 + 65) << 2;
-                }
-                if (1) {} // FAKE (permuter)
+            if (!draw) {
+                continue;
+            }
+            for (j = 0; j < 4; j++) {
+                SysUtils_MtxFToMtx(&spFC, &D_801CE5F8->unkA80[j]);
+                D_801CE5F8->unk1280[j] = D_i15_802C6DE0;
+                D_801CE5F8->unk1280[j].vp.vtrans[0] = (thing->unk8 + 58) << 2;
+                D_801CE5F8->unk1280[j].vp.vtrans[1] = (thing->unkC + j * 32 + 65) << 2;
             }
         }
     }

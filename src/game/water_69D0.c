@@ -1379,12 +1379,13 @@ void func_80050204(s32 view, Vtx* arena) {
  */
 
 #ifdef NON_MATCHING
-// Score 236 of 26100: same instructions, frame (0xC0) and registers; the up vector is read from cam (not copied to
+// Score 212 of 26100: same instructions, frame (0xC0) and registers; the up vector is read from cam (not copied to
 // locals, which lets IDO sink the ray sums into the branches) and cx/cy/cz serve both rays. cam->unk98 is read once
 // into c98 inside the block (the original loads it there and spills it), and the end point goes through t rather
-// than dist. Declaration order (angle after h, s after hiz) moved the stack slots closer (320 to 236). Left: stack
-// slots (c98 at 0x44 and the d products at 0x74..0x6C in the original) and the operand order of the d multiplies
-// (writing cam->unk64 * d does not change it).
+// than dist. Declaration order (angle after h, s after hiz, dist between upx and upy; the last found by a
+// declaration-move search) moved the stack slots closer (320 to 212). Left: stack slots (c98 at 0x44 and the d
+// products at 0x74..0x6C in the original) and the operand order of the d multiplies (writing cam->unk64 * d does
+// not change it).
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     s32 pad[2]; // stack pad: the frame is 0xC0 as in the original
     f32 d;
@@ -1403,9 +1404,9 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     f32 cz;
     f32 w;
     f32 upx;
+    f32 dist;
     f32 upy;
     f32 upz;
-    f32 dist;
     f32 t;
     f32 c98;
 
