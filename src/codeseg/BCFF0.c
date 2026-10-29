@@ -1508,7 +1508,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 56488 of 490800: same control flow and stack frame; register allocation and scheduling differ throughout:
+// Score 56483 of 490800: same stack frame and nearly the same branches (structure diff): where the original
+// keeps 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks, two
+// if / else joins end in an extra branch there, and the lap-split popup reuses its gapRequest load. Register
+// allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
 // lap-split loop, the constant 1 in the lap-split popup), so the saved and temporary registers of every display-list
 // block differ. The 1.8f below is D_80227A4C in the original.
@@ -1928,9 +1931,10 @@ void func_801F4120(Gfx** gdlp) {
                 x = D_80228B54 + 0x38;
             } else {
                 x = 0x18;
-                y = 0xD6;
                 if (i == 0) {
                     y = 0x68;
+                } else {
+                    y = 0xD6;
                 }
             }
             for (j = 0; j < k; j++) {
