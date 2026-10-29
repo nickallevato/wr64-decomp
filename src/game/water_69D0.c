@@ -1073,9 +1073,11 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 9535 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
+// Score 2380 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
 // their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across sqrtf.
-// Left: the frame (0x68 here, 0x50 in the original) and the saved registers are numbered differently.
+// The copy loop ends at &D_80192460[13] (the address of gWaterWindowN, which the original does not reuse), the
+// sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0. Left: the frame (0x68 here, 0x50 in the
+// original), and D_80192460's address stays in s4 from the copy loop on here (rebuilt for the pool loop there).
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     s32* src;
@@ -1112,7 +1114,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterWindow[1].unk18 = 0.0f;
     gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
         gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
-    for (src = &D_800D4684[set], dst = D_80192460; dst < &gWaterWindowN;) {
+    for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192460[13];) {
         *dst++ = *src++;
     }
     D_801924A0 = 0x8000;
@@ -1124,10 +1126,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     Water_BuildCellLists();
     Water_FillNoise(amplitude);
     bot = ((f32) ((D_801924A8 * 2) + D_801924A0) / 49152.0f) + 0.9;
-    b = ((f32) (D_801924A4 + (D_801924A8 * 2)) / (sqrtf(3.0f) * 2.0f * 8192.0f)) + 0.9;
+    b = ((f32) (D_801924A4 + (D_801924A8 * 2)) / (sqrtf(3.0f) * 2 * 8192.0f)) + 0.9;
     D_801924AC = (bot * 0x6000) - 1.0;
-    D_801924B0 = -bot * 0x6000;
     D_801924B8 = (sqrtf(3.0f) * b * 8192.0f) - 1.0;
+    D_801924B0 = -bot * 0x6000;
     D_801924BC = sqrtf(3.0f) * -b * 8192.0f;
     D_801924B4 = (D_801924AC - D_801924B0) + 1.0;
     D_801924C0 = (D_801924B8 - D_801924BC) + 1.0;
@@ -1148,8 +1150,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         }
         top = gWaterWindowN;
         bot = D_8019249C - gWaterWindowN;
-        set = bot - 1;
         d = bot - 2;
+        set = bot - 1;
         b = top + 1;
         step = top + 2;
         for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
@@ -1210,12 +1212,11 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 10449 of 60500: frame, the row loops and the first skirt loop match in shape. Left: callee-saved register
+// Score 10353 of 60500: frame, the row loops and the first skirt loop match in shape. Left: callee-saved register
 // choice (vtx, lo, sx and sz land in other s registers), and the second skirt loop ends on idx != &D_80192460[7]
 // (with < IDO unrolls it by two; the original compares with sltu and does not unroll)
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
-    f32 dz;
     f32 dx;
     f32 k;
     s32 oz;
@@ -1225,6 +1226,7 @@ void func_80050204(s32 view, Vtx* arena) {
     s32 hB;
     s32 hA;
     s32 i;
+    f32 dz;
     UnkStruct_80160A98* hi;
     UnkStruct_80160A98* lo;
     s32* idx;

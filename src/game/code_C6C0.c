@@ -1017,9 +1017,10 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 9765 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
-// are laid out) and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the original's frame is 0x70
-// (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
+// Score 9636 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the
+// original's frame is 0x70 (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered
+// differently.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1029,8 +1030,8 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     f32 len;
     f32 t;
 
-    d[2] = arg6 - arg3;
     d[1] = arg7 - arg4;
+    d[2] = arg6 - arg3;
     d[0] = arg8 - arg5;
     len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
@@ -7077,24 +7078,27 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 8106 of 76300: register allocation and scheduling differ (the original keeps &D_80192650/&D_80192670 in
-// saved registers and player in a temporary it spills across the calls; frame 0x60). level also serves as the
-// push-apart counter and the two-player stamp flag, and best as the stamp radius.
+// Score 2400 of 76300: player 1's x and z are read into dist and lim before the nearest-rider loop, its pointer (p1)
+// is a separate variable declared last so it lands in a temporary spilled across the calls, the stamp radius is
+// read from D_80192498 each time (the original reloads it after the first stamp), and the one-player stamp level
+// reuses i (s0 there). Left: frame 0x68 (0x60 there) with the spill and nearest one slot apart, and FP temps
+// numbered differently in the nearest loop and the stamp maths. level also serves as the push-apart counter and
+// the two-player stamp flag.
 void func_800665B0(void) {
-    UnkStruct_80192690* player;
-    UnkStruct_80192690* other;
+    UnkStruct_80192690* rider;
     camera_unk_1* cam;
     s32 i;
     s32 nearest;
-    s32 level;
     u8 pan;
     f32 best;
     f32 dx;
     f32 dz;
-    f32 dist;
     f32 lim;
     f32 sx;
+    f32 dist;
     f32 sz;
+    s32 level;
+    UnkStruct_80192690* p1;
 
     if (D_801CE638 != 21) {
         for (i = gRiders - 1; i >= 0; i--) {
@@ -7138,11 +7142,13 @@ void func_800665B0(void) {
         func_800C11CC(D_80192630);
     } else if (gRiders >= 2) {
         best = 1e10f;
-        player = &D_80192690[gPlayer1Rider];
+        p1 = &D_80192690[gPlayer1Rider];
+        dist = p1->unk44.x;
+        lim = p1->unk44.z;
         for (i = gRiders - 1; i >= 0; i--) {
             if (i != gPlayer1Rider) {
-                dx = player->unk44.x - D_80192690[i].unk44.x;
-                dz = player->unk44.z - D_80192690[i].unk44.z;
+                dx = dist - D_80192690[i].unk44.x;
+                dz = lim - D_80192690[i].unk44.z;
                 if (SQ(dx) + SQ(dz) < best) {
                     best = SQ(dx) + SQ(dz);
                     nearest = i;
@@ -7151,19 +7157,19 @@ void func_800665B0(void) {
         }
         func_80052480(nearest, (struct UnkStruct_80052480*) D_80192630);
         func_800C11CC(D_80192630);
-        D_80192650.x = player->unk44.x;
-        D_80192650.y = player->unk44.y;
-        D_80192650.z = player->unk44.z;
-        D_80192660.x = player->unkB78;
-        D_80192660.y = player->unkB7C;
-        D_80192660.z = player->unkB80;
-        other = &D_80192690[nearest];
-        D_80192670.x = other->unk44.x;
-        D_80192670.y = other->unk44.y;
-        D_80192670.z = other->unk44.z;
-        D_80192680.x = other->unkB78;
-        D_80192680.y = other->unkB7C;
-        D_80192680.z = other->unkB80;
+        D_80192650.x = p1->unk44.x;
+        D_80192650.y = p1->unk44.y;
+        D_80192650.z = p1->unk44.z;
+        D_80192660.x = p1->unkB78;
+        D_80192660.y = p1->unkB7C;
+        D_80192660.z = p1->unkB80;
+        rider = &D_80192690[nearest];
+        D_80192670.x = rider->unk44.x;
+        D_80192670.y = rider->unk44.y;
+        D_80192670.z = rider->unk44.z;
+        D_80192680.x = rider->unkB78;
+        D_80192680.y = rider->unkB7C;
+        D_80192680.z = rider->unkB80;
         dx = D_80192670.x - D_80192650.x;
         dz = D_80192670.z - D_80192650.z;
         dist = SQ(dx) + SQ(dz);
@@ -7177,26 +7183,25 @@ void func_800665B0(void) {
         func_800BFB84(&D_80192650, &D_80192670, &D_80192660, &D_80192680, pan);
     }
     if (gRiderGameModes != PAUSE_MODE) {
-        best = D_80192498;
         cam = &gCameraPerspective[D_80223930];
-        sx = gWaterWindow[0].unk0 + (best * cam->unkF0);
-        sz = gWaterWindow[0].unk4 + (best * cam->unkF4);
+        sx = gWaterWindow[0].unk0 + (D_80192498 * cam->unkF0);
+        sz = gWaterWindow[0].unk4 + (D_80192498 * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
-            player = &D_80192690[gPlayer1Rider];
-            dist = (s32) sqrtf(SQ(player->unk44.z) + SQ(player->unk44.x));
+            rider = &D_80192690[gPlayer1Rider];
+            dist = (s32) sqrtf(SQ(rider->unk44.z) + SQ(rider->unk44.x));
             if (dist <= D_801C1FB4) {
-                level = D_800D49B0;
+                i = D_800D49B0;
             } else {
                 lim = D_801C1FB4 + 4000.0f;
-                level = 60;
+                i = 60;
                 if (D_801924AC < lim) {
                     lim = D_801924AC;
                 }
                 if (dist < lim) {
-                    level = (((dist - D_801C1FB4) * (f32) (60 - D_800D49B0)) / (lim - D_801C1FB4)) + (f32) D_800D49B0;
+                    i = (((dist - D_801C1FB4) * (f32) (60 - D_800D49B0)) / (lim - D_801C1FB4)) + (f32) D_800D49B0;
                 }
             }
-            Water_StampDiagonalSine(sx, sz, level, D_800D49AC, 1);
+            Water_StampDiagonalSine(sx, sz, i, D_800D49AC, 1);
         } else {
             level = 1;
             dx = sx - D_80192690[gPlayer2Rider].unk44.x;
@@ -7206,8 +7211,8 @@ void func_800665B0(void) {
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
             }
             cam = &gCameraPerspective[D_80223934];
-            sx = gWaterWindow[1].unk0 + (best * cam->unkF0);
-            sz = gWaterWindow[1].unk4 + (best * cam->unkF4);
+            sx = gWaterWindow[1].unk0 + (D_80192498 * cam->unkF0);
+            sz = gWaterWindow[1].unk4 + (D_80192498 * cam->unkF4);
             dx = sx - D_80192690[gPlayer1Rider].unk44.x;
             dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
