@@ -1142,9 +1142,10 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 20256 of 127200, 17 instructions short: register allocation (the original keeps the camera direction on
-// the stack across sqrtf and five saved FP registers, frame 0xC8), and in the D_800D988C == 1 loop the original
-// reloads D_801C4160/4/8 after storing them where IDO here reuses the stored values.
+// Score 19488 of 127200, 16 instructions short: the direction is scaled in place and one f32 (len) serves the length,
+// the 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
+// original keeps the camera direction on the stack across sqrtf (five saved FP registers, frame 0xC8; four and 0xB8
+// here), and in the D_800D988C == 1 loop it reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
     f32 dirX;
     f32 dirZ;
@@ -1152,17 +1153,12 @@ void func_8008E794(void) {
     UnkStruct_801C43F8* p;
     Vtx* arena;
     Vtx* vtx;
-    f32 var_fv1;
-    f32 var_fa1;
     f32 len;
-    f32 scale;
     s32 i;
     s32 angle;
     UnkStruct_801CB058* e;
     f32 dx;
     f32 dz;
-    f32 dist;
-    f32 k;
     f32 c;
     f32 s;
 
@@ -1173,12 +1169,10 @@ void func_8008E794(void) {
     p = &D_801C43F8[D_8011F8E0];
     arena = gGfxPool->unk13D68;
     len = sqrtf((dirX * dirX) + (dirZ * dirZ));
-    var_fv1 = dirX;
-    var_fa1 = dirZ;
     if (len != 0.0f) {
-        scale = 4000.0f / len;
-        var_fv1 *= scale;
-        var_fa1 *= scale;
+        len = 4000.0f / len;
+        dirX *= len;
+        dirZ *= len;
     }
     vtx = p->unkE0;
     vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[0].unk14;
@@ -1199,16 +1193,16 @@ void func_8008E794(void) {
     vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[5].v.ob[1] = gWaterLevel;
     vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[0].unk18;
-    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - var_fv1) - gWaterWindow[0].unk14;
+    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - dirX) - gWaterWindow[0].unk14;
     vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - var_fa1) - gWaterWindow[0].unk18;
+    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - dirZ) - gWaterWindow[0].unk18;
     if (gPlayers == TWO_PLAYERS) {
         cam = &gCameraPerspective[D_80223934];
         dirX = cam->unk64;
         dirZ = cam->unk6C;
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
-        scale = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        len = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
         vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
@@ -1227,9 +1221,9 @@ void func_8008E794(void) {
         vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[5].v.ob[1] = gWaterLevel;
         vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[1].unk18;
-        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * scale)) - gWaterWindow[1].unk14;
+        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * len)) - gWaterWindow[1].unk14;
         vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * scale)) - gWaterWindow[1].unk18;
+        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * len)) - gWaterWindow[1].unk18;
     }
     if (gPlayers == ONE_PLAYER) {
         switch (gCourseID) {
@@ -1291,31 +1285,31 @@ void func_8008E794(void) {
                     D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[gRiderRaceState[i].nearestRecord];
                     dx = D_801C3C54->unk0 - D_801C3C50->unk44;
                     dz = D_801C3C54->unk8 - D_801C3C50->unk4C;
-                    dist = sqrtf((dx * dx) + (dz * dz));
-                    if ((dist < 1500.0f) && ((D_801C3C54->unk98 == 1) || (D_801C3C54->unk98 == 0))) {
+                    len = sqrtf((dx * dx) + (dz * dz));
+                    if ((len < 1500.0f) && ((D_801C3C54->unk98 == 1) || (D_801C3C54->unk98 == 0))) {
                         D_801C3C58->unk78 = 1;
-                        if (dist != 0.0f) {
-                            if (dist < 500.0f) {
-                                k = 1.0f;
+                        if (len != 0.0f) {
+                            if (len < 500.0f) {
+                                len = 1.0f;
                             } else {
-                                k = sqrtf(100.0f / ((dist - 475.0f) * 4.0f));
+                                len = sqrtf(100.0f / ((len - 475.0f) * 4.0f));
                             }
                             e->unkFC = D_801C3C54->unk0 - D_801C3C50->unk44;
                             e->unk104 = D_801C3C54->unk8 - D_801C3C50->unk4C;
                             if (D_801C3C54->unk98 == 0) {
-                                e->unkCC = D_800D98B0[0] * k;
-                                e->unkD0 = D_800D98B0[1] * k;
-                                e->unkD4 = D_800D98B0[2] * k;
-                                e->unkD8 = (s32) ((D_800D98B0[3] - e->unkF0) * k) + e->unkF0;
-                                e->unkDC = (s32) ((D_800D98B0[4] - e->unkF4) * k) + e->unkF4;
-                                e->unkE0 = (s32) ((D_800D98B0[5] - e->unkF8) * k) + e->unkF8;
+                                e->unkCC = D_800D98B0[0] * len;
+                                e->unkD0 = D_800D98B0[1] * len;
+                                e->unkD4 = D_800D98B0[2] * len;
+                                e->unkD8 = (s32) ((D_800D98B0[3] - e->unkF0) * len) + e->unkF0;
+                                e->unkDC = (s32) ((D_800D98B0[4] - e->unkF4) * len) + e->unkF4;
+                                e->unkE0 = (s32) ((D_800D98B0[5] - e->unkF8) * len) + e->unkF8;
                             } else if (D_801C3C54->unk98 == 1) {
-                                e->unkCC = D_800D9898[0] * k;
-                                e->unkD0 = D_800D9898[1] * k;
-                                e->unkD4 = D_800D9898[2] * k;
-                                e->unkD8 = (s32) ((D_800D9898[3] - e->unkF0) * k) + e->unkF0;
-                                e->unkDC = (s32) ((D_800D9898[4] - e->unkF4) * k) + e->unkF4;
-                                e->unkE0 = (s32) ((D_800D9898[5] - e->unkF8) * k) + e->unkF8;
+                                e->unkCC = D_800D9898[0] * len;
+                                e->unkD0 = D_800D9898[1] * len;
+                                e->unkD4 = D_800D9898[2] * len;
+                                e->unkD8 = (s32) ((D_800D9898[3] - e->unkF0) * len) + e->unkF0;
+                                e->unkDC = (s32) ((D_800D9898[4] - e->unkF4) * len) + e->unkF4;
+                                e->unkE0 = (s32) ((D_800D9898[5] - e->unkF8) * len) + e->unkF8;
                             }
                         }
                     } else {
