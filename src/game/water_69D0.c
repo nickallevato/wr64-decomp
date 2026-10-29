@@ -1374,92 +1374,83 @@ void func_80050204(s32 view, Vtx* arena) {
  */
 
 #ifdef NON_MATCHING
-// Score 18761 of 26100: float register allocation; the original keeps more of the corner products in stack slots (frame 0xC0, here 0xD0) and uses five saved FP registers, here six
+// Score 3440 of 26100: same frame (0xC0) and five saved FP registers; the up vector is read from cam (not copied to
+// locals, which lets IDO sink the ray sums into the branches) and cx/cy/cz serve both rays. Left: h and the up vector
+// take each other's saved registers, and the locals above h and around the up products sit a few slots off.
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     s32 angle;
     f32 d;
-    f32 s;
-    f32 ax;
-    f32 ay;
-    f32 az;
-    f32 bx;
-    f32 by;
-    f32 bz;
-    f32 cx;
-    f32 cy;
-    f32 cz;
     f32 h;
-    f32 w;
-    f32 e;
-    f32 rx;
-    f32 ry;
-    f32 rz;
-    f32 dist;
-    f32 t;
-    f32 upx;
-    f32 upy;
-    f32 upz;
     f32 lox;
     f32 loy;
     f32 loz;
     f32 hix;
     f32 hiy;
     f32 hiz;
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    f32 upx;
+    f32 upy;
+    f32 upz;
+    f32 e;
+    f32 w;
+    f32 s;
+    f32 dist;
+    f32 t;
 
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
     d = cam->unk9C;
     h = (d * SIN(angle)) / COS(angle);
-    ax = cam->upX;
-    ay = cam->upY;
-    az = cam->upZ;
-    bx = cam->unk64;
-    by = cam->unk68;
-    bz = cam->unk6C;
-    cx = (ay * bz) - (az * by);
-    cy = (az * bx) - (ax * bz);
-    cz = (ax * by) - (ay * bx);
-    e = cam->unk94;
+    cx = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
+    cy = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C);
+    cz = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
     w = (h * 320.0f) / 240.0f;
-    hix = (e + w) * cx;
-    hiy = (e + w) * cy;
-    hiz = (e + w) * cz;
-    lox = (e - w) * cx;
-    loy = (e - w) * cy;
-    loz = (e - w) * cz;
-    upx = d * bx;
-    upy = d * by;
-    upz = d * bz;
-    s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
-    dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
+    e = cam->unk94 + w;
+    hix = e * cx;
+    hiy = e * cy;
+    hiz = e * cz;
+    e = cam->unk94 - w;
+    lox = e * cx;
+    loy = e * cy;
+    loz = e * cz;
+
+    upx = d * cam->unk64;
+    upy = d * cam->unk68;
+    upz = d * cam->unk6C;
+    do { // FAKE: a block boundary with no code; it moves the register allocation towards the original
+        s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
+        dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
+    } while (0);
 
     e = cam->unk98 - h;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) < -5.0f) {
-        t = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    cx = (cam->upX * e) + upx;
+    cy = (cam->upY * e) + upy;
+    cz = (cam->upZ * e) + upz;
+    if ((cy + hiy) < -5.0f) {
+        t = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
     }
-    if ((ry + loy) < -5.0f) {
-        t = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((cy + loy) < -5.0f) {
+        t = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
     }
     e = cam->unk98 + h;
-    rx = (ax * e) + upx;
-    ry = (ay * e) + upy;
-    rz = (az * e) + upz;
-    if ((ry + hiy) < -5.0f) {
-        t = (s / (ry + hiy)) * (((rx + hix) * cam->unkF0) + ((rz + hiz) * cam->unkF4));
+    cx = (cam->upX * e) + upx;
+    cy = (cam->upY * e) + upy;
+    cz = (cam->upZ * e) + upz;
+    if ((cy + hiy) < -5.0f) {
+        t = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
     }
-    if ((ry + loy) < -5.0f) {
-        t = (s / (ry + loy)) * (((rx + lox) * cam->unkF0) + ((rz + loz) * cam->unkF4));
+    if ((cy + loy) < -5.0f) {
+        t = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
         if (t < dist) {
             dist = t;
         }
