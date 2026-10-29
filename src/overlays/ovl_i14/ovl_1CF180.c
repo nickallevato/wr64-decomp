@@ -144,15 +144,15 @@ Gfx* PostRaceMenu_DrawMenu(Gfx* gdl) {
         item = D_i14_802C60F4;
     }
     for (i = 0; i < D_i14_802C61EC; i++, item++) {
-        if (i != D_i14_802C60F0) {
-            if (i & 1) {
-                x = D_i14_802C61E4;
-                if (1) {} // FAKE: the original's s3/s4/s5 order for the three globals
-            } else {
-                x = D_i14_802C61E8;
-            }
-            gdl = func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
+        if (i == D_i14_802C60F0) {
+            continue;
         }
+        if (i & 1) {
+            x = D_i14_802C61E4;
+        } else {
+            x = D_i14_802C61E8;
+        }
+        gdl = func_801E3EE0(gdl, 1, item->texture, x + 60 + item->x, i * 18 + 100, 0);
     }
 
     i = D_i14_802C60F0;

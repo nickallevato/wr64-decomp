@@ -1272,10 +1272,6 @@ void Camera_HandleCButtons(void) {
                 break;
             default:
                 viewY = D_80223970[mode];
-                // FAKE: an empty statement here keeps IDO from merging this case with case 7's else.
-                do {
-                } while (0);
-                break;
         }
         gCameraPerspective[i].unkEC = mode;
         gCameraPerspective[i].camViewY += (viewY - gCameraPerspective[i].camViewY) * rate;

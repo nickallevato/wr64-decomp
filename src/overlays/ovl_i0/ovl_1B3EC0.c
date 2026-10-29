@@ -256,16 +256,14 @@ Gfx* MainMenu_DrawRows(Gfx* gdl) {
     }
     gdl = Printer_SetMode(gdl, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     for (i = 0, item = items; i < D_i0_802C6F0C; i++, item++) {
-        if (i != D_i0_802C6EE4) {
-            // FAKE: an empty statement here gives the original's register allocation
-            do {
-            } while (0);
-            if (menu->unk14 != 0) {
-                gdl = Printer_SetMode(gdl, D_i0_802C6BD4[i] ? 0 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                                      0xFF, 0xFF, 0xFF, 0xFF);
-            }
-            gdl = func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + i * 20, 0);
+        if (i == D_i0_802C6EE4) {
+            continue;
         }
+        if (menu->unk14 != 0) {
+            gdl = Printer_SetMode(gdl, D_i0_802C6BD4[i] ? 0 : 7, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                  0xFF, 0xFF, 0xFF);
+        }
+        gdl = func_801E3EE0(gdl, 1, item->unk8, item->unkC + x, y + 1 + i * 20, 0);
     }
     gdl = Printer_SetMode(gdl, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     item = &items[D_i0_802C6EE4];
