@@ -72,18 +72,6 @@ void func_800AB92C(void);
 
 #define SIGNF(x) (x >= 0 ? 1.0f : -1.0f)
 
-extern s32 D_80228110[];
-// FAKE (until codeseg's .bss is split): defined here, not extern, as gInitialsEntered is in AF8C0.c. IDO then
-// addresses func_801DC274's stores from one `lui at`, as the original does. 11 entries: the uses here reach index 10.
-// FAKE: gA95D0BssPad0/1 stand in for the rest of A95D0's .bss (0x80227A60..0x802287AF: the globals other files
-// reach through the linker script, whose assignments win over these slots). With them, D_80228190's slot and
-// func_801DCD34's function-scope statics (0x802287B0..0x802287DF, just below AF8C0's gLetterWheelFirst) land at
-// their own addresses. Pad1 starts at 0x802283D0: D_80228190 ends at 0x802283CC and the array is 8-aligned.
-u8 gA95D0BssPad0[0x80228190 - 0x80227A60];
-struct UnkStruct_801DB0E4_arg0 D_80228190[11];
-u8 gA95D0BssPad1[0x802287B0 - 0x802283D0];
-extern s32 D_802287A8;
-extern s32 D_802287AC;
 
 // A keyframed object (type 1, 2, 3 or 5) and the script runner that drives it.
 // Layouts come from the copies and stores in func_801DEF84..func_801DFE80 and func_801E0F8C.
@@ -203,8 +191,6 @@ typedef struct UnkA95D0_Runner {
 } UnkA95D0_Runner; // size = 0x38
 
 void func_801DEA94(UnkA95D0_Cursor* cursors, s32 count);
-extern UnkA95D0_Runner D_80228058[];
-extern UnkA95D0_Obj D_80227E98[];
 void func_800AB95C(s32, s32);
 extern UnkA95D0_Step D_80223F7C[];
 extern Vec3f D_80225CB4;
@@ -240,8 +226,6 @@ extern f32 D_80223940[];
 extern f32 D_80223950[];
 extern f32 D_80223960[];
 extern f32 D_80223970[];
-extern UnkA95D0_Cursor D_802280C8[][4];
-extern f32 D_80228108;
 void func_801DFD8C(UnkA95D0_Runner* runner, UnkA95D0_Obj* obj);
 void func_801DFDA0(UnkA95D0_Runner* runner, UnkA95D0_Cursor* cursors);
 void func_801DFDA8(UnkA95D0_Runner* runner, f32* arg1, f32* arg2, f32* arg3, f32* arg4, f32* arg5, f32* arg6,
@@ -256,7 +240,6 @@ void func_801DD2D0(UnkA95D0_Runner* runner);
 void func_800AC098(UnkStruct_801DB0E4_arg0* arg0, s32 arg1);
 extern UnkA95D0_Step D_80224B14[];
 extern UnkStruct_801DB0E4_arg1 D_80225E34;
-extern f32 D_80228120[][2];
 void func_801DF744(UnkA95D0_Obj* obj);
 void func_801DF38C(UnkA95D0_Obj* obj);
 void func_801DF128(UnkA95D0_Obj* obj);
@@ -276,6 +259,22 @@ void func_801DEB08(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline1* spline);
 void func_801DEC00(f32* out, UnkA95D0_Cursor* cursor, UnkA95D0_Spline3* spline);
 void func_801DF278(UnkA95D0_Obj* obj, s32 type, UnkA95D0_Key2* key);
 void func_801DF008(UnkA95D0_Obj* obj, UnkA95D0_Key1* key);
+
+// This file's .bss, the start of codeseg's: 0x80227A60..0x802287DF (yaml split), then func_801DCD34's statics.
+// Sizes run to the next variable; D_80227A60 is cleared with the whole of codeseg's .bss by the game loader.
+UnkStruct_80227A60 D_80227A60[8];
+camera_unk_1 gCameraPerspective[2];
+UnkA95D0_Obj D_80227E98[2];
+UnkA95D0_Runner D_80228058[2];
+UnkA95D0_Cursor D_802280C8[2][4];
+f32 D_80228108;
+s32 D_80228110[4];
+// func_801DC60C's asm names D_80228120 + 4 and its loop end, D_80228120 + 0x60, as D_80228124 and D_80228180
+// (resolve.txt).
+f32 D_80228120[14][2];
+struct UnkStruct_801DB0E4_arg0 D_80228190[30];
+s32 D_802287A8;
+s32 D_802287AC;
 
 // TODO: Improve these matches
 void func_801DAFA0(void** arg0, s32 arg1) {

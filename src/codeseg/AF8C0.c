@@ -14,15 +14,15 @@ extern s32 D_801C2690[];
 extern const s16 D_800EAC14[][8];
 extern Mtx D_8011F820;
 extern Gfx D_106F6C0[];
-extern s32 gLetterWheelFirst;
-extern s32 gLetterWheelLast;
-extern s32 gLetterWheelSlots[];
-// FAKE (until codeseg's .bss is split): defined here, not extern, which adds a 0x10 .bss slot to AF8C0.o and
-// moves the later codeseg .bss objects in the ELF (not the ROM). IDO then addresses the four zero stores in func_801E1BA8 from one
-// `lui at`, as the original does. Its address still comes from symbol_addrs.txt (the linker
-// script's assignment wins over this .bss slot), because codeseg's .bss is not split yet.
+// This file's .bss, 0x802287E0..0x802288EF (yaml split).
+s32 gLetterWheelFirst;
+s32 gLetterWheelLast;
+s32 gLetterWheelSlots[16];
+f32 D_80228828[16];
+f32 D_80228868[16];
+f32 D_802288A8[16];
 s8 gInitialsEntered[4];
-extern u16 D_802288EC;
+u16 D_802288EC;
 extern s16 D_800DAB6C;
 extern s32 D_801C2650;
 extern s32 D_801C2654;
@@ -30,9 +30,6 @@ extern s8 D_801CE700[];
 // 2 * pi. This copy sits just past the end of this file's split rodata (splat gives
 // 0x80226330 to B17D0's data), so the code names it rather than writing the literal.
 extern f32 D_80226330;
-extern f32 D_80228828[];
-extern f32 D_80228868[];
-extern f32 D_802288A8[];
 extern UnkStruct_AF8C0_14 gBestTimes[][3];
 extern UnkStruct_AF8C0_14 gBestLaps[];
 extern UnkStruct_AF8C0_14 D_801C23B0[];
