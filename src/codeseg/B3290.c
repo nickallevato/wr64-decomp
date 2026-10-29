@@ -1,9 +1,10 @@
 #include "common.h"
 
 #ifdef NON_MATCHING
-// Score 265 of 22600: as in guLookAtF, the second cross product is written back into ux, uy, uz. Left: the
-// stack slots of the values spilled across sqrtf are 4 bytes lower here, and the integer temporaries take
-// a1-a3 in the third block (v0, v1, a1 in the original) and v0, v1, t1 in the last (a2, a3, t0).
+// Score 210 of 22600: as in guLookAtF, the second cross product is written back into ux, uy, uz. The third
+// value of each block (c before) is a repeated cast, not a local; without c the spill slots match. Left: the FAKE copy m2
+// takes c's stack slot back, so the spills are 4 bytes lower again; the integer temporaries of the third and last
+// blocks are swapped (a2, a3, t0 here for the third, v0, v1, a1 for the last; the other way round in the original).
 void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 arg7, f32 arg8, f32 arg9,
                    f32 arg10) {
     f32 scale;
@@ -13,7 +14,7 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
     f32 len;
     s32 a;
     s32 b;
-    s32 c;
+    Mtx* m2;
 
     fx /= 127.0;
     fy /= 127.0;
@@ -26,9 +27,8 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
     b = fy * scale;
     mtx->m[1][0] = (a & 0xFFFF0000) | ((u32) b >> 16);
     mtx->m[3][0] = (a << 16) | (b & 0xFFFF);
-    c = fz * scale;
-    mtx->m[1][1] = c & 0xFFFF0000;
-    mtx->m[3][1] = c << 16;
+    mtx->m[1][1] = ((s32) (fz * scale)) & 0xFFFF0000;
+    mtx->m[3][1] = ((s32) (fz * scale)) << 16;
 
     xx = uy * fz - uz * fy;
     xy = uz * fx - ux * fz;
@@ -39,9 +39,8 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
         a = xx * len;
         b = xy * len;
         mtx->m[0][0] = (a & 0xFFFF0000) | ((u32) b >> 16);
-        c = xz * len;
-        mtx->m[0][1] = c & 0xFFFF0000;
-        mtx->m[2][1] = c << 16;
+        mtx->m[0][1] = ((s32) (xz * len)) & 0xFFFF0000;
+        mtx->m[2][1] = ((s32) (xz * len)) << 16;
         mtx->m[2][0] = (a << 16) | (b & 0xFFFF);
 
         ux = fy * xz - fz * xy;
@@ -53,19 +52,18 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
         uz *= len;
         a = ux * scale;
         b = uy * scale;
-        c = uz * scale;
         mtx->m[0][2] = (a & 0xFFFF0000) | ((u32) b >> 16);
-        mtx->m[0][3] = c & 0xFFFF0000;
-        mtx->m[2][2] = (a << 16) | (b & 0xFFFF);
-        mtx->m[2][3] = c << 16;
+        mtx->m[0][3] = ((s32) (uz * scale)) & 0xFFFF0000;
+        m2 = mtx; // FAKE: a copy of mtx for the last two blocks' registers
+        m2->m[2][2] = (a << 16) | (b & 0xFFFF);
+        m2->m[2][3] = ((s32) (uz * scale)) << 16;
 
         a = 65536.0f * arg7;
         b = 65536.0f * arg8;
-        mtx->m[1][2] = (a & 0xFFFF0000) | ((u32) b >> 16);
-        c = 65536.0f * arg9;
-        mtx->m[1][3] = (c & 0xFFFF0000) | 1;
-        mtx->m[3][2] = (a << 16) | (b & 0xFFFF);
-        mtx->m[3][3] = c << 16;
+        m2->m[1][2] = (a & 0xFFFF0000) | ((u32) b >> 16);
+        m2->m[1][3] = (((s32) (65536.0f * arg9)) & 0xFFFF0000) | 1;
+        m2->m[3][2] = (a << 16) | (b & 0xFFFF);
+        m2->m[3][3] = ((s32) (65536.0f * arg9)) << 16;
     }
 }
 #else
