@@ -4300,7 +4300,9 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 101742 of 280200: far off in registers and scheduling (0x138 bytes shorter); kept for reading. Control flow
+// Score 101278 of 280200: far off in registers and scheduling (0x138 bytes shorter; frame 0x310 here, 0x100 in the
+// original, as most m2c temps get stack homes here); kept for reading. Statement order in a few straight-line runs
+// is from a greedy statement-move search. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the unk1608 /
 // unk16E0 timers and the unkC54 cases that pick the next func_80053EAC state, the func_8005CD24 frame step and
 // blend, then the per-entry update by state word, the link passes (D_800D4A08/D_800D4A0C times) and the copy of the
@@ -4964,8 +4966,8 @@ void func_8005DE24(s32 arg0) {
         temp_fs0_2 = temp_fs4_3 - temp_ft4_3;
         sp90 = temp_fv0_7 - RIDER_PARTS(rider)[19].unk4.z;
         temp_fs3_2 = (temp_fs1_2 * sp90) - (temp_fs2_2 * sp80);
-        temp_fa1_3 = (temp_fs2_2 * sp8C) - (temp_fs0_2 * sp90);
         temp_ft5_3 = (temp_fs0_2 * sp80) - (temp_fs1_2 * sp8C);
+        temp_fa1_3 = (temp_fs2_2 * sp8C) - (temp_fs0_2 * sp90);
         temp_fs5 = RIDER_PARTS(rider)[21].unk4.x - temp_fs4_3;
         spC4 = RIDER_PARTS(rider)[21].unk4.y - temp_fv1_5;
         var_fs0 = sp8C;
@@ -4985,8 +4987,8 @@ void func_8005DE24(s32 arg0) {
             temp_fa1_4 = temp_fa1_3 * temp_fv1_6;
             temp_ft5_4 = temp_ft5_3 * temp_fv1_6;
             temp_fa0_4 = (temp_fs5 * temp_fs3_3) + (spC4 * temp_fa1_4) + (spC0 * temp_ft5_4);
-            spC4 -= temp_fa0_4 * temp_fa1_4;
             spC0 -= temp_fa0_4 * temp_ft5_4;
+            spC4 -= temp_fa0_4 * temp_fa1_4;
             temp_fs4_4 = RIDER_PARTS(rider)[20].unk4.x;
             temp_fv1_7 = RIDER_PARTS(rider)[20].unk4.y;
             temp_fa0_5 = RIDER_PARTS(rider)[20].unk4.z;
@@ -5046,8 +5048,8 @@ void func_8005DE24(s32 arg0) {
         }
     }
     temp_fs5_2 = rider->unk78;
-    spC4 = rider->unk7C;
     spC0 = rider->unk80;
+    spC4 = rider->unk7C;
     for (; part >= &RIDER_PARTS(rider)[0]; part--) {
         switch (part->unk0) {
             case 0:
@@ -5056,8 +5058,8 @@ void func_8005DE24(s32 arg0) {
                 part->unk4.z = part->unk10.z;
                 break;
             case 1:
-                var_fs3 = part->unk10.x - part->unk4.x;
                 var_fa1 = part->unk10.y - part->unk4.y;
+                var_fs3 = part->unk10.x - part->unk4.x;
                 var_ft5 = part->unk10.z - part->unk4.z;
                 temp_fs1_5 = (var_fs3 * var_fs3) + (var_fa1 * var_fa1) + (var_ft5 * var_ft5);
                 if ((D_800D4984 * D_800D4984) < temp_fs1_5) {
@@ -5093,8 +5095,8 @@ void func_8005DE24(s32 arg0) {
             case 4:
             case 5:
                 temp_fv1_10 = part->unk4.x;
-                temp_fa0_7 = part->unk4.y;
                 temp_fs3_4 = part->unk10.x - temp_fv1_10;
+                temp_fa0_7 = part->unk4.y;
                 temp_fs0_6 = part->unk4.z;
                 temp_fa1_7 = part->unk10.y - temp_fa0_7;
                 temp_ft5_5 = part->unk10.z - temp_fs0_6;
@@ -5141,8 +5143,8 @@ void func_8005DE24(s32 arg0) {
             }
             // Pull each linked pair of entries toward the link's length; entries in state 0, 2 or 3 stay put.
             for (link = &RIDER_LINKS(rider)[21]; link >= &RIDER_LINKS(rider)[0]; link--) {
-                a = link->unk0;
                 b = link->unk4;
+                a = link->unk0;
                 temp_fs0_8 = b->unk4.x - a->unk4.x;
                 temp_fs1_6 = b->unk4.y - a->unk4.y;
                 temp_fs2_5 = b->unk4.z - a->unk4.z;
@@ -5161,8 +5163,8 @@ void func_8005DE24(s32 arg0) {
                         a->unk1C.y -= temp_ft4_15 * temp_fs1_6;
                         a->unk1C.z -= temp_ft4_15 * temp_fs2_5;
                     } else {
-                        temp_fv1_12 = temp_fs0_8 * temp_ft4_13;
                         temp_fa0_9 = temp_fs1_6 * temp_ft4_13;
+                        temp_fv1_12 = temp_fs0_8 * temp_ft4_13;
                         temp_fa1_8 = temp_fs2_5 * temp_ft4_13;
                         b->unk1C.x += temp_fv1_12;
                         b->unk1C.y += temp_fa0_9;
