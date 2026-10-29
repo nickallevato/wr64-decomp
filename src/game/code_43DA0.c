@@ -1142,8 +1142,8 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 19488 of 127200, 16 instructions short: the direction is scaled in place and one f32 (len) serves the length,
-// the 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
+// Score 17178 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
+// 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
 // original keeps the camera direction on the stack across sqrtf (five saved FP registers, frame 0xC8; four and 0xB8
 // here), and in the D_800D988C == 1 loop it reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
@@ -1203,6 +1203,8 @@ void func_8008E794(void) {
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
         len = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        dirX *= len;
+        dirZ *= len;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
         vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
@@ -1221,9 +1223,9 @@ void func_8008E794(void) {
         vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[5].v.ob[1] = gWaterLevel;
         vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[1].unk18;
-        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - (dirX * len)) - gWaterWindow[1].unk14;
+        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - dirX) - gWaterWindow[1].unk14;
         vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - (dirZ * len)) - gWaterWindow[1].unk18;
+        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - dirZ) - gWaterWindow[1].unk18;
     }
     if (gPlayers == ONE_PLAYER) {
         switch (gCourseID) {
