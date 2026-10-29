@@ -2,13 +2,16 @@
 
 void func_801EC830(s32*);
 
-extern u32 D_802288F0;
-extern s32 D_802288F4;
-extern s32 D_802288F8;
-extern s32 D_802288FC;
 extern f32 D_80226334;
 extern Vp D_80226340;
-extern u16 D_80228900;
+
+// This file's .bss, 0x802288F0..0x80228901 (yaml split); the object's 16-byte alignment puts
+// wr64_pause_menu's at 0x80228910.
+u32 D_802288F0;
+s32 D_802288F4;
+s32 D_802288F8;
+s32 D_802288FC;
+u16 D_80228900;
 extern UnkStruct_801CE5F8* D_801CE5F8;
 
 f32 func_801E31A0(void) {

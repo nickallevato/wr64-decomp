@@ -96,7 +96,8 @@ extern Gfx* D_801CE9A0[];
 extern Anim* D_802238DC[];
 extern s32 D_80226C30;
 extern UnkStruct_80227A60 D_80227A60[];
-extern s32 D_80228920;
+// This file's .bss, 0x80228920..0x80228923 (yaml split).
+s32 D_80228920;
 
 void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 x, f32 y, f32 z, f32 scale);
 
