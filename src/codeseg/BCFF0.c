@@ -2363,11 +2363,13 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 510 of 32800: side is computed first, then the forward dot product (copied to fwd); the direction is
+// Score 120 of 32800: side is computed first, then the forward dot product (copied to fwd); the direction is
 // normalised in place (dx /= dist); dot holds side / scale once the angle test is done, and a holds the clamped fwd
 // before it holds the angle (with these the saved FP registers are coloured as in the original). The zero tests of
-// a use the integer literal 0. Left: the zero of aa > 0.0f is loaded at the top of the block in the original (f16),
-// and the 0.0f for sgn is its own (f14); here they share one zero, loaded in both arms of sgn.
+// a use the integer literal 0. A differently spelled zero is a separate constant here (0.f, 0.00f and 0e0f all
+// work; 0.0F does not): sgn's 0.f is its own, while written 0.0f it shares aa > 0.0f's zero, which is then loaded in
+// both arms of sgn instead of once at the top. Left: the
+// lui of gRiders' address is scheduled two instructions later than in the original (after the b->unk4 store).
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2457,7 +2459,7 @@ void func_801F9EA0(void) {
                     a -= 360.0f;
                 }
                 aa = (a >= 0) ? a : -a;
-                sgn = (a == 0) ? 0.0f : ((a > 0) ? 1 : -1);
+                sgn = (a == 0) ? 0.f : ((a > 0) ? 1 : -1); // odd literal: 0.f, not 0.0f (see the note)
                 if (aa > 0.0f) {
                     aa *= 0.6666667f;
                     if (aa > 90.0f) {
