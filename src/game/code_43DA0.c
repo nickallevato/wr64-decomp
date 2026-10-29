@@ -390,11 +390,11 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 44328 of 181100: same calls and branches (by a structure diff) and the same frame (0x2C0) with every
+// Score 43578 of 181100: same calls and branches (by a structure diff) and the same frame (0x2C0) with every
 // local at the original's offset; the direction is scaled in place after sqrtf and glare is squared four times
 // before the branch, both as in the original. The quad corners (v -/+ c, -v -/+ c) are written out at each
-// use, as the original keeps them in compiler temporaries. Left: the spill slots of those temporaries and
-// float register allocation, and cam->unk68 * 2.0f is an add.s here, a mul.s there.
+// use, as the original keeps them in compiler temporaries. Left: the spill slots of those temporaries (the
+// original also stores cam->upX/upY/upZ to stack temporaries and reads them back) and float registers.
 Gfx* func_8008A0E0(Gfx* gdl) {
     UnkStruct_801C43F8* p;
     f32 cx;
@@ -450,7 +450,7 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     } else {
         D_800D47E0[0] = 0;
     }
-    angle = cam->unk68 * 2.0f * 3.141592653589793;
+    angle = cam->unk68 * 2 * 3.141592653589793; // int 2: the original multiplies; 2.0f becomes an add.s
     alpha = 160.0f * dot * dot * dot * dot * dot * dot * dot * dot * dot * dot * dot * dot;
     if (alpha < 15.0f) {
         alpha = 0.0f;
