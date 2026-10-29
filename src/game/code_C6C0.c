@@ -625,8 +625,9 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #ifdef NON_MATCHING
-// Score 410 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (z and
-// the 0.0f constant swap $f20 and $f14; p and t take a1 and a0 where the original has a0 and a2).
+// Score 305 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (z,
+// x and y are in $f16/$f18/$f20, the original's $f20/$f16/$f18; p and t take a1 and a0 where the original has a0
+// and a2).
 void func_80051EC0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* p = rider->unk90;
@@ -720,6 +721,7 @@ void func_80051EC0(s32 arg0) {
         (((dz2 * c) + ((a * dx2) + (b * dy2))) > 0.0f)) {
     reset:
         end = &D_800D4840[12];
+        if (t && t && t) {} // FAKE: an empty test (from the permuter) that changes p and t's registers
         for (; t != end; t += 2, p += 2) { // two points per pass, as in the original
 
             a = t[0].x;
