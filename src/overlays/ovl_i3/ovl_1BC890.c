@@ -201,10 +201,10 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 3550 of 38000. The control flow and arithmetic match. Storing the 170 value (D_i3_802C6F70/7C) before the
-// 255 value (D_i3_802C6F6C/78) in case 1, case 2 and case 3's else gained about 900. Left: the original keeps the
-// addresses of D_i3_802C6F70 and D_i3_802C6F7C in registers and stores D_i3_802C6F6C through `lui at`; IDO here
-// keeps D_i3_802C6F6C's address in a register and stores D_i3_802C6F7C through `lui at`.
+// Score 1095 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
+// search: the 255 value (D_i3_802C6F6C/78) is set before the 170 value (D_i3_802C6F70/7C) everywhere. Left:
+// register numbering, and case 0's chain stores D_i3_802C6F6C last here, first in the original (none of the 24
+// chain orders gives that).
 Gfx* func_i3_802C5D54(Gfx* gdl) {
     TexLabel* label;
 
@@ -215,7 +215,7 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F74 = 0;
                 D_i3_802C6F68 = 0;
             }
-            D_i3_802C6F7C = D_i3_802C6F70 = D_i3_802C6F6C = D_i3_802C6F78 = 0;
+            D_i3_802C6F6C = D_i3_802C6F70 = D_i3_802C6F7C = D_i3_802C6F78 = 0;
             break;
 
         case 1:
@@ -226,20 +226,20 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F6C = 255;
                 D_i3_802C6F70 = 170;
             } else {
-                D_i3_802C6F70 = D_i3_802C6F68 * 170 / 10;
                 D_i3_802C6F6C = D_i3_802C6F68 * 255 / 10;
+                D_i3_802C6F70 = D_i3_802C6F68 * 170 / 10;
             }
             if (D_i3_802C6F74 >= 10) {
-                D_i3_802C6F7C = 170;
                 D_i3_802C6F78 = 255;
+                D_i3_802C6F7C = 170;
             } else {
                 D_i3_802C6F78 = D_i3_802C6F74 * 255 / 10;
                 D_i3_802C6F7C = D_i3_802C6F74 * 170 / 10;
             }
             if ((D_i3_802C6F68 >= 10) && (D_i3_802C6F74 >= 10)) {
                 D_i3_802C6F64 = 2;
-                D_i3_802C6F7C = D_i3_802C6F70 = 170;
                 D_i3_802C6F6C = D_i3_802C6F78 = 255;
+                D_i3_802C6F70 = D_i3_802C6F7C = 170;
                 D_i3_802C6F68 = 0;
                 D_i3_802C6F74 = 0;
             }
@@ -251,8 +251,8 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F74 = 0;
                 D_i3_802C6F68 = 0;
             }
-            D_i3_802C6F7C = D_i3_802C6F70 = 170;
             D_i3_802C6F6C = D_i3_802C6F78 = 255;
+            D_i3_802C6F70 = D_i3_802C6F7C = 170;
             break;
 
         case 3:
@@ -263,8 +263,8 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F70 = 0;
                 D_i3_802C7028 = 1;
             } else {
-                D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
                 D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
+                D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
             }
             D_i3_802C6F78 = D_i3_802C6F6C;
             D_i3_802C6F7C = D_i3_802C6F70;

@@ -527,24 +527,24 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 1055 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 933 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
-// reused; the permuter found them, and with them the int registers match, except wasIn's). Left: the frame is 0x90,
-// not 0x88 (isHuman and rider spill to new slots below the declared ones, where the original spills them to slots of
-// their own among them), the second distance (dxp, reused) is not stored, and the float registers of the
-// nearest-record and Drake Lake blocks differ. The Drake Lake deltas reuse dx0/dz0.
+// reused; the permuter found them, and with them the int registers match, except wasIn's). The declaration order
+// (from a move search) gives the 0x88 frame. Left: the stack slots of x, z, the distances, ra/isHuman and the zone
+// outputs differ, the second distance (dxp, reused) is not stored, and the float registers of the nearest-record
+// and Drake Lake blocks differ. The Drake Lake deltas reuse dx0/dz0.
 void func_80076378(s32 arg0) {
-    s32 prev;
-    s32 next;
-    f32 dx0;
-    f32 dz0;
-    f32 dxp;
-    s32 cur;
     s32 best;
+    f32 dx0;
+    s32 next;
+    s32 prev;
     s32 isHuman;
     s32 zoneA;
+    s32 cur;
+    f32 dxp;
     s32 zoneB;
     s32 zoneC;
+    f32 dz0;
     s32 zoneD;
     f32 bestDist;
     f32 dzp;

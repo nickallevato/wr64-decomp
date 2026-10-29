@@ -761,10 +761,11 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 3905 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
+// Score 3885 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
 // the height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before
 // end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. Left: the
-// first pair's cells load in the other order, registers differ, and IDO here saves an extra s0.
+// first pair's cells load in the other order, registers differ, and IDO here saves an extra s0
+// (never used). The last pass's bound is set in its for, as in the first two passes.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -851,10 +852,9 @@ void func_8004EAA4(void) {
         a->unk0 += a->unk2;
         a->unk2 -= a->unk2 >> D_800D4730;
     }
-    end = p + gWaterWindowN;
     a = WATER_CELL_AT(p->unk0);
     ha = a->unk0;
-    while (p < end) {
+    for (end = p + gWaterWindowN; p < end;) {
         b = WATER_CELL_AT(p[1].unk0);
         hb = b->unk0;
         p += 2;
@@ -1073,10 +1073,11 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 2380 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
+// Score 2300 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
 // their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across sqrtf.
 // The copy loop ends at &D_80192460[13] (the address of gWaterWindowN, which the original does not reuse), the
-// sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0. Left: the frame (0x68 here, 0x50 in the
+// sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
+// for j, b and top (from a search over each pair's order). Left: the frame (0x68 here, 0x50 in the
 // original), and D_80192460's address stays in s4 from the copy loop on here (rebuilt for the pool loop there).
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
@@ -1155,8 +1156,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         b = top + 1;
         step = top + 2;
         for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
-            pool->unk13D68[j].v.tc[1] = pool->unk13D68[j].v.tc[0] = pool->unk13D68[b].v.tc[1] = pool->unk13D68[b].v.tc[0] =
-                pool->unk13D68[top].v.tc[1] = pool->unk13D68[top].v.tc[0] = pool->unk13D68[set].v.tc[0] =
+            pool->unk13D68[j].v.tc[0] = pool->unk13D68[j].v.tc[1] = pool->unk13D68[b].v.tc[0] = pool->unk13D68[b].v.tc[1] =
+                pool->unk13D68[top].v.tc[0] = pool->unk13D68[top].v.tc[1] = pool->unk13D68[set].v.tc[0] =
                     pool->unk13D68[set].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
                         pool->unk13D68[k].v.tc[0] = pool->unk13D68[k].v.tc[1] = 0x400;
             b += step;
@@ -1179,8 +1180,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
             b = top + 1;
             step = top + 2;
             for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
-                pool->unk170D8[j].v.tc[1] = pool->unk170D8[j].v.tc[0] = pool->unk170D8[b].v.tc[1] = pool->unk170D8[b].v.tc[0] =
-                    pool->unk170D8[top].v.tc[1] = pool->unk170D8[top].v.tc[0] = pool->unk170D8[set].v.tc[0] =
+                pool->unk170D8[j].v.tc[0] = pool->unk170D8[j].v.tc[1] = pool->unk170D8[b].v.tc[0] = pool->unk170D8[b].v.tc[1] =
+                    pool->unk170D8[top].v.tc[0] = pool->unk170D8[top].v.tc[1] = pool->unk170D8[set].v.tc[0] =
                         pool->unk170D8[set].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
                             pool->unk170D8[k].v.tc[0] = pool->unk170D8[k].v.tc[1] = 0x400;
                 b += step;

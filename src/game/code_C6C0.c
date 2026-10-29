@@ -7080,22 +7080,22 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 2400 of 76300: player 1's x and z are read into dist and lim before the nearest-rider loop, its pointer (p1)
+// Score 2225 of 76300: player 1's x and z are read into dist and lim before the nearest-rider loop, its pointer (p1)
 // is a separate variable declared last so it lands in a temporary spilled across the calls, the stamp radius is
 // read from D_80192498 each time (the original reloads it after the first stamp), and the one-player stamp level
-// reuses i (s0 there). Left: frame 0x68 (0x60 there) with the spill and nearest one slot apart, and FP temps
+// reuses i (s0 there). The stamp-distance deltas set dz before dx (from a statement-swap search). Left: frame 0x68 (0x60 there) with the spill and nearest one slot apart, and FP temps
 // numbered differently in the nearest loop and the stamp maths. level also serves as the push-apart counter and
 // the two-player stamp flag.
 void func_800665B0(void) {
     UnkStruct_80192690* rider;
     camera_unk_1* cam;
     s32 i;
-    s32 nearest;
     u8 pan;
+    s32 nearest;
     f32 best;
     f32 dx;
-    f32 dz;
     f32 lim;
+    f32 dz;
     f32 sx;
     f32 dist;
     f32 sz;
@@ -7206,8 +7206,8 @@ void func_800665B0(void) {
             Water_StampDiagonalSine(sx, sz, i, D_800D49AC, 1);
         } else {
             level = 1;
-            dx = sx - D_80192690[gPlayer2Rider].unk44.x;
             dz = sz - D_80192690[gPlayer2Rider].unk44.z;
+            dx = sx - D_80192690[gPlayer2Rider].unk44.x;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
                 level = 0;
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
@@ -7215,8 +7215,8 @@ void func_800665B0(void) {
             cam = &gCameraPerspective[D_80223934];
             sx = gWaterWindow[1].unk0 + (D_80192498 * cam->unkF0);
             sz = gWaterWindow[1].unk4 + (D_80192498 * cam->unkF4);
-            dx = sx - D_80192690[gPlayer1Rider].unk44.x;
             dz = sz - D_80192690[gPlayer1Rider].unk44.z;
+            dx = sx - D_80192690[gPlayer1Rider].unk44.x;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, level);
             }

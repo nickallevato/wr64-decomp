@@ -977,11 +977,12 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 2191 of 134600: the original stores D_801CE740[0..3].unk2 in case 2 through lui/%lo of each element (here
+// Score 2047 of 134600: the original stores D_801CE740[0..3].unk2 in case 2 through lui/%lo of each element (here
 // through one base register), schedules the first loop's pointer step later, spills arg0 at 0x1C (here 0x18), and
 // colours a few temporaries differently (the `1` loaded for the alts stores in cases 0, 2 and 4). The chained
 // D_801CE760 store shares one -1 as in the original. Reading alts[i] through the pointer ap gives the display-list loop's
-// reload after each store, and alts declared after dl puts it at 0x40 as in the original.
+// reload after each store, and alts declared after dl puts it at 0x40 as in the original. The first switch's
+// chains written alts[1] = alts[2] and alts[5] = alts[6] score better than the other way round.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
@@ -1098,9 +1099,9 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                 alts[0] = 2;
             }
             if (D_801CE740[1].rider == 2) {
-                alts[2] = alts[1] = 1;
+                alts[1] = alts[2] = 1;
             } else if (D_801CE740[1].rider == 6) {
-                alts[2] = alts[1] = 2;
+                alts[1] = alts[2] = 2;
             }
             if (D_801CE740[2].rider == 2) {
                 alts[4] = alts[3] = 1;
@@ -1108,9 +1109,9 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                 alts[4] = alts[3] = 2;
             }
             if (D_801CE740[3].rider == 2) {
-                alts[6] = alts[5] = 1;
+                alts[5] = alts[6] = 1;
             } else if (D_801CE740[3].rider == 6) {
-                alts[6] = alts[5] = 2;
+                alts[5] = alts[6] = 2;
             }
             for (i = 0; i < count; i++) {
                 if (D_801CE740[i].rider == 2) {
