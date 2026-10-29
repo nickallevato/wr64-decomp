@@ -168,7 +168,7 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
-// Score 6219 of 30700: plain pointer compares in the loops, the sums zeroed in one chain and each added next to its
+// Score 6155 of 30700: plain pointer compares in the loops, the sums zeroed in one chain and each added next to its
 // difference, and an int 0 for the zero stores (a separate zero from the sums'). Left: the original keeps 12 in s5
 // from the start and indexes D_80158450 with multu, keeps the sums in f14-f18 (saved registers and a stack slot
 // here) and spills the old centre values in the tail. dt also holds the link constant k, as the original's $f30 does.
@@ -230,7 +230,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
             pt->unk8 += pt->unk14;
         }
     }
-    sz = sy = sx = 0.0f;
+    sz = sy = sx = 0; // int 0: a separate zero constant from the 0.f below (zero-spelling search)
     prev = &D_80158450[arg0->unk28];
     for (pt = &arg0->unk30[arg0->unk28]; pt >= arg0->unk30; pt--, prev--) {
         sx += pt->unk0;
@@ -258,7 +258,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     dz = arg0->unk4C - old;
     arg0->unk58 = dz;
     d = SQ(dx) + SQ(dy) + SQ(dz);
-    if (d != 0.0f) {
+    if (d != 0.f) { // FAKE: 0.f instead of 0.0f, a separate zero constant to IDO (zero-spelling search)
         len = sqrtf(d);
         arg0->unk68 = len;
         arg0->unk5C = dx / len;
