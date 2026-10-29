@@ -1441,14 +1441,12 @@ void func_800AFBD0(s32);
 void func_800B08F8(s32);
 
 #ifdef NON_MATCHING
-// Score 10560 of 36000: same blocks and calls. Here &gCameraPerspective and 0x10C stay in saved registers
-// (multu), where the original rebuilds each camera address with shifts and keeps the
-// D_800E6D60..D_800E6D80 addresses in s2-s7 instead; the frame is 0x80, not 0x78.
+// Score 165 of 36000: D_801D796C and D_801D7970 are always the cameras of D_80223930 and D_80223934; only
+// D_801D7968 depends on the rider. Left: two saved registers swapped, &D_801D7968 in s2 here (s3 in the original)
+// and D_801D7984, D_801D79A8 and D_800E6D60 in s3 (s2).
 void func_800B2ABC(void) {
     s32 i;
     UnkStruct_801D0798* e;
-    struct camera_unk_1* other;
-    struct camera_unk_1* cam;
 
     D_801D7B18 = osGetTime();
 
@@ -1493,14 +1491,12 @@ void func_800B2ABC(void) {
         D_800E6D80 = e->unk1AA0;
         func_800AE210(i);
         if ((gPlayers == ONE_PLAYER) || ((gPlayers == TWO_PLAYERS) && (i != gPlayer2Rider))) {
-            D_801D7968 = cam = &gCameraPerspective[D_80223930];
-            other = &gCameraPerspective[D_80223934];
+            D_801D7968 = &gCameraPerspective[D_80223930];
         } else {
-            D_801D7968 = other = &gCameraPerspective[D_80223934];
-            cam = &gCameraPerspective[D_80223930];
+            D_801D7968 = &gCameraPerspective[D_80223934];
         }
-        D_801D796C = cam;
-        D_801D7970 = other;
+        D_801D796C = &gCameraPerspective[D_80223930];
+        D_801D7970 = &gCameraPerspective[D_80223934];
         if (gCurrentPauseMenuOption == -1) {
             func_800B08F8(i);
         }
