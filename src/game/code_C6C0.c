@@ -625,16 +625,21 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #ifdef NON_MATCHING
-// Score 22584 of 36800: far off: the original keeps the 18 differences in stack homes (frame 0x88) with a different
-// register assignment. Control flow matches: the plane tests short-circuit in the same order, then the 12 points are
-// reset from D_800D4840 in the rider's basis.
+// Score 2670 of 36800: frame, stack homes and the two-points-per-pass reset loop match. Left: z and the 0.0f constant
+// swap $f20 and $f14, and the original computes p (rider + 0x90) up front and addresses the tests from it, where here
+// the offsets fold into the rider pointer. The plane tests branch to the reset loop by goto.
 void func_80051EC0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* p = rider->unk90;
-    Vec3f* t;
+    Vec3f* t = D_800D4840;
     f32 x;
     f32 y;
     f32 z;
+    f32 a;
+    f32 b;
+    f32 c;
+    f32 pad; // stack pad: puts the differences at sp+0x14..0x58
+    Vec3f* end;
     f32 dz2;
     f32 dx2;
     f32 dy2;
@@ -657,27 +662,79 @@ void func_80051EC0(s32 arg0) {
     z = rider->unk44.z;
     x = rider->unk44.x;
     y = rider->unk44.y;
-    if (((dz2 = p[2].unk8 - z, dx2 = p[2].unk0 - x, dy2 = p[2].unk4 - y), ((rider->unk84 * dx2) + (rider->unk88 * dy2) + (dz2 * rider->unk8C)) < 0.0f) ||
-        ((dz5 = p[5].unk8 - z, dx5 = p[5].unk0 - x, dy5 = p[5].unk4 - y), ((rider->unk84 * dx5) + (rider->unk88 * dy5) + (dz5 * rider->unk8C)) < 0.0f) ||
-        ((dz0 = p[0].unk8 - z, dx0 = p[0].unk0 - x, dy0 = p[0].unk4 - y), ((rider->unk84 * dx0) + (rider->unk88 * dy0) + (dz0 * rider->unk8C)) > 0.0f) ||
-        ((dz3 = p[3].unk8 - z, dx3 = p[3].unk0 - x, dy3 = p[3].unk4 - y), ((rider->unk84 * dx3) + (rider->unk88 * dy3) + (dz3 * rider->unk8C)) > 0.0f) ||
-        ((dz1 = p[1].unk8 - z, dx1 = p[1].unk0 - x, dy1 = p[1].unk4 - y), ((rider->unk78 * dx1) + (rider->unk7C * dy1) + (dz1 * rider->unk80)) < 0.0f) ||
-        ((dz4 = p[4].unk8 - z, dx4 = p[4].unk0 - x, dy4 = p[4].unk4 - y), ((rider->unk78 * dx4) + (rider->unk7C * dy4) + (dz4 * rider->unk80)) < 0.0f) ||
-        (((rider->unk78 * dx0) + (rider->unk7C * dy0) + (dz0 * rider->unk80)) > 0.0f) ||
-        (((rider->unk78 * dx2) + (rider->unk7C * dy2) + (dz2 * rider->unk80)) > 0.0f) ||
-        (((rider->unk78 * dx3) + (rider->unk7C * dy3) + (dz3 * rider->unk80)) > 0.0f) ||
-        (((rider->unk78 * dx5) + (rider->unk7C * dy5) + (dz5 * rider->unk80)) > 0.0f) ||
-        (((rider->unk6C * dx3) + (rider->unk70 * dy3) + (dz3 * rider->unk74)) < 0.0f) ||
-        (((rider->unk6C * dx4) + (rider->unk70 * dy4) + (dz4 * rider->unk74)) < 0.0f) ||
-        (((rider->unk6C * dx5) + (rider->unk70 * dy5) + (dz5 * rider->unk74)) < 0.0f) ||
-        (((rider->unk6C * dx0) + (rider->unk70 * dy0) + (dz0 * rider->unk74)) > 0.0f) ||
-        (((rider->unk6C * dx1) + (rider->unk70 * dy1) + (dz1 * rider->unk74)) > 0.0f) ||
-        (((rider->unk6C * dx2) + (rider->unk70 * dy2) + (dz2 * rider->unk74)) > 0.0f)) {
-        for (t = D_800D4840; t != &D_800D4840[12]; t++, p++) {
-            p->unk0 = (rider->unk84 * t->x) + (rider->unk78 * t->y) + (rider->unk6C * t->z) + x;
-            p->unk4 = (rider->unk88 * t->x) + (rider->unk7C * t->y) + (rider->unk70 * t->z) + y;
-            p->unk8 = (rider->unk8C * t->x) + (rider->unk80 * t->y) + (rider->unk74 * t->z) + z;
+    a = rider->unk84;
+    b = rider->unk88;
+    c = rider->unk8C;
+    dz2 = p[2].unk8 - z;
+    dx2 = p[2].unk0 - x;
+    dy2 = p[2].unk4 - y;
+    if (((dz2 * c) + ((a * dx2) + (b * dy2))) < 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz5 = p[5].unk8 - z;
+    dx5 = p[5].unk0 - x;
+    dy5 = p[5].unk4 - y;
+    if (((dz5 * c) + ((a * dx5) + (b * dy5))) < 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz0 = p[0].unk8 - z;
+    dx0 = p[0].unk0 - x;
+    dy0 = p[0].unk4 - y;
+    if (((dz0 * c) + ((a * dx0) + (b * dy0))) > 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz3 = p[3].unk8 - z;
+    dx3 = p[3].unk0 - x;
+    dy3 = p[3].unk4 - y;
+    if (((dz3 * c) + ((a * dx3) + (b * dy3))) > 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    a = rider->unk78;
+    b = rider->unk7C;
+    c = rider->unk80;
+    dz1 = p[1].unk8 - z;
+    dx1 = p[1].unk0 - x;
+    dy1 = p[1].unk4 - y;
+    if (((dz1 * c) + ((a * dx1) + (b * dy1))) < 0.0f) {
+        goto reset; // goto: straight to the reset loop
+    }
+    dz4 = p[4].unk8 - z;
+    dx4 = p[4].unk0 - x;
+    dy4 = p[4].unk4 - y;
+    if ((((dz4 * c) + ((a * dx4) + (b * dy4))) < 0.0f) ||
+        (((dz0 * c) + ((a * dx0) + (b * dy0))) > 0.0f) ||
+        (((dz2 * c) + ((a * dx2) + (b * dy2))) > 0.0f) ||
+        (((dz3 * c) + ((a * dx3) + (b * dy3))) > 0.0f) ||
+        (((dz5 * c) + ((a * dx5) + (b * dy5))) > 0.0f)) {
+        goto reset; // goto: straight to the reset loop
+    }
+    a = rider->unk6C;
+    b = rider->unk70;
+    c = rider->unk74;
+    if ((((dz3 * c) + ((a * dx3) + (b * dy3))) < 0.0f) ||
+        (((dz4 * c) + ((a * dx4) + (b * dy4))) < 0.0f) ||
+        (((dz5 * c) + ((a * dx5) + (b * dy5))) < 0.0f) ||
+        (((dz0 * c) + ((a * dx0) + (b * dy0))) > 0.0f) ||
+        (((dz1 * c) + ((a * dx1) + (b * dy1))) > 0.0f) ||
+        (((dz2 * c) + ((a * dx2) + (b * dy2))) > 0.0f)) {
+    reset:
+        end = &D_800D4840[12];
+        for (; t != end; t += 2, p += 2) { // two points per pass, as in the original
+
+            a = t[0].x;
+            b = t[0].y;
+            c = t[0].z;
+            p[0].unk0 = (rider->unk84 * a) + (rider->unk78 * b) + (rider->unk6C * c) + x;
+            p[0].unk4 = (rider->unk88 * a) + (rider->unk7C * b) + (rider->unk70 * c) + y;
+            p[0].unk8 = (rider->unk8C * a) + (rider->unk80 * b) + (rider->unk74 * c) + z;
+            a = t[1].x;
+            b = t[1].y;
+            c = t[1].z;
+            p[1].unk0 = (rider->unk84 * a) + (rider->unk78 * b) + (rider->unk6C * c) + x;
+            p[1].unk4 = (rider->unk88 * a) + (rider->unk7C * b) + (rider->unk70 * c) + y;
+            p[1].unk8 = (rider->unk8C * a) + (rider->unk80 * b) + (rider->unk74 * c) + z;
         }
+
     }
 }
 #else
