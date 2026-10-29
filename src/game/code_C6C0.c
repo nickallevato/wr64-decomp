@@ -2112,7 +2112,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 71397 of 246800: far off (frame 0x738 here, 0x388 in the original; registers; 0x50 bytes longer); this is the
+// Score 72102 of 246800: far off (frame 0x738 here, 0x388 in the original; registers; 0x50 bytes longer); this is the
 // m2c structure with named
 // skeleton entries and rider parts, kept for reading. Control flow follows the original: the lean side (unk16B8),
 // the per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame counters
@@ -2913,11 +2913,11 @@ block_45: // m2c label name
     arg1->unkFC.unk0.x = (f32) ((f64) arg1->unk1F8.unk0.x + (14.483002 * (f64) arg1->unk1F8.unkC.x));
     arg1->unkFC.unk0.y = (f32) ((f64) arg1->unk1F8.unk0.y + (14.483002 * (f64) arg1->unk1F8.unkC.y));
     arg1->unkFC.unk0.z = (f32) ((f64) arg1->unk1F8.unk0.z + (14.483002 * (f64) arg1->unk1F8.unkC.z));
-    temp_s2_5 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
     temp_fv0_11 = rider->unk74;
     temp_fv1_19 = rider->unk6C;
     temp_fa1_10 = rider->unk8C;
     temp_fa0_16 = rider->unk84;
+    temp_s2_5 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
     temp_fs4_7 = (temp_fv1_19 * temp_fv1_19) + (temp_fv0_11 * temp_fv0_11);
     temp_fs3_8 = (temp_fa0_16 * temp_fa0_16) + (temp_fa1_10 * temp_fa1_10);
     if ((temp_fs4_7 != 0.0f) && (temp_fs3_8 != 0.0f)) {
