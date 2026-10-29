@@ -1017,9 +1017,10 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 9765 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
-// are laid out) and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the original's frame is 0x70
-// (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
+// Score 9636 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the
+// original's frame is 0x70 (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered
+// differently.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1029,8 +1030,8 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     f32 len;
     f32 t;
 
-    d[2] = arg6 - arg3;
     d[1] = arg7 - arg4;
+    d[2] = arg6 - arg3;
     d[0] = arg8 - arg5;
     len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
