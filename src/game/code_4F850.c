@@ -977,9 +977,10 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 2795 of 134600, 2 instructions short: the original stores D_801CE740[0..3].unk2 in case 2 through
-// lui/%lo of each element (here through one base register), schedules the first loop's pointer step later,
-// and in the display-list loop reloads alts[i] after each store (here the loads move above the stores).
+// Score 2396 of 134600: the original stores D_801CE740[0..3].unk2 in case 2 through lui/%lo of each element (here
+// through one base register), schedules the first loop's pointer step later, spills arg0 at 0x1C (here 0x18), and
+// colours a few temporaries differently. Reading alts[i] through the pointer ap gives the display-list loop's
+// reload after each store, and alts declared after dl puts it at 0x40 as in the original.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
@@ -991,8 +992,9 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     DmaEntry* src;
     s32 offset;
     DmaEntry* dst;
-    s16 alts[8];
     s32* dl;
+    s16 alts[8];
+    s16* ap;
 
     for (i = 0; i < 8; i++) {
         D_801CE740[i].unk2 = 1;
@@ -1234,6 +1236,7 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             break;
     }
     for (i = 0; i < models; i++) {
+        ap = &alts[i];
         switch (arg0) {
             case 0:
                 if (i == 0) {
@@ -1272,19 +1275,19 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         dl[9] += offset;
         dl[10] += offset;
         dl[11] += offset;
-        if (alts[i] != 0) {
+        if (*ap != 0) {
             dl[12] += offset;
         }
-        if (alts[i] != 0) {
+        if (*ap != 0) {
             dl[13] += offset;
         }
-        if (alts[i] != 0) {
+        if (*ap != 0) {
             dl[14] += offset;
         }
-        if (alts[i] != 0) {
+        if (*ap != 0) {
             dl[15] += offset;
         }
-        if (alts[i] != 0) {
+        if (*ap != 0) {
             dl[16] += offset;
         }
     }
