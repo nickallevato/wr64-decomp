@@ -1309,8 +1309,9 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 135881 of 358000: same passes, commands, loops and calls; register allocation and scheduling differ
-// throughout, and this C is about 76 instructions longer (most of it in the visibility loops).
+// Score 131696 of 358000: same passes, commands, loops and calls; register allocation and scheduling differ
+// throughout, and this C is about 76 instructions longer (most of it in the visibility loops). Statement order in
+// a few straight-line runs is from a greedy statement-move search.
 void func_8006E674(Gfx** gdl) {
     camera_unk_1* cam;
     UnkStruct_80192690* craft;
@@ -1348,17 +1349,17 @@ void func_8006E674(Gfx** gdl) {
     gdlh = *gdl;
     if (D_800DAB2C == 0) {
         cam = &gCameraPerspective[D_80223930];
-        cur = gRiderRaceState[gPlayer1Rider].unkC;
         craft = &D_80192690[gPlayer1Rider];
+        cur = gRiderRaceState[gPlayer1Rider].unkC;
     } else {
         cam = &gCameraPerspective[D_80223934];
-        cur = gRiderRaceState[gPlayer2Rider].unkC;
         craft = &D_80192690[gPlayer2Rider];
+        cur = gRiderRaceState[gPlayer2Rider].unkC;
     }
     D_801C0C80 = &D_801CB058[D_800DAB2C];
     sqrtf((craft->unk6C * craft->unk6C) + (craft->unk74 * craft->unk74));
-    dirX = cam->unk64;
     dirZ = cam->unk6C;
+    dirX = cam->unk64;
     d = sqrtf((dirX * dirX) + (dirZ * dirZ));
     if (d > 0.0f) {
         dirX /= d;
@@ -1536,16 +1537,16 @@ void func_8006E674(Gfx** gdl) {
         idx = 17;
     }
     if (idx < 10) {
-        dlB = D_102CC58;
-        dlB2 = D_102CC70;
         dlA2 = D_102CD90;
+        dlB2 = D_102CC70;
         dlA = D_102CD78;
+        dlB = D_102CC58;
     } else {
-        dlB = D_102CCE8;
-        dlB2 = D_102CD00;
-        dlA2 = D_102CE20;
-        dlA = D_102CE08;
         idx = 18 - idx;
+        dlA2 = D_102CE20;
+        dlB2 = D_102CD00;
+        dlA = D_102CE08;
+        dlB = D_102CCE8;
     }
     tex = D_101F978 + (idx << 12);
     tex2 = tex + 0x800;
@@ -1632,8 +1633,8 @@ void func_8006E674(Gfx** gdl) {
             continue;
         }
         if (D_801AEE20[i].unk9C == 0) {
-            dx = cam->eyeX - e->unk0;
             dy = cam->eyeY - e->unk4;
+            dx = cam->eyeX - e->unk0;
             dz = cam->eyeZ - e->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
