@@ -215,8 +215,9 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
         dList = func_80094338(dList, 0, 171, 188, 101, 12);
         dList = func_80094338(dList, 0, 171, 201, 101, 12);
     }
-    for (j = 0; j < 9; j++) {
-        dList = func_80094338(dList, 0, 28, j * 18 + 53, 118, 16);
+    // one local serves as this row counter and as the texture offset below
+    for (offset = 0; offset < 9; offset++) {
+        dList = func_80094338(dList, 0, 28, offset * 18 + 53, 118, 16);
     }
 
     if (D_i4_802C7548 != 0) {
@@ -235,12 +236,10 @@ Gfx* CourseSelect_DrawScreen(Gfx* dList) {
                     } else {
                         height = 16;
                     }
-                    if (1) { // FAKE (permuter): gives the original's registers for offset and j
-                        gDPLoadTextureTile(dList++, D_80A3DD8 + offset, G_IM_FMT_RGBA, G_IM_SIZ_16b, 118, height, 0, 0,
-                                           117, height - 1, 0, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
-                        gSPTextureRectangle(dList++, 162 << 2, posY << 2, 280 << 2, (j + height + 124) << 2, 0, 0, 0,
-                                            1 << 10, 1 << 10);
-                    }
+                    gDPLoadTextureTile(dList++, D_80A3DD8 + offset, G_IM_FMT_RGBA, G_IM_SIZ_16b, 118, height, 0, 0,
+                                       117, height - 1, 0, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+                    gSPTextureRectangle(dList++, 162 << 2, posY << 2, 280 << 2, (j + height + 124) << 2, 0, 0, 0,
+                                        1 << 10, 1 << 10);
                 }
                 break;
         }
