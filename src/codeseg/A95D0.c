@@ -1579,12 +1579,13 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 1374 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf; float temp
-// registers are numbered differently throughout, b is in a3 (original t0) and p spills to 0x2C (original 0x28).
-// p and b set at the top (as in func_801DF38C) put obj in s0 and fixed the frame.
+// Score 1200 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
+// registers numbered differently throughout (from the first ease update on). p and b set at the top (as in
+// func_801DF38C) put obj in s0; b declared before p and the unk24 stores through obj->base (as func_801DDEDC
+// writes them) give p's spill slot 0x28 and the original's t0/a3.
 void func_801DF744(UnkA95D0_Obj* obj) {
-    UnkA95D0_Payload5* p = &obj->u.p5;
     UnkA95D0_Base* b = &obj->base;
+    UnkA95D0_Payload5* p = &obj->u.p5;
     f32 d[2];
     f32 v[2];
     f32 x;
@@ -1603,7 +1604,8 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         COS(DEG_TO_BINANG(x)) * (p->unk48[0].value * COS(DEG_TO_BINANG(p->unk48[2].value))) + p->unk0[p->unk74[0]];
     b->unkC[p->unk74[1]] =
         SIN(DEG_TO_BINANG(x)) * (p->unk48[0].value * COS(DEG_TO_BINANG(p->unk48[2].value))) + p->unk0[p->unk74[1]];
-    b->unkC[p->unk74[2]] = ((p->unk0[p->unk74[2]] - p->unkC) * p->unk6C + p->unkC) +
+    x = p->unkC; // FAKE: x holds unkC once, for the original's float registers
+    b->unkC[p->unk74[2]] = ((p->unk0[p->unk74[2]] - x) * p->unk6C + p->unkC) +
                            SIN(DEG_TO_BINANG(p->unk48[2].value)) * p->unk48[0].value;
     x = p->unk34 * p->unk38;
     if (x < p->unk3C) {
@@ -1628,13 +1630,13 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     b->unk0[p->unk74[0]] = d[0] + p->unk0[p->unk74[0]];
     b->unk0[p->unk74[1]] = d[1] + p->unk0[p->unk74[1]];
     if (p->unk80 != 0) {
-        b->unk24[0] = d[0] * p->unk70;
-        b->unk24[1] = p->unk30;
-        b->unk24[2] = d[1] * p->unk70;
+        obj->base.unk24[0] = d[0] * p->unk70;
+        obj->base.unk24[1] = p->unk30;
+        obj->base.unk24[2] = d[1] * p->unk70;
     } else {
-        b->unk24[0] = 0.0f;
-        b->unk24[2] = 0.0f;
-        b->unk24[1] = 1.0f;
+        obj->base.unk24[0] = 0.0f;
+        obj->base.unk24[2] = 0.0f;
+        obj->base.unk24[1] = 1.0f;
     }
     y = p->unk0[p->unk74[2]];
     if (y <= p->unk10) {
