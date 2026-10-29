@@ -654,8 +654,8 @@ void func_80049710(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     SysUtils_MtxFToMtx(arg1, arg0);
 }
 #ifdef NON_MATCHING
-// Score 1036 of 12400: sysz is not spilled (the original keeps it at 0x1C, frame 0x38), so the end of the
-// function schedules differently.
+// Score 671 of 12400: sysz is not spilled (the original keeps it at 0x1C, frame 0x38), so every stack slot sits
+// 8 lower and the end of the function schedules differently. The zero stores' order is from a greedy move search.
 void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     f32 sx;
     f32 sy;
@@ -690,17 +690,17 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx
     arg1->mf[0][0] = cycz + cx;
+    arg1->mf[3][0] = 0.0f;
+    arg1->mf[3][2] = 0.0f;
     sycz = sy * cz;
     szcy = sz * cy;
     arg1->mf[1][0] = (sx * sycz) - szcy;
     sy = (sx * szcy) - sycz; // FAKE: reuses sy
     arg1->mf[0][2] = sy;
-    arg1->mf[3][0] = 0.0f;
-    arg1->mf[3][1] = 0.0f;
-    arg1->mf[3][2] = 0.0f;
-    arg1->mf[0][3] = 0.0f;
     arg1->mf[1][2] = (sx * cycz) + sysz;
     arg1->mf[1][3] = 0.0f;
+    arg1->mf[0][3] = 0.0f;
+    arg1->mf[3][1] = 0.0f;
     arg1->mf[2][3] = 0.0f;
     arg1->mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(arg1, arg0);
@@ -768,7 +768,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #endif
 
 #ifdef NON_MATCHING
-// Score 1993 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
+// Score 1928 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
 // at 0x84), and the zero chain at the end goes through a temporary at 0x28.
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
@@ -803,7 +803,8 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[1][1] = cz * cx * arg7;
     sysz = sy * sz;
     cycz = cy * cz;
-    mf.mf[0][0] = (cycz + (sx * sysz)) * arg7;
+    cx = sx * sysz; // FAKE: reuses cx, as in func_80049A94
+    mf.mf[0][0] = (cycz + cx) * arg7;
     sycz = sy * cz;
     szcy = sz * cy;
     mf.mf[1][0] = ((sx * sycz) - szcy) * arg7;
@@ -812,8 +813,8 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[3][0] = arg4;
     mf.mf[3][1] = arg5;
     mf.mf[3][2] = arg6;
-    mf.mf[3][3] = 1.0f;
     mf.mf[0][3] = mf.mf[1][3] = mf.mf[2][3] = 0.0f;
+    mf.mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(&mf, arg0);
 }
 #else
