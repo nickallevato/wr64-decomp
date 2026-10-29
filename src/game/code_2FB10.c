@@ -1288,7 +1288,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 24854 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
+// Score 22849 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
 // original keeps more values on the stack; frame 0xB0, here 0x78), and this C is shorter.
 void func_800783AC(s32 arg0) {
     s32 trick;
@@ -1391,8 +1391,8 @@ void func_800783AC(s32 arg0) {
             }
             D_801C26E0 = 0;
         } else if (trick == 7) {
-            D_801C26E0 = 0;
             points = D_80192690[gPlayer1Rider].unk15EC * 7.15f;
+            D_801C26E0 = 0;
         } else if (trick == 8) {
             D_801C26E0 = 0;
         } else if ((D_801C26E0 == 0) && (D_801C39C8 != 0) && (trick == 0)) {
@@ -1541,9 +1541,9 @@ void func_800783AC(s32 arg0) {
         }
     }
     if (passed) {
+        rider->unkC = e->unkA0;
         rider->unk1C = -1;
         rider->unk20 = 1;
-        rider->unkC = e->unkA0;
     }
     if (passed && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
         // A checkpoint gate: its time (interpolated between this frame and the last), and the
@@ -1563,8 +1563,8 @@ void func_800783AC(s32 arg0) {
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
             rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = rider->raceTime - frac;
-            rider->unk334 = 0;
             bonus = ((rider->timeLeft + (frac / 2)) / 100) * D_800D92B8;
+            rider->unk334 = 0;
             if (bonus > 0) {
                 func_801FB488(1, bonus, cur == D_801BB12C);
             }
