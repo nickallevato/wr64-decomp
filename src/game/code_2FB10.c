@@ -662,7 +662,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 17007 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
+// Score 16923 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
 // not ra) and scheduling differ, the original keeps the two empty tests in the gate block as branches (IDO drops them
 // here) and keeps dPrev in its stack slot. unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
@@ -702,12 +702,12 @@ void func_8007687C(s32 arg0) {
     s32 pad1; // stack pad
     f32 progress;
     s32 pad[12]; // stack pad
-    f32 pz;
     f32 dx;
     f32 dirX;
     f32 dz;
     f32 dirZ;
     f32 px;
+    f32 pz;
     if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
