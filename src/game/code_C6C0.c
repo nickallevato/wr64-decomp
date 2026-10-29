@@ -4299,8 +4299,8 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 69597 of 280200: same calls and branches as the original (by a structure diff), registers and
-// scheduling differ and the frame is 0x158 here, 0x100 in the original (the original has about 26 locals; this
+// Score 68647 of 280200: same calls and branches as the original (by a structure diff), registers and
+// scheduling differ and the frame is 0x148 here, 0x100 in the original (the original has about 26 locals; this
 // C still has more). Statement order in a few straight-line runs is from a greedy statement-move search.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
@@ -4336,14 +4336,9 @@ void func_8005DE24(s32 arg0) {
     f32 vz;
     f32 len;
     f32 k;
-    struct UnkStruct_801C2938* temp_a0;
-    struct UnkStruct_801C2938* temp_a1;
     s32 temp_a1_2;
-    u16 temp_t7_2;
     s32 temp_t9;
-    u16 temp_v0;
     s32 temp_v0_3;
-    s16 temp_v0_4;
     s8 temp_v0_7;
     struct UnkStruct_801C2938* temp_v1;
     f32 var_ft5;
@@ -4406,12 +4401,11 @@ void func_8005DE24(s32 arg0) {
                     }
                 }
             } else {
-                temp_a0 = &gRiderRaceState[gPlayer1Rider];
-                if ((temp_a0->unk2F4 != 0) && (temp_a1 = &gRiderRaceState[gPlayer2Rider], (temp_a1->unk2F4 != 0)) && (temp_a0->raceTime == temp_a1->raceTime)) {
+                                if ((gRiderRaceState[gPlayer1Rider].unk2F4 != 0) && (gRiderRaceState[gPlayer2Rider].unk2F4 != 0) && (gRiderRaceState[gPlayer1Rider].raceTime == gRiderRaceState[gPlayer2Rider].raceTime)) {
                     D_80192690[gPlayer2Rider].unk16C8 = 3;
                     D_80192690[gPlayer1Rider].unk16C8 = 3;
                 } else {
-                    D_80192690[gPlayer1Rider].unk16C8 = D_800D4818[temp_a0->unk4];
+                    D_80192690[gPlayer1Rider].unk16C8 = D_800D4818[gRiderRaceState[gPlayer1Rider].unk4];
                     D_80192690[gPlayer2Rider].unk16C8 = D_800D4818[gRiderRaceState[gPlayer2Rider].unk4];
                 }
             }
@@ -4436,12 +4430,10 @@ void func_8005DE24(s32 arg0) {
             rider->unk16C8 = D_800D4800[D_8022393C - 1];
         }
     }
-    temp_v0 = rider->unk1608;
     temp_t9 = rider->unkB64;
-    if (temp_v0 != 0) {
-        temp_t7_2 = temp_v0 - 1;
-        rider->unk1608 = temp_t7_2;
-        if (!(temp_t7_2 & 0xFFFF)) {
+    if (rider->unk1608 != 0) {
+        rider->unk1608--;
+        if (rider->unk1608 == 0) {
             func_80053EAC(arg0, 0x17, 0, 1.0f, 0U);
             for (part = &RIDER_PARTS(rider)[18]; part >= &RIDER_PARTS(rider)[0]; part--) {
                 part->unk1C.x *= 0.8f;
@@ -4454,11 +4446,9 @@ void func_8005DE24(s32 arg0) {
             rider->unkC70 = -1;
         }
     } else {
-        temp_v0 = rider->unk16E0;
-        temp_t7_2 = temp_v0 - 1;
-        if (temp_v0 != 0) {
-            rider->unk16E0 = temp_t7_2;
-            if (!(temp_t7_2 & 0xFFFF) || (rider->unk1598 != 0)) {
+        if (rider->unk16E0 != 0) {
+            rider->unk16E0--;
+            if ((rider->unk16E0 == 0) || (rider->unk1598 != 0)) {
                 func_80053EAC(arg0, 0x18, 0, 1.0f, 1U);
                 first = &RIDER_PARTS(rider)[0];
                 for (part = &RIDER_PARTS(rider)[18]; part >= first; part--) {
@@ -4513,12 +4503,11 @@ void func_8005DE24(s32 arg0) {
             } else {
                 temp_v0_3 = rider->unkC54;
                 if ((temp_v0_3 == 0x16) || (temp_v0_3 == 0xF)) {
-                    temp_a1_2 = rider->unk16C8;
-                    if ((temp_a1_2 >= 0) && (temp_v0_4 = rider->unk1446, (temp_v0_4 >= 0))) {
-                        if (temp_v0_4 == 0) {
-                            func_80053EAC(arg0, temp_a1_2, 1, 0.15f, 1U);
+                    if ((rider->unk16C8 >= 0) && (rider->unk1446 >= 0)) {
+                        if (rider->unk1446 == 0) {
+                            func_80053EAC(arg0, rider->unk16C8, 1, 0.15f, 1U);
                         } else {
-                            rider->unk1446 = temp_v0_4 - 1;
+                            rider->unk1446--;
                         }
                     } else if ((((nx > 22.222223f) && (gRiderRaceState[arg0].unk2F4 == 0) &&
                                  ((D_800D9360[temp_t9] < rider->unkC50) || (D_800D9370[temp_t9] < rider->unkC3C) ||
@@ -4538,17 +4527,17 @@ void func_8005DE24(s32 arg0) {
                         func_80053EAC(arg0, 0x19, 0, 0.15f, 0U);
                     } else if ((!(rider->unkB56 & 0xA000) && (rider->unkB50.stick_y >= 0x46) &&
                                 ((u32) (gFrameCounter - rider->unk15F0) < (u32) D_800D4944) && ((u16) rider->unk1600 == 0)) ||
-                               (temp_v0_4 = rider->unk16F4, (temp_v0_4 == 1))) {
+                               (rider->unk16F4 == 1)) {
                         rider->unk16F4 = 0;
                         if ((rider->unk16CC == 0) && (gGameModeState == GMODE_STATE_STARTED)) {
                             func_80053EAC(arg0, 8, 1, 0.15f, 1U);
                         }
-                    } else if (((s32) rider->unk15FA >= 4) || (temp_v0_4 == 2)) {
+                    } else if (((s32) rider->unk15FA >= 4) || (rider->unk16F4 == 2)) {
                         rider->unk16F4 = 0;
                         if ((rider->unk16CC == 0) && (gGameModeState == GMODE_STATE_STARTED)) {
                             func_80053EAC(arg0, 9, 1, 0.15f, 1U);
                         }
-                    } else if (((s32) rider->unk15F8 >= 4) || (temp_v0_4 == 9)) {
+                    } else if (((s32) rider->unk15F8 >= 4) || (rider->unk16F4 == 9)) {
                         rider->unk16F4 = 0;
                         if ((rider->unk16CC == 0) && (gGameModeState == GMODE_STATE_STARTED)) {
                             func_80053EAC(arg0, 0x11, 1, 0.15f, 1U);
