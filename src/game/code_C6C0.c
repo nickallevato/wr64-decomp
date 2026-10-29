@@ -7569,8 +7569,9 @@ Gfx* func_80068538(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 14356 of 73400: register allocation and scheduling differ throughout (the original keeps more of the GBI
-// words in registers); control flow and the display lists follow the original.
+// Score 12840 of 73400: control flow and the display lists follow the original. The original's frame (0x128) is far
+// larger than its locals need, and it saves only s0/s1, spilling the rider pointer to the stack across calls; a local
+// whose address is taken gives that shape (pad, FAKE; frame 0x138 here). Left: register allocation and scheduling.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \
     (((c)->unk6C * ((r)->unk44.z - (c)->eyeZ)) +                                       \
@@ -7594,12 +7595,14 @@ Gfx* func_80068538(Gfx* gdl) {
 #define RIDER_DL(rider, lod) ((Gfx*) ((u8*) D_2000000 + (rider) * 0x290 + (lod) * 0x148))
 
 Gfx* func_800687A4(Gfx* gdl) {
+    s32 pad[1]; // FAKE: with its address taken below, the saved registers come out as in the original
     UnkStruct_80192690* rider;
     camera_unk_1* cam;
     s32 i;
     s32 idx;
     f32 d;
 
+    if (pad) {} // FAKE: takes pad's address (no code); see pad
     gSPDisplayList(gdl++, D_10079F0);
     gdl = func_800916B4(gdl);
     if (D_801CE64C == 2) {
