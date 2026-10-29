@@ -527,7 +527,7 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 1100 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 1055 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
 // reused; the permuter found them, and with them the int registers match, except wasIn's). Left: the frame is 0x90,
 // not 0x88 (isHuman and rider spill to new slots below the declared ones, where the original spills them to slots of
@@ -572,10 +572,10 @@ void func_80076378(s32 arg0) {
         cur = rider->nearestRecord;
         best = cur;
         x = D_801C3780;
-        z = D_801C3788;
         prev = D_801AEE20[cur].unkA8;
         next = D_801AEE20[cur].unkA0;
         dx0 = D_801AEE20[cur].unk0 - x;
+        z = D_801C3788;
         dzp = D_801AEE20[prev].unk8 - z;
         dxp = D_801AEE20[prev].unk0 - x;
         dz0 = D_801AEE20[cur].unk8 - z;
@@ -610,8 +610,8 @@ void func_80076378(s32 arg0) {
         }
         for (best = 0; best < wasIn; best++) {
             if (!(D_801C3784 > 40.0f)) {
-                dx0 = D_801C3780 - D_800D81D4[best].x;
                 dz0 = D_801C3788 - D_800D81D4[best].z;
+                dx0 = D_801C3780 - D_800D81D4[best].x;
                 if (((dx0 * dx0) + (dz0 * dz0)) <= 22500.0f) {
                     rider->unk318 = 1;
                     break;
