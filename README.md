@@ -50,6 +50,14 @@ neighbour became its own symbol.
 | `src/sys` | boot, threads, memory | 32 / 37 | `█████████████████▎░░` 86.5% |
 | **Total** | | **1286 / 1348** | **95.4%** |
 
+Every function, sized by its bytes and grouped by area, then by source file (the thin lines). Green is
+matched C, amber is still assembly. Drawn by `tools/fork/progress_map.py` from a full build.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/progress-map-dark.svg">
+  <img alt="Map of all 1348 functions: 1286 matched (green), 62 still assembly (amber)" src="docs/progress-map.svg" width="100%">
+</picture>
+
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
 assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
 builds with those attempts, so most of the game can already be read and changed as C.
