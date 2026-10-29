@@ -61,56 +61,51 @@ Gfx* func_8007FFA8(Gfx* gdl) {
     }
     gSPDisplayList(gdl++, D_E010F28);
     gSPMatrix(gdl++, D_2000A40, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    do { // FAKE (permuter): moves i to the original's saved register
-        i = 0;
-    } while (0);
-    // FAKE (line join, found by the permuter): IDO schedules by source line; with p's set-up on the loop's first
-    // line, p's address (s2) is set up after the other loop-invariant addresses, as in the original
-    p = D_801C3B90; do {
+    i = 0;
+    for (p = D_801C3B90; p < &D_801C3B90[16]; i += 8, p++) {
         dx = p->unk0 - gWaterWindow[0].unk8;
         dz = p->unk4 - gWaterWindow[0].unkC;
-        if (!(gWaterWindow[0].unk10 <= dx * dx + dz * dz)) {
-            dx = gSinTable[(p->unk8 + 0x400) & 0xFFF];
-            ax = 26.24f * dx;
-            dz = gSinTable[p->unk8 & 0xFFF];
-            az = 26.24f * dz;
-            bx = -17.28f * dz;
-            bz = 17.28f * dx;
-            v = &gGfxPool->unk170D8[0x151 + i];
-            v[3].v.ob[0] = x = p->unk0 - ax;
-            v[3].v.ob[2] = z = p->unk4 - az;
-            v[3].v.ob[1] = func_8004D30C(x, z);
-            v[0].v.ob[0] = dx = x - bx;
-            v[0].v.ob[2] = dz = z - bz;
-            v[0].v.ob[1] = func_8004D30C(dx, dz);
-            v[5].v.ob[0] = dx = x + bx;
-            v[5].v.ob[2] = dz = z + bz;
-            v[5].v.ob[1] = func_8004D30C(dx, dz);
-            v[1].v.ob[0] = dx = p->unk0 - bx;
-            v[1].v.ob[2] = dz = p->unk4 - bz;
-            v[1].v.ob[1] = func_8004D30C(dx, dz);
-            v[6].v.ob[0] = dx = p->unk0 + bx;
-            v[6].v.ob[2] = dz = p->unk4 + bz;
-            v[6].v.ob[1] = func_8004D30C(dx, dz);
-            v[4].v.ob[0] = x = p->unk0 + ax;
-            v[4].v.ob[2] = z = p->unk4 + az;
-            v[4].v.ob[1] = func_8004D30C(x, z);
-            v[2].v.ob[0] = dx = x - bx;
-            v[2].v.ob[2] = dz = z - bz;
-            v[2].v.ob[1] = func_8004D30C(dx, dz);
-            v[7].v.ob[0] = dx = x + bx;
-            v[7].v.ob[2] = dz = z + bz;
-            v[7].v.ob[1] = func_8004D30C(dx, dz);
-            gSPVertex(gdl++, &((GfxPool*) D_3000000)->unk170D8[0x151 + i], 8, 0);
-            gSP1Triangle(gdl++, 0, 3, 1, 0);
-            gSP1Triangle(gdl++, 1, 3, 6, 0);
-            gSP1Triangle(gdl++, 6, 3, 5, 0);
-            gSP1Triangle(gdl++, 6, 7, 4, 0);
-            gSP1Triangle(gdl++, 6, 4, 1, 0);
-            gSP1Triangle(gdl++, 1, 4, 2, 0);
+        if (gWaterWindow[0].unk10 <= dx * dx + dz * dz) {
+            continue;
         }
-        i += 8;
-        p++;
-    } while ((u32) p < (u32) &D_801C3B90[16]);
+        dx = gSinTable[(p->unk8 + 0x400) & 0xFFF];
+        ax = 26.24f * dx;
+        dz = gSinTable[p->unk8 & 0xFFF];
+        az = 26.24f * dz;
+        bx = -17.28f * dz;
+        bz = 17.28f * dx;
+        v = &gGfxPool->unk170D8[0x151 + i];
+        v[3].v.ob[0] = x = p->unk0 - ax;
+        v[3].v.ob[2] = z = p->unk4 - az;
+        v[3].v.ob[1] = func_8004D30C(x, z);
+        v[0].v.ob[0] = dx = x - bx;
+        v[0].v.ob[2] = dz = z - bz;
+        v[0].v.ob[1] = func_8004D30C(dx, dz);
+        v[5].v.ob[0] = dx = x + bx;
+        v[5].v.ob[2] = dz = z + bz;
+        v[5].v.ob[1] = func_8004D30C(dx, dz);
+        v[1].v.ob[0] = dx = p->unk0 - bx;
+        v[1].v.ob[2] = dz = p->unk4 - bz;
+        v[1].v.ob[1] = func_8004D30C(dx, dz);
+        v[6].v.ob[0] = dx = p->unk0 + bx;
+        v[6].v.ob[2] = dz = p->unk4 + bz;
+        v[6].v.ob[1] = func_8004D30C(dx, dz);
+        v[4].v.ob[0] = x = p->unk0 + ax;
+        v[4].v.ob[2] = z = p->unk4 + az;
+        v[4].v.ob[1] = func_8004D30C(x, z);
+        v[2].v.ob[0] = dx = x - bx;
+        v[2].v.ob[2] = dz = z - bz;
+        v[2].v.ob[1] = func_8004D30C(dx, dz);
+        v[7].v.ob[0] = dx = x + bx;
+        v[7].v.ob[2] = dz = z + bz;
+        v[7].v.ob[1] = func_8004D30C(dx, dz);
+        gSPVertex(gdl++, &((GfxPool*) D_3000000)->unk170D8[0x151 + i], 8, 0);
+        gSP1Triangle(gdl++, 0, 3, 1, 0);
+        gSP1Triangle(gdl++, 1, 3, 6, 0);
+        gSP1Triangle(gdl++, 6, 3, 5, 0);
+        gSP1Triangle(gdl++, 6, 7, 4, 0);
+        gSP1Triangle(gdl++, 6, 4, 1, 0);
+        gSP1Triangle(gdl++, 1, 4, 2, 0);
+    }
     return gdl;
 }
