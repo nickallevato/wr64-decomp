@@ -2823,7 +2823,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 12094 of 68000: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered.
+// Score 12028 of 68000: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered; our frame is 0x98 against 0xB8.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2837,7 +2837,6 @@ void func_801FB514(Gfx** gdlp) {
     UnkStruct_80228AE0* p;
     f32 f;
     f32 g;
-    u8* img;
     s32 w;
     s32 x;
     s32 y;
@@ -2846,6 +2845,7 @@ void func_801FB514(Gfx** gdlp) {
     s32 count;
     s32 k;
     s8* digit;
+    u8* img;
 
     gdl = *gdlp;
     f = (2 - D_80228D18) / (f32) 2;

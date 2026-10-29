@@ -859,7 +859,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 32185 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
+// Score 30504 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
 // s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
 // into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
 void func_800B08F8(s32 arg0) {
@@ -980,7 +980,7 @@ void func_800B08F8(s32 arg0) {
     }
     if (D_801D79D4 < 8.0f) {
         lean = (D_801D79DC * (8.0f - D_801D79D4)) + cosA;
-        if (lean > 1.0f) {
+        if (lean > 1) {
             lean = 1.0f;
         }
     } else {
@@ -1305,7 +1305,7 @@ void func_800B08F8(s32 arg0) {
                             sx = (24.0f + rate) - (len * 8.0f);
                             a = (angle / 360.0f) * 4096.0f;
                             D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
-                            D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2.0f * rate);
+                            D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
                             D_800E6D6C->unk8 = (gSinTable[a & 0xFFF] * sx) + (D_801D79C4 - sz);
                             f = Math_FloatRand(r);
                             n++;
@@ -1348,9 +1348,9 @@ void func_800B08F8(s32 arg0) {
                 if (n >= 2) {
                     width = -width;
                 }
-                height = (f * 12.0f) + 4.0f;
+                height = (f * 12) + 4.0f;
                 g = Math_FloatRand(16.0f);
-                depth = (Math_FloatRand(4.0f) + (-16.0f - ((8.0f + g) * f))) - 2.0f;
+                depth = (Math_FloatRand(4.0f) + (-16.0f - ((8 + g) * f))) - 2.0f;
             }
             D_800E6D74->unk0 = (width * D_801D79EC) + D_801D79BC + (depth * D_801D79E0);
             D_800E6D74->unk4 = (width * D_801D79F0) + D_801D79C0 + (depth * D_801D79E4) + height;

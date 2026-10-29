@@ -6012,11 +6012,13 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 17729 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
+// Score 12925 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
 // floats, an unsigned conversion into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by
 // index, and the C88 entry is re-read through the rider each time (the loop reloads unk1424 after every store, as in
-// the original). Left: the original keeps 0.0f in $f20 across the calls (here it is rematerialised, so the frame is 8
-// bytes smaller and f20 is not saved), and float registers and scheduling differ in the sphere code.
+// the original). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared with an int 0, a
+// separate constant to IDO (the original's zero there is not the 0.0f it keeps in ). Left: the original keeps
+// 0.0f in  across the calls (here it is rematerialised, so the frame is 8 bytes smaller and f20 is not saved), and
+// float registers and scheduling differ in the sphere code.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     MtxF mf;
@@ -6068,9 +6070,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
                         rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
                             rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
     rider->unk1604 = rider->unk16F2 = 0;
-    rider->unk1446 = 10;
     rider->unk16C8 = -1;
     rider->unk15FC = 0x800;
+    rider->unk1446 = 10;
     rider->unk1598 = 0;
     rider->unk16F0 = rider->unk16F2;
     rider->unk16F4 = rider->unk1604;
@@ -6081,10 +6083,10 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC7C = 1;
     rider->unkC82 = 1;
     rider->unkC78 = 8;
-    rider->unk1578 = 1.0f;
     rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
-    rider->unkC54 = 22;
+    rider->unk1578 = 1;
     rider->unkC00 = 34.11f;
+    rider->unkC54 = 22;
     func_800624CC(rider);
     rider->unkBA0 = rider->unk6C;
     rider->unkBA4 = rider->unk70;
@@ -6108,20 +6110,20 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     RIDER_SPHERES(rider)[3].pos.x = (rider->unk6C * -27.0f) + x;
     RIDER_SPHERES(rider)[3].pos.y = (rider->unk70 * -27.0f) + y;
     RIDER_SPHERES(rider)[3].pos.z = (rider->unk74 * -27.0f) + z;
-    RIDER_SPHERES(rider)[0].vel.x = 0.0f;
-    RIDER_SPHERES(rider)[0].vel.y = 0.0f;
-    RIDER_SPHERES(rider)[0].vel.z = 0.0f;
-    RIDER_SPHERES(rider)[1].vel.x = 0.0f;
-    RIDER_SPHERES(rider)[1].vel.y = 0.0f;
-    RIDER_SPHERES(rider)[1].vel.z = 0.0f;
-    RIDER_SPHERES(rider)[2].vel.x = 0.0f;
-    RIDER_SPHERES(rider)[2].vel.y = 0.0f;
-    RIDER_SPHERES(rider)[2].vel.z = 0.0f;
-    RIDER_SPHERES(rider)[3].vel.x = 0.0f;
-    RIDER_SPHERES(rider)[3].vel.y = 0.0f;
-    RIDER_SPHERES(rider)[3].vel.z = 0.0f;
+    RIDER_SPHERES(rider)[0].vel.x = 0;
+    RIDER_SPHERES(rider)[0].vel.y = 0;
+    RIDER_SPHERES(rider)[0].vel.z = 0;
+    RIDER_SPHERES(rider)[1].vel.x = 0;
+    RIDER_SPHERES(rider)[1].vel.y = 0;
+    RIDER_SPHERES(rider)[1].vel.z = 0;
+    RIDER_SPHERES(rider)[2].vel.x = 0;
+    RIDER_SPHERES(rider)[2].vel.y = 0;
+    RIDER_SPHERES(rider)[2].vel.z = 0;
+    RIDER_SPHERES(rider)[3].vel.x = 0;
+    RIDER_SPHERES(rider)[3].vel.y = 0;
+    RIDER_SPHERES(rider)[3].vel.z = 0;
     for (part = &RIDER_PARTS(rider)[24]; part >= RIDER_PARTS(rider); part--) {
-        part->unk1C.x = part->unk1C.y = part->unk1C.z = 0.0f;
+        part->unk1C.x = part->unk1C.y = part->unk1C.z = 0;
     }
     rider->unk1420 = 0;
     rider->unk1424 = 1;
@@ -6138,18 +6140,18 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC58 = func_8005CD24(arg0, (UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], rider->unkC54,
                                   rider->unkC58) - 1;
     func_8005D390((UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], (UnkStruct_8005CEF8*) rider->unk660);
-    rider->unkC20 = 0.0f;
-    rider->unkC24 = 0.0f;
-    rider->unkC28 = 0.0f;
-    rider->unkC2C = 0.0f;
-    rider->unkC30 = 0.0f;
-    rider->unkC34 = 0.0f;
-    rider->unkC08 = 0.0f;
+    rider->unkC20 = 0;
+    rider->unkC24 = 0;
+    rider->unkC28 = 0;
+    rider->unkC2C = 0;
+    rider->unkC30 = 0;
+    rider->unkC34 = 0;
+    rider->unkC08 = 0;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
     rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
-    rider->unkC0C = rider->unkC04 = 34.11f;
     rider->unkC10 = -27.300001f;
+    rider->unkC0C = rider->unkC04 = 34.11f;
     rider->unk1448[0].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unk0.x = (RIDER_C88(rider)[rider->unk1424][7].unkC.x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
@@ -7569,8 +7571,9 @@ Gfx* func_80068538(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 14356 of 73400: register allocation and scheduling differ throughout (the original keeps more of the GBI
-// words in registers); control flow and the display lists follow the original.
+// Score 12840 of 73400: control flow and the display lists follow the original. The original's frame (0x128) is far
+// larger than its locals need, and it saves only s0/s1, spilling the rider pointer to the stack across calls; a local
+// whose address is taken gives that shape (pad, FAKE; frame 0x138 here). Left: register allocation and scheduling.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \
     (((c)->unk6C * ((r)->unk44.z - (c)->eyeZ)) +                                       \
@@ -7594,12 +7597,14 @@ Gfx* func_80068538(Gfx* gdl) {
 #define RIDER_DL(rider, lod) ((Gfx*) ((u8*) D_2000000 + (rider) * 0x290 + (lod) * 0x148))
 
 Gfx* func_800687A4(Gfx* gdl) {
+    s32 pad[1]; // FAKE: with its address taken below, the saved registers come out as in the original
     UnkStruct_80192690* rider;
     camera_unk_1* cam;
     s32 i;
     s32 idx;
     f32 d;
 
+    if (pad) {} // FAKE: takes pad's address (no code); see pad
     gSPDisplayList(gdl++, D_10079F0);
     gdl = func_800916B4(gdl);
     if (D_801CE64C == 2) {

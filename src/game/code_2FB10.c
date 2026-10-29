@@ -662,9 +662,9 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 17587 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
+// Score 16923 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
 // not ra) and scheduling differ, the original keeps the two empty tests in the gate block as branches (IDO drops them
-// here), multiplies unk8C by 2.0f instead of adding, and keeps dPrev in its stack slot.
+// here) and keeps dPrev in its stack slot. unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
     s32 i;
     s32 time;
@@ -702,12 +702,12 @@ void func_8007687C(s32 arg0) {
     s32 pad1; // stack pad
     f32 progress;
     s32 pad[12]; // stack pad
-    f32 pz;
     f32 dx;
     f32 dirX;
     f32 dz;
     f32 dirZ;
     f32 px;
+    f32 pz;
     if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
@@ -771,7 +771,7 @@ void func_8007687C(s32 arg0) {
         dot = ((D_801C3780 - e->unk18) * dx) + ((D_801C3788 - e->unk20) * dz);
         if (dot >= 0.0f) {} // an empty test, as in the original
         if (D_801C1F90 == 0) {
-            inGate = dot <= ((e->unk8C * 2.0f) + D_801C39C4);
+            inGate = dot <= ((e->unk8C * 2) + D_801C39C4);
         } else {
             inGate = -D_801C39C4 <= dot;
         }
@@ -1288,11 +1288,10 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 24854 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
+// Score 22781 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
 // original keeps more values on the stack; frame 0xB0, here 0x78), and this C is shorter.
 void func_800783AC(s32 arg0) {
     s32 trick;
-    s32 points;
     s32 cur;
     s32 passed;
     s32 inGate;
@@ -1303,6 +1302,7 @@ void func_800783AC(s32 arg0) {
     s32 sfx;
     f32 dx;
     f32 dz;
+    s32 points;
     f32 len;
     f32 dot;
     f32 dPos;
@@ -1391,8 +1391,8 @@ void func_800783AC(s32 arg0) {
             }
             D_801C26E0 = 0;
         } else if (trick == 7) {
-            D_801C26E0 = 0;
             points = D_80192690[gPlayer1Rider].unk15EC * 7.15f;
+            D_801C26E0 = 0;
         } else if (trick == 8) {
             D_801C26E0 = 0;
         } else if ((D_801C26E0 == 0) && (D_801C39C8 != 0) && (trick == 0)) {
@@ -1541,9 +1541,9 @@ void func_800783AC(s32 arg0) {
         }
     }
     if (passed) {
+        rider->unkC = e->unkA0;
         rider->unk1C = -1;
         rider->unk20 = 1;
-        rider->unkC = e->unkA0;
     }
     if (passed && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
         // A checkpoint gate: its time (interpolated between this frame and the last), and the
@@ -1563,8 +1563,8 @@ void func_800783AC(s32 arg0) {
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
             rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = rider->raceTime - frac;
-            rider->unk334 = 0;
             bonus = ((rider->timeLeft + (frac / 2)) / 100) * D_800D92B8;
+            rider->unk334 = 0;
             if (bonus > 0) {
                 func_801FB488(1, bonus, cur == D_801BB12C);
             }

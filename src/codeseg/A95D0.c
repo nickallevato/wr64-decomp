@@ -650,28 +650,28 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 12642 of 45800: the two SysUtils_Rand calls now come before sqrtf, as in the original. Left: register
-// allocation; the original keeps center on the stack, gSinTable and D_80228190 in s7/fp, and one local (in s4) for the
-// step index, frame - 30 and the loop counter.
+// Score 12513 of 45800: the two SysUtils_Rand calls now come before sqrtf, as in the original. Left: register
+// allocation; the original keeps center on the stack and gSinTable and D_80228190 in s7/fp. i now holds the step
+// index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Payload1* center;
     s32 i;
-    f32 vec[3];
     f32 mag;
     f32 f;
     f32 g;
+    f32 vec[3];
     f32 speed;
     s32 j;
-    s32 t;
     u32 r;
     UnkStruct_801DB0E4_arg0* e;
 
     center = &runner->obj->u.p1;
-    if (runner->step - D_802241E0 != 2) {
+    i = runner->step - D_802241E0;
+    if (i != 2) {
         return;
     }
     D_802287A8 = 24;
-    t = runner->frame - 30;
+    i = runner->frame - 30;
     if (runner->frame == 1) {
         func_800AB92C();
         for (i = 0; i < 24; i++) {
@@ -690,8 +690,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             e->unk14[1] = 0.0f;
             e->unk14[2] = 1.0f;
             e->unk24[0] = 0.0f;
-            e->unk24[1] = 1.0f;
             e->unk24[2] = 0.0f;
+            e->unk24[1] = 1.0f;
             e->unk30 = 0.1f;
             if (i == 0) {
                 ((f32*) D_80228120)[i] = 17.0f;
@@ -700,11 +700,11 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                     15.0f + (f32) (SysUtils_Rand() & 3) + (f32) ((SysUtils_Rand() & 3) + 1) * sqrtf(g);
             }
         }
-    } else if (t >= 0) {
-        f = t;
+    } else if (i >= 0) {
+        f = i;
         vec[0] = 4.0f - f * 0.04f;
-        vec[2] = 1.0f;
         vec[1] = SIN(DEG_TO_BINANG(f / (runner->step->duration - 30) * 180.0f));
+        vec[2] = 1.0f;
         mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
         for (j = 0; j < 3; j++) {
             D_80228190[0].unk14[j] = vec[j] / mag;
@@ -735,8 +735,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             for (j = 0; j < 3; j++) {
                 e->unkC[j] += e->unk14[j] * ((f32*) D_80228120)[i];
             }
-            vec[0] = center->unk0[0] - e->unkC[0];
             vec[1] = 1200.0f;
+            vec[0] = center->unk0[0] - e->unkC[0];
             vec[2] = 0.0f;
             mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
             for (j = 0; j < 3; j++) {
