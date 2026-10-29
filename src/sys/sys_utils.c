@@ -768,8 +768,9 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #endif
 
 #ifdef NON_MATCHING
-// Score 1928 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
-// at 0x84), and the zero chain at the end goes through a temporary at 0x28.
+// Score 1482 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
+// at 0x84), and the zero chain at the end goes through a temporary at 0x28. mf[3][3] = 1.0f first (from an
+// order search over the last stores) puts mf at 0x2C, as in the original, though it schedules the 1.0f early.
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -809,12 +810,12 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     szcy = sz * cy;
     mf.mf[1][0] = ((sx * sycz) - szcy) * arg7;
     mf.mf[0][2] = ((sx * szcy) - sycz) * arg7;
+    mf.mf[3][3] = 1.0f;
     mf.mf[1][2] = ((sx * cycz) + sysz) * arg7;
     mf.mf[3][0] = arg4;
     mf.mf[3][1] = arg5;
     mf.mf[3][2] = arg6;
     mf.mf[0][3] = mf.mf[1][3] = mf.mf[2][3] = 0.0f;
-    mf.mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(&mf, arg0);
 }
 #else
