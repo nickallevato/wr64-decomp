@@ -168,9 +168,10 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
-// Score 8611 of 30700: same loops and calls; register allocation differs (the original keeps 12 in s5 from the start
-// and indexes D_80158450 with multu, and other float registers), and its frame is 0x10 larger. dt also holds the
-// link constant k, as the original's $f30 does.
+// Score 6219 of 30700: plain pointer compares in the loops, the sums zeroed in one chain and each added next to its
+// difference, and an int 0 for the zero stores (a separate zero from the sums'). Left: the original keeps 12 in s5
+// from the start and indexes D_80158450 with multu, keeps the sums in f14-f18 (saved registers and a stack slot
+// here) and spills the old centre values in the tail. dt also holds the link constant k, as the original's $f30 does.
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     UnkStruct_8004B0F8_1* pt;
     UnkStruct_8004B0F8_unk34* link;
@@ -194,19 +195,19 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     f32 len;
 
     dt = arg0->unkC;
-    for (pt = &arg0->unk30[arg0->unk28], prev = &D_80158450[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--, prev--) {
+    for (pt = &arg0->unk30[arg0->unk28], prev = &D_80158450[arg0->unk28]; pt >= arg0->unk30; pt--, prev--) {
         pt->unk0 = (prev->x = pt->unk0) + (dt * pt->unkC);
         pt->unk4 = (prev->y = pt->unk4) + (dt * pt->unk10);
         pt->unk8 = (prev->z = pt->unk8) + (dt * pt->unk14);
     }
     dt = 0.5f / ((arg0->unk20 * (arg0->unk28 - 1)) + 1.0f);
     for (n = arg0->unk24; n != 0; n--) {
-        for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
+        for (pt = &arg0->unk30[arg0->unk28]; pt >= arg0->unk30; pt--) {
             pt->unk14 = 0.0f;
             pt->unk10 = 0.0f;
             pt->unkC = 0.0f;
         }
-        for (link = &arg0->unk34[arg0->unk2C]; (u32) link >= (u32) arg0->unk34; link--) {
+        for (link = &arg0->unk34[arg0->unk2C]; link >= arg0->unk34; link--) {
             pt = link->unk0;
             b = link->unk4;
             dx = b->unk0 - pt->unk0;
@@ -223,22 +224,20 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
             pt->unk10 -= fy;
             pt->unk14 -= fz;
         }
-        for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--) {
+        for (pt = &arg0->unk30[arg0->unk28]; pt >= arg0->unk30; pt--) {
             pt->unk0 += pt->unkC;
             pt->unk4 += pt->unk10;
             pt->unk8 += pt->unk14;
         }
     }
-    sx = 0.0f;
-    sz = 0.0f;
-    sy = 0.0f;
+    sz = sy = sx = 0.0f;
     prev = &D_80158450[arg0->unk28];
-    for (pt = &arg0->unk30[arg0->unk28]; (u32) pt >= (u32) arg0->unk30; pt--, prev--) {
+    for (pt = &arg0->unk30[arg0->unk28]; pt >= arg0->unk30; pt--, prev--) {
         sx += pt->unk0;
-        sy += pt->unk4;
-        sz += pt->unk8;
         dx = pt->unk0 - prev->x;
+        sy += pt->unk4;
         dy = pt->unk4 - prev->y;
+        sz += pt->unk8;
         dz = pt->unk8 - prev->z;
         d = (1.0f - pt->unk18) * ((dx * arg0->unk5C) + (dy * arg0->unk60) + (dz * arg0->unk64));
         pt->unkC = (arg0->unk5C * d) + (pt->unk18 * dx);
@@ -266,10 +265,10 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
         arg0->unk60 = dy / len;
         arg0->unk64 = dz / len;
     } else {
-        arg0->unk64 = 0.0f;
-        arg0->unk60 = 0.0f;
-        arg0->unk5C = 0.0f;
-        arg0->unk68 = 0.0f;
+        arg0->unk64 = 0;
+        arg0->unk60 = 0;
+        arg0->unk5C = 0;
+        arg0->unk68 = 0;
     }
 }
 #else
