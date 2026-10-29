@@ -43,3 +43,8 @@ D_80228CF0 = 0x80228CF0;
 D_80228CF7 = 0x80228CF7;
 D_80228CFC = 0x80228CFC;
 D_80228CFD = 0x80228CFD;
+/* 0x802C5800, the first function of whichever overlay (or seg_1C3D00) is loaded. code_4C750.c's update
+   switch calls it as LoadedOverlay_Update and its draw switch as LoadedOverlay_Draw, not under any one
+   overlay's name. */
+LoadedOverlay_Update = 0x802C5800;
+LoadedOverlay_Draw = 0x802C5800;

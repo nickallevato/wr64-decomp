@@ -219,9 +219,12 @@ void FadeTransition_Update(void);
 void Printer_StepColorCycle(void);
 void func_802C7090(void);
 void func_802C7608(void);
-// The update switch below calls 0x802C5800, the first function of whichever overlay is loaded (ovl_i1's
-// Race_OverlayUpdate, ovl_i2's RiderSelect_OverlayUpdate, ...), under ovl_i3's name.
-void func_i3_802C5800(void);
+// 0x802C5800 is the first function of whichever overlay (or seg_1C3D00) is loaded. The update switch
+// below calls it as LoadedOverlay_Update (ovl_i1's Race_OverlayUpdate, ovl_i2's RiderSelect_OverlayUpdate,
+// ...) and the draw switch as LoadedOverlay_Draw (ovl_i0's TitleScreen_Draw, ovl_i7's OptionsMenu_Draw,
+// ...); both symbols are in linker_scripts/us/rev1/resolve.txt.
+void LoadedOverlay_Update(void);
+Gfx* LoadedOverlay_Draw(Gfx*);
 extern s32 D_800D47E0;
 extern s8 D_801CB400;
 extern s8 D_801CB401;
@@ -272,12 +275,12 @@ void func_800922E4(void) {
                 if (gGameState == 0x2D) {
                     func_802C7608();
                 } else {
-                    func_i3_802C5800();
+                    LoadedOverlay_Update();
                 }
             } else if (D_801CE638 == 8) {
-                func_i3_802C5800();
+                LoadedOverlay_Update();
             } else if (D_801CE638 == 0x15) {
-                func_i3_802C5800();
+                LoadedOverlay_Update();
             }
             break;
         case GAME_STATE_TIME_TRIALS_RESULTS:
@@ -285,14 +288,14 @@ void func_800922E4(void) {
             func_801DDE48();
             Water_Update();
             func_8008E794();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case GAME_STATE_50:
         case GAME_STATE_51:
             func_801DDE48();
             Water_Update();
             func_8008E794();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case GAME_STATE_RIDER_SELECT:
         case GAME_STATE_B:
@@ -303,21 +306,21 @@ void func_800922E4(void) {
             func_8008E794();
             func_8006E3A8();
             func_800B2ABC();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case GAME_STATE_COURSE_SELECT:
         case GAME_STATE_15:
             func_801DDE48();
             Water_Update();
             func_8008E794();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x34:
         case 0x35:
             func_801DDE48();
             Water_Update();
             func_8008E794();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x3E:
         case 0x3F:
@@ -328,19 +331,19 @@ void func_800922E4(void) {
             func_8008E794();
             func_8006E3A8();
             func_800B2ABC();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x42:
         case 0x43:
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x44:
         case 0x45:
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x40:
         case 0x41:
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x5A:
         case 0x5B:
@@ -358,7 +361,7 @@ void func_800922E4(void) {
             break;
         case 0x5:
         case 0x6:
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x36:
         case 0x37:
@@ -370,7 +373,7 @@ void func_800922E4(void) {
             func_801DDE48();
             Water_Update();
             func_8008E794();
-            func_i3_802C5800();
+            LoadedOverlay_Update();
             break;
         case 0x39:
             func_801DDE48();
@@ -590,9 +593,8 @@ Gfx* func_80092CF0(Gfx* dList) {
 
         case 0x2:
             D_801CE62A = 0;
-            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
-            // here ovl_i0's TitleScreen_Draw.
-            dList = func_1C3D00_802C5800(dList);
+            // The loaded overlay's first function, here ovl_i0's TitleScreen_Draw.
+            dList = LoadedOverlay_Draw(dList);
             break;
 
         case 0x3:
@@ -634,7 +636,7 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x36:
         case 0x37:
             D_801CE62A = 0;
-            dList = func_1C3D00_802C5800(dList);
+            dList = LoadedOverlay_Draw(dList);
             break;
 
         case 0x32:
@@ -676,9 +678,8 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x3C:
         case 0x3D:
             D_801CE62A = 0;
-            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
-            // here ovl_i7's OptionsMenu_Draw.
-            dList = func_1C3D00_802C5800(dList);
+            // The loaded overlay's first function, here ovl_i7's OptionsMenu_Draw.
+            dList = LoadedOverlay_Draw(dList);
             break;
 
         case 0x3E:
@@ -702,17 +703,15 @@ Gfx* func_80092CF0(Gfx* dList) {
         case 0x48:
         case 0x49:
             D_801CE62A = 0;
-            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
-            // here ovl_i11's AudioOptions_Draw.
-            dList = func_1C3D00_802C5800(dList);
+            // The loaded overlay's first function, here ovl_i11's AudioOptions_Draw.
+            dList = LoadedOverlay_Draw(dList);
             break;
 
         case 0x46:
         case 0x47:
             D_801CE62A = 0;
-            // seg_1C3D00's name for 0x802C5800, the loaded overlay's first function:
-            // here ovl_i12's EraseCourseRecords_Draw.
-            dList = func_1C3D00_802C5800(dList);
+            // The loaded overlay's first function, here ovl_i12's EraseCourseRecords_Draw.
+            dList = LoadedOverlay_Draw(dList);
             break;
 
         case 0x40:

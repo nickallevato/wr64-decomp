@@ -153,7 +153,7 @@ extern u8 codeseg_TEXT_START[];
 extern u8 D_1008290_2[];
 extern u8 gAudioHeap[];
 extern u64 gAudioGlobalsEndMarker;
-void func_i3_802C5800(void);
+void LoadedOverlay_Update(void); // 0x802C5800, the start of the overlay region (resolve.txt)
 void GameLoad_LoadCodeseg(void);
 void GameLoad_LoadOverlay(void);
 void unk_game_load(void);
@@ -174,7 +174,7 @@ void SysMain_Thread(void* entry) {
     D_8015196C = D_80151968;
     D_80151970 = D_8015196C + (D_80228E10 - codeseg_TEXT_START);
     D_80151974 = osVirtualToPhysical(D_802A0000);
-    D_80151978 = osVirtualToPhysical(func_i3_802C5800);
+    D_80151978 = osVirtualToPhysical(LoadedOverlay_Update);
     D_8015197C = osVirtualToPhysical(D_8038F800);
     D_80151980 = osVirtualToPhysical(D_80400000);
     D_801519A4 = osVirtualToPhysical(gAudioHeap);
