@@ -897,9 +897,6 @@ void func_80071E70(void) {
 extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
-#ifdef NON_MATCHING
-// Score 20 of 54400: same loops, calls, stores and frame; the link walks count down with --n in the condition.
-// Left: the sums stored to unk60 and unk68 take $f10/$f6 where the original has $f6/$f10.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     UnkStruct_801AEE20* e;
     s32 i;
@@ -1101,20 +1098,17 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         e->unk10 = 0.0f;
         e->unk1C = 0.0f;
         e->unk14 = e->unk30 = e->unk8 + (dz * width);
-        e->unk68 = e->unk8 + oz;
         e->unk18 = e->unk34 = e->unk0 - (dx * width);
-        e->unk64 = 46.0f;
         e->unk20 = e->unk38 = e->unk8 - (dz * width);
         e->unk60 = e->unk0 + ox;
+        e->unk64 = 46.0f;
+        e->unk68 = e->unk8 + oz;
         if ((i == D_801BB12C) && (gCourseID == GLACIER_COAST)) {
             e->unk10 = -110.0f;
             e->unk1C = -160.0f;
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2C670/func_800735EC.s")
-#endif
 
 void Course_BuildGrid(void) {
     s32 i;
