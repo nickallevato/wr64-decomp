@@ -527,7 +527,7 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 1232 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 1188 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
 // reused; the permuter found them, and with them the int registers match, except wasIn's). Left: the frame is 0x90,
 // not 0x88 (isHuman and rider spill to new slots below the declared ones, where the original spills them to slots of
@@ -540,6 +540,7 @@ void func_80076378(s32 arg0) {
     f32 dxp;
     s32 cur;
     s32 best;
+    s32 isHuman;
     s32 zoneA;
     s32 zoneB;
     s32 zoneC;
@@ -552,7 +553,6 @@ void func_80076378(s32 arg0) {
     s32 player;
     UnkStruct_800D8204* rect;
     f32 dx;
-    s32 isHuman;
     RiderStruct* rider;
     f32 x;
     f32 z;
