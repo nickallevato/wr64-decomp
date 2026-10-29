@@ -279,8 +279,10 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 52762 of 150300: same lists, switches and stores; register allocation and scheduling differ throughout,
-// and this C is shorter (the frame is 0x90, not 0xA0).
+// Score 45579 of 150300: same lists, switches and stores; register allocation and scheduling differ throughout (the
+// original keeps &gCourseID in ra in places, and reloads D_800DAB68 and D_800D8250 by absolute address inside the
+// src2 loop where IDO here hoists their addresses), and this C is shorter (the frame is 0x90, not 0xA0). The first
+// list is walked with its own pointer (p1), as the original copies src1 into a1.
 void func_80071E70(void) {
     s32 i;
     s32 n;
@@ -291,6 +293,7 @@ void func_80071E70(void) {
     s32 difficulty;
     UnkStruct_800D699C* params;
     UnkStruct_800D6B1C* params2;
+    CourseUnkBFA48Src* p1;
     CourseUnkBFA48Src* src1;
     CourseUnkBFB70Src* src2;
     CourseRecordSrc* list0;
@@ -337,9 +340,9 @@ void func_80071E70(void) {
         params = D_800D699C[gCourseID];
         D_80192530 = D_800D6A2C[gCourseID];
     } else {
+        params = D_800D6A5C[gCourseID];
         D_80192538 = D_800D6A8C[gCourseID];
         D_80192534 = D_800D6ABC[gCourseID];
-        params = D_800D6A5C[gCourseID];
         D_80192530 = D_800D6AEC[gCourseID];
     }
     D_801924F4 = params->unk0[0];
@@ -359,15 +362,15 @@ void func_80071E70(void) {
     D_8019252C = params->unk38;
     D_801924F0 = params->unk3C;
     if (gPlayers == ONE_PLAYER) {
-        D_801C3B84 = D_800D6B4C[gCourseID];
         D_801C3B7C = D_800D6BAC[gCourseID];
-        D_801C3B80 = D_800D6B7C[gCourseID] - 2;
         params2 = D_800D6B1C[gCourseID];
+        D_801C3B80 = D_800D6B7C[gCourseID] - 2;
+        D_801C3B84 = D_800D6B4C[gCourseID];
     } else {
-        D_801C3B84 = D_800D6C0C[gCourseID];
         D_801C3B7C = D_800D6C6C[gCourseID];
-        D_801C3B80 = D_800D6C3C[gCourseID] - 2;
         params2 = D_800D6BDC[gCourseID];
+        D_801C3B80 = D_800D6C3C[gCourseID] - 2;
+        D_801C3B84 = D_800D6C0C[gCourseID];
     }
     D_800D9630 = D_800D5894[gCourseID];
     D_801C3B44 = params2->unk0[0];
@@ -399,16 +402,16 @@ void func_80071E70(void) {
         src1 = D_800D68AC[gCourseID];
         src2 = D_800D68D4[gCourseID];
     }
-    for (; src1->unk4 != -1; src1++) {
-        D_801BFA48[D_801BFB68].unk0 = src1->unk0;
-        D_801BFA48[D_801BFB68].unk4 = src1->unk2;
-        angle = (src1->unk4 / 360.0f) * 4096.0f;
+    for (p1 = src1; p1->unk4 != -1; p1++) {
+        D_801BFA48[D_801BFB68].unk0 = p1->unk0;
+        D_801BFA48[D_801BFB68].unk4 = p1->unk2;
+        angle = (p1->unk4 / 360.0f) * 4096.0f;
         D_801BFA48[D_801BFB68].unk8 = gSinTable[angle & 0xFFF] * 64.0f;
         D_801BFA48[D_801BFB68].unkC = gSinTable[(angle + 0x400) & 0xFFF] * 64.0f;
-        D_801BFA48[D_801BFB68].unk1C = src1->unk6 / 64;
-        D_801BFA48[D_801BFB68].unk10 = src1->unk8;
-        D_801BFA48[D_801BFB68].unk14 = src1->unkA;
-        D_801BFA48[D_801BFB68].unk18 = src1->unkC;
+        D_801BFA48[D_801BFB68].unk1C = p1->unk6 / 64;
+        D_801BFA48[D_801BFB68].unk10 = p1->unk8;
+        D_801BFA48[D_801BFB68].unk14 = p1->unkA;
+        D_801BFA48[D_801BFB68].unk18 = p1->unkC;
         if (++D_801BFB68 >= 8) {
             break;
         }
@@ -446,21 +449,21 @@ void func_80071E70(void) {
     if (D_800D8240 != 0) {
         return;
     }
-
-    D_801BFA40 = 0;
     D_801BC938 = 0;
     D_801BB128 = 0;
+    D_801BB130 = 0;
+    D_801BB12C = 0;
     D_801BB124 = 0;
     D_801BB120 = 0;
-    D_801BB12C = 0;
-    D_801BB130 = 0;
+
+    D_801BFA40 = 0;
     D_801BB134 = 0;
     if (D_801CE638 == 21) {
         return;
     }
     if (gGameModes == GMODE_2P_VS) {
-        D_801C1FBC = 0.0f;
         D_801C1F90 = *D_800D62D4[gCourseID];
+        D_801C1FBC = 0.0f;
         D_801C1FB8 = D_801C1FBC;
     } else {
         D_801C1F90 = *D_800D62A4[gCourseID];
@@ -476,12 +479,12 @@ void func_80071E70(void) {
         buoys = D_800D6744[gCourseID];
         objects = D_800D66A4[gCourseID];
     } else if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) {
-        list1 = NULL;
-        list2 = NULL;
         list0 = D_800D653C[gCourseID];
         buoys = D_800D676C[gCourseID];
         objects = D_800D66CC[gCourseID];
         rings = D_800D6884[gCourseID];
+        list2 = NULL;
+        list1 = NULL;
     } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) {
         if (gPlayers == ONE_PLAYER) {
             list0 = D_800D6564[gCourseID];
@@ -490,11 +493,11 @@ void func_80071E70(void) {
             buoys = D_800D66F4[gCourseID];
             objects = D_800D6654[gCourseID];
         } else {
-            list0 = D_800D65DC[gCourseID];
+            objects = D_800D667C[gCourseID];
             list1 = D_800D6604[gCourseID];
             list2 = D_800D662C[gCourseID];
             buoys = D_800D671C[gCourseID];
-            objects = D_800D667C[gCourseID];
+            list0 = D_800D65DC[gCourseID];
         }
     } else if (gPlayers == TWO_PLAYERS) {
         if (gDifficulty == DIFFICULTY_NORMAL) {
@@ -504,8 +507,8 @@ void func_80071E70(void) {
         } else {
             list0 = D_800D64EC[gCourseID];
         }
-        buoys = D_800D671C[gCourseID];
         objects = D_800D667C[gCourseID];
+        buoys = D_800D671C[gCourseID];
         if (gCourseID == RIDER_SELECTION) {
             list1 = D_800D5700;
         } else {
@@ -874,11 +877,11 @@ void func_80071E70(void) {
                 break;
             }
             a = &gCoursePoints[D_801BC938];
+            D_801BC938++;
             a->unk10 = 5;
             a->unk0 = pts[i * 3];
             a->unk4 = pts[i * 3 + 1];
             a->unk8 = pts[i * 3 + 2];
-            D_801BC938++;
             i++;
         } while ((pts[i * 3] != -1) || (pts[i * 3 + 2] != -1));
     }
