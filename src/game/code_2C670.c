@@ -279,15 +279,12 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 45284 of 150300: same lists, switches and stores; register allocation and scheduling differ throughout (the
-// original keeps &gCourseID in ra in places, and reloads D_800DAB68 and D_800D8250 by absolute address inside the
-// src2 loop where IDO here hoists their addresses), and this C is shorter (the frame is 0x90, not 0xA0). The first
-// list is walked with its own pointer (p1), as the original copies src1 into a1.
+// Score 42309 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
+// default, written first, as the table's entry 0 and its block order show). Left: the original keeps a zero
+// (probably the edge index i) live in a1 from the D_801CE638 == 21 test on, and rematerialises it at every loop
+// exit, which gives each capped loop its "bnez / b exit" break shape; putting i = 0 there here did not
+// reproduce it. Registers differ throughout (src2 lives in s2, &gCourseID in ra) and the frame is 0x90, not 0xA0.
 void func_80071E70(void) {
-    s32 i;
-    s32 n;
-    s32 t;
-    s32 type;
     s32 kind;
     s32 angle;
     s32 difficulty;
@@ -300,13 +297,17 @@ void func_80071E70(void) {
     CourseRecordSrc* list1;
     CourseRecordSrc* list2;
     CourseRecordSrc* rec;
+    s32 type;
     CourseBuoySrc* buoys;
     CourseObjectSrc* objects;
-    CourseRingSrc* rings;
-    CourseThingSrc* things;
-    CourseBuoySrc* b;
     s16* edge;
+    s32 t;
+    CourseRingSrc* rings;
     s16* pts;
+    CourseThingSrc* things;
+    s32 i;
+    s32 n;
+    CourseBuoySrc* b;
     UnkStruct_801AEE20* table;
     UnkStruct_801AEE20* e;
     UnkStruct_801BC940* o;
@@ -822,8 +823,13 @@ void func_80071E70(void) {
 
     // Table A (gCoursePoints, at most 256): the small buoys by type and difficulty, the course-edge
     // points (type 1), and the points with a height (type 5).
+    i = 0;
     for (b = buoys; b->type != -1; b++) {
         switch (b->type) {
+            case 0:
+            default:
+                kind = 0;
+                break;
             case 1:
                 kind = 1;
                 break;
@@ -845,9 +851,6 @@ void func_80071E70(void) {
             case 4:
                 kind = 4;
                 break;
-            default:
-                kind = 0;
-                break;
         }
         a = &gCoursePoints[D_801BC938];
         a->unk10 = kind;
@@ -858,7 +861,6 @@ void func_80071E70(void) {
         }
     }
     if ((edge[0] != -1) || (edge[1] != -1)) {
-        i = 0;
         do {
             a = &gCoursePoints[D_801BC938];
             a->unk10 = 1;
