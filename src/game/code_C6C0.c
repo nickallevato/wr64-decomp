@@ -5441,7 +5441,7 @@ void func_800609EC(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 770 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
+// Score 560 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
 // (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), which shifts the t-register
 // rotation for the rest of the function; and it keeps the constant 1 of the UNACTIVE_MODE test in a2 for the
 // unk15DC store. btn and pad set at the top (not before first use) stop IDO folding their first access into arg0;
@@ -5465,7 +5465,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     if (d < -D_800D49DC) {
         d = -D_800D49DC;
     } else if (D_800D49DC < d) {
-        d = D_800D49DC;
+        d = D_800D49DC & 0xFFFFFFFFFFFFFFFFu; // FAKE (permuter): a no-op 64-bit mask that takes one more t-register
     }
     arg0->unkB60 += d;
     arg0->unkC66 = btn->held & 0xA000;
