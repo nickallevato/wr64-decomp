@@ -5436,10 +5436,11 @@ void func_800609EC(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1383 of 30400: same instructions; register choice differs: the original has unkB50.button in a1 (here v0)
-// and btn/pad in a1 (here v1), with unkC54 and &gFrameCounter in v1 (here a1), and loads the constant 1 for
-// unk1444/unk1600 into a fresh temp where IDO here keeps it in a2. btn and pad set at the top (not before first use)
-// stop IDO folding their first access into arg0; d holding the button is a reuse that put unkB56 in v1.
+// Score 830 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
+// (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), which shifts the t-register
+// rotation for the rest of the function; and it keeps the constant 1 of the UNACTIVE_MODE test in a2 for the
+// unk15DC store. btn and pad set at the top (not before first use) stop IDO folding their first access into arg0;
+// d holding the button is a reuse that put unkB56 in v1.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
@@ -5465,7 +5466,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     arg0->unkC66 = btn->held & 0xA000;
     if ((arg0->unkC54 == 23) || (arg0->unk1608 != 0) || ((arg0->unkC54 == 7) && (arg0->unkC58 < 56)) ||
         ((arg0->unkC54 > 0) && (arg0->unkC54 < 7)) || (gRiderGameModes == PAUSE_MODE) ||
-        (gRiderGameModes == UNACTIVE_MODE)) {
+        (gRiderGameModes == (u32) UNACTIVE_MODE)) { // FAKE: (u32) keeps this 1 out of the 1 stored below
         btn->stickX = btn->stickY = 0;
         arg0->unkC66 = 0;
         arg0->unk15DC = 0;
@@ -5494,8 +5495,8 @@ void func_80061184(UnkStruct_80192690* arg0) {
     if (btn->stickY < -14) {
         arg0->unk15A8 = gFrameCounter;
         if (!(btn->held & 0xA000)) {
-            arg0->unk1600 = 0;
             arg0->unk15F0 = gFrameCounter;
+            arg0->unk1600 = 0;
         }
     } else if (btn->stickY >= 15) {
         arg0->unk15A4 = gFrameCounter;
@@ -5541,7 +5542,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
                         if (arg0->unk15F4 & 0x100) {
                             arg0->unk15F8++;
                         } else {
-                            arg0->unk15F8 = 0;
+                            arg0->unk15F8 = dirs * 0; // FAKE: 0 written as dirs * 0
                         }
                         break;
                     case 0x200:
