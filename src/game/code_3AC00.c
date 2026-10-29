@@ -1287,8 +1287,8 @@ void func_80085408(void) {
  * Scratch: https://decomp.me/scratch/c7EJc
  * Score: 105 (99.62&)
  */
-// Score 280 of 27700: float registers only (sp4C is in $f12, the original's $f2; var_f12 is in $f16, the original's
-// $f12; the cross product is in $f2, the original's $f16). Upstream's 105 above is decomp.me's scale.
+// Score 200 of 27700: float registers only (sp48 is in $f12, the original's $f14; the dot product is in $f14, the
+// original's $f0; and others follow). Upstream's 105 above is decomp.me's scale.
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;
@@ -1373,6 +1373,7 @@ void func_80085510(void) {
         sp4C = -70.0f;
     }
 
+    if (!var_f0) {} // FAKE: an empty test (from the permuter) that moves the float registers
     var_f12 = sp4C - (var_f0 = D_801C3C50->unkB52);
     if (var_f12 > 35.0f) {
         D_801C3C50->unkB52 += 0x23;

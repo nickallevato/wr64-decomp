@@ -207,8 +207,10 @@ extern s16 D_800D9890;
 extern s32 D_800D9894;
 extern f32 D_801CB160;
 extern s32 D_800D9924[];
-extern UnkStruct_8008962C D_801C4170;
-extern UnkStruct_8008962C D_801C4188;
+// The start of this file's .bss as split so far (the yaml takes 0x801C4170..0x801C419F out of bss2b). Defined,
+// not extern, func_8008BD2C's Dolphin Park block loads unk0 and unk4 from one lui, as in the original.
+UnkStruct_8008962C D_801C4170;
+UnkStruct_8008962C D_801C4188;
 extern u16 D_10102B0[];
 extern s32 D_800DA628[];
 extern RgbaColors D_800DA6A8[];
@@ -388,9 +390,10 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 75435 of 181100, one instruction long: float register allocation and stack layout throughout (frame 0x2E0,
-// not 0x2C0; the original keeps the camera's unk70/unk74/unk78, the squared dot product and the direction on
-// the stack, and saves four FP registers).
+// Score 70673 of 181100: the direction is scaled in place after sqrtf and glare is squared four times before the
+// branch, both as in the original (glare then lives on the stack, as there). Left: float register allocation and
+// stack layout (frame 0x2E8 here, 0x2C0 in the original, which saves four FP registers and keeps alpha in $f22 and
+// the camera's upX/upY/upZ in stack homes), and cam->unk68 * 2.0f is an add.s here, a mul.s there.
 Gfx* func_8008A0E0(Gfx* gdl) {
     UnkStruct_801C43F8* p;
     camera_unk_1* cam;
@@ -441,13 +444,17 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     dy = D_800D98D0 - cam->eyeY;
     dz = D_800D98D4 - cam->eyeZ;
     inv = 1.0f / sqrtf((dx * dx) + (dy * dy) + (dz * dz));
-    dot = (cam->unk64 * (dx * inv)) + ((dy * inv) * cam->unk68) + ((dz * inv) * cam->unk6C);
+    dx *= inv;
+    dy *= inv;
+    dz *= inv;
+    dot = (cam->unk64 * dx) + (dy * cam->unk68) + (dz * cam->unk6C);
     glare = dot * dot;
+    glare = glare * glare;
     glare = glare * glare;
     glare = glare * glare;
     if (dot > 0.8f) {
         D_800D47E0[0] = 2;
-        gColorAlpha = 200.0f * (glare * glare);
+        gColorAlpha = 200.0f * glare;
         gColorRed = 0xF5;
         gColorGreen = 0xFF;
         gColorBlue = 0xD7;
@@ -463,23 +470,23 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     ry = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
     rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     func_8004A3C0(&sp240, &sp200, cam->unk64, cam->unk68, cam->unk6C, angle);
-    vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
-    vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
     vz = (sp200.mf[2][2] * rz) + ((sp200.mf[0][2] * rx) + (sp200.mf[1][2] * ry));
-    cx = (cam->unk68 * vz) - (cam->unk6C * vy);
-    cy = (cam->unk6C * vx) - (cam->unk64 * vz);
+    vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
+    vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     cz = (cam->unk64 * vy) - (cam->unk68 * vx);
-    o0x = (-1.0f * vx) - cx;
-    o0y = (-1.0f * vy) - cy;
+    cy = (cam->unk6C * vx) - (cam->unk64 * vz);
     o0z = (-1.0f * vz) - cz;
-    o1x = vx - cx;
-    o1y = vy - cy;
-    o1z = vz - cz;
+    o0y = (-1.0f * vy) - cy;
+    cx = (cam->unk68 * vz) - (cam->unk6C * vy);
     o2x = (-1.0f * vx) + cx;
-    o2y = (-1.0f * vy) + cy;
-    o2z = (-1.0f * vz) + cz;
+    o0x = (-1.0f * vx) - cx;
     o3x = vx + cx;
     o3y = vy + cy;
+    o1z = vz - cz;
+    o1y = vy - cy;
+    o2z = (-1.0f * vz) + cz;
+    o2y = (-1.0f * vy) + cy;
+    o1x = vx - cx;
     o3z = vz + cz;
     p->unk350[0][0].v.ob[0] = (s16) (s32) (32.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * o0x);
     p->unk350[0][0].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * o0y);
@@ -729,12 +736,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008A0E0.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 260 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
-// for its unk4 load, where the original shares the lui with the unk0 load; and after the fourth, fifth and sixth
-// rectangles unk4 is reloaded before unk0, where the original reloads unk0 first. The rectangles are
-// gSPScisTextureRectangle with dsdx written as a shift (4 << 10 is 0x1000), and mirror is the s32 local the
-// original converts once: x for the fifth and sixth elements, assigned from the float sum in two steps.
+// The rectangles are gSPScisTextureRectangle with dsdx written as a shift (4 << 10 is 0x1000), and mirror is the
+// s32 local the original converts once: x for the fifth and sixth elements, assigned from the float sum in two
+// steps.
 Gfx* func_8008BD2C(Gfx* gdl) {
     s32 alpha;
     s32 mirror;
@@ -778,6 +782,7 @@ Gfx* func_8008BD2C(Gfx* gdl) {
                           0);
         gDPSetTexturePersp(gdl++, G_TP_NONE);
         alpha = 160.0f * D_801C4170.unk14 * D_801C4170.unk14 * scale;
+        y = D_801C4170.unk4; // FAKE: a dead read; with it IDO reloads unk0 before unk4 after each rectangle
         if (D_801C4170.unk14 > 0.7) {
             D_800D47E0[0] = 2;
             gColorAlpha = flareAlpha.alpha[gCourseID] * D_801C4170.unk14 * D_801C4170.unk14 * D_801C4170.unk14 *
@@ -874,9 +879,6 @@ Gfx* func_8008BD2C(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008BD2C.s")
-#endif
 
 Gfx* func_8008CFEC(Gfx* gdl) {
     UnkStruct_8008962C* var_t1;
