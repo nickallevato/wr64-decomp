@@ -109,16 +109,16 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 8944 of 97200: same blocks, loops and calls. The original keeps one more value in a saved register
-// (frame 0x80, here 0x78), so most registers are renamed from the first loop on; it stores gMapHalfSize
-// with lui at in the extent loops, and does not unroll the 8-step checkpointTimes loop (unrolled here).
+// Score 7065 of 97200: same blocks, loops and calls. -1 sits in ra here (t5 in the original) and most
+// registers are renamed from the extent loops on; the original stores gMapHalfSize with lui at in the
+// extent loops, and does not unroll the 8-step checkpointTimes loop (unrolled here).
 void func_80075310(void) {
     s32 i;
     s32 j;
     s32 k;
     s32 depth;
-    s32 type;
     s32 n;
+    s32 type;
     f32 x;
     f32 z;
     f32 a;
@@ -271,11 +271,11 @@ void func_80075310(void) {
         rider->unk8 = 0;
         rider->unk320 = 0;
         rider->progress = 0; // int 0, as gMapHalfSize
+        rider->unkC = rider->unk10 = rider->nearestRecord = D_801BB12C;
         rider->unk1C = -1;
         rider->unk20 = 0;
         rider->unk24 = 0;
         rider->unk28 = 0;
-        rider->unkC = rider->unk10 = rider->nearestRecord = D_801BB12C;
         if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
             rider->power = 5;
         } else {
@@ -403,11 +403,11 @@ void func_80075310(void) {
         D_801C39D4 = D_801C39D0 = D_801C39CC = 0;
         D_801C39E4 = D_801C39E0 = D_801C39DC = D_801C39D8 = 0;
         D_801C39F8 = D_801C39F4 = D_801C39F0 = D_801C39EC = D_801C39E8 = 0;
-        D_801C3A04 = 0;
         D_801C3A00 = 0;
         D_801C39FC = D_801C3A00;
-        D_801C292C = 0;
         D_801C39C8 = 0;
+        D_801C3A04 = 0;
+        D_801C292C = 0;
     }
     D_801C39B0 = 100000.0f;
     D_801C39B4 = -100000.0f;
