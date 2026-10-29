@@ -859,7 +859,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 31020 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
+// Score 30504 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
 // s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
 // into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
 void func_800B08F8(s32 arg0) {
@@ -1305,7 +1305,7 @@ void func_800B08F8(s32 arg0) {
                             sx = (24.0f + rate) - (len * 8.0f);
                             a = (angle / 360.0f) * 4096.0f;
                             D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
-                            D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2.0f * rate);
+                            D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
                             D_800E6D6C->unk8 = (gSinTable[a & 0xFFF] * sx) + (D_801D79C4 - sz);
                             f = Math_FloatRand(r);
                             n++;
