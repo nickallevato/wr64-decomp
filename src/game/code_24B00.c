@@ -35,7 +35,8 @@ typedef struct UnkStruct_801C0C80_s {
     f32 unkAC;
     f32 unkB0;
     f32 unkB4;
-} UnkStruct_801C0C80;
+    char padB8[0x58];
+} UnkStruct_801C0C80; /* size = 0x110, as UnkStruct_801CB058 in code_43DA0.c */
 
 typedef struct UnkStruct_800D5330_s {
     f32 unk0;
