@@ -625,13 +625,12 @@ void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 
 #ifdef NON_MATCHING
-// Score 525 of 36800: frame, stack homes and the two-points-per-pass reset loop match; the plane tests branch to the
-// reset loop by goto. Left: z and the 0.0f constant swap $f20 and $f14, and the loop end is computed up front (in a0,
-// so p lands in a1) where the original computes it before the loop.
+// Score 410 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (z and
+// the 0.0f constant swap $f20 and $f14; p and t take a1 and a0 where the original has a0 and a2).
 void func_80051EC0(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* p = rider->unk90;
-    Vec3f* t = D_800D4840;
+    Vec3f* t;
     f32 x;
     f32 y;
     f32 z;
@@ -666,6 +665,7 @@ void func_80051EC0(s32 arg0) {
     a = rider->unk84;
     b = rider->unk88;
     c = rider->unk8C;
+    t = D_800D4840;
     dz2 = p[2].unk8 - z;
     dx2 = p[2].unk0 - x;
     dy2 = p[2].unk4 - y;
