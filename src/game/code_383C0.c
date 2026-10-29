@@ -146,9 +146,10 @@ void func_8007DBC0(void) {
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
 #ifdef NON_MATCHING
-// Score 4282 of 60700: same blocks, frame (0x88) and saved registers. The free sphere's push factor is computed
+// Score 3701 of 60700: same blocks, frame (0x88) and saved registers. The free sphere's push factor is computed
 // once (in dot, reused) as in the original's single load of D_800D49B8; each block scales x, y and z by 1/len and
-// computes its push component right after each one. Left: float register choice and scheduling.
+// computes its push component right after each one. The loop compares the pointers without (u32) casts; len and pen
+// sit where a declaration search put them. Left: float register choice and scheduling.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
     f32 d;
     f32 k; // stack pad: unused, but removing it moves the register allocation
@@ -156,14 +157,14 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
     f32 x;
     f32 y;
     f32 z;
-    f32 len;
-    f32 pen;
     f32 px;
+    f32 len;
     f32 py;
     f32 pz;
     f32 dot;
+    f32 pen;
 
-    for (e = (struct UnkStruct_801AEE20*) &D_801AEE20[D_801BB120 - 1]; (u32) e >= (u32) D_801AEE20; e--) {
+    for (e = (struct UnkStruct_801AEE20*) &D_801AEE20[D_801BB120 - 1]; e >= (struct UnkStruct_801AEE20*) D_801AEE20; e--) {
         if (e->unk9C == 0) {
             if (e->unkC4 == 0) {
                 continue;
