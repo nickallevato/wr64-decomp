@@ -761,10 +761,11 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 3905 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
+// Score 3885 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
 // the height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before
 // end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. Left: the
-// first pair's cells load in the other order, registers differ, and IDO here saves an extra s0.
+// first pair's cells load in the other order, registers differ, and IDO here saves an extra s0
+// (never used). The last pass's bound is set in its for, as in the first two passes.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -851,10 +852,9 @@ void func_8004EAA4(void) {
         a->unk0 += a->unk2;
         a->unk2 -= a->unk2 >> D_800D4730;
     }
-    end = p + gWaterWindowN;
     a = WATER_CELL_AT(p->unk0);
     ha = a->unk0;
-    while (p < end) {
+    for (end = p + gWaterWindowN; p < end;) {
         b = WATER_CELL_AT(p[1].unk0);
         hb = b->unk0;
         p += 2;
