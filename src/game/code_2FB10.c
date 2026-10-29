@@ -109,7 +109,8 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 7065 of 97200: same blocks, loops and calls. -1 sits in ra here (t5 in the original) and most
+// Score 6995 of 97200: same blocks, loops and calls; five zeroing chains (all s32 globals) store in ascending
+// address order (from a chain-order search). -1 sits in ra here (t5 in the original) and most
 // registers are renamed from the extent loops on; the original stores gMapHalfSize with lui at in the
 // extent loops, and does not unroll the 8-step checkpointTimes loop (unrolled here).
 void func_80075310(void) {
@@ -373,7 +374,7 @@ void func_80075310(void) {
     }
 
     D_800D817C = 1;
-    D_801C1FD8 = D_801C1FD4 = 0;
+    D_801C1FD4 = D_801C1FD8 = 0;
     D_801C1FDC = 0;
     D_801C39C4 = D_800D8180[gCourseID];
     if (gDifficulty == DIFFICULTY_NORMAL) {
@@ -383,7 +384,7 @@ void func_80075310(void) {
     } else {
         D_801C39B8 = 5;
     }
-    D_801C1FD0 = D_801C1FCC = D_801C1FC8 = 0;
+    D_801C1FC8 = D_801C1FCC = D_801C1FD0 = 0;
     if (gCourseID == MARINE_FORTRESS) {
         for (i = 0; i < D_801BFA40; i++) {
             if (D_801BC940[i].unk4C == 2) {
@@ -398,9 +399,9 @@ void func_80075310(void) {
     }
     D_801C2930 = 0;
     if (gGameModes == GMODE_STUNT) {
-        D_801C26DC = D_801C26D8 = D_801C26D4 = D_801C26D0 = 0;
+        D_801C26D0 = D_801C26D4 = D_801C26D8 = D_801C26DC = 0;
         D_801C26E4 = D_801C26E0 = 0;
-        D_801C39D4 = D_801C39D0 = D_801C39CC = 0;
+        D_801C39CC = D_801C39D0 = D_801C39D4 = 0;
         D_801C39E4 = D_801C39E0 = D_801C39DC = D_801C39D8 = 0;
         D_801C39F8 = D_801C39F4 = D_801C39F0 = D_801C39EC = D_801C39E8 = 0;
         D_801C3A00 = 0;
@@ -411,7 +412,7 @@ void func_80075310(void) {
     }
     D_801C39B0 = 100000.0f;
     D_801C39B4 = -100000.0f;
-    D_801C2928 = D_801C2658 = D_801C2654 = D_801C2650 = 0;
+    D_801C2650 = D_801C2654 = D_801C2658 = D_801C2928 = 0;
     if (D_800DAB68 == 0) {
         D_801C1FE4 = gBestTimes[gCourseID][0].time;
         D_801C1FE8 = D_801C1FE0 = gBestLaps[gCourseID].time;
