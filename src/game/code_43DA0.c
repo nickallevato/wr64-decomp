@@ -207,8 +207,10 @@ extern s16 D_800D9890;
 extern s32 D_800D9894;
 extern f32 D_801CB160;
 extern s32 D_800D9924[];
-extern UnkStruct_8008962C D_801C4170;
-extern UnkStruct_8008962C D_801C4188;
+// The start of this file's .bss as split so far (the yaml takes 0x801C4170..0x801C419F out of bss2b). Defined,
+// not extern, func_8008BD2C's Dolphin Park block loads unk0 and unk4 from one lui, as in the original.
+UnkStruct_8008962C D_801C4170;
+UnkStruct_8008962C D_801C4188;
 extern u16 D_10102B0[];
 extern s32 D_800DA628[];
 extern RgbaColors D_800DA6A8[];
@@ -729,12 +731,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008A0E0.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 260 of 120000, one instruction long: in the Dolphin Park block the second element reloads %hi(D_801C4170)
-// for its unk4 load, where the original shares the lui with the unk0 load; and after the fourth, fifth and sixth
-// rectangles unk4 is reloaded before unk0, where the original reloads unk0 first. The rectangles are
-// gSPScisTextureRectangle with dsdx written as a shift (4 << 10 is 0x1000), and mirror is the s32 local the
-// original converts once: x for the fifth and sixth elements, assigned from the float sum in two steps.
+// The rectangles are gSPScisTextureRectangle with dsdx written as a shift (4 << 10 is 0x1000), and mirror is the
+// s32 local the original converts once: x for the fifth and sixth elements, assigned from the float sum in two
+// steps.
 Gfx* func_8008BD2C(Gfx* gdl) {
     s32 alpha;
     s32 mirror;
@@ -778,6 +777,7 @@ Gfx* func_8008BD2C(Gfx* gdl) {
                           0);
         gDPSetTexturePersp(gdl++, G_TP_NONE);
         alpha = 160.0f * D_801C4170.unk14 * D_801C4170.unk14 * scale;
+        y = D_801C4170.unk4; // FAKE: a dead read; with it IDO reloads unk0 before unk4 after each rectangle
         if (D_801C4170.unk14 > 0.7) {
             D_800D47E0[0] = 2;
             gColorAlpha = flareAlpha.alpha[gCourseID] * D_801C4170.unk14 * D_801C4170.unk14 * D_801C4170.unk14 *
@@ -874,9 +874,6 @@ Gfx* func_8008BD2C(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008BD2C.s")
-#endif
 
 Gfx* func_8008CFEC(Gfx* gdl) {
     UnkStruct_8008962C* var_t1;

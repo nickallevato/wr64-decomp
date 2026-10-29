@@ -342,6 +342,10 @@ segments:
       # stamp); the rest of it is still in bss2
       - { type: .bss, start: 0xA95D0, vram: 0x801C3A00, name: game/code_2FB10 }
       - { type: bss, start: 0xA95D0, vram: 0x801C3A10, name: bss2b }
+      # code_43DA0's .bss from 0x801C4170 to 0x801C419F (D_801C4170 and D_801C4188); the rest of it is still in
+      # bss2b and bss2c
+      - { type: .bss, start: 0xA95D0, vram: 0x801C4170, name: game/code_43DA0 }
+      - { type: bss, start: 0xA95D0, vram: 0x801C41A0, name: bss2c }
       # code_68A10's .bss, 0x801D0790..0x801D7B6F
       - { type: .bss, start: 0xA95D0, vram: 0x801D0790, name: game/code_68A10 }
       - { type: bss, start: 0xA95D0, vram: 0x801D7B70, name: bss3 }
