@@ -898,9 +898,8 @@ extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
 #ifdef NON_MATCHING
-// Score 515 of 54400: same loops, calls, stores and frame. Left: the n = arg1 - 1 of the third loop's link walk is
-// scheduled earlier here (the original puts it in a branch delay slot), and the sums stored to unk60 and unk68 take
-// $f10/$f6 where the original has $f6/$f10.
+// Score 20 of 54400: same loops, calls, stores and frame; the link walks count down with --n in the condition.
+// Left: the sums stored to unk60 and unk68 take $f10/$f6 where the original has $f6/$f10.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     UnkStruct_801AEE20* e;
     s32 i;
@@ -938,7 +937,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     }
     for (i = 0; i < arg1; i++) {
         if (arg0[i].unkC0 < 2) {
-            for (k = arg0[i].unkB4, n = arg1 - 1; (arg0[k].unkC0 >= 2) && (n > 0); n--) {
+            for (k = arg0[i].unkB4, n = arg1; (arg0[k].unkC0 >= 2) && (--n > 0);) {
                 k = arg0[k].unkB4;
             }
             arg0[i].unkA0 = k;
@@ -947,7 +946,7 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     }
     for (i = 0; i < arg1; i++) {
         if (arg0[i].unkC0 != 1) {
-            for (k = arg0[i].unkB4, n = arg1 - 1; (arg0[k].unkC0 == 1) && (n > 0); n--) {
+            for (k = arg0[i].unkB4, n = arg1; (arg0[k].unkC0 == 1) && (--n > 0);) {
                 k = arg0[k].unkB4;
             }
             arg0[i].unkAC = k;
@@ -957,8 +956,8 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     for (path = 0; path < 4; path++) {
         for (i = 0; i < arg1; i++) {
             if ((arg0[i].unkC0 == 0) || (arg0[i].unkC0 == 2) || (arg0[i].unkC0 == path + 3)) {
-                for (k = arg0[i].unkB4, n = arg1 - 1;
-                     (arg0[k].unkC0 != 0) && (arg0[k].unkC0 != 2) && (arg0[k].unkC0 != path + 3) && (n > 0); n--) {
+                for (k = arg0[i].unkB4, n = arg1;
+                     (arg0[k].unkC0 != 0) && (arg0[k].unkC0 != 2) && (arg0[k].unkC0 != path + 3) && (--n > 0);) {
                     k = arg0[k].unkB4;
                 }
                 arg0[i].unkCC[path] = k;
