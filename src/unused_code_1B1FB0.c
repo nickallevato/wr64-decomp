@@ -357,11 +357,9 @@ Gfx* func_1B1FB0_802C6970(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 85 of 13700: register allocation only. The empty if after d = n % 10 (a FAKE) makes d a register
-// variable, in a3 as in the original. Left: the original keeps i, x + 16 and x in t0, t1, t2; here the fourth
-// packet pointer of gDPLoadTextureBlock takes t0 (t3 in the original) and i, x, x + 16 get t1, t2, t3 (x + 16
-// written as 560 - i * 18 gives their order but still t1..t3: score 90). Without the local d IDO unrolls the
-// loop by two.
+// Score 25 of 13700: register allocation only. d (a3 in the original) and the fifth packet pointer (t3) take each
+// other's registers. n /= 10 right after d = n % 10 puts i in t0, and 560 - i * 18 puts x + 16 in t1 and x in t2
+// as in the original. The empty if (a FAKE; any empty if does it) stops IDO unrolling the loop by two.
 Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
     s32 n;
     s32 digits;
@@ -378,13 +376,13 @@ Gfx* func_1B1FB0_802C6C1C(Gfx* gdl) {
     }
     for (i = 0; i < digits; i++) {
         d = n % 10;
-        if (!d) {} // FAKE: keeps d a register variable (a3)
+        if (!d) {} // FAKE: stops IDO unrolling the loop by two
+        n /= 10;
         gDPLoadTextureBlock(gdl++, D_1B1FB0_802C767C[d], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 18, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
-        gSPTextureRectangle(gdl++, (544 - i * 18) << 2, 368 << 2, (544 - i * 18 + 16) << 2, 386 << 2,
+        gSPTextureRectangle(gdl++, (544 - i * 18) << 2, 368 << 2, (560 - i * 18) << 2, 386 << 2,
                             G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
-        n /= 10;
     }
     return gdl;
 }
