@@ -1274,7 +1274,10 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 12816 of 174400: same instructions, but the frame is 0x18 smaller and y is not kept in s0, so registers and stack offsets differ; the original has more locals.
+// Score 6415 of 174400: y is copied into a local (py), which the original keeps in s0 (the big-digit loop still reads
+// y, which orders its hoisted y << 2 terms as in the original), a stack pad gives the original's 0x2C8 frame, sec is
+// reduced mod 60 before ms is taken, and the paired digit stores are chained assignments. Left: temp registers numbered
+// differently from the style 0/2 branch on.
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1312,8 +1315,11 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
     s32 skip;
     s32 ix;
     RiderStruct* rider;
+    s32 py;
+    s32 pad[2]; // stack pad
 
     gdl = *gdlp;
+    py = y;
     if (time < 0) {
         time = 0;
     }
@@ -1321,21 +1327,20 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         time = 599999;
     }
     sec = time / 1000;
-    ms = time % 1000;
     min = sec / 60;
+    sec %= 60;
+    ms = time % 1000;
     D_80228CD8[0] = min;
-    D_80228CD8[1] = (sec % 60) / 10;
-    D_80228CD8[2] = (sec % 60) % 10;
+    D_80228CD8[1] = sec / 10;
+    D_80228CD8[2] = sec % 10;
     D_80228CD8[3] = ms / 100;
     if ((style != 1) || (arg5 != 1)) {
         D_80228CD8[4] = (ms % 100) / 10;
         D_80228CD8[5] = ms % 10;
     } else if (time == 0) {
-        D_80228CD8[5] = 0;
-        D_80228CD8[4] = 0;
+        D_80228CD8[4] = D_80228CD8[5] = 0;
     } else if (time == 599999) {
-        D_80228CD8[5] = 9;
-        D_80228CD8[4] = 9;
+        D_80228CD8[4] = D_80228CD8[5] = 9;
     } else {
         D_80228CD8[4] = (color + 5) % 10;
         D_80228CD8[5] = color % 10;
@@ -1364,8 +1369,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 px += 7;
             }
         }
-        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, y);
-        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, y);
+        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, py);
+        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, py);
     } else if ((style == 0) || (style == 2)) {
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
@@ -1397,12 +1402,12 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
             } else {
                 ix = x + 10;
             }
-            HUD_SCISRECT(gdl, ix, y, 8, 8);
+            HUD_SCISRECT(gdl, ix, py, 8, 8);
         }
         for (i = 0; i < 6; i++) {
             if ((skip == 0) || (i >= skip)) {
                 HUD_LOAD8(gdl, &D_10387C0[D_80228CD8[i] << 6], 8, 8);
-                HUD_SCISRECT(gdl, px, y, 8, 8);
+                HUD_SCISRECT(gdl, px, py, 8, 8);
             }
             px += 7;
             if ((i == 0) || (i == 2)) {
@@ -1411,15 +1416,15 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         }
         if (skip == 0) {
             HUD_LOAD8(gdl, D_1039100, 8, 8);
-            HUD_SCISRECT(gdl, x + 6, y, 8, 8);
+            HUD_SCISRECT(gdl, x + 6, py, 8, 8);
         }
         HUD_LOAD8(gdl, D_1039140, 8, 8);
-        HUD_SCISRECT(gdl, x + 25, y, 8, 8);
+        HUD_SCISRECT(gdl, x + 25, py, 8, 8);
         if (style == 0) {
             HUD_LOAD8(gdl, D_1038D00, 8, 8);
-            HUD_SCISRECT(gdl, x + 60, y, 8, 8);
+            HUD_SCISRECT(gdl, x + 60, py, 8, 8);
             HUD_LOAD8(gdl, &D_10387C0[arg5 << 6], 8, 8);
-            HUD_SCISRECT(gdl, x + 66, y, 8, 8);
+            HUD_SCISRECT(gdl, x + 66, py, 8, 8);
         }
     } else if (style == 3) {
         gDPPipeSync(gdl++);
@@ -1443,12 +1448,12 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
             } else {
                 ix = x + 16;
             }
-            HUD_RECT(gdl, ix, y, 16, 12);
+            HUD_RECT(gdl, ix, py, 16, 12);
         }
         for (i = 0; i < 6; i++) {
             if ((skip == 0) || (i >= skip)) {
                 HUD_LOAD8(gdl, &D_1039248[D_80228CD8[i] * 0xC0], 16, 12);
-                HUD_RECT(gdl, px, y, 16, 12);
+                HUD_RECT(gdl, px, py, 16, 12);
             }
             px += 11;
             if ((i == 0) || (i == 2)) {
@@ -1457,10 +1462,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         }
         if (skip == 0) {
             HUD_LOAD8(gdl, D_103AEC8, 16, 12);
-            HUD_RECT(gdl, x + 10, y, 16, 12);
+            HUD_RECT(gdl, x + 10, py, 16, 12);
         }
         HUD_LOAD8(gdl, D_103AF88, 16, 12);
-        HUD_RECT(gdl, x + 36, y, 16, 12);
+        HUD_RECT(gdl, x + 36, py, 16, 12);
     }
     *gdlp = gdl;
 }
