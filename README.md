@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1255%20%2F%201348-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-93.1%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-68.5%25-4fc9b8?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1281%20%2F%201348-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-95.0%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-73.5%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -43,12 +43,12 @@ neighbour became its own symbol.
 |---|---|--:|---|
 | `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | `src/audio` | sequence and sound playback | 226 / 228 | `███████████████████▉` 99.1% |
-| `src/overlays` | courses and menu screens | 146 / 151 | `███████████████████▍` 96.7% |
+| `src/overlays` | courses and menu screens | 148 / 151 | `███████████████████▌` 98.0% |
 | other | handwritten assembly and loose segments | 53 / 55 | `███████████████████▎` 96.4% |
-| `src/codeseg` | HUD, menus, text printer, popups, fades | 197 / 219 | `██████████████████░░` 90.0% |
-| `src/game` | race logic, riders, camera, water | 444 / 501 | `█████████████████▊░░` 88.6% |
+| `src/codeseg` | HUD, menus, text printer, popups, fades | 205 / 219 | `██████████████████▋░` 93.6% |
+| `src/game` | race logic, riders, camera, water | 460 / 501 | `██████████████████▎░` 91.8% |
 | `src/sys` | boot, threads, memory | 32 / 37 | `█████████████████▎░░` 86.5% |
-| **Total** | | **1255 / 1348** | **93.1%** |
+| **Total** | | **1281 / 1348** | **95.0%** |
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
 assembly under `#ifdef NON_MATCHING`, with a note on what still differs. `make NON_MATCHING=1`
