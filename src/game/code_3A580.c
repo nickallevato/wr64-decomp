@@ -43,13 +43,15 @@ void func_8007FD80(void) {
 // In Port Blue, draws each D_801C3B90 entry inside the water window (gWaterWindow[0]) as eight vertices at its angle,
 // on the water height (func_8004D30C), and six triangles.
 #ifdef NON_MATCHING
-// Score 4945 of 27500: the original computes bx and bz before the first func_8004D30C call (with c and s in dx/dz's
-// $f20/$f22) where IDO here computes them after it and keeps dx/dz in $f24/$f26 across the call; x/z and the
-// saved registers differ from there. dx/dz reused for the cosine and sine, and the chained stores, are closest.
+// Score 110 of 27500: same instructions and FP registers. dx/dz serve as the distance, the cosine and sine, and the
+// corner points beside x/z (v[0], v[5], v[1], v[6], v[2], v[7]); that one change took the score from 4945 to 120.
+// Left: the saved registers for i, gWaterWindow and the gSPVertex address come out as s4/s5/s6 where the original
+// has s6/s4/s5.
 Gfx* func_8007FFA8(Gfx* gdl) {
     UnkStruct_801C3B90* p;
     Vtx* v;
     s32 i;
+    s32 pad[4]; // stack pad: the frame is 0x98 as in the original
     f32 ax;
     f32 az;
     f32 bx;
@@ -80,27 +82,27 @@ Gfx* func_8007FFA8(Gfx* gdl) {
             v[3].v.ob[0] = x = p->unk0 - ax;
             v[3].v.ob[2] = z = p->unk4 - az;
             v[3].v.ob[1] = func_8004D30C(x, z);
-            v[0].v.ob[0] = x - bx;
-            v[0].v.ob[2] = z - bz;
-            v[0].v.ob[1] = func_8004D30C(x - bx, z - bz);
-            v[5].v.ob[0] = x + bx;
-            v[5].v.ob[2] = z + bz;
-            v[5].v.ob[1] = func_8004D30C(x + bx, z + bz);
-            v[1].v.ob[0] = x = p->unk0 - bx;
-            v[1].v.ob[2] = z = p->unk4 - bz;
-            v[1].v.ob[1] = func_8004D30C(x, z);
-            v[6].v.ob[0] = x = p->unk0 + bx;
-            v[6].v.ob[2] = z = p->unk4 + bz;
-            v[6].v.ob[1] = func_8004D30C(x, z);
+            v[0].v.ob[0] = dx = x - bx;
+            v[0].v.ob[2] = dz = z - bz;
+            v[0].v.ob[1] = func_8004D30C(dx, dz);
+            v[5].v.ob[0] = dx = x + bx;
+            v[5].v.ob[2] = dz = z + bz;
+            v[5].v.ob[1] = func_8004D30C(dx, dz);
+            v[1].v.ob[0] = dx = p->unk0 - bx;
+            v[1].v.ob[2] = dz = p->unk4 - bz;
+            v[1].v.ob[1] = func_8004D30C(dx, dz);
+            v[6].v.ob[0] = dx = p->unk0 + bx;
+            v[6].v.ob[2] = dz = p->unk4 + bz;
+            v[6].v.ob[1] = func_8004D30C(dx, dz);
             v[4].v.ob[0] = x = p->unk0 + ax;
             v[4].v.ob[2] = z = p->unk4 + az;
             v[4].v.ob[1] = func_8004D30C(x, z);
-            v[2].v.ob[0] = x - bx;
-            v[2].v.ob[2] = z - bz;
-            v[2].v.ob[1] = func_8004D30C(x - bx, z - bz);
-            v[7].v.ob[0] = x + bx;
-            v[7].v.ob[2] = z + bz;
-            v[7].v.ob[1] = func_8004D30C(x + bx, z + bz);
+            v[2].v.ob[0] = dx = x - bx;
+            v[2].v.ob[2] = dz = z - bz;
+            v[2].v.ob[1] = func_8004D30C(dx, dz);
+            v[7].v.ob[0] = dx = x + bx;
+            v[7].v.ob[2] = dz = z + bz;
+            v[7].v.ob[1] = func_8004D30C(dx, dz);
             gSPVertex(gdl++, &((GfxPool*) D_3000000)->unk170D8[0x151 + i], 8, 0);
             gSP1Triangle(gdl++, 0, 3, 1, 0);
             gSP1Triangle(gdl++, 1, 3, 6, 0);
