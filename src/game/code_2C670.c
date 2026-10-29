@@ -898,9 +898,9 @@ extern s32 D_801BB12C;
 f32 func_801ED090(f32 arg0);
 
 #ifdef NON_MATCHING
-// Score 570 of 54400: same loops, calls, stores and frame. Left: the n = arg1 - 1 of the third loop's link walk is
-// scheduled earlier here (the original puts it in a branch delay slot), the unkB0 lookup takes a1/a0 where the
-// original has v1/v0, and some float temps of the last statements are numbered differently.
+// Score 515 of 54400: same loops, calls, stores and frame. Left: the n = arg1 - 1 of the third loop's link walk is
+// scheduled earlier here (the original puts it in a branch delay slot), and the sums stored to unk60 and unk68 take
+// $f10/$f6 where the original has $f6/$f10.
 void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
     UnkStruct_801AEE20* e;
     s32 i;
@@ -1069,9 +1069,9 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
             angle = 360.0f - angle;
         }
         e->unk94 = angle;
-        k = arg0[i].unkB0;
-        ax = e->unk0 - arg0[k].unk0;
-        az = e->unk8 - arg0[k].unk8;
+        n = arg0[i].unkB0;
+        ax = e->unk0 - arg0[n].unk0;
+        az = e->unk8 - arg0[n].unk8;
         len = sqrtf((ax * ax) + (az * az));
         if (len > 0.0f) {
             ax /= len;
@@ -1081,8 +1081,8 @@ void func_800735EC(UnkStruct_801AEE20* arg0, s32 arg1) {
         e->unkE8 = az;
         switch (e->unk98) {
             case 0:
-                e->unkF0 = e->unkE4;
                 e->unkEC = -e->unkE8;
+                e->unkF0 = e->unkE4;
                 break;
             case 1:
                 e->unkEC = e->unkE8;
