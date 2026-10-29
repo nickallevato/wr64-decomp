@@ -2363,10 +2363,11 @@ void func_801F9520(Gfx** gdlp) {
 }
 
 #ifdef NON_MATCHING
-// Score 1800 of 32800: the side offset's numerator is computed before the sqrt and func_801ED090 is called before the
-// distance test, as in the original; the forward dot product passes through dist, and the zero tests of a use their
-// own zeros. Left: the saved FP registers are still coloured partly differently and some statements are scheduled
-// elsewhere.
+// Score 510 of 32800: side is computed first, then the forward dot product (copied to fwd); the direction is
+// normalised in place (dx /= dist); dot holds side / scale once the angle test is done, and a holds the clamped fwd
+// before it holds the angle (with these the saved FP registers are coloured as in the original). The zero tests of
+// a use the integer literal 0. Left: the zero of aa > 0.0f is loaded at the top of the block in the original (f16),
+// and the 0.0f for sgn is its own (f14); here they share one zero, loaded in both arms of sgn.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2423,29 +2424,31 @@ void func_801F9EA0(void) {
                 p = &D_80192690[j];
                 dx = p->unk44.x - camX;
                 dz = p->unk44.z - camZ;
-                dist = dx * dirX + dz * dirZ;
-                fwd = dot = dist;
                 side = dx * dirZ + dz * -dirX;
+                dot = dx * dirX + dz * dirZ;
+                fwd = dot;
                 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 0.0f) {
-                    dot = (dx / dist) * dirX + (dz / dist) * dirZ;
+                    dx /= dist;
+                    dz /= dist;
+                    dot = dx * dirX + dz * dirZ;
                 }
                 dot = func_801ED090(dot);
                 if ((dist > 1024.0f) || (dot > 135.0f)) {
                     continue;
                 }
-                sx = fwd;
+                a = fwd;
                 if (fwd < 0.0f) {
-                    sx = 0.0f;
+                    a = 0.0f;
                 }
-                scale = sx * 0.0009765625f * 1024.0f + 60.0f;
-                side /= scale;
-                sx = side;
-                if (side > 1.0f) {
-                    a = func_801ED154(side - 1.0f, fwd / scale);
+                scale = a * 0.0009765625f * 1024.0f + 60.0f;
+                dot = side / scale;
+                sx = dot;
+                if (dot > 1.0f) {
+                    a = func_801ED154(dot - 1.0f, fwd / scale);
                     sx = 1.0f;
-                } else if (side < -1.0f) {
-                    a = func_801ED154(side + 1.0f, fwd / scale);
+                } else if (dot < -1.0f) {
+                    a = func_801ED154(dot + 1.0f, fwd / scale);
                     sx = -1.0f;
                 } else {
                     a = 0; // integer literal: with 0.0f the zero is shared with the other tests
@@ -2453,8 +2456,8 @@ void func_801F9EA0(void) {
                 if (a > 180.0f) {
                     a -= 360.0f;
                 }
-                aa = (a >= 0.0f * 1.0f) ? a : -a; // FAKE: 0.0f * 1.0f, a zero of its own for the original's FP registers
-                sgn = (a == 0) ? 0.0f : ((a > 0) ? 1 : -1); // integer literals, as above
+                aa = (a >= 0) ? a : -a;
+                sgn = (a == 0) ? 0.0f : ((a > 0) ? 1 : -1);
                 if (aa > 0.0f) {
                     aa *= 0.6666667f;
                     if (aa > 90.0f) {
