@@ -195,10 +195,11 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 8141 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
-// addresses in registers as in the original. Left: the original stores before incrementing in the Vtx copy loop and
-// rebuilds the 0xB240.. offsets inside it, keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and
-// B50/B54 at the top also go through registers there.
+// Score 7046 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// addresses in registers as in the original; the Vtx copy pointers are set up in the order found by a move search.
+// Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
+// keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
+// registers there.
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -261,14 +262,14 @@ void func_801EED70(void) {
         }
     }
     for (gfxPool = D_80198368; gfxPool < &D_80198368[2]; gfxPool++) {
-        d0 = gfxPool->unkB240;
         d1 = gfxPool->unkB1C0;
-        d2 = gfxPool->unkB200;
-        s3 = D_80227788[3];
+        d0 = gfxPool->unkB240;
         s2 = D_80227788[2];
-        s1 = D_80227788[1];
-        s0 = D_80227788[0];
+        s3 = D_80227788[3];
+        d2 = gfxPool->unkB200;
         d3 = gfxPool->unkB280;
+        s0 = D_80227788[0];
+        s1 = D_80227788[1];
         do {
             *d0++ = *s0++;
             *d1++ = *s1++;
