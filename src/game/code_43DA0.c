@@ -925,17 +925,18 @@ Gfx* func_8008CFEC(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 125 of 31800: same instructions and schedule; register allocation only: x is in t3, not t2, and the
-// x - 12 temps are in a2, not a3 (y - 12 takes a3, not a2), and the second rectangle's copy of x - 12 is in t2,
-// not t3. The s/t terms come from gSPScisTextureRectangle's xl*dsdx with dsdx written 3 << 9 (0x600).
+// Score 70 of 31800: same instructions and schedule; register allocation only: x is in t3, not t2, and the
+// second rectangle's copy of x - 12 is in t2, not t3. The s/t terms come from gSPScisTextureRectangle's xl*dsdx
+// with dsdx written 3 << 9 (0x600).
 Gfx* func_8008D454(Gfx* gdl) {
-    s32 pad; // stack pad
     s32 y;
     s32 x;
     s32 l;
+    s32 t; // FAKE: never read; its dead store moves the registers (and stands in for a stack pad)
 
     x = D_801C4188.unk0 + D_801C4188.unkC;
     y = D_801C4188.unk4 - D_801C4188.unk10;
+    t = y - 12;
     l = x - 12;
 
     gDPPipeSync(gdl++);
