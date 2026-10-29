@@ -860,7 +860,8 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 30504 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
+// Score 30254 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// compare); register allocation differs from the start: isHuman stays in
 // s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
 // into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
 void func_800B08F8(s32 arg0) {
@@ -1272,7 +1273,7 @@ void func_800B08F8(s32 arg0) {
                     step = -45.0f / half;
                 }
                 spawn = rate >= 3.0f;
-                if (spawn && ((absCos >= 0.94f) || (D_800E6D60->unk1C50 == 0))) {
+                if (spawn && (!(absCos < 0.94f) || (D_800E6D60->unk1C50 == 0))) {
                     spawn = D_800E6D60->unk1C34 != 0;
                 }
                 if (spawn) {
