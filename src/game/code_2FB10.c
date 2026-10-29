@@ -664,60 +664,64 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 43461 of 146400: same blocks and calls, 4 instructions shorter; register allocation and scheduling differ
-// throughout.
+// Score 17587 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
+// not ra) and scheduling differ, the original keeps the two empty tests in the gate block as branches (IDO drops them
+// here), multiplies unk8C by 2.0f instead of adding, and keeps dPrev in its stack slot.
 void func_8007687C(s32 arg0) {
-    s32 isHuman;
+    s32 i;
+    s32 time;
+    s32 ref;
+    s32 sfx;
+    s32 isHuman[1]; // FAKE: keeps isHuman in memory, as the original does
+    s32 type;
     s32 cur;
-    s32 inGate;
+    s32 laps;
     s32 passed;
-    s32 sameZone;
+    s32 r1;
+    s32 inGate;
+    s32 r2;
     s32 zoneA;
     s32 zoneB;
     s32 zoneC;
     s32 zoneD;
-    s32 type;
-    s32 frac;
-    s32 time;
-    s32 ref;
-    s32 sfx;
-    s32 laps;
-    s32 i;
-    s32 r;
-    s32 r1;
-    s32 r2;
+    s32 sameZone;
     s32 r3;
-    s32 beyond;
+    s32 r4;
     s32 nearLine;
-    f32 px;
-    f32 pz;
-    f32 dirX;
-    f32 dirZ;
-    f32 dx;
-    f32 dz;
+    s32 pad0[2]; // stack pad
+    s32 beyond;
+    s32 r;
     f32 len;
+    s32 next;
     f32 dot;
     f32 dPos;
-    f32 dPrev;
-    f32 progress;
+    s32 frac;
     f32 segLen;
+    f32 dPrev;
     RiderStruct* rider;
     UnkStruct_801AEE20* e;
-    UnkStruct_801AEE20* next;
-    UnkStruct_801AEE20* from;
-
+    s32 from;
+    s32 pad1; // stack pad
+    f32 progress;
+    s32 pad[12]; // stack pad
+    f32 pz;
+    f32 dx;
+    f32 dirX;
+    f32 dz;
+    f32 dirZ;
+    f32 px;
     if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
-    isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
-    rider = &gRiderRaceState[arg0];
-    rider->unk314 = 0;
-    if (rider->gapTimer != 0) {
-        rider->gapTimer--;
+    isHuman[0] = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
+    gRiderRaceState[arg0].unk314 = 0;
+    if (gRiderRaceState[arg0].gapTimer != 0) {
+        gRiderRaceState[arg0].gapTimer--;
     }
-    if ((gCourseID == DRAKE_LAKE) && (D_801C1FD0 == 0) && isHuman && (rider->raceTime >= 50001)) {
+    if ((gCourseID == DRAKE_LAKE) && (D_801C1FD0 == 0) && isHuman[0] && (gRiderRaceState[arg0].raceTime >= 50001)) {
         D_801C1FD0 = 1;
     }
+    rider = &gRiderRaceState[arg0];
     if (gCourseID == GLACIER_COAST) {
         if (D_801C1FCC >= 2) {
             rider->unk350 = (struct UnkStruct_801C3C54*) D_801B7020;
@@ -735,7 +739,7 @@ void func_8007687C(s32 arg0) {
         }
         return;
     }
-    // The race clock; 9'59"99 retires (except in Dolphin Park).
+    // The race clock; 9'59"99 retires (except in Dolphin Park) and ends the update.
     if ((D_801CE638 == 1) && (rider->unk2F4 == 0) && (rider->finishState == 0) && (D_800D817C == 0) && (D_801C1FD4 == 0)) {
         rider->lapTime += 50;
         if (rider->lapTime >= 599999) {
@@ -746,6 +750,7 @@ void func_8007687C(s32 arg0) {
             rider->raceTime = 599999;
             if (gCourseID != DOLPHIN_PARK) {
                 Rider_SetFinishState((struct_800762D0*) rider);
+                return;
             }
         }
         rider->unk16C = D_800D4B00 & 0xFFFF;
@@ -755,8 +760,8 @@ void func_8007687C(s32 arg0) {
     // whether the rider is between the posts (with D_801C39C4 of slack).
     cur = rider->unkC;
     e = &D_801AEE20[cur];
-    px = e->unk0 - (e->unk80 * 50.0f * 0.5f);
     pz = e->unk8 - (e->unk84 * 50.0f * 0.5f);
+    px = e->unk0 - (e->unk80 * 50.0f * 0.5f);
     if (e->unk9C == 1) {
         dx = e->unkC - e->unk18;
         dz = e->unk14 - e->unk20;
@@ -819,87 +824,86 @@ void func_8007687C(s32 arg0) {
         type = e->unk98;
         if (rider->unk320 != rider->lapCount) {
             rider->unk20 = 0;
-        }
-        if ((e->unk9C == 1) && !inGate) {
+        } else if ((e->unk9C == 1) && !inGate) {
             rider->unk20 = 0;
-        }
-        if ((e->unkC8 != 0) && !sameZone) {
+        } else if ((e->unkC8 != 0) && !sameZone) {
             rider->unk20 = 0;
-        }
-        if ((gCourseID == MARINE_FORTRESS) && (gGameModes != GMODE_STUNT) && (type == 4) && !sameZone) {
+        } else if ((gCourseID == MARINE_FORTRESS) && (gGameModes != GMODE_STUNT) && (type == 4) && !sameZone) {
             rider->unk20 = 0;
-        }
-        passed = true;
-        rider->unk2F0 = 0;
-        // A buoy: power up on the correct side (type 0 on the left, 1 on the right), else a miss.
-        if ((e->unk9C == 0) && (rider->unk2F4 == 0) && (rider->finishState == 0) && (type != 8) && (type != 9)) {
-            if (((type == 0) && (rider->unk1C == 0)) || ((type == 1) && (rider->unk1C == 1))) {
-                if (e->unkC8 != 0) {
-                    if (rider->power < 5) {
-                        rider->power++;
-                        rider->unk314 = 1;
+        } else {
+            passed = true;
+            rider->unk2F0 = 0;
+            // A buoy: power up on the correct side (type 0 on the left, 1 on the right), else a miss.
+            if ((e->unk9C == 0) && (rider->unk2F4 == 0) && (rider->finishState == 0) && (type != 8) && (type != 9)) {
+                if (((type == 0) && (rider->unk1C == 0)) || ((type == 1) && (rider->unk1C == 1))) {
+                    if (e->unkC8 != 0) {
+                        if (rider->power < 5) {
+                            rider->power++;
+                            rider->unk314 = 1;
+                        }
+                        rider->unk28 = 1;
+                        if (isHuman[0]) {
+                            if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
+                                sfx = 0x80;
+                            } else {
+                                sfx = 0;
+                            }
+                            if (type == 0) {
+                                AudioGeneral_PlaySound(0x26, sfx);
+                            } else {
+                                AudioGeneral_PlaySound(0x27, sfx);
+                            }
+                        }
                     }
-                    rider->unk28 = 1;
-                    if (isHuman) {
-                        if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
-                            sfx = 0x80;
-                        } else {
+                } else if (((type == 0) || (type == 1)) && (D_801CE72E != 0) && (D_801CE638 == 1) && (e->unkC8 != 0)) {
+                    if (isHuman[0]) {
+                        rider->unk130++;
+                        rider->unk134++;
+                    }
+                    if (rider->unk134 >= gBuoyMisses) {
+                        rider->unk13C = 1;
+                        if (isHuman[0] && (gBuoyMisses == 0)) {
+                            Rider_SetFinishState((struct_800762D0*) rider);
+                            return;
+                        }
+                    }
+                    rider->unk28 = 2;
+                    if (isHuman[0]) {
+                        sfx = gBuoyMisses - rider->unk134;
+                        if (sfx < 0) {
                             sfx = 0;
                         }
-                        if (type == 0) {
-                            AudioGeneral_PlaySound(0x26, sfx);
-                        } else {
-                            AudioGeneral_PlaySound(0x27, sfx);
+                        if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
+                            sfx += 0x80;
                         }
-                    }
-                }
-            } else if (((type == 0) || (type == 1)) && (D_801CE72E != 0) && (D_801CE638 == 1) && (e->unkC8 != 0)) {
-                if (isHuman) {
-                    rider->unk130++;
-                    rider->unk134++;
-                }
-                if (rider->unk134 >= gBuoyMisses) {
-                    rider->unk13C = 1;
-                    if (isHuman && (gBuoyMisses == 0)) {
-                        Rider_SetFinishState((struct_800762D0*) rider);
-                    }
-                }
-                rider->unk28 = 2;
-                if (isHuman) {
-                    sfx = gBuoyMisses - rider->unk134;
-                    if (sfx < 0) {
-                        sfx = 0;
-                    }
-                    if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
-                        sfx += 0x80;
-                    }
-                    if (type == 0) {
-                        AudioGeneral_PlaySound(0x29, sfx);
-                    } else {
-                        AudioGeneral_PlaySound(0x28, sfx);
+                        if (type == 0) {
+                            AudioGeneral_PlaySound(0x29, sfx);
+                        } else {
+                            AudioGeneral_PlaySound(0x28, sfx);
+                        }
                     }
                 }
             }
-        }
-        rider->unkC = e->unkA0;
-        if (sameZone) {
-            rider->nearestRecord = cur;
-        }
-        rider->unk1C = -1;
-        rider->unk20 = 1;
-        // Marine Fortress, above normal difficulty: once, near the type 2 object, a sound cue.
-        if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_801C1FC8 == 0) && (rider->lapCount >= 2) &&
-            (((D_800DAB68 == 0) && (e->unk98 == 6)) || (D_800DAB68 != 0))) {
-            D_801C1FC8 = 1;
-            dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].eyeX;
-            dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
-            if (((dx * dx) + (dz * dz)) < 1.6e7f) {
-                func_800C1B30();
-            } else if (gPlayers == TWO_PLAYERS) {
-                dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
-                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+            rider->unkC = e->unkA0;
+            if (sameZone) {
+                rider->nearestRecord = cur;
+            }
+            rider->unk1C = -1;
+            rider->unk20 = 1;
+            // Marine Fortress, above normal difficulty: once, near the type 2 object, a sound cue.
+            if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_801C1FC8 == 0) && (rider->lapCount >= 2) &&
+                (((D_800DAB68 == 0) && (e->unk98 == 6)) || (D_800DAB68 != 0))) {
+                D_801C1FC8 = 1;
+                dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].eyeX;
+                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
                 if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                     func_800C1B30();
+                } else if (gPlayers == TWO_PLAYERS) {
+                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
+                    dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+                    if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                        func_800C1B30();
+                    }
                 }
             }
         }
@@ -972,27 +976,30 @@ void func_8007687C(s32 arg0) {
                                 D_80228A98 = 1;
                             }
                             if (rider->lapCount < D_801CE728[0]) {
-                                sfx = 1;
                                 if (D_801CE728[0] == rider->lapCount + 1) {
                                     sfx = 0x81;
+                                } else {
+                                    sfx = 1;
                                 }
                                 AudioGeneral_PlaySound(0x21, sfx);
                             }
                         } else if (rider->lapCount < D_801CE728[0]) {
-                            sfx = 0;
                             if (D_801CE728[0] == rider->lapCount + 1) {
                                 sfx = 0x80;
+                            } else {
+                                sfx = 0;
                             }
                             if ((gGameModes == GMODE_TIME_TRIALS) && (rider->gapRequest == 2)) {
                                 sfx += 2;
                             }
                             AudioGeneral_PlaySound(0x21, sfx);
                         }
-                    } else if ((gPlayers == TWO_PLAYERS) && isHuman) {
+                    } else if ((gPlayers == TWO_PLAYERS) && isHuman[0]) {
                         if (rider->lapCount < D_801CE728[0]) {
-                            sfx = 0;
                             if (D_801CE728[0] == rider->lapCount + 1) {
                                 sfx = 0x80;
+                            } else {
+                                sfx = 0;
                             }
                             AudioGeneral_PlaySound(0x21, sfx);
                         }
@@ -1002,10 +1009,10 @@ void func_8007687C(s32 arg0) {
                 if ((gCourseID == MARINE_FORTRESS) && (gDifficulty > 0) && (D_800D8240 == 0) && (rider->lapCount > 0)) {
                     rider->unk350 = (struct UnkStruct_801C3C54*) D_801B2F20;
                 }
-                if ((gCourseID == GLACIER_COAST) && isHuman && (D_801C1FCC < rider->lapCount)) {
+                if ((gCourseID == GLACIER_COAST) && isHuman[0] && (D_801C1FCC < rider->lapCount)) {
                     D_801C1FCC++;
                 }
-                if (isHuman && (rider->lapCount < D_801CE728[0])) {
+                if (isHuman[0] && (rider->lapCount < D_801CE728[0])) {
                     switch (rider->racePosition) {
                         case 0:
                             func_800C1EB8(2);
@@ -1030,7 +1037,7 @@ void func_8007687C(s32 arg0) {
                     for (i = 0; i < laps; i++) {
                         rider->raceTime += rider->lapTimes[i];
                     }
-                    if (!isHuman) {
+                    if (!isHuman[0]) {
                         rider->power = 0;
                     }
                 }
@@ -1052,34 +1059,30 @@ void func_8007687C(s32 arg0) {
         rider->unk2C[cur] = 1;
     }
     if (rider->power != rider->unk138) {
-        if (rider->power - rider->unk138 == 0) {
-            i = 0;
-        } else if (rider->power - rider->unk138 > 0) {
-            i = 1;
-        } else {
-            i = -1;
-        }
+        i = (rider->power - rider->unk138 == 0) ? 0 : ((rider->power - rider->unk138 > 0) ? 1 : -1);
         rider->unk138 += i;
     }
     if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
         rider->unk8 = 0;
         rider->progress = 0.0f;
         D_801C39A0[arg0] = 0.0f;
+        return;
     }
 
     // Crossing the line backwards or forwards near it (within one record of it, four on
     // Sunset Bay) moves the lap counter unk320.
-    r1 = D_801AEE20[rider->nearestRecord].unkA0;
-    r2 = D_801AEE20[r1].unkA0;
-    r3 = D_801AEE20[r2].unkA0;
     beyond = false;
     if (((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
          ((D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70)) > 0.0f) {
         beyond = true;
     }
+    r1 = D_801AEE20[rider->nearestRecord].unkA0;
+    r2 = D_801AEE20[r1].unkA0;
+    r3 = D_801AEE20[r2].unkA0;
+    r4 = D_801AEE20[r3].unkA0;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
-        nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (D_801AEE20[r3].unkA0 == D_801BB12C);
+        nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (r4 == D_801BB12C);
     }
     if (func_80076240(D_801C3780, D_801C3788, D_801AEE20[D_801BB12C].unk0, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
@@ -1100,18 +1103,18 @@ void func_8007687C(s32 arg0) {
     progress = 0.0f;
     for (i = 0; i < D_801BB120; i++) {
         e = &D_801AEE20[r];
-        dz = D_801C3788 - e->unk8;
         dx = D_801C3780 - e->unk0;
+        dz = D_801C3788 - e->unk8;
         if (!(((e->unk74 * dz) + (dx * e->unk70)) <= 0.0f)) {
+            next = e->unkA0;
             if ((gCourseID == MARINE_FORTRESS) && (e->unk98 == 4) && (e->unkC0 == 1) &&
                 (func_80074448(D_801C3780, D_801C3788) != 0)) {
-                from = &D_801AEE20[e->unkA8];
+                from = e->unkA8;
             } else {
-                from = &D_801AEE20[r];
+                from = r;
             }
-            next = &D_801AEE20[e->unkA0];
-            dirX = next->unk0 - from->unk0;
-            dirZ = next->unk8 - from->unk8;
+            dirX = D_801AEE20[next].unk0 - D_801AEE20[from].unk0;
+            dirZ = D_801AEE20[next].unk8 - D_801AEE20[from].unk8;
             segLen = sqrtf((dirX * dirX) + (dirZ * dirZ));
             if (segLen > 0.0f) {
                 dirX /= segLen;
