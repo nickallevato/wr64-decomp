@@ -928,18 +928,18 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 8351 of 31600: control flow and arithmetic follow the original, x * x is taken once before the branches.
-// Left: the register allocation: the original keeps x in f14 and reloads x and z from their argument slots after
+// Score 8295 of 31600: control flow and arithmetic follow the original, x * x is taken once before the branches.
+// Left: the register allocation: the declaration order (s, nx, a after nz) is from a declaration-move search. The original keeps x in f14 and reloads x and z from their argument slots after
 // each sqrtf, where this keeps them in saved registers (frame 0xB8 here, 0xB0 there).
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 c;
     f32 len;
-    f32 a;
     f32 b;
-    f32 nx;
-    f32 s;
     f32 ny;
     f32 nz;
+    f32 s;
+    f32 nx;
+    f32 a;
     f32 t;
     f32 u;
     f32 v;

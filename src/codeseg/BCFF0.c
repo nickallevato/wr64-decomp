@@ -195,7 +195,7 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 7046 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// Score 7041 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
 // addresses in registers as in the original; the Vtx copy pointers are set up in the order found by a move search.
 // Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
 // keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
@@ -338,8 +338,8 @@ void func_801EED70(void) {
     D_80228AE0[1].unk0 = 0;
     D_80228AE0[2].unk0 = 0;
     D_80228AE0[3].unk0 = 0;
-    D_80228A94 = 0;
     D_80228A9C = 0;
+    D_80228A94 = 0;
     D_80228DFC = 0;
     D_80228DF8 = 0;
     for (i = 0; i < gPlayers; i++) {
@@ -2486,9 +2486,10 @@ void func_801F9EA0(void) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5900 of 61800: the first two rider loops count by 1, where the original counts a second induction variable in
-// 0x14-byte steps against gRiders * 20 (written that way, the frame and loop tests match but the guards and registers
-// do not). Each loop with its own counter is closest; the original keeps the first two counters in s3.
+// Score 5665 of 61800: face is zeroed after the position is set (inside the drawn-rider branch). Left: the first
+// two rider loops count by 1, where the original counts a second induction variable in 0x14-byte steps against
+// gRiders * 20 (written that way, the frame and loop tests match but the guards and registers do not). Each loop with
+// its own counter is closest; the original keeps the first two counters in s3.
 extern Gfx D_10147C8[];
 extern Gfx D_10149F8[];
 extern u8 D_10448D0[];
@@ -2567,7 +2568,6 @@ void func_801FA3C0(Gfx** gdlp) {
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
             b = &D_80228B88[i][j];
-            face = 0;
             if (b->unk10 != 0) {
                 if (gPlayers == ONE_PLAYER) {
                     x = b->unk0 + 160.0f;
@@ -2579,6 +2579,7 @@ void func_801FA3C0(Gfx** gdlp) {
                     x = b->unk0 + 160.0f;
                     y = b->unk4 + 206.0f;
                 }
+                face = 0;
                 if ((gPlayers == TWO_PLAYERS) &&
                     (((j == gPlayer1Rider) && (D_801CE6F4[0] != 0)) || ((j == gPlayer2Rider) && (D_801CE6F4[1] != 0)))) {
                     face = 4;
@@ -2990,7 +2991,8 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5865 of 25000: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
+// Score 5485 of 25000: x * 4 (an int literal, a separate constant to IDO; from a literal search) in the first
+// rectangle coordinate. Left: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
 // D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
 // IDO here hoists it. A 12-byte pad gives the original's frame (0xE0) and spill slots.
 extern Gfx D_10146B0[];
@@ -3055,7 +3057,7 @@ void func_801FBFB4(Gfx** gdlp) {
             gDPLoadTextureTile(gdl++, &tex[j * w * 8], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
+            gSPTextureRectangle(gdl++, (s32) (x * 4), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f), // odd literal: int 4
                                 (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
                                 (s32) (32768.0f / height));
             y = nextY;
