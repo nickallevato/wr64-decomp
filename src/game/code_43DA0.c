@@ -1145,7 +1145,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 13450 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
+// Score 13364 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
 // 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
 // original keeps the camera direction on the stack across sqrtf (five saved FP registers, frame 0xC8; four and 0xB8
 // here), and in the D_800D988C == 1 loop it reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
@@ -1375,7 +1375,7 @@ void func_8008E794(void) {
             Math_Normalize_VectorComponents(&D_801CB058[i].unkFC, &D_801CB058[i].unk104);
             e->unk100 = 64.0f;
             e->unkFC *= 64;
-            e->unk104 *= 64.0f;
+            e->unk104 *= 64;
             D_801C4160 = e->unkAC;
             D_801C4168 = e->unkB4;
             D_801C4164 = e->unkB0;
