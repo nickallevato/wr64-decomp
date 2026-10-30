@@ -631,9 +631,12 @@ extern struct camera_unk_1* D_801D7970;
 void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 
 #ifdef NON_MATCHING
-// Score 605 of 84200: same loops, calls, stores and frame. Only the last loop differs: the original has one
-// extra dead li t0, 0xDF in front of it, and from the first float store on its temps are numbered differently.
-// The index j and the pad give the original's frame (0xE8) and its a0 for the index.
+// Score 330 of 84200: same loops, calls, stores and frame. The original has a dead li t0, 0xDF before the last
+// loop: a constant IDO hoisted for a store it then removed. A dead store of 0xDF to the vertex's alpha (FAKE,
+// marked) gives the hoisted li here, but the store stays (an extra sb); a store right before the 0xFF one is
+// removed with its li, and stores at any other place in the loop either stay or change the result. Left: that sb,
+// and from the first float store on the loop's temporaries are numbered differently (t7 where the original has
+// t9). The index j and the pad give the original's frame (0xE8) and its a0 for the index.
 void func_800AFBD0(s32 arg0) {
     s32 i;
     s32 alpha;
@@ -839,6 +842,7 @@ void func_800AFBD0(s32 arg0) {
         j = (D_800E6D60->unk1C38 + i) % 8;
         D_800E6D7C = &D_800E6D80[j];
         vtx->v.ob[0] = D_800E6D7C->unk0;
+        vtx->v.cn[3] = 0xDF; // FAKE: dead store (overwritten below), for the dead li
         vtx->v.ob[1] = D_800E6D7C->unk4;
         vtx->v.ob[2] = D_800E6D7C->unk8;
         vtx->v.cn[3] = 0xFF;
