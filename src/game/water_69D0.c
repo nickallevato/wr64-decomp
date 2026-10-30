@@ -85,7 +85,7 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 536 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// Score 510 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
 // ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
 // alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
 // spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
@@ -112,6 +112,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 hix;
     f32 hiy;
     f32 hiz;
+    Vtx* vp;
     f32 padB; // stack pad
     camera_unk_1* cam;
     f32 x;
@@ -120,7 +121,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 upx;
     f32 upy;
     f32 upz;
-    Vtx* vp;
 
     if (view != 0) {
         cam = &gCameraPerspective[D_80223934];
@@ -146,9 +146,9 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     lox = e * x;
     loy = e * y;
     loz = e * z;
+    upx = cam->unk9C * cam->unk64;
     upy = cam->unk9C * cam->unk68;
     upz = cam->unk9C * cam->unk6C;
-    upx = cam->unk9C * cam->unk64;
     s = D_800D4740 - cam->eyeY;
     dist = (cam->unk9C * D_800D4744 * 1.732f) / 320.0f;
 
