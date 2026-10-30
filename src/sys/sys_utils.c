@@ -768,13 +768,13 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #endif
 
 #ifdef NON_MATCHING
-// Score 138 of 13500: the original stores sysz to its home (0x84) after the product and reloads it for mf[1][2];
-// a permuter FAKE (marked) stores it into mf[1][2] first and adds it back from there, which gives the store, the
-// reload and the registers around them, but in mf[1][2]'s slot (0x44). mf[3][3] = 1.0f is stored last (from a
-// permuter output), cos(y) and cos(z) are read after the first store that does not need them (statement moves from
-// the permuter and a move search), and the zero chain also clears sysz (a permuter FAKE, marked: it keeps the
-// chain's value in $f0 as in the original). A (0, arg7) comma in mf[1][2] (permuter FAKE, marked) schedules its
-// reload as in the original but swaps that multiply's operands. Left: sysz's slot (0x44 here, 0x84 there).
+// Score 10 of 13500: the original keeps sysz in memory after the product (its home, 0x84) and reloads it for
+// mf[1][2]. Here a one-element array (home, a FAKE, marked) declared at sysz's place stands for that home, and ax
+// also holds the z angle so the frame keeps its size. A (0, arg7) comma in mf[1][2] (permuter FAKE, marked) puts
+// the reload where the original has it but swaps that multiply's operands (the 10 points left). mf[3][3] = 1.0f is
+// stored last, cos(y) and cos(z) are read after the first store that does not need them (statement moves from the
+// permuter and a move search), and the zero chain also clears sysz (a permuter FAKE, marked: it keeps the chain's
+// value in $f0 as in the original).
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -782,13 +782,13 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     f32 cx;
     f32 cy;
     f32 cz;
+    f32 home[1]; // FAKE: sysz's stack home (the original spills sysz there and reloads it)
     f32 sysz;
     f32 cycz;
     f32 sycz;
     f32 szcy;
     s32 ax;
     s32 ay;
-    s32 az;
     MtxF mf;
 
     ax = (arg1 * 4096.0f) / 360.0f;
@@ -801,10 +801,10 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[2][0] = cx * sy * arg7;
     cy = COS(ay);
     mf.mf[2][2] = cy * cx * arg7;
-    az = (arg3 * 4096.0f) / 360.0f;
-    sz = SIN(az);
+    ax = (arg3 * 4096.0f) / 360.0f;
+    sz = SIN(ax);
     mf.mf[0][1] = sz * cx * arg7;
-    cz = COS(az);
+    cz = COS(ax);
     mf.mf[1][1] = cz * cx * arg7;
     sysz = sy * sz;
     cycz = cy * cz;
@@ -814,8 +814,8 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     szcy = sz * cy;
     mf.mf[1][0] = ((sx * sycz) - szcy) * arg7;
     mf.mf[0][2] = ((sx * szcy) - sycz) * arg7;
-    mf.mf[1][2] = sysz; // FAKE (permuter): stores sysz and reloads it, as the original does through its home
-    mf.mf[1][2] = ((sx * cycz) + mf.mf[1][2]) * (0, arg7); // FAKE (permuter): the comma
+    home[0] = sysz; // FAKE: the spill (see home)
+    mf.mf[1][2] = ((sx * cycz) + home[0]) * (0, arg7); // FAKE (permuter): the comma, for the reload's place
     mf.mf[3][0] = arg4;
     mf.mf[3][1] = arg5;
     mf.mf[3][2] = arg6;
