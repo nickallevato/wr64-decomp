@@ -768,10 +768,11 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #endif
 
 #ifdef NON_MATCHING
-// Score 1257 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
+// Score 1167 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
 // at 0x84), and the zero chain at the end goes through a temporary at 0x28. mf[3][3] = 1.0f first (from an
 // order search over the last stores) puts mf at 0x2C, as in the original, though it schedules the 1.0f early.
-// cos(z) is read after the mf[0][1] store (a statement order the permuter found).
+// cos(y) and cos(z) are read after the first store that does not need them (statement moves from the permuter
+// and a move search).
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -795,8 +796,8 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     sysz = SIN(ay); // FAKE: through sysz, to put sin(y) in sysz's register
     sy = sysz;
     cx = COS(ax);
-    cy = COS(ay);
     mf.mf[2][0] = cx * sy * arg7;
+    cy = COS(ay);
     mf.mf[2][2] = cy * cx * arg7;
     az = (arg3 * 4096.0f) / 360.0f;
     sz = SIN(az);
