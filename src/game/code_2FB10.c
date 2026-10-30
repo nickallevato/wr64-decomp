@@ -530,7 +530,7 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 587 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 575 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
 // reused; the permuter found them, and with them the int registers match, except wasIn's). The nearest-record block
 // reads D_801C3780 / D_801C3788 directly and writes the previous record's distance out twice: the original's stack
@@ -545,16 +545,16 @@ void func_80076378(s32 arg0) {
     s32 isHuman;
     s32 zoneA;
     s32 cur;
-    f32 dxp;
-    s32 zoneB;
     s32 zoneC;
+    s32 zoneB;
     f32 dz0;
     s32 zoneD;
     f32 bestDist;
+    f32 dxp;
     f32 dzp;
     f32 dxn;
-    f32 dzn;
     s32 wasIn;
+    f32 dzn;
     s32 player;
     UnkStruct_800D8204* rect;
     RiderStruct* rider;
