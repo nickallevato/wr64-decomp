@@ -1287,8 +1287,10 @@ void func_80085408(void) {
  * Scratch: https://decomp.me/scratch/c7EJc
  * Score: 105 (99.62&)
  */
-// Score 155 of 27700: float registers only (sp48, var_f0 and cross rotate: $f16/$f14/$f0 here for the original's
-// $f14/$f0/$f16, with the constants that reuse them). Upstream's 105 above is decomp.me's scale.
+// Score 55 of 27700: float registers only. The scaled steering values and the float copy of unkB52 reuse cross
+// (dead after its test), from a partition search (155 -> 105), and an empty block in the unk40 arm (FAKE, marked)
+// gives 55. Left: the dot product (var_f0) and cross swap $f0 and $f16, and var_f12's copy takes $f16, not $f12.
+// Upstream's 105 above is decomp.me's scale.
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;
@@ -1346,13 +1348,13 @@ void func_80085510(void) {
         }
     } else if ((var_f0 = ABS(var_f12)) > 0.05f) {
         if (var_f12 < 0.0f) {
-            var_f0 = (-1.0f * var_f12) / 0.5f;
-            sp4C = (s32) (var_f0 * steer);
-            D_801C3C50->unkB53 = (s32) (var_f0 * -35.0f);
+            cross = (-1.0f * var_f12) / 0.5f;
+            sp4C = (s32) (cross * steer);
+            D_801C3C50->unkB53 = (s32) (cross * -35.0f);
         } else {
-            var_f0 = var_f12 / 0.5f;
-            sp4C = (s32) (-steer * var_f0);
-            D_801C3C50->unkB53 = (s32) (var_f0 * -35.0f);
+            cross = var_f12 / 0.5f;
+            sp4C = (s32) (-steer * cross);
+            D_801C3C50->unkB53 = (s32) (cross * -35.0f);
         }
     } else {
         sp4C = 0;
@@ -1361,6 +1363,7 @@ void func_80085510(void) {
 
     if (D_801C3C58->unk40 != 0) {
         if (var_f12 < 0.0f) {
+            if (1) {} // FAKE: an empty block (insertion search) that moves the float registers
             sp4C = 70.0f;
         } else {
             sp4C = -70.0f;
@@ -1375,17 +1378,17 @@ void func_80085510(void) {
     }
 
     if (!var_f0) {} // FAKE: an empty test (from the permuter) that moves the float registers
-    var_f12 = sp4C - (var_f0 = D_801C3C50->unkB52);
+    var_f12 = sp4C - (cross = D_801C3C50->unkB52);
     if (var_f12 > 35.0f) {
         D_801C3C50->unkB52 += 0x23;
-        var_f12 = sp4C - (var_f0 = D_801C3C50->unkB52);
+        var_f12 = sp4C - (cross = D_801C3C50->unkB52);
     }
     if (var_f12 < -35.0f) {
         D_801C3C50->unkB52 -= 0x23;
-        var_f12 = sp4C - (var_f0 = D_801C3C50->unkB52);
+        var_f12 = sp4C - (cross = D_801C3C50->unkB52);
     }
 
-    if (((var_f0 <= sp4C) ? var_f12 : -var_f12) <= 35.0f) {
+    if (((cross <= sp4C) ? var_f12 : -var_f12) <= 35.0f) {
         D_801C3C50->unkB52 = sp4C;
     }
 
