@@ -1004,10 +1004,11 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 3160 of 31200, 3 instructions longer: the display-list pointer after the texture load is advanced with
-// move/addiu pairs here, where the original chains addiu from the previous command's pointer; the setup of the
-// texture-load words is also scheduled later (the original has it in t4, t5 and t9 before the vertices, which moves
-// the vertex temps to t6-t8). Frame and spill slots match.
+// Score 2965 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display
+// lists). Left: the original computes the first two texture-load commands' pointers (two gdl increments) and their
+// constant words (t4, t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are computed
+// at the commands and the vertex temps rotate through t4-t9. Writing the texture commands before the vertices is far
+// worse (the stores move too). Frame and spill slots match.
 Gfx* func_8008DFD0(Gfx* gdl) {
     camera_unk_1* cam;
     Vtx* vtx;
@@ -1053,8 +1054,16 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     vtx[3].v.tc[0] = 0x800;
     vtx[3].v.tc[1] = 0x800;
 
-    gDPLoadTextureBlock(gdl++, D_8004400, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                        G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+    gDPSetTextureImage(gdl++, G_IM_FMT_IA, G_IM_SIZ_16b_LOAD_BLOCK, 1, D_8004400);
+    gDPSetTile(gdl++, G_IM_FMT_IA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5,
+               G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
+    gDPLoadSync(gdl++);
+    gDPLoadBlock(gdl++, G_TX_LOADTILE, 0, 0, (((32) * (32) + G_IM_SIZ_16b_INCR) >> G_IM_SIZ_16b_SHIFT) - 1,
+                 CALC_DXT(32, G_IM_SIZ_16b_BYTES));
+    gDPPipeSync(gdl++);
+    gDPSetTile(gdl++, G_IM_FMT_IA, G_IM_SIZ_16b, (((32) * G_IM_SIZ_16b_LINE_BYTES) + 7) >> 3, 0, G_TX_RENDERTILE, 0,
+               G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
+    gDPSetTileSize(gdl++, G_TX_RENDERTILE, 0, 0, ((32) - 1) << G_TEXTURE_IMAGE_FRAC, ((32) - 1) << G_TEXTURE_IMAGE_FRAC);
     gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0x00);
     gSPVertex(gdl++, D_6000310, 4, 0);
     gSP1Triangle(gdl++, 0, 1, 2, 0);
