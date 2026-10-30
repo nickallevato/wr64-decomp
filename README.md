@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1290%20%2F%201348-0b6e63?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1292%20%2F%201348-0b6e63?style=for-the-badge)
 ![percent](https://img.shields.io/badge/matched-95.4%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-75.0%25-4fc9b8?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-76.0%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -43,19 +43,19 @@ neighbour became its own symbol.
 |---|---|--:|---|
 | `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | other | handwritten assembly and loose segments | 55 / 55 | `████████████████████` 100% |
-| `src/audio` | sequence and sound playback | 226 / 228 | `███████████████████▉` 99.1% |
+| `src/audio` | sequence and sound playback | 227 / 228 | `███████████████████▉` 99.6% |
 | `src/overlays` | courses and menu screens | 148 / 151 | `███████████████████▌` 98.0% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 208 / 219 | `██████████████████▉░` 95.0% |
-| `src/game` | race logic, riders, camera, water | 464 / 501 | `██████████████████▌░` 92.6% |
+| `src/game` | race logic, riders, camera, water | 465 / 501 | `██████████████████▌░` 92.8% |
 | `src/sys` | boot, threads, memory | 32 / 37 | `█████████████████▎░░` 86.5% |
-| **Total** | | **1290 / 1348** | **95.7%** |
+| **Total** | | **1292 / 1348** | **95.8%** |
 
 Every function, sized by its bytes and grouped by area, then by source file (the thin lines). Green is
 matched C, amber is still assembly. Drawn by `tools/fork/progress_map.py` from a full build.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/progress-map-dark.svg">
-  <img alt="Map of all 1348 functions: 1290 matched (green), 58 still assembly (amber)" src="docs/progress-map.svg" width="100%">
+  <img alt="Map of all 1348 functions: 1292 matched (green), 56 still assembly (amber)" src="docs/progress-map.svg" width="100%">
 </picture>
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
