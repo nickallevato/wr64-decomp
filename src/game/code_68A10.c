@@ -633,10 +633,13 @@ void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 #ifdef NON_MATCHING
 // Score 330 of 84200: same loops, calls, stores and frame. The original has a dead li t0, 0xDF before the last
 // loop: a constant IDO hoisted for a store it then removed. A dead store of 0xDF to the vertex's alpha (FAKE,
-// marked) gives the hoisted li here, but the store stays (an extra sb); a store right before the 0xFF one is
-// removed with its li, and stores at any other place in the loop either stay or change the result. Left: that sb,
-// and from the first float store on the loop's temporaries are numbered differently (t7 where the original has
-// t9). The index j and the pad give the original's frame (0xE8) and its a0 for the index.
+// marked) gives the hoisted li here, but the store stays (an extra sb). Two near misses: the same store with an
+// empty block (do {} while (0)) before the 0xFF store is removed with the li kept (395: every instruction as in
+// the original, but 0xDF takes a3 and the other constants shift: &D_800E6D80 a2, 0x30 a1, 0xFF a0); with a dead
+// load in between instead (x = D_801D7980) 0xDF gets t0 as in the original but the store stays (335). A store
+// right before the 0xFF one is removed with its li. Left: the extra sb, and from the first float store on the
+// loop's temporaries are numbered differently (t7 where the original has t9). The index j and the pad give the
+// original's frame (0xE8) and its a0 for the index.
 void func_800AFBD0(s32 arg0) {
     s32 i;
     s32 alpha;
