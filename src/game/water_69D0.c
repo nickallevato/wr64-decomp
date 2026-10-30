@@ -85,12 +85,12 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 555 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// Score 546 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
 // ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
 // alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
 // spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
 // a separate constant to IDO from the vertices' 0.866f (found by the permuter); the ob[1] chain runs from vtx[6].
-// padB/padC are stack pads (the original has two more words between hiz and cam). The (s16) on the second texture
+// padB is a stack pad (the original has one more word between hiz and cam). The (s16) on the second texture
 // coordinate's SysUtils_Round takes an extra integer temporary (hack: the original uses one more between each
 // coordinate's load and add, and this moves the temporaries towards its numbering). An empty test of cam->unkF4
 // after the last corner ray is a permuter FAKE (marked; it moves the float registers). Left: the cam->upY CSE takes
@@ -98,7 +98,7 @@ extern s32 D_80223934;
 // sums and second load take t7/t0 (t8/t9 there).
 void func_8004C1D0(s32 view, Vtx* vtx) {
     s32 i;
-    f32 d;
+    f32 pd; // stack pad (cam->unk9C is read through, as in func_80050B78)
     f32 e;
     f32 k;
     s32 angle;
@@ -113,7 +113,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 hiy;
     f32 hiz;
     f32 padB; // stack pad
-    f32 padC; // stack pad
     camera_unk_1* cam;
     f32 x;
     f32 y;
@@ -129,8 +128,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         cam = &gCameraPerspective[D_80223930];
     }
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
-    d = cam->unk9C;
-    h = (d * SIN(angle)) / COS(angle);
+    h = (cam->unk9C * SIN(angle)) / COS(angle);
     w = (h * 320.0f) / 240.0f;
     if (gPlayers == TWO_PLAYERS) {
         if (D_801CE638 == 1) {
@@ -148,11 +146,11 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     lox = e * x;
     loy = e * y;
     loz = e * z;
-    upx = d * cam->unk64;
-    upy = d * cam->unk68;
-    upz = d * cam->unk6C;
+    upx = cam->unk9C * cam->unk64;
+    upy = cam->unk9C * cam->unk68;
+    upz = cam->unk9C * cam->unk6C;
     s = D_800D4740 - cam->eyeY;
-    dist = (d * D_800D4744 * 1.732f) / 320.0f;
+    dist = (cam->unk9C * D_800D4744 * 1.732f) / 320.0f;
 
     e = cam->unk98 - h;
     x = (cam->upX * e) + upx;
