@@ -109,10 +109,12 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 6995 of 97200: same blocks, loops and calls; five zeroing chains (all s32 globals) store in ascending
-// address order (from a chain-order search). -1 sits in ra here (t5 in the original) and most
-// registers are renamed from the extent loops on; the original stores gMapHalfSize with lui at in the
-// extent loops, and does not unroll the 8-step checkpointTimes loop (unrolled here).
+// Score 6835 of 97200: same blocks, loops and calls; five zeroing chains (all s32 globals) store in ascending
+// address order (from a chain-order search); in the D_801CE638 == 8 search k holds the found record and j walks.
+// -1 sits in ra here (t5 in the original) and most registers are renamed from the extent loops on; the original
+// stores gMapHalfSize with lui at in the extent loops, keeps 8 in s0 for the D_801CE638 test, and does not unroll
+// the 8-step checkpointTimes loop (unrolled here). IDO keeps that loop rolled, as the original's, when its counter
+// is the switch's `type` variable (or k becomes the switch variable), but the registers then shift (score 8121).
 void func_80075310(void) {
     s32 i;
     s32 j;
@@ -352,24 +354,24 @@ void func_80075310(void) {
                 }
             }
             if (j >= D_801BB120) {
-                j = D_801BB12C;
+                k = D_801BB12C;
             } else {
+                k = D_801AEE20[j].unkB4;
+            }
+            for (j = k, n = D_801BB120 - 1; (D_801AEE20[j].unk98 >= 2) && (n > 0); n--) {
                 j = D_801AEE20[j].unkB4;
             }
-            for (k = j, n = D_801BB120 - 1; (D_801AEE20[k].unk98 >= 2) && (n > 0); n--) {
-                k = D_801AEE20[k].unkB4;
-            }
-            rider->unkC = rider->nearestRecord = k;
-            k = j;
-            if (D_801AEE20[j].unk98 == 1) {
+            rider->unkC = rider->nearestRecord = j;
+            j = k;
+            if (D_801AEE20[k].unk98 == 1) {
                 for (n = D_801BB120 - 1; n > 0; n--) {
-                    k = D_801AEE20[k].unkB4;
-                    if (D_801AEE20[k].unk98 != 1) {
+                    j = D_801AEE20[j].unkB4;
+                    if (D_801AEE20[j].unk98 != 1) {
                         break;
                     }
                 }
             }
-            rider->unk10 = k;
+            rider->unk10 = j;
         }
     }
 
