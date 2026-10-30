@@ -776,14 +776,9 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_80049A94.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 10 of 13500: the original keeps sysz in memory after the product (its home, 0x84) and reloads it for
-// mf[1][2]. Here a one-element array (home, a FAKE, marked) declared at sysz's place stands for that home, and ax
-// also holds the z angle so the frame keeps its size. A (0, arg7) comma in mf[1][2] (permuter FAKE, marked) puts
-// the reload where the original has it but swaps that multiply's operands (the 10 points left). mf[3][3] = 1.0f is
-// stored last, cos(y) and cos(z) are read after the first store that does not need them (statement moves from the
-// permuter and a move search), and the zero chain also clears sysz (a permuter FAKE, marked: it keeps the chain's
-// value in $f0 as in the original).
+// Rotation matrix from three angles in degrees (x, y, z), scaled by arg7, with the translation (arg4, arg5, arg6),
+// converted with SysUtils_MtxFToMtx. The original spills sin(y) * sin(z) to its stack home after the product and
+// reloads it for mf[1][2]: a volatile local (home, a FAKE) at sysz's declaration slot gives that store and reload.
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -791,7 +786,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     f32 cx;
     f32 cy;
     f32 cz;
-    f32 home[1]; // FAKE: sysz's stack home (the original spills sysz there and reloads it)
+    volatile f32 home; // FAKE: sysz's stack home (0x84): the original stores sysz there and reloads it
     f32 sysz;
     f32 cycz;
     f32 sycz;
@@ -815,7 +810,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[0][1] = sz * cx * arg7;
     cz = COS(ax);
     mf.mf[1][1] = cz * cx * arg7;
-    sysz = sy * sz;
+    home = sysz = sy * sz; // FAKE: the spill (see home)
     cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx, as in func_80049A94
     mf.mf[0][0] = (cycz + cx) * arg7;
@@ -823,8 +818,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     szcy = sz * cy;
     mf.mf[1][0] = ((sx * sycz) - szcy) * arg7;
     mf.mf[0][2] = ((sx * szcy) - sycz) * arg7;
-    home[0] = sysz; // FAKE: the spill (see home)
-    mf.mf[1][2] = ((sx * cycz) + home[0]) * (0, arg7); // FAKE (permuter): the comma, for the reload's place
+    mf.mf[1][2] = ((sx * cycz) + home) * arg7; // the reload (see home)
     mf.mf[3][0] = arg4;
     mf.mf[3][1] = arg5;
     mf.mf[3][2] = arg6;
@@ -832,9 +826,6 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(&mf, arg0);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_80049C9C.s")
-#endif
 
 void SysUtils_MatrixAffineMultiply(MtxF* dest, MtxF* mtxFA, MtxF* mtxFB) {
     mtxFB->mf[0][0] =
