@@ -145,20 +145,16 @@ void func_8007DBC0(void) {
 // is a sphere of radius 62 that is pushed back as well (D_800D49B8 of the depth goes to the rider); a fixed one is two
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
-#ifdef NON_MATCHING
-// Score 3701 of 60700: same blocks, frame (0x88) and saved registers. The free sphere's push factor is computed
-// once (in dot, reused) as in the original's single load of D_800D49B8; each block scales x, y and z by 1/len and
-// computes its push component right after each one. The loop compares the pointers without (u32) casts; len and pen
-// sit where a declaration search put them. Left: float register choice and scheduling.
+// dot holds the squared distance, then the distance and then the push factor (one local, as the original's frame
+// shows); the free sphere's push factor is computed once and reused. The alias e2 for the free sphere's first push
+// is a FAKE (permuter, marked): without it IDO keeps pen in a register where the original spills pen * z.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
-    f32 d;
-    f32 k; // stack pad: unused, but removing it moves the register allocation
     struct UnkStruct_801AEE20* e;
     f32 x;
     f32 y;
     f32 z;
     f32 px;
-    f32 len;
+    struct UnkStruct_801AEE20* e2;
     f32 py;
     f32 pz;
     f32 dot;
@@ -171,28 +167,29 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
             }
             x = arg1 - e->unk0;
             z = arg3 - e->unk8;
-            d = SQ(x) + SQ(z);
-            if (d > 3844.0f) {
+            dot = SQ(x) + SQ(z);
+            if (dot > 3844.0f) {
                 continue;
             }
             y = arg2 - e->unk4;
-            d += SQ(y);
-            if (d < 3844.0f) {
-                len = sqrtf(d);
-                pen = 62.0f - len;
-                x *= 1.0f / len;
-                y *= 1.0f / len;
-                z *= 1.0f / len;
+            dot += SQ(y);
+            if (dot < 3844.0f) {
+                dot = sqrtf(dot);
+                pen = 62.0f - dot;
+                x *= 1.0f / dot;
+                y *= 1.0f / dot;
+                z *= 1.0f / dot;
                 dot = pen * D_800D49B8;
                 pen -= dot;
-                e->unk0 -= pen * x;
+                e2 = e; // FAKE (permuter): an alias of e for the first push; gives the original's spill of pen * z
+                e2->unk0 -= pen * x;
                 e->unk4 -= pen * y;
                 e->unk8 -= pen * z;
                 e->unk3C -= pen * x;
-                e->unk44 -= pen * z;
                 e->unk40 -= pen * y;
-                py = dot * y;
+                e->unk44 -= pen * z;
                 px = dot * x;
+                py = dot * y;
                 pz = dot * z;
                 dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC38 < dot) {
@@ -201,9 +198,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -218,18 +215,18 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         if (e->unk98 == 3) {
             x = arg1 - e->unkC;
             z = arg3 - e->unk14;
-            d = SQ(x) + SQ(z);
-            if (d < 8464.0f) {
+            dot = SQ(x) + SQ(z);
+            if (dot < 8464.0f) {
                 y = arg2 - e->unk10;
-                d += SQ(y);
-                if (d < 8464.0f) {
-                    len = sqrtf(d);
-                    pen = 92.0f - len;
-                    x *= 1.0f / len;
+                dot += SQ(y);
+                if (dot < 8464.0f) {
+                    dot = sqrtf(dot);
+                    pen = 92.0f - dot;
+                    x *= 1.0f / dot;
                     px = x * pen;
-                    y *= 1.0f / len;
+                    y *= 1.0f / dot;
                     py = y * pen;
-                    z *= 1.0f / len;
+                    z *= 1.0f / dot;
                     pz = z * pen;
                     dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                     if (arg0->unkC3C < dot) {
@@ -238,9 +235,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                         arg0->unk15B8 = y;
                         arg0->unk15BC = z;
                     }
+                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -253,18 +250,18 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
             }
             x = arg1 - e->unk18;
             z = arg3 - e->unk20;
-            d = SQ(x) + SQ(z);
-            if (d < 8464.0f) {
+            dot = SQ(x) + SQ(z);
+            if (dot < 8464.0f) {
                 y = arg2 - e->unk1C;
-                d += SQ(y);
-                if (d < 8464.0f) {
-                    len = sqrtf(d);
-                    pen = 92.0f - len;
-                    x *= 1.0f / len;
+                dot += SQ(y);
+                if (dot < 8464.0f) {
+                    dot = sqrtf(dot);
+                    pen = 92.0f - dot;
+                    x *= 1.0f / dot;
                     px = x * pen;
-                    y *= 1.0f / len;
+                    y *= 1.0f / dot;
                     py = y * pen;
-                    z *= 1.0f / len;
+                    z *= 1.0f / dot;
                     pz = z * pen;
                     dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                     if (arg0->unkC3C < dot) {
@@ -273,9 +270,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                         arg0->unk15B8 = y;
                         arg0->unk15BC = z;
                     }
+                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -290,18 +287,18 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         }
         x = arg1 - e->unkC;
         z = arg3 - e->unk14;
-        d = SQ(x) + SQ(z);
-        if (d < 3844.0f) {
+        dot = SQ(x) + SQ(z);
+        if (dot < 3844.0f) {
             y = arg2 - e->unk10;
-            d += SQ(y);
-            if (d < 3844.0f) {
-                len = sqrtf(d);
-                pen = 62.0f - len;
-                x *= 1.0f / len;
+            dot += SQ(y);
+            if (dot < 3844.0f) {
+                dot = sqrtf(dot);
+                pen = 62.0f - dot;
+                x *= 1.0f / dot;
                 px = x * pen;
-                y *= 1.0f / len;
+                y *= 1.0f / dot;
                 py = y * pen;
-                z *= 1.0f / len;
+                z *= 1.0f / dot;
                 pz = z * pen;
                 dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC3C < dot) {
@@ -310,9 +307,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -325,18 +322,18 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         }
         x = arg1 - e->unk18;
         z = arg3 - e->unk20;
-        d = SQ(x) + SQ(z);
-        if (d < 3844.0f) {
+        dot = SQ(x) + SQ(z);
+        if (dot < 3844.0f) {
             y = arg2 - e->unk1C;
-            d += SQ(y);
-            if (d < 3844.0f) {
-                len = sqrtf(d);
-                pen = 62.0f - len;
-                x *= 1.0f / len;
+            dot += SQ(y);
+            if (dot < 3844.0f) {
+                dot = sqrtf(dot);
+                pen = 62.0f - dot;
+                x *= 1.0f / dot;
                 px = x * pen;
-                y *= 1.0f / len;
+                y *= 1.0f / dot;
                 py = y * pen;
-                z *= 1.0f / len;
+                z *= 1.0f / dot;
                 pz = z * pen;
                 dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC3C < dot) {
@@ -345,9 +342,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -360,9 +357,6 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_383C0/func_8007DF4C.s")
-#endif
 
 void func_8007E8C8(UnkStruct_80192690* arg0) {
     func_8007DF4C(arg0, arg0->unk160C, arg0->unk1610, arg0->unk1614, &arg0->unk90[4], &arg0->unk90[5], &arg0->unk90[3]);

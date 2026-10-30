@@ -85,19 +85,23 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 2108 of 49800: calls, branches and the frame (0xF0) agree, and nearly every stack slot sits at the original's
-// offset. The alpha is a signed conversion ((s32) (e + 0.5f): the original has no unsigned-conversion sequence), the
-// first k (the far vertex's offset) is its own local r, and one f32 (e) serves the corner-ray temps and the alpha.
-// The dist offset spells 0.866 as .866f, a separate constant to IDO from the vertices' 0.866f (found by the
-// permuter); the ob[1] chain runs from vtx[6]. padB/padC are stack pads (the original has two more words between hiz
-// and cam). Left: float registers (the original keeps dist in $f24, spills r to sp+0xE4 across SysUtils_Round and
-// keeps 0.866f in $f24), and its integer temps start two later than here.
+// Score 575 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
+// alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
+// spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
+// a separate constant to IDO from the vertices' 0.866f (found by the permuter); the ob[1] chain runs from vtx[6].
+// padB/padC are stack pads (the original has two more words between hiz and cam). The (s16) on the second texture
+// coordinate's SysUtils_Round takes an extra integer temporary (hack: the original uses one more between each
+// coordinate's load and add, and this moves the temporaries towards its numbering). An empty test of cam->unkF4
+// after the last corner ray is a permuter FAKE (marked; it moves the float registers). Left: the cam->upY CSE takes
+// $f14 (the original's $f24) and the float registers after it, 0.866f is loaded later into $f20 (early into $f24 there), and the texture coordinates'
+// sums and second load take t7/t0 (t8/t9 there).
 void func_8004C1D0(s32 view, Vtx* vtx) {
-    s32 angle;
-    f32 k;
     s32 i;
     f32 d;
-    f32 r;
+    f32 e;
+    f32 k;
+    s32 angle;
     f32 w;
     f32 h;
     f32 s;
@@ -117,7 +121,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 upx;
     f32 upy;
     f32 upz;
-    f32 e;
     Vtx* vp;
 
     if (view != 0) {
@@ -183,22 +186,23 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         if (e < dist) {
             dist = e;
         }
+        if (!cam->unkF4) {} // FAKE (permuter): an empty test, for the float registers
     }
     dist = (D_800D4744 * .866f) + dist; // .866f: a separate constant from the 0.866f below (IDO keeps them apart)
     x = cam->eyeX + (dist * cam->unkF0);
     z = cam->eyeZ + (dist * cam->unkF4);
-    r = D_800D4744 * D_800D4764;
+    e = D_800D4744 * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
     vtx[5].v.ob[0] = vtx[1].v.ob[0] =
  SysUtils_Round(x - (D_800D4744 * 0.5f));
-    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * r));
+    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * e));
     vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
     vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
     vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
         vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
     vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
-    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * r));
+    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * e));
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
     vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
 
@@ -232,7 +236,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
             vp->v.cn[3] = (s32) (e + 0.5f);
         }
         vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;
+        vp->v.tc[1] = (s16) SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760; // (s16): see above
     }
 }
 #else
@@ -767,11 +771,13 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 3885 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
+// Score 3490 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
 // the height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before
-// end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. Left: the
-// first pair's cells load in the other order, registers differ, and IDO here saves an extra s0
-// (never used). The last pass's bound is set in its for, as in the first two passes.
+// end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. The velocity
+// damping reads the velocity into hb first (v -= v >> D_800D4730 as hb = v; v = hb - (hb >> ...)) in the first
+// pass's last cell, the third pass's b and the final cell (from a search over which ones): that removes the extra
+// saved s0 IDO kept here. Left: the first pair's cells load in the other order, the q index is computed in a1 in the
+// original, the damping's reload goes to a1 there (a t register here), and the t registers rotate differently.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -825,7 +831,8 @@ void func_8004EAA4(void) {
         diff = (hb - ha) >> D_800D472C;
         a->unk0 += a->unk2 = (a->unk2 + diff) - mean;
         b->unk2 = (b->unk2 - diff) - mean;
-        a->unk2 -= a->unk2 >> D_800D4730;
+        hb = a->unk2;
+        a->unk2 = hb - (hb >> D_800D4730);
     }
     for (i = 0; i < gWaterWindowN; i++) {
         a = WATER_CELL_AT(p->unk0);
@@ -875,10 +882,12 @@ void func_8004EAA4(void) {
         diff = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         b->unk0 += b->unk2 = (b->unk2 - diff) - mean;
-        b->unk2 -= b->unk2 >> D_800D4730;
+        hb = b->unk2;
+        b->unk2 = hb - (hb >> D_800D4730);
     }
-    a->unk0 += a->unk2;
-    a->unk2 -= a->unk2 >> D_800D4730;
+    hb = a->unk2;
+    a->unk0 += hb;
+    a->unk2 = hb - (hb >> D_800D4730);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
@@ -1079,25 +1088,22 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 2300 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
-// their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across sqrtf.
-// The copy loop ends at &D_80192460[13] (the address of gWaterWindowN, which the original does not reuse), the
-// sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
-// for j, b and top (from a search over each pair's order). Left: the frame (0x68 here, 0x50 in the
-// original), and D_80192460's address stays in s4 from the copy loop on here (rebuilt for the pool loop there).
+// Score 1820 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
+// their own and the ring loop's counters in the pool loop's body. bot and b also hold the two wrap counts (nu, nv) and
+// set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
+// caller-saved registers and are spilled across sqrtf. The copy loop ends at &D_80192460[13] (the address of
+// gWaterWindowN, which the original does not reuse), the sqrt(3) scale is "* 2" and D_801924B8 is set before
+// D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order),
+// and the first ring sets set before d, as the second does.
+// A permuter FAKE (b = 1 standing in for D_8019249C's + 1) lowers the score; it explains nothing (D_8019249C's
+// address is now built in s5 before the pool loop, early in the original).
+// Left: D_80192460's address stays in s4 from the copy loop on here (rebuilt in s2 before the pool loop there), which
+// moves the pool loop's constants (0xFF, 0xB0, 0x400) to other saved registers.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
-    s32* src;
-    s32* dst;
     GfxPool* pool;
-    s32 i;
-    s32 j;
-    s32 k;
-    s32 top;
     s32 bot;
     s32 b;
-    s32 d;
-    s32 step;
 
     if (D_801CE64C == 1) {
         D_800D4724 = 10;
@@ -1121,14 +1127,20 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterWindow[1].unk18 = 0.0f;
     gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
         gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
-    for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192460[13];) {
-        *dst++ = *src++;
+    b = 1; // FAKE (permuter): b stands in for the 1 added to D_8019249C below
+    {
+        s32* src;
+        s32* dst;
+
+        for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192460[13];) {
+            *dst++ = *src++;
+        }
     }
     D_801924A0 = 0x8000;
     D_801924A4 = 0x8000;
     D_801924A8 = 0x800;
     D_80192498 = gWaterWindowN << 6;
-    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + 1;
+    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + b; // FAKE: b is 1 (see above)
     gWaterLevel = waterLevel;
     Water_BuildCellLists();
     Water_FillNoise(amplitude);
@@ -1141,6 +1153,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     D_801924B4 = (D_801924AC - D_801924B0) + 1.0;
     D_801924C0 = (D_801924B8 - D_801924BC) + 1.0;
     for (pool = &D_8011F8E8[1]; pool >= D_8011F8E8; pool--) {
+        s32 i;
+        s32 j;
+        s32 k;
+        s32 top;
+        s32 d;
+        s32 step;
+
         for (i = D_8019249C + 5; i >= 0; i--) {
             pool->unk13D68[i].v.cn[0] = 0xFF;
             pool->unk13D68[i].v.cn[1] = 0xFF;
@@ -1157,8 +1176,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         }
         top = gWaterWindowN;
         bot = D_8019249C - gWaterWindowN;
-        d = bot - 2;
         set = bot - 1;
+        d = bot - 2;
         b = top + 1;
         step = top + 2;
         for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {

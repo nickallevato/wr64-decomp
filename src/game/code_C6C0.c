@@ -6549,19 +6549,21 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 2225 of 76300: player 1's x and z are read into dist and lim before the nearest-rider loop, its pointer (p1)
-// is a separate variable declared last so it lands in a temporary spilled across the calls, the stamp radius is
-// read from D_80192498 each time (the original reloads it after the first stamp), and the one-player stamp level
-// reuses i (s0 there). The stamp-distance deltas set dz before dx (from a statement-swap search). Left: frame 0x68 (0x60 there) with the spill and nearest one slot apart, and FP temps
-// numbered differently in the nearest loop and the stamp maths. level also serves as the push-apart counter and
-// the two-player stamp flag.
+// Score 320 of 76300: the frame (0x60) and every stack slot agree once rider and pan are declared in the blocks
+// that use them. Player 1's x and z are read into dist and sz before the nearest-rider loop and lim holds the best
+// distance (pad keeps the stack slot of what was a separate best). Player 1's pointer (p1) is a separate variable
+// declared last so it lands in a temporary spilled across the calls. The pan's scaled side offset is computed into
+// lim first (the original keeps it in $f16), the far stamp level is set to 60 in an else arm, and the two-player
+// stamp deltas are taken dx first. The first two-player stamp passes level-- (1, and clears the flag after the
+// argument set-up, so the clear lands in the call's delay slot as in the original). The stamp radius is read from
+// D_80192498 each time (the original reloads it after the first stamp), and the one-player stamp level reuses i
+// (s0 there). level also serves as the push-apart counter and the two-player stamp flag. Left: the original stores
+// D_80192660.x and .y through one lui at (here two; not reproduced in scratch tests either).
 void func_800665B0(void) {
-    UnkStruct_80192690* rider;
     camera_unk_1* cam;
     s32 i;
-    u8 pan;
     s32 nearest;
-    f32 best;
+    f32 pad; // stack pad (the original has a word here)
     f32 dx;
     f32 lim;
     f32 dz;
@@ -6612,16 +6614,19 @@ void func_800665B0(void) {
         func_80052480(gPlayer2Rider, (struct UnkStruct_80052480*) D_80192630);
         func_800C11CC(D_80192630);
     } else if (gRiders >= 2) {
-        best = 1e10f;
+        UnkStruct_80192690* rider;
+        u8 pan;
+
+        lim = 1e10f;
         p1 = &D_80192690[gPlayer1Rider];
         dist = p1->unk44.x;
-        lim = p1->unk44.z;
+        sz = p1->unk44.z;
         for (i = gRiders - 1; i >= 0; i--) {
             if (i != gPlayer1Rider) {
                 dx = dist - D_80192690[i].unk44.x;
-                dz = lim - D_80192690[i].unk44.z;
-                if (SQ(dx) + SQ(dz) < best) {
-                    best = SQ(dx) + SQ(dz);
+                dz = sz - D_80192690[i].unk44.z;
+                if (SQ(dx) + SQ(dz) < lim) {
+                    lim = SQ(dx) + SQ(dz);
                     nearest = i;
                 }
             }
@@ -6649,7 +6654,8 @@ void func_800665B0(void) {
         } else {
             dist = sqrtf(dist);
             cam = &gCameraPerspective[D_80223930];
-            pan = 127 - (s32) (((((1.0f / dist) * ((cam->unkF4 * dx) - (cam->unkF0 * dz))) + 1.0f) * 63.5f) + 0.5f);
+            lim = (1.0f / dist) * ((cam->unkF4 * dx) - (cam->unkF0 * dz));
+            pan = 127 - (s32) (((lim + 1.0f) * 63.5f) + 0.5f);
         }
         func_800BFB84(&D_80192650, &D_80192670, &D_80192660, &D_80192680, pan);
     }
@@ -6658,34 +6664,33 @@ void func_800665B0(void) {
         sx = gWaterWindow[0].unk0 + (D_80192498 * cam->unkF0);
         sz = gWaterWindow[0].unk4 + (D_80192498 * cam->unkF4);
         if (gPlayers == ONE_PLAYER) {
-            rider = &D_80192690[gPlayer1Rider];
-            dist = (s32) sqrtf(SQ(rider->unk44.z) + SQ(rider->unk44.x));
+            dist = (s32) sqrtf(SQ(D_80192690[gPlayer1Rider].unk44.x) + SQ(D_80192690[gPlayer1Rider].unk44.z));
             if (dist <= D_801C1FB4) {
                 i = D_800D49B0;
             } else {
                 lim = D_801C1FB4 + 4000.0f;
-                i = 60;
                 if (D_801924AC < lim) {
                     lim = D_801924AC;
                 }
                 if (dist < lim) {
                     i = (((dist - D_801C1FB4) * (f32) (60 - D_800D49B0)) / (lim - D_801C1FB4)) + (f32) D_800D49B0;
+                } else {
+                    i = 60;
                 }
             }
             Water_StampDiagonalSine(sx, sz, i, D_800D49AC, 1);
         } else {
             level = 1;
-            dz = sz - D_80192690[gPlayer2Rider].unk44.z;
             dx = sx - D_80192690[gPlayer2Rider].unk44.x;
+            dz = sz - D_80192690[gPlayer2Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                level = 0;
-                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
+                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, level--); // passes 1, clears the flag
             }
             cam = &gCameraPerspective[D_80223934];
             sx = gWaterWindow[1].unk0 + (D_80192498 * cam->unkF0);
             sz = gWaterWindow[1].unk4 + (D_80192498 * cam->unkF4);
-            dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             dx = sx - D_80192690[gPlayer1Rider].unk44.x;
+            dz = sz - D_80192690[gPlayer1Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
                 Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, level);
             }
