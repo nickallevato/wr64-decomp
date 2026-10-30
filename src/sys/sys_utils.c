@@ -716,11 +716,12 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 60 of 13000: the original spills sysz (0x1C) after the product and reloads it for mf[1][2] into a temporary.
-// Here a one-element array (home, a FAKE, marked) declared at sysz's place stands for that home, as in func_80049C9C,
-// and the reload goes through sysz (permuter): the schedule then matches, but the reload lands in sysz's register
-// ($f2) instead of $f10, which renames the registers of the last stores (the 60 points). Reading home[0] inline in
-// mf[1][2] gives $f10 but stores mf[1][0] one slot early (480); a separate reload local gets a second spill.
+// Score 55 of 13000: the original spills sysz (0x1C) after the product and reloads it for mf[1][2] into a temporary.
+// As in the matched func_80049C9C, a volatile local (home, a FAKE, marked) at sysz's declaration slot gives that
+// store and reload, and every float register now matches. Left: from the volatile store on, the stores through arg1
+// use a0 (the call's copy) where the original keeps a1: the assembler splits its register renaming at a volatile
+// access. A one-element array instead (the old shape) needs the reload through sysz and scores 60; struct, pointer
+// and volatile-cast spellings of the home score 480 or more.
 void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -728,7 +729,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     f32 cx;
     f32 cy;
     f32 cz;
-    f32 home[1]; // FAKE: sysz's stack home (the original spills sysz there and reloads it)
+    volatile f32 home; // FAKE: sysz's stack home (0x1C): the original stores sysz there and reloads it
     f32 sysz;
     f32 cycz;
     f32 sycz;
@@ -752,8 +753,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     arg1->mf[0][1] = sz * cx;
     cz = COS(az);
     arg1->mf[1][1] = cz * cx;
-    sysz = sy * sz;
-    home[0] = sysz; // FAKE: the spill (see home)
+    home = sysz = sy * sz; // FAKE: the spill (see home)
     cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx
     arg1->mf[0][0] = cycz + cx;
@@ -761,8 +761,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     szcy = sz * cy;
     arg1->mf[1][0] = (sx * sycz) - szcy;
     arg1->mf[0][2] = (sx * szcy) - sycz;
-    sysz = home[0]; // FAKE (permuter): the reload, through sysz
-    arg1->mf[1][2] = (sx * cycz) + sysz;
+    arg1->mf[1][2] = (sx * cycz) + home; // the reload (see home)
     arg1->mf[3][0] = arg5;
     arg1->mf[3][1] = arg6;
     arg1->mf[3][2] = arg7;
