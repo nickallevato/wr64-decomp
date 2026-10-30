@@ -686,11 +686,13 @@ void SaveLoad_UpdateMessageBox(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 310 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
+// Score 250 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
 // stored at its first use, reloaded for the second panel and for y + 3. Written plainly (y = 186)
 // IDO folds it (score 7011); the two FAKE lines below get most of it back. The rest is register
 // allocation: the D_i13_802C8DB4 load register ($a3 for the original's $t0), the first call's 186 ($a3, stored to y)
 // and one hoisted lui t0, 0x600 the original keeps before a display-list block.
+// Loading the selected label's texture into a spare local first (a permuter FAKE, 310 without it) fixes most of
+// the D_i13_802C8DB4 part.
 Gfx* func_i13_802C711C(Gfx* gdl) {
     s32 i;
     s32 y;
@@ -855,7 +857,8 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     gdl = TexLabel_Draw(gdl, 2, 0, 66, 22, 0);
     gdl = TexLabel_Draw(gdl, 4, 12, 87, 206, 0);
     gdl = TexLabel_Draw(gdl, 4, 13, 169, 206, 0);
-    gdl = TexLabel_Draw(gdl, 1, D_i13_802C8D9C[D_i13_802C8D50].texture, D_i13_802C8DB4[D_i13_802C8D50] + 139, 82, 0);
+    mode2 = D_i13_802C8D9C[D_i13_802C8D50].texture; // FAKE (permuter): the texture through mode2 (any free s32 does)
+    gdl = TexLabel_Draw(gdl, 1, mode2, D_i13_802C8DB4[D_i13_802C8D50] + 139, 82, 0);
     gdl = TexLabel_Draw(gdl, 0, 0, 67, 95, 0);
     gdl = TexLabel_Draw(gdl, 0, 1, 161, 95, 0);
     tab = D_i13_802C8D9C;
