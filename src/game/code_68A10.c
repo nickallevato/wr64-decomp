@@ -860,7 +860,8 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 30504 of 216100: same blocks, loops and calls; register allocation differs from the start: isHuman stays in
+// Score 30254 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// compare); register allocation differs from the start: isHuman stays in
 // s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
 // into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
 void func_800B08F8(s32 arg0) {
@@ -1272,7 +1273,7 @@ void func_800B08F8(s32 arg0) {
                     step = -45.0f / half;
                 }
                 spawn = rate >= 3.0f;
-                if (spawn && ((absCos >= 0.94f) || (D_800E6D60->unk1C50 == 0))) {
+                if (spawn && (!(absCos < 0.94f) || (D_800E6D60->unk1C50 == 0))) {
                     spawn = D_800E6D60->unk1C34 != 0;
                 }
                 if (spawn) {
@@ -1534,7 +1535,7 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 17749 of 124000: same blocks, display-list commands and loops. The stack pads give the original's frame
+// Score 16909 of 124000: same blocks, display-list commands and loops (calls and branches now agree). The stack pads give the original's frame
 // (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. gdlh is read after the first command is
 // stored through gdl (the original reloads D_801AE94C there). Left: register allocation and scheduling (the
 // original keeps more command words in saved registers).
@@ -1597,11 +1598,13 @@ void func_800B305C(Gfx** gdl) {
             for (j = 63; j >= 0; j--) {
                 if (D_800E6D68[j].unk38 != 0) {
                     D_800E6D64 = &D_800E6D68[j];
-                    if ((((D_800E6D64->unk3C + j) & 3) + 1) == k) {
+                    if ((((D_800E6D64->unk3C + j) & 3) + 1) != k) {
+                        n += 3;
+                    } else {
                         gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][n], 3, 0);
                         gSP1Triangle(gdlh++, 0, 1, 2, 0);
+                        n += 3;
                     }
-                    n += 3;
                 }
             }
         }
@@ -1696,14 +1699,16 @@ void func_800B305C(Gfx** gdl) {
         }
         n = 0;
         k = D_800E6D60->unk1C24 / 5;
-        for (j = 0; j < k; j++) {
-            gSPVertex(gdlh++, vtx, 15, 0);
-            vtx += 15;
-            gSP1Triangle(gdlh++, 0, 1, 2, 0);
-            gSP1Triangle(gdlh++, 3, 4, 5, 0);
-            gSP1Triangle(gdlh++, 6, 7, 8, 0);
-            gSP1Triangle(gdlh++, 9, 10, 11, 0);
-            gSP1Triangle(gdlh++, 12, 13, 14, 0);
+        if (k != 0) {
+            for (j = 0; j < k; j++) {
+                gSPVertex(gdlh++, vtx, 15, 0);
+                vtx += 15;
+                gSP1Triangle(gdlh++, 0, 1, 2, 0);
+                gSP1Triangle(gdlh++, 3, 4, 5, 0);
+                gSP1Triangle(gdlh++, 6, 7, 8, 0);
+                gSP1Triangle(gdlh++, 9, 10, 11, 0);
+                gSP1Triangle(gdlh++, 12, 13, 14, 0);
+            }
         }
         k = D_800E6D60->unk1C24 % 5;
         if (k != 0) {

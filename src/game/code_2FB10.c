@@ -663,7 +663,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 16923 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
+// Score 16751 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
 // not ra) and scheduling differ, the original keeps the two empty tests in the gate block as branches (IDO drops them
 // here) and keeps dPrev in its stack slot. unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
@@ -786,8 +786,8 @@ void func_8007687C(s32 arg0) {
             if (dot <= e->unk8C) {} // an empty test, as in the original
         }
     }
-    dirX = e->unk70;
     dirZ = e->unk74;
+    dirX = e->unk70;
     dx = D_801C3780 - px;
     dz = D_801C3788 - pz;
     len = sqrtf((dx * dx) + (dz * dz));
@@ -898,8 +898,8 @@ void func_8007687C(s32 arg0) {
                 if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                     func_800C1B30();
                 } else if (gPlayers == TWO_PLAYERS) {
-                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
                     dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
                     if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                         func_800C1B30();
                     }
@@ -1289,20 +1289,25 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 22781 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
-// original keeps more values on the stack; frame 0xB0, here 0x78), and this C is shorter.
+// Score 21880 of 111900: same blocks, switches and calls. The original has more locals (frame 0xB0, its homes
+// spread over 0x50..0xA4); the stack pads below (found by a placement search) give that frame and move some
+// homes to its offsets, but are not the real variables. Register allocation differs from the start, and the
+// original keeps its empty arg0 == gPlayer1Rider test as a branch, which this C does not.
 void func_800783AC(s32 arg0) {
+    s32 padC[2]; // stack pad
+    s32 padB[6]; // stack pad
     s32 trick;
     s32 cur;
-    s32 passed;
+    s32 sfx;
     s32 inGate;
     s32 frac;
+    s32 padA[6]; // stack pad
     s32 bonus;
     s32 laps;
     s32 i;
-    s32 sfx;
     f32 dx;
     f32 dz;
+    s32 passed;
     s32 points;
     f32 len;
     f32 dot;
