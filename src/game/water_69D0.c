@@ -1081,12 +1081,14 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 2295 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
+// Score 1840 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
 // their own and the ring loop's counters in the pool loop's body. bot and b also hold the two wrap counts (nu, nv) and
 // set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
 // caller-saved registers and are spilled across sqrtf. The copy loop ends at &D_80192460[13] (the address of
 // gWaterWindowN, which the original does not reuse), the sqrt(3) scale is "* 2" and D_801924B8 is set before
 // D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order).
+// A permuter FAKE (b = 1 standing in for D_8019249C's + 1) lowers the score; it explains nothing (D_8019249C's
+// address is now built in s5 before the pool loop, early in the original).
 // Left: D_80192460's address stays in s4 from the copy loop on here (rebuilt in s2 before the pool loop there), which
 // moves the pool loop's constants (0xFF, 0xB0, 0x400) to other saved registers.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
@@ -1117,6 +1119,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterWindow[1].unk18 = 0.0f;
     gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
         gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
+    b = 1; // FAKE (permuter): b stands in for the 1 added to D_8019249C below
     {
         s32* src;
         s32* dst;
@@ -1129,7 +1132,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     D_801924A4 = 0x8000;
     D_801924A8 = 0x800;
     D_80192498 = gWaterWindowN << 6;
-    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + 1;
+    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + b; // FAKE: b is 1 (see above)
     gWaterLevel = waterLevel;
     Water_BuildCellLists();
     Water_FillNoise(amplitude);
