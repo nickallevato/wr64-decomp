@@ -1050,11 +1050,11 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 195 of 24200: pix is an s32 that also holds the lookup index (the original reuses v0 for it). Left: the
+// Score 150 of 24200: pix is an s32 that also holds the lookup index (the original reuses v0 for it). Left: the
 // original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads entry 62 at 0x7C(s1);
 // here the [62] address is folded into one constant and the lookup adds base + index (index + base there), and
-// the column pointers take v1/t1/t0 where the original has a1/a2/t1. The flag is cleared through pix (a permuter
-// FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an absolute lhu).
+// the column pointers and lum take a0/a3/t0/t1/a2 where the original has a3/t0/t1/a2/a3. The flag is cleared
+// through pix (a permuter FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an absolute lhu).
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
@@ -1083,6 +1083,7 @@ void func_8004A8B0(u16* fb) {
     }
 
     if (!D_80158350) {} // FAKE: found by the permuter; gives the lookup its own copy of &D_80158350
+    prev = lum; // FAKE (permuter): a dead store of the still-unset lum; moves the column pointers' registers
     fb += 20 * 320;
     col = fb + 8;
     do {
