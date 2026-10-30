@@ -530,24 +530,25 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 575 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 485 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
 // reused; the permuter found them, and with them the int registers match, except wasIn's). The nearest-record block
 // reads D_801C3780 / D_801C3788 directly and writes the previous record's distance out twice: the original's stack
-// slots at 0x28, 0x24 and 0x20 are IDO's spilled copies of those, not locals. Left: the frame slots above them sit
-// 4 or 8 bytes off (ra/isHuman, the rider pointer, the zone outputs, bestDist and dzn), the prev deltas' registers
-// (f12/f14) swap, and the Drake Lake block's float registers differ. The Drake Lake deltas reuse dx0/dz0.
+// slots at 0x28, 0x24 and 0x20 are IDO's spilled copies of those, not locals. The declaration order gives every
+// stack slot: cur (0x6C) before the four zone outputs (0x68..0x5C), dz0 next to dx0, and one more word at the end.
+// Left: the prev deltas' registers (f12/f14) swap, the Drake Lake block's float registers differ, and wasIn takes
+// a1 (a3 there). The Drake Lake deltas reuse dx0/dz0.
 void func_80076378(s32 arg0) {
     s32 best;
+    f32 dz0;
     f32 dx0;
     s32 next;
     s32 prev;
     s32 isHuman;
-    s32 zoneA;
     s32 cur;
-    s32 zoneC;
+    s32 zoneA;
     s32 zoneB;
-    f32 dz0;
+    s32 zoneC;
     s32 zoneD;
     f32 bestDist;
     f32 dxp;
@@ -558,6 +559,7 @@ void func_80076378(s32 arg0) {
     s32 player;
     UnkStruct_800D8204* rect;
     RiderStruct* rider;
+    s32 pad; // stack pad: the original has one more word here
 
     rider = &gRiderRaceState[arg0];
     if (D_801CE638 == 2) {
