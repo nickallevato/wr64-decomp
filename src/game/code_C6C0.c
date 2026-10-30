@@ -7035,9 +7035,10 @@ Gfx* func_80068538(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 12840 of 73400: control flow and the display lists follow the original. The original's frame (0x128) is far
-// larger than its locals need, and it saves only s0/s1, spilling the rider pointer to the stack across calls; a local
-// whose address is taken gives that shape (pad, FAKE; frame 0x138 here). Left: register allocation and scheduling.
+// Score 3455 of 73400: calls, branches and instruction count agree. The segment-2 lists are indexed as Gfx
+// (i * 82 + lod * 41: the original computes i * 82 and scales it by 8), the Rider_DrawParts index shares i with the
+// rider loop (both in s1), and the loop skips the player's rider with an early continue. Left: frame 0x130 here vs
+// 0x128 (the spilled rider sits at sp+0x20, not 0x24), and where the gdl increments are scheduled.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \
     (((c)->unk6C * ((r)->unk44.z - (c)->eyeZ)) +                                       \
@@ -7057,34 +7058,31 @@ Gfx* func_80068538(Gfx* gdl) {
     gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);                       \
     gSPSetGeometryMode(gdl++, G_FOG)
 
-// Segment 2 holds two display lists of 0x148 bytes per rider.
-#define RIDER_DL(rider, lod) ((Gfx*) ((u8*) D_2000000 + (rider) * 0x290 + (lod) * 0x148))
+// Segment 2 holds two display lists of 41 commands (0x148 bytes) per rider.
+#define RIDER_DL(rider, lod) (&D_2000000[(rider) * 82 + (lod) * 41])
 
 Gfx* func_800687A4(Gfx* gdl) {
-    s32 pad[1]; // FAKE: with its address taken below, the saved registers come out as in the original
     UnkStruct_80192690* rider;
     camera_unk_1* cam;
     s32 i;
-    s32 idx;
     f32 d;
 
-    if (pad) {} // FAKE: takes pad's address (no code); see pad
     gSPDisplayList(gdl++, D_10079F0);
     gdl = func_800916B4(gdl);
     if (D_801CE64C == 2) {
         RIDER_FOG_OFF(gdl);
         if (D_800DAB2C != 0) {
-            idx = D_80192690[gPlayer2Rider].unkB68;
+            i = D_80192690[gPlayer2Rider].unkB68;
             if (D_801CE6F4[1] != 0) {
-                idx += 4;
+                i += 4;
             }
-            gdl = Rider_DrawParts(gdl, idx, gPlayer2Rider);
+            gdl = Rider_DrawParts(gdl, i, gPlayer2Rider);
         } else {
-            idx = D_80192690[gPlayer1Rider].unkB68;
+            i = D_80192690[gPlayer1Rider].unkB68;
             if (D_801CE6F4[0] != 0) {
-                idx += 4;
+                i += 4;
             }
-            gdl = Rider_DrawParts(gdl, idx, gPlayer1Rider);
+            gdl = Rider_DrawParts(gdl, i, gPlayer1Rider);
         }
     } else if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
         RIDER_FOG_ON(gdl);
@@ -7138,26 +7136,27 @@ Gfx* func_800687A4(Gfx* gdl) {
         gSPDisplayList(gdl++, RIDER_DL(gPlayer1Rider, 0));
         gSPClearGeometryMode(gdl++, G_FOG);
         for (i = 0; i < gRiders; i++) {
-            if (i != gPlayer1Rider) {
-                gDPPipeSync(gdl++);
-                rider = &D_80192690[i];
-                if (i == 1) {
-                    gdl = func_80091CD8(gdl);
-                }
-                cam = &gCameraPerspective[D_80223930];
-                d = CAM_DEPTH(cam, rider);
-                if (d > 1000.0f) {
-                    RIDER_FOG_ON(gdl);
-                } else if (d > 0.0f) {
-                    RIDER_FOG_OFF(gdl);
-                } else {
-                    continue;
-                }
-                if (D_800D49A8 < d) {
-                    gSPDisplayList(gdl++, RIDER_DL(i, 1));
-                } else {
-                    gSPDisplayList(gdl++, RIDER_DL(i, 0));
-                }
+            if (i == gPlayer1Rider) {
+                continue;
+            }
+            gDPPipeSync(gdl++);
+            rider = &D_80192690[i];
+            if (i == 1) {
+                gdl = func_80091CD8(gdl);
+            }
+            cam = &gCameraPerspective[D_80223930];
+            d = CAM_DEPTH(cam, rider);
+            if (d > 1000.0f) {
+                RIDER_FOG_ON(gdl);
+            } else if (d > 0.0f) {
+                RIDER_FOG_OFF(gdl);
+            } else {
+                continue;
+            }
+            if (D_800D49A8 < d) {
+                gSPDisplayList(gdl++, RIDER_DL(i, 1));
+            } else {
+                gSPDisplayList(gdl++, RIDER_DL(i, 0));
             }
         }
     } else {
