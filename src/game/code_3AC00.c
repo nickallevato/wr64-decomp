@@ -1287,10 +1287,10 @@ void func_80085408(void) {
  * Scratch: https://decomp.me/scratch/c7EJc
  * Score: 105 (99.62&)
  */
-// Score 40 of 27700: float registers only. The scaled steering values and the float copy of unkB52 reuse cross
-// (dead after its test), from a partition search (155 -> 105), and a dead copy of the dot product into var_f0 before
-// the ABS chain (permuter FAKE, marked) gives 40; the empty block in the unk40 arm is no longer needed. Left: the
-// dot product (var_f0) and cross swap $f0 and $f16. Upstream's 105 above is decomp.me's scale.
+// Score 30 of 27700: float registers only. The scaled steering values and the float copy of unkB52 reuse cross
+// (dead after its test), from a partition search (155 -> 105); a dead copy of the dot product into var_f0 before the
+// ABS chain (40) and a copy of cross into c in its test (30) are permuter FAKEs, marked. Left: the dot product
+// (var_f0) and cross swap $f0 and $f16. Upstream's 105 above is decomp.me's scale.
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;
@@ -1301,7 +1301,7 @@ void func_80085510(void) {
     f32 var_f12;
     f32 steer;
     f32 cross;
-    f32 pad1; // stack pad: puts sp4C at sp+0x4C
+    f32 c; // FAKE (permuter): a copy of cross in its test; it was the stack pad that puts sp4C at sp+0x4C
     f32 pad2; // stack pad
 
     if (D_800DAB68 != 0) {
@@ -1335,7 +1335,7 @@ void func_80085510(void) {
     D_801C3C58->unk68 = var_f0;
     cross = (D_801C3C58->unkD4 * sp4C) - (sp48 * D_801C3C58->unkD0);
 
-    if ((var_f0 * cross) < 0.0f) {
+    if ((var_f0 * (c = cross)) < 0.0f) { // FAKE (permuter): the copy into c
         sp4C = 0;
         D_801C3C50->unkB53 = 0;
     } else {
