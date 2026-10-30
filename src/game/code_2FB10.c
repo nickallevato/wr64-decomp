@@ -1289,20 +1289,25 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 22781 of 111900: same blocks, switches and calls. Register allocation differs from the start (the
-// original keeps more values on the stack; frame 0xB0, here 0x78), and this C is shorter.
+// Score 21880 of 111900: same blocks, switches and calls. The original has more locals (frame 0xB0, its homes
+// spread over 0x50..0xA4); the stack pads below (found by a placement search) give that frame and move some
+// homes to its offsets, but are not the real variables. Register allocation differs from the start, and the
+// original keeps its empty arg0 == gPlayer1Rider test as a branch, which this C does not.
 void func_800783AC(s32 arg0) {
+    s32 padC[2]; // stack pad
+    s32 padB[6]; // stack pad
     s32 trick;
     s32 cur;
-    s32 passed;
+    s32 sfx;
     s32 inGate;
     s32 frac;
+    s32 padA[6]; // stack pad
     s32 bonus;
     s32 laps;
     s32 i;
-    s32 sfx;
     f32 dx;
     f32 dz;
+    s32 passed;
     s32 points;
     f32 len;
     f32 dot;
