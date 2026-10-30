@@ -1120,11 +1120,12 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 11919 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
-// (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first); the zeros are all 0.0f,
-// which IDO keeps in one saved register as the original does. Left: the original keeps dirX/dirZ in caller-saved
-// registers spilled across sqrtf (dirX lives in a saved register here), and in the D_800D988C == 1 loop it reloads
-// D_801C4160/4/8 after storing them where IDO here reuses the values.
+// Score 11124 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
+// (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first). The literal spellings
+// (64 as an int, 0 and 0.00f in two zero tests) came from a respelling search: IDO keeps differently spelled
+// constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
+// caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
+// the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
     f32 dirX;
     camera_unk_1* cam;
@@ -1226,13 +1227,13 @@ void func_8008E794(void) {
         for (i = 0, e = D_801CB058; i < gPlayers; i++, e++) {
             e->unkAC = 0.0f;
             angle = ANGLE_TO_CUSTOM_UNITS(D_800DA8B0);
-            e->unkB0 = SIN(angle) * 64.0f;
+            e->unkB0 = SIN(angle) * 64;
             e->unkB4 = COS(angle) * 64.0f;
             D_801C4160 = e->unkAC;
             D_801C4168 = e->unkB4;
             D_801C4164 = e->unkB0;
             len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
-            if (len == 0.0f) {
+            if (len == 0) {
                 D_801C4168 = 120;
             }
             e->unkAC = (D_801C4160 / len) * 120.0f;
@@ -1257,7 +1258,7 @@ void func_8008E794(void) {
                     e->unkD8 = e->unkF0;
                     e->unkDC = e->unkF4;
                     e->unkE0 = e->unkF8;
-                    e->unk104 = SIN(0xE00) * 64.0f;
+                    e->unk104 = SIN(0xE00) * 64;
                     break;
                 case TWILIGHT_CITY:
                     e->unkAC = cam->unk64 * -1.0f;
@@ -1270,7 +1271,7 @@ void func_8008E794(void) {
                     len = sqrtf((dx * dx) + (dz * dz));
                     if ((len < 1500.0f) && ((D_801C3C54->unk98 == 1) || (D_801C3C54->unk98 == 0))) {
                         D_801C3C58->unk78 = 1;
-                        if (len != 0.0f) {
+                        if (len != 0.00f) { // 0.00f: a separate constant from 0.0f to IDO
                             if (len < 500.0f) {
                                 len = 1.0f;
                             } else {
@@ -1356,9 +1357,9 @@ void func_8008E794(void) {
             e->unk100 = 64.0f;
             e->unkFC *= 64;
             e->unk104 *= 64;
-            D_801C4160 = e->unkAC;
             D_801C4168 = e->unkB4;
             D_801C4164 = e->unkB0;
+            D_801C4160 = e->unkAC;
         }
     }
 }
