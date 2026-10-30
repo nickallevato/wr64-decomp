@@ -2499,10 +2499,10 @@ void func_801F9EA0(void) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5665 of 61800: face is zeroed after the position is set (inside the drawn-rider branch). Left: the first
-// two rider loops count by 1, where the original counts a second induction variable in 0x14-byte steps against
-// gRiders * 20 (written that way, the frame and loop tests match but the guards and registers do not). Each loop with
-// its own counter is closest; the original keeps the first two counters in s3.
+// Score 1800 of 61800: the first two rider loops skip a cleared slot with `continue` (an if around the body keeps
+// k as the loop counter; with continue IDO replaces it by a 0x14-step offset tested against gRiders * 20, as in
+// the original), and both use k, so it lives in s3 as in the original. Left: gdl and b swap s0 and s1, 1 is in ra
+// (t5 in the original), and some scheduling in the set-up and before the third loop.
 extern Gfx D_10147C8[];
 extern Gfx D_10149F8[];
 extern u8 D_10448D0[];
@@ -2514,7 +2514,6 @@ void func_801FA3C0(Gfx** gdlp) {
     s32 i;
     s32 j;
     s32 k;
-    s32 l;
     s32 x;
     s32 y;
     s32 face;
@@ -2532,19 +2531,20 @@ void func_801FA3C0(Gfx** gdlp) {
     for (i = 0; i < gPlayers; i++) {
         for (k = 0; k < gRiders; k++) {
             b = &D_80228B88[i][k];
-            if (b->unk10 != 0) {
-                if (gPlayers == ONE_PLAYER) {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 190.0f;
-                } else if (i == 0) {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 96.0f;
-                } else {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 206.0f;
-                }
-                gDPFillRectangle(gdl++, x - 10, y - 10, x + 10, y + 10);
+            if (b->unk10 == 0) {
+                continue;
             }
+            if (gPlayers == ONE_PLAYER) {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 190.0f;
+            } else if (i == 0) {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 96.0f;
+            } else {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 206.0f;
+            }
+            gDPFillRectangle(gdl++, x - 10, y - 10, x + 10, y + 10);
         }
     }
     gSPDisplayList(gdl++, D_10147C8);
@@ -2553,25 +2553,26 @@ void func_801FA3C0(Gfx** gdlp) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPMatrix(gdl++, &D_5000000->unk4040, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     for (i = 0; i < gPlayers; i++) {
-        for (l = 0; l < gRiders; l++) {
-            b = &D_80228B88[i][l];
-            if (b->unk10 != 0) {
-                if (gPlayers == ONE_PLAYER) {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 190.0f;
-                } else if (i == 0) {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 96.0f;
-                } else {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 206.0f;
-                }
-                func_801EDFFC(&D_801AE948->unk4140[D_801AE950], x, y, 0.0f);
-                gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                func_801EE228(&D_801AE948->unk4140[D_801AE950], -b->unk8, 0.0f, 0.0f, 1.0f);
-                gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                gSPDisplayList(gdl++, D_10149F8);
+        for (k = 0; k < gRiders; k++) {
+            b = &D_80228B88[i][k];
+            if (b->unk10 == 0) {
+                continue;
             }
+            if (gPlayers == ONE_PLAYER) {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 190.0f;
+            } else if (i == 0) {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 96.0f;
+            } else {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 206.0f;
+            }
+            func_801EDFFC(&D_801AE948->unk4140[D_801AE950], x, y, 0.0f);
+            gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            func_801EE228(&D_801AE948->unk4140[D_801AE950], -b->unk8, 0.0f, 0.0f, 1.0f);
+            gSPMatrix(gdl++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+            gSPDisplayList(gdl++, D_10149F8);
         }
     }
     gDPPipeSync(gdl++);

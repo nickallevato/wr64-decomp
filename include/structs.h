@@ -736,7 +736,7 @@ struct UnkStruct_8004B0F8 {
     /* 0x20 */ f32 unk20;
     /* 0x24 */ s32 unk24;
     /* 0x28 */ u32 unk28;
-    /* 0x2C */ s32 unk2C;
+    /* 0x2C */ u32 unk2C;
     /* 0x30 */ UnkStruct_8004B0F8_1* unk30;
     /* 0x34 */ UnkStruct_8004B0F8_unk34* unk34;
     /* 0x38 */ f32* unk38;

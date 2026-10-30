@@ -168,16 +168,13 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
-// Score 6155 of 30700: plain pointer compares in the loops, the sums zeroed in one chain and each added next to its
-// difference, and an int 0 for the zero stores (a separate zero from the sums'). Left: the original keeps 12 in s5
-// from the start and indexes D_80158450 with multu, keeps the sums in f14-f18 (saved registers and a stack slot
-// here) and spills the old centre values in the tail. dt also holds the link constant k, as the original's $f30 does.
+// Score 1290 of 30700: plain pointer compares in the loops, the sums zeroed in one chain and each added next to its
+// difference. The 12 in s5 (multu for every D_80158450 and unk34 index) needs unk2C to be u32 like unk28: IDO keeps
+// one register for a constant only when every use has the same type. s also holds the new centre values and the
+// length (its stack home is the original's sp+0x60); with the declaration order (from a search) the frame and every
+// stack slot match. Left: the sums sit in saved registers here (f14-f18 in the original), and the link loop's dx..dz
+// and s, dt and the zero take other float registers. dt also holds the link constant k, as the original's $f30 does.
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
-    UnkStruct_8004B0F8_1* pt;
-    UnkStruct_8004B0F8_unk34* link;
-    UnkStruct_8004B0F8_1* b;
-    Vec3f* prev;
-    s32 n;
     f32 dt;
     f32 dx;
     f32 dy;
@@ -186,13 +183,15 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     f32 fx;
     f32 fy;
     f32 fz;
+    s32 n;
+    Vec3f* prev;
+    UnkStruct_8004B0F8_1* b;
+    UnkStruct_8004B0F8_unk34* link;
+    UnkStruct_8004B0F8_1* pt;
     f32 sx;
     f32 sy;
     f32 sz;
     f32 d;
-    f32 count;
-    f32 old;
-    f32 len;
 
     dt = arg0->unkC;
     for (pt = &arg0->unk30[arg0->unk28], prev = &D_80158450[arg0->unk28]; pt >= arg0->unk30; pt--, prev--) {
@@ -230,7 +229,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
             pt->unk8 += pt->unk14;
         }
     }
-    sz = sy = sx = 0; // int 0: a separate zero constant from the 0.f below (zero-spelling search)
+    sz = sy = sx = 0.0f;
     prev = &D_80158450[arg0->unk28];
     for (pt = &arg0->unk30[arg0->unk28]; pt >= arg0->unk30; pt--, prev--) {
         sx += pt->unk0;
@@ -244,26 +243,31 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
         pt->unk10 = (arg0->unk60 * d) + (pt->unk18 * dy);
         pt->unk14 = (arg0->unk64 * d) + (pt->unk18 * dz);
     }
-    count = arg0->unk28 + 1;
-    old = arg0->unk44;
-    arg0->unk44 = sx / count;
-    dx = arg0->unk44 - old;
+    // The link forces fx..fz carry the old centre and the loop's d the count: the original keeps them in the same
+    // variables (its old centre values sit in stack homes, the count shares d's register).
+    d = arg0->unk28 + 1;
+    fx = arg0->unk44;
+    s = sx / d;
+    arg0->unk44 = s;
+    dx = s - fx;
     arg0->unk50 = dx;
-    old = arg0->unk48;
-    arg0->unk48 = sy / count;
-    dy = arg0->unk48 - old;
+    fy = arg0->unk48;
+    s = sy / d;
+    arg0->unk48 = s;
+    dy = s - fy;
     arg0->unk54 = dy;
-    old = arg0->unk4C;
-    arg0->unk4C = sz / count;
-    dz = arg0->unk4C - old;
+    fz = arg0->unk4C;
+    s = sz / d;
+    arg0->unk4C = s;
+    dz = s - fz;
     arg0->unk58 = dz;
     d = SQ(dx) + SQ(dy) + SQ(dz);
     if (d != 0.f) { // FAKE: 0.f instead of 0.0f, a separate zero constant to IDO (zero-spelling search)
-        len = sqrtf(d);
-        arg0->unk68 = len;
-        arg0->unk5C = dx / len;
-        arg0->unk60 = dy / len;
-        arg0->unk64 = dz / len;
+        s = sqrtf(d);
+        arg0->unk68 = s;
+        arg0->unk5C = dx / s;
+        arg0->unk60 = dy / s;
+        arg0->unk64 = dz / s;
     } else {
         arg0->unk64 = 0;
         arg0->unk60 = 0;
