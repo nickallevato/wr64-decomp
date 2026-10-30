@@ -378,10 +378,12 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 10003 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows. Left:
-// &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not 0xB8, and the
-// saved registers shift; and IDO folds `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps
-// the sub.s and compares with 0.0f.
+// Score 9598 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows, and the
+// stunt-object search is a plain for loop that skips other kinds with continue (this replaced a guarded do-while
+// with a permuter FAKE). Left: the original guards that loop with D_801BFA40 > 0 (blez) and recomputes the end
+// pointer on the skip path; &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the saved
+// registers shift; and IDO folds `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps the
+// sub.s and compares with 0.0f.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -515,25 +517,22 @@ void func_801EF504(void) {
         }
         if (gGameModes == GMODE_STUNT) {
             found = 0;
-            obj = D_801BC940;
-            if (D_801BFA40 > 0) do {
-                if (obj->unk4C == 8) {
-                    dx = obj->unk0 - cam->eyeX;
-                    dz = obj->unk8 - cam->eyeZ;
-                    dist = sqrtf(dx * dx + dz * dz);
-                    if (dist > 0.0f) {
-                        dx /= dist;
-                        dz /= dist;
-                    }
-                    if ((0.7f <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
-                        found = 1;
-                        break;
-                    }
+            for (obj = D_801BC940; obj < &D_801BC940[D_801BFA40]; obj++) {
+                if (obj->unk4C != 8) {
+                    continue;
                 }
-                if (0) { // FAKE: from the permuter; keeps i in a saved register
+                dx = obj->unk0 - cam->eyeX;
+                dz = obj->unk8 - cam->eyeZ;
+                dist = sqrtf(dx * dx + dz * dz);
+                if (dist > 0.0f) {
+                    dx /= dist;
+                    dz /= dist;
                 }
-                obj++;
-            } while (obj < &D_801BC940[D_801BFA40]);
+                if ((0.7f <= dirX * dx + dirZ * dz) && (dist < 4096.0f)) {
+                    found = 1;
+                    break;
+                }
+            }
             if (found) {
                 show = 0;
             }
