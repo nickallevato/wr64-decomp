@@ -2828,7 +2828,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 12028 of 68000: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered; our frame is 0x98 against 0xB8.
+// Score 11823 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here;
+// as dead stores, expression statements, register or volatile they stay deleted or turn into stores), so every temp
+// after the prologue is renumbered; our frame is 0xB0 against 0xB8.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2878,11 +2881,10 @@ void func_801FB514(Gfx** gdlp) {
         count = 0;
         if (p->unk8 < 4) {
             alpha = p->unk8 * 255 / 4;
+        } else if (p->unk8 >= 20) {
+            alpha = (23 - p->unk8) * 255 / 4;
         } else {
             alpha = 255;
-            if (p->unk8 >= 20) {
-                alpha = (23 - p->unk8) * 255 / 4;
-            }
         }
         gDPPipeSync(gdl++);
         switch (p->unk0) {
