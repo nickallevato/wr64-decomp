@@ -768,11 +768,11 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #endif
 
 #ifdef NON_MATCHING
-// Score 1167 of 13500: cx and sy take f0/f2 the other way round, sysz is not spilled (the original keeps it
-// at 0x84), and the zero chain at the end goes through a temporary at 0x28. mf[3][3] = 1.0f first (from an
-// order search over the last stores) puts mf at 0x2C, as in the original, though it schedules the 1.0f early.
-// cos(y) and cos(z) are read after the first store that does not need them (statement moves from the permuter
-// and a move search).
+// Score 1034 of 13500: sysz is not spilled (the original keeps it at 0x84 and reloads it for mf[1][2]), and the
+// 1.0f for mf[3][3] is scheduled early. mf[3][3] = 1.0f first (from an order search over the last stores) puts mf
+// at 0x2C, as in the original. cos(y) and cos(z) are read after the first store that does not need them (statement
+// moves from the permuter and a move search). The zero chain also clears sysz (a permuter FAKE, marked): that
+// keeps the chain's value in $f0 as in the original instead of a temporary at 0x28.
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -817,7 +817,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[3][0] = arg4;
     mf.mf[3][1] = arg5;
     mf.mf[3][2] = arg6;
-    mf.mf[0][3] = mf.mf[1][3] = mf.mf[2][3] = 0.0f;
+    mf.mf[0][3] = mf.mf[1][3] = sysz = mf.mf[2][3] = 0.0f; // FAKE (permuter): sysz in the zero chain
     SysUtils_MtxFToMtx(&mf, arg0);
 }
 #else
