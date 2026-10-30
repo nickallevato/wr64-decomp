@@ -145,16 +145,9 @@ void func_8007DBC0(void) {
 // is a sphere of radius 62 that is pushed back as well (D_800D49B8 of the depth goes to the rider); a fixed one is two
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
-#ifdef NON_MATCHING
-// Score 200 of 60700: same blocks, frame (0x88), saved registers and stack slots. dot holds the squared distance,
-// then the distance (its square root) and then the push factor; a separate d, len and an unused pad all cost
-// frame slots. The permuter's alias e2 (a FAKE, marked) makes the free-sphere block spill pen * z as the original
-// does. The free sphere's push factor is computed once (in dot, reused) as in the original's single load of
-// D_800D49B8; each block scales x, y and z by 1/dot and computes its push component right after each one. The loop
-// compares the pointers without (u32) casts; e2 and px sit where a declaration search put them, e->unk8 is pushed
-// before e->unk4 (a permuter statement order), and the free sphere's push components are computed x, y, z. Left:
-// the free sphere's pushes of e->unk4/unk8 and unk40/unk44 come in the other order (the natural order costs more
-// elsewhere) and the arg4 sums take other float temps.
+// dot holds the squared distance, then the distance and then the push factor (one local, as the original's frame
+// shows); the free sphere's push factor is computed once and reused. The alias e2 for the free sphere's first push
+// is a FAKE (permuter, marked): without it IDO keeps pen in a register where the original spills pen * z.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
     struct UnkStruct_801AEE20* e;
     f32 x;
@@ -188,13 +181,13 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                 z *= 1.0f / dot;
                 dot = pen * D_800D49B8;
                 pen -= dot;
-                e->unk0 -= pen * x;
-                e->unk8 -= pen * z;
+                e2 = e; // FAKE (permuter): an alias of e for the first push; gives the original's spill of pen * z
+                e2->unk0 -= pen * x;
                 e->unk4 -= pen * y;
+                e->unk8 -= pen * z;
                 e->unk3C -= pen * x;
-                e2 = e; // FAKE (permuter): an alias of e for one store, moves the spills and registers
-                e2->unk44 -= pen * z;
                 e->unk40 -= pen * y;
+                e->unk44 -= pen * z;
                 px = dot * x;
                 py = dot * y;
                 pz = dot * z;
@@ -205,9 +198,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -242,9 +235,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                         arg0->unk15B8 = y;
                         arg0->unk15BC = z;
                     }
+                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -277,9 +270,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                         arg0->unk15B8 = y;
                         arg0->unk15BC = z;
                     }
+                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                    ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                     ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -314,9 +307,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -349,9 +342,9 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                     arg0->unk15B8 = y;
                     arg0->unk15BC = z;
                 }
+                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg4)->unk14 += pz;
-                ((UnkStruct_8004B0F8_1*) arg4)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unkC += px;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk10 += py;
                 ((UnkStruct_8004B0F8_1*) arg5)->unk14 += pz;
@@ -364,9 +357,6 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_383C0/func_8007DF4C.s")
-#endif
 
 void func_8007E8C8(UnkStruct_80192690* arg0) {
     func_8007DF4C(arg0, arg0->unk160C, arg0->unk1610, arg0->unk1614, &arg0->unk90[4], &arg0->unk90[5], &arg0->unk90[3]);
