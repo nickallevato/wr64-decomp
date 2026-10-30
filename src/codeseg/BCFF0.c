@@ -195,8 +195,10 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 7041 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
-// addresses in registers as in the original; the Vtx copy pointers are set up in the order found by a move search.
+// Score 6826 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// addresses in registers as in the original (the order of the four HUD colour globals is from a permutation search);
+// the Vtx copy pointers are set up in the order found by a move search; the D_80228B60..70 loop runs while i != 2,
+// which gives the original's bne end test.
 // Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
 // keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
 // registers there.
@@ -297,9 +299,9 @@ void func_801EED70(void) {
     } else {
         gStartLightsOffset = gStartLightsOffsetMax;
     }
-    gHudColorStep = gHudMarkerColorStep = gHudMarkerColorFrame = gHudColorFrame = 0;
+    gHudColorStep = gHudColorFrame = gHudMarkerColorStep = gHudMarkerColorFrame = 0;
     D_80228A98 = D_80228B78 = D_80228B7C = D_80228B80 = 0;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i != 2; i++) {
         D_80228B70[i] = 0;
         D_80228B68[i] = 0;
         D_80228B60[i] = 0;
@@ -1312,7 +1314,8 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6415 of 174400: y is copied into a local (py), which the original keeps in s0 (the big-digit loop still reads
+// Score 5400 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
+// instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original keeps in s0 (the big-digit loop still reads
 // y, which orders its hoisted y << 2 terms as in the original), a stack pad gives the original's 0x2C8 frame, sec is
 // reduced mod 60 before ms is taken, and the paired digit stores are chained assignments. Left: temp registers numbered
 // differently from the style 0/2 branch on.
@@ -1398,7 +1401,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
         for (i = 0; i < 6; i++) {
-            HUD_DIGIT(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16, px, y);
+            HUD_LOAD32(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16);
+            HUD_RECT(gdl, px, y, 12, 16);
             px += 13;
             if (i == 0) {
                 px += 6;
@@ -1406,8 +1410,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 px += 7;
             }
         }
-        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, py);
-        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, py);
+        HUD_LOAD32(gdl, D_103D2D0, 12, 16);
+        HUD_RECT(gdl, x + 12, py, 12, 16);
+        HUD_LOAD32(gdl, D_103D5D0, 12, 16);
+        HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
@@ -2999,11 +3005,6 @@ void func_801FB514(Gfx** gdlp) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FB514.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 5485 of 25000: x * 4 (an int literal, a separate constant to IDO; from a literal search) in the first
-// rectangle coordinate. Left: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
-// D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
-// IDO here hoists it. A 12-byte pad gives the original's frame (0xE0) and spill slots.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
@@ -3012,7 +3013,7 @@ extern u32 D_8052018[];
 void func_801FBFB4(Gfx** gdlp) {
     Gfx* gdl;
     s32 i;
-    s32 pad[3]; // stack pad: the frame is 0xE0 as in the original
+    s32 pad[4]; // stack pad: gives the original's frame (0xE0)
     s32 j;
     s32 cx;
     s32 cy;
@@ -3023,7 +3024,7 @@ void func_801FBFB4(Gfx** gdlp) {
     f32 height;
     f32 x;
     f32 y;
-    f32 nextY;
+    f32 step;
 
     gdl = *gdlp;
     gSPDisplayList(gdl++, D_10146B0);
@@ -3060,23 +3061,20 @@ void func_801FBFB4(Gfx** gdlp) {
         height = 32.0f * scale;
         width = w * scale;
         y = cy - height * 0.5f;
+        step = height * 0.25f;
         x = cx - width * 0.5f;
         for (j = 0; j < 4; j++) {
-            nextY = y + height * 0.25f;
-            gDPLoadTextureTile(gdl++, &tex[j * w * 8], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
+            gDPLoadTextureTile(gdl++, &tex[j * (w * 8)], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(gdl++, (s32) (x * 4), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f), // odd literal: int 4
-                                (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
+            gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
+                                (s32) ((y + step) * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
                                 (s32) (32768.0f / height));
-            y = nextY;
+            y += step;
         }
     }
     *gdlp = gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FBFB4.s")
-#endif
 
 void func_801FC39C(void) {
     Players player;

@@ -2069,7 +2069,8 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 9855 of 259500: registers and scheduling. cam declared after five locals and sp4C/sp48 last put them at
+// Score 9475 of 259500: registers and scheduling. The 11.0f compare is single precision (c.lt.s) as in the
+// original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts p before i. cam declared after five locals and sp4C/sp48 last put them at
 // 0x58/0x4C/0x48 as in the original; D_801D0774's offset is stored before it is scaled; statement order from a move
 // search. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
@@ -2498,17 +2499,17 @@ void func_800A68A4(s32 arg0) {
                 }
             }
             func_800A2B24(arg0);
-            best = -1;
             D_801D0754 = func_8009D4A8(D_801CF060[arg0].unkC - D_801B2F20[D_801CF060[arg0].unk9C].unk0,
                                        D_801CF060[arg0].unk14 - D_801B2F20[D_801CF060[arg0].unk9C].unk8);
-            if ((D_801D0754 < 1000.0f) && (D_801D06D4 > 11.0)) { // double literal from a literal search (score 9875 -> 9855)
+            if ((D_801D0754 < 1000.0f) && (D_801D06D4 > 11.0f)) {
                 D_801CF060[arg0].unk8 = 1;
                 D_801CF060[arg0].unk9C = D_801B2F20[D_801CF060[arg0].unk9C].unkA0;
                 D_801CF060[arg0].unk50 = 0;
             }
+            best = -1;
             if (D_801D0754 > 3000.0f) {
                 D_801D0754 = 2e9f;
-                for (i = 0, p = D_801B2F20; i < D_801BB124; i++, p++) {
+                for (p = D_801B2F20, i = 0; i < D_801BB124; i++, p++) {
                     D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
                     if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
                         best = i;
