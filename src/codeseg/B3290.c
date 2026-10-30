@@ -1,13 +1,7 @@
 #include "common.h"
 
-#ifdef NON_MATCHING
-// Score 130 of 22600: as in guLookAtF, the second cross product is written back into ux, uy, uz. The third
-// value of each block is a repeated cast, not a local. The stores go in the order of func_80048A88 (the
-// matched sibling): [r][c], [r][c + 1], [r + 2][c], [r + 2][c + 1]. Left: the FAKE copy m2 takes a stack slot,
-// so the spills are 4 bytes lower; the integer temporaries of the third and last blocks are swapped (a2, a3, t0
-// here for the third, v0, v1, a1 for the last; the other way round in the original). Without m2 (plain mtx) the
-// spills and the third block match, but 0xFFFF0000 lands in a2 instead of t1 and the last block shifts by one
-// register (score 295).
+// Builds the fixed-point Mtx directly: as in guLookAtF, the second cross product is
+// written back into ux, uy, uz; the stores follow func_80048A88 ([r][c], [r][c + 1], [r + 2][c], [r + 2][c + 1]).
 void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32 arg7, f32 arg8, f32 arg9,
                    f32 arg10) {
     f32 scale;
@@ -17,7 +11,6 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
     f32 len;
     s32 a;
     s32 b;
-    Mtx* m2;
 
     fx /= 127.0;
     fy /= 127.0;
@@ -50,6 +43,7 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
         uy = fz * xx - fx * xz;
         uz = fx * xy - fy * xx;
         len = 1.0 / sqrtf(ux * ux + uy * uy + uz * uz);
+        scale = arg10 * 65536.0f; // computed again after the call, as the original does
         ux *= len;
         uy *= len;
         uz *= len;
@@ -57,21 +51,17 @@ void func_801E4C60(Mtx* mtx, f32 fx, f32 fy, f32 fz, f32 ux, f32 uy, f32 uz, f32
         b = uy * scale;
         mtx->m[0][2] = (a & 0xFFFF0000) | ((u32) b >> 16);
         mtx->m[0][3] = ((s32) (uz * scale)) & 0xFFFF0000;
-        m2 = mtx; // FAKE: a copy of mtx for the last two blocks' registers
-        m2->m[2][2] = (a << 16) | (b & 0xFFFF);
-        m2->m[2][3] = ((s32) (uz * scale)) << 16;
+        mtx->m[2][2] = (a << 16) | (b & 0xFFFF);
+        mtx->m[2][3] = ((s32) (uz * scale)) << 16;
 
         a = 65536.0f * arg7;
         b = 65536.0f * arg8;
-        m2->m[1][2] = (a & 0xFFFF0000) | ((u32) b >> 16);
-        m2->m[1][3] = (((s32) (65536.0f * arg9)) & 0xFFFF0000) | 1;
-        m2->m[3][2] = (a << 16) | (b & 0xFFFF);
-        m2->m[3][3] = ((s32) (65536.0f * arg9)) << 16;
+        mtx->m[1][2] = (a & 0xFFFF0000) | ((u32) b >> 16);
+        mtx->m[1][3] = (((s32) (65536.0f * arg9)) & 0xFFFF0000) | 1;
+        mtx->m[3][2] = (a << 16) | (b & 0xFFFF);
+        mtx->m[3][3] = ((s32) (65536.0f * arg9)) << 16;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/B3290/func_801E4C60.s")
-#endif
 
 typedef struct AnimKey {
     /* 0x0 */ s16 x;

@@ -2702,9 +2702,6 @@ void func_801FBFB4(Gfx**);
 void func_801FAEB0(s32 arg0) {
 }
 
-#ifdef NON_MATCHING
-// Score 445 of 37200: only the three hoisted float constants take other saved FP registers (the original: 1.0f in f24,
-// 3.0f in f22, 1.3f in f20; here 3.0f, 1.3f, 1.0f in that order).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2762,6 +2759,8 @@ void func_801FAEB8(Gfx** gdlp) {
                 D_80228B70[i] = 0;
                 D_80228B68[i] &= 3;
             }
+            if (1) {} // FAKE (permuter): an empty block before the lap test; with it the saved integer registers
+                      // (gdl, i, the i * 4 offset, rider, w) are coloured as in the original
             if (rider->lapCount < D_801CE728[0]) {
                 if (gPlayers == ONE_PLAYER) {
                     x = 116;
@@ -2771,12 +2770,12 @@ void func_801FAEB8(Gfx** gdlp) {
                 } else {
                     x = 125;
                     w = 48;
-                    scale = 1.0f;
                     if (i == 0) {
                         y = 40;
                     } else {
                         y = 150;
                     }
+                    scale = 1.0f;
                 }
                 gdl = Printer_PrintScaled(gdl, 0, "LAP", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
                 sprintf((char*) D_80228CF8, "%d", rider->lapCount);
@@ -2789,13 +2788,13 @@ void func_801FAEB8(Gfx** gdlp) {
                     w = 98;
                     scale = 1.3f;
                 } else {
-                    scale = 1.0f;
-                    w = 77;
                     if (i == 0) {
                         y = 40;
                     } else {
                         y = 150;
                     }
+                    w = 77;
+                    scale = 1.0f;
                 }
                 gdl = Printer_DrawString(Printer_PrintScaled(gdl, 0, "FINAL", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
                                                   g1, b1, scale),
@@ -2805,9 +2804,6 @@ void func_801FAEB8(Gfx** gdlp) {
     }
     *gdlp = gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FAEB8.s")
-#endif
 
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
     UnkStruct_80228AE0* var_v1;
