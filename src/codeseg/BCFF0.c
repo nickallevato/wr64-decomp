@@ -2105,13 +2105,13 @@ void func_801F4120(Gfx** gdlp) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F4120.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 30 of 46800: only the bob counter (d) takes $v0 where the original has $v1; everything else matches.
 extern s32 D_801C1FD4;
 extern s32 D_80228DD8[4];
 extern s32 D_80228DE8[4];
 extern s32 D_80228DFC;
 
+// Moves each portrait toward the row of its rider's race position, steps the D_80228DC8 offsets toward
+// D_80228DD8, and advances the portraits' bob phase.
 void func_801F8DD0(void) {
     s32 i;
     s32 j;
@@ -2119,6 +2119,7 @@ void func_801F8DD0(void) {
     s32 me;
     s32 ad;
     s32 d;
+    s32 step; // the D_80228DC8 / D_80228DD8 difference
     f32 dx;
     f32 dz;
     f32 dist;
@@ -2182,12 +2183,12 @@ void func_801F8DD0(void) {
             D_80228DE8[j] = 1;
             D_80228DD8[j] = 0;
         }
-        d = D_80228DC8[j]; // FAKE: loads D_80228DC8 before D_80228DD8
-        d = D_80228DD8[j] - d;
+        step = D_80228DC8[j]; // FAKE: loads D_80228DC8 before D_80228DD8
+        step = D_80228DD8[j] - step;
         if (D_80228DC8[j] != D_80228DD8[j]) {
-            me = (d >= 0) ? d : -d;
+            me = (step >= 0) ? step : -step;
             D_80228DE8[j]++;
-            if (d > 0) {
+            if (step > 0) {
                 D_80228DC8[j]++;
             } else if (D_80228DE8[j] >= me) {
                 D_80228DC8[j] = D_80228DD8[j];
@@ -2216,13 +2217,13 @@ void func_801F8DD0(void) {
                         dz = D_80192690[me].unk44.z - D_80192690[j].unk44.z;
                         dist = sqrtf(dx * dx + dz * dz);
                         if (dist < 512.0f) {
-                            d = gPortraitPos[i][j].bobPhase;
+                            me = gPortraitPos[i][j].bobPhase; // reuses me (dead here) for the bob counter
                             if (dist < 256.0f) {
-                                d += 2;
+                                me += 2;
                             } else {
-                                d += 1;
+                                me += 1;
                             }
-                            gPortraitPos[i][j].bobPhase = d & 7;
+                            gPortraitPos[i][j].bobPhase = me & 7;
                         }
                     }
                 }
@@ -2252,9 +2253,6 @@ void func_801F8DD0(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F8DD0.s")
-#endif
 
 // Draw the column of rider portraits, with their race positions.
 void func_801F9520(Gfx** gdlp) {
