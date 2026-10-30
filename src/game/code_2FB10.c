@@ -529,15 +529,10 @@ extern f32 D_801C3788;
 void func_800C1904(s32);
 void func_800C1A20(s32);
 
-#ifdef NON_MATCHING
-// Score 10 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
-// if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
-// reused; the permuter found them, and with them the int registers match, except wasIn's). The nearest-record block
-// reads D_801C3780 / D_801C3788 directly and writes the previous record's distance out twice: the original's stack
-// slots at 0x28, 0x24 and 0x20 are IDO's spilled copies of those, not locals. The declaration order gives every
-// stack slot: cur (0x6C) before the four zone outputs (0x68..0x5C), dz0 next to dx0, and one more word at the end.
-// The deltas go prev, cur, next (a search of all 720 orders). The Drake Lake loop skips with `continue` when
-// D_801C3784 > 40 and takes dx before dz (that gives its float registers). Left: wasIn takes a1 (a3 there). The Drake Lake deltas reuse dx0/dz0.
+// Nearest-record tracking for rider arg0, Drake Lake's flag (unk318) and the Port Blue / Twilight City box
+// (inBox, with func_800C1904 / func_800C1A20 on a change for a human player). The nearest-record block reads
+// D_801C3780 / D_801C3788 directly: the stack slots at 0x28, 0x24 and 0x20 are IDO's spilled copies of those.
+// best counts the Drake Lake loop and next holds the old inBox (both reused once dead).
 void func_80076378(s32 arg0) {
     s32 best;
     f32 dz0;
@@ -554,12 +549,12 @@ void func_80076378(s32 arg0) {
     f32 dxp;
     f32 dzp;
     f32 dxn;
-    s32 wasIn;
+    s32 count;
     f32 dzn;
     s32 player;
     UnkStruct_800D8204* rect;
     RiderStruct* rider;
-    s32 pad; // stack pad: the original has one more word here
+    s32 pad; // stack pad
 
     rider = &gRiderRaceState[arg0];
     if (D_801CE638 == 2) {
@@ -604,11 +599,11 @@ void func_80076378(s32 arg0) {
     if (gCourseID == DRAKE_LAKE) {
         rider->unk318 = 0;
         if (gDifficulty < 2) {
-            wasIn = 3;
+            count = 3;
         } else {
-            wasIn = 6;
+            count = 6;
         }
-        for (best = 0; best < wasIn; best++) {
+        for (best = 0; best < count; best++) {
             if (D_801C3784 > 40.0f) {
                 continue;
             }
@@ -621,7 +616,7 @@ void func_80076378(s32 arg0) {
         }
     }
     if ((gCourseID == PORT_BLUE) || (gCourseID == TWILIGHT_CITY)) {
-        wasIn = rider->inBox;
+        next = rider->inBox; // next (dead here) holds the old inBox
         if (gCourseID == PORT_BLUE) {
             rect = &D_800D8204;
         } else {
@@ -633,7 +628,7 @@ void func_80076378(s32 arg0) {
         } else {
             rider->inBox = 0;
         }
-        if (isHuman && (wasIn != rider->inBox)) {
+        if (isHuman && (next != rider->inBox)) {
             if (arg0 == gPlayer1Rider) {
                 player = 0;
             } else {
@@ -647,9 +642,6 @@ void func_80076378(s32 arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80076378.s")
-#endif
 
 extern s32 D_800D4B00;
 extern s32 D_801B2F20[];
