@@ -85,16 +85,16 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 610 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// Score 600 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
 // ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
 // alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
 // spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
 // a separate constant to IDO from the vertices' 0.866f (found by the permuter); the ob[1] chain runs from vtx[6].
-// padB/padC are stack pads (the original has two more words between hiz and cam). The (u16) on each texture
-// coordinate's SysUtils_Round takes the extra integer temporary the original uses there (hack: it shifts the
-// temporaries to the original's numbering). Left: the cam->upY CSE takes $f14 (the original's $f24) and the
-// float registers after it, 0.866f is loaded later into $f20 (early into $f24 there), and the first texture
-// coordinate's D_800D475C load is t7 (t6 there).
+// padB/padC are stack pads (the original has two more words between hiz and cam). The (s16) on the second texture
+// coordinate's SysUtils_Round takes an extra integer temporary (hack: the original uses one more between each
+// coordinate's load and add, and this moves the temporaries towards its numbering). Left: the cam->upY CSE takes
+// $f14 (the original's $f24) and the float registers after it, 0.866f is loaded later into $f20 (early into $f24 there), and the texture coordinates'
+// sums and second load take t7/t0 (t8/t9 there).
 void func_8004C1D0(s32 view, Vtx* vtx) {
     s32 i;
     f32 d;
@@ -233,8 +233,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = (s32) (e + 0.5f);
         }
-        vp->v.tc[0] = (u16) SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C; // (u16): see above
-        vp->v.tc[1] = (u16) SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;
+        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
+        vp->v.tc[1] = (s16) SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760; // (s16): see above
     }
 }
 #else
