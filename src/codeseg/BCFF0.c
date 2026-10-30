@@ -2999,12 +2999,6 @@ void func_801FB514(Gfx** gdlp) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FB514.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 2500 of 25000: the texture offset is j * (w * 8), so the step w * 8 is recomputed in the inner loop as in the
-// original (w stays in s3); the quarter height is its own local, computed before the loop as the original does; x * 4
-// uses the same 4.0f as the other coordinates. Left: the loop-invariant rectangle words are hoisted into s0..s2 in a
-// different order (the original: x * 4 in s0, the dsdx/dtdy word in s1, (x + width) * 4 with the opcode in s2). A
-// 12-byte pad gives the original's frame (0xE0) and spill slots.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
@@ -3013,7 +3007,7 @@ extern u32 D_8052018[];
 void func_801FBFB4(Gfx** gdlp) {
     Gfx* gdl;
     s32 i;
-    s32 pad[3]; // stack pad: the frame is 0xE0 as in the original
+    s32 pad[4]; // stack pad: gives the original's frame (0xE0)
     s32 j;
     s32 cx;
     s32 cy;
@@ -3024,7 +3018,6 @@ void func_801FBFB4(Gfx** gdlp) {
     f32 height;
     f32 x;
     f32 y;
-    f32 nextY;
     f32 step;
 
     gdl = *gdlp;
@@ -3065,21 +3058,17 @@ void func_801FBFB4(Gfx** gdlp) {
         step = height * 0.25f;
         x = cx - width * 0.5f;
         for (j = 0; j < 4; j++) {
-            nextY = y + step;
             gDPLoadTextureTile(gdl++, &tex[j * (w * 8)], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
-                                (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
+                                (s32) ((y + step) * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
                                 (s32) (32768.0f / height));
-            y = nextY;
+            y += step;
         }
     }
     *gdlp = gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FBFB4.s")
-#endif
 
 void func_801FC39C(void) {
     Players player;
