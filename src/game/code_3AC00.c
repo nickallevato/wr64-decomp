@@ -1287,10 +1287,10 @@ void func_80085408(void) {
  * Scratch: https://decomp.me/scratch/c7EJc
  * Score: 105 (99.62&)
  */
-// Score 55 of 27700: float registers only. The scaled steering values and the float copy of unkB52 reuse cross
-// (dead after its test), from a partition search (155 -> 105), and an empty block in the unk40 arm (FAKE, marked)
-// gives 55. Left: the dot product (var_f0) and cross swap $f0 and $f16, and var_f12's copy takes $f16, not $f12.
-// Upstream's 105 above is decomp.me's scale.
+// Score 40 of 27700: float registers only. The scaled steering values and the float copy of unkB52 reuse cross
+// (dead after its test), from a partition search (155 -> 105), and a dead copy of the dot product into var_f0 before
+// the ABS chain (permuter FAKE, marked) gives 40; the empty block in the unk40 arm is no longer needed. Left: the
+// dot product (var_f0) and cross swap $f0 and $f16. Upstream's 105 above is decomp.me's scale.
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;
@@ -1338,32 +1338,34 @@ void func_80085510(void) {
     if ((var_f0 * cross) < 0.0f) {
         sp4C = 0;
         D_801C3C50->unkB53 = 0;
-    } else if ((var_f0 = ABS(var_f12)) > 0.5f) {
-        if (var_f12 < 0.0f) {
-            sp4C = (s32) steer;
-            D_801C3C50->unkB53 = -0x2A;
-        } else {
-            sp4C = (s32) (-1.0f * steer);
-            D_801C3C50->unkB53 = -0x2A;
-        }
-    } else if ((var_f0 = ABS(var_f12)) > 0.05f) {
-        if (var_f12 < 0.0f) {
-            cross = (-1.0f * var_f12) / 0.5f;
-            sp4C = (s32) (cross * steer);
-            D_801C3C50->unkB53 = (s32) (cross * -35.0f);
-        } else {
-            cross = var_f12 / 0.5f;
-            sp4C = (s32) (-steer * cross);
-            D_801C3C50->unkB53 = (s32) (cross * -35.0f);
-        }
     } else {
-        sp4C = 0;
-        D_801C3C50->unkB53 = 0;
+        var_f0 = (sp4C * sp44) + (sp48 * sp40); // FAKE (permuter): dead copy
+        if ((var_f0 = ABS(var_f12)) > 0.5f) {
+            if (var_f12 < 0.0f) {
+                sp4C = (s32) steer;
+                D_801C3C50->unkB53 = -0x2A;
+            } else {
+                sp4C = (s32) (-1.0f * steer);
+                D_801C3C50->unkB53 = -0x2A;
+            }
+        } else if ((var_f0 = ABS(var_f12)) > 0.05f) {
+            if (var_f12 < 0.0f) {
+                cross = (-1.0f * var_f12) / 0.5f;
+                sp4C = (s32) (cross * steer);
+                D_801C3C50->unkB53 = (s32) (cross * -35.0f);
+            } else {
+                cross = var_f12 / 0.5f;
+                sp4C = (s32) (-steer * cross);
+                D_801C3C50->unkB53 = (s32) (cross * -35.0f);
+            }
+        } else {
+            sp4C = 0;
+            D_801C3C50->unkB53 = 0;
+        }
     }
 
     if (D_801C3C58->unk40 != 0) {
         if (var_f12 < 0.0f) {
-            if (1) {} // FAKE: an empty block (insertion search) that moves the float registers
             sp4C = 70.0f;
         } else {
             sp4C = -70.0f;
