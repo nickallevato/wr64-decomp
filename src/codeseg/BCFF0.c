@@ -378,10 +378,11 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 10003 of 69300: the two waypoint tests compute dx/dz first, as the original's operand order shows. Left:
-// &D_801AEE20 is hoisted into s8 here (the original rebuilds it at each use), so the frame is 0xC0, not 0xB8, and the
-// saved registers shift; and IDO folds `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps
-// the sub.s and compares with 0.0f.
+// Score 7828 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// original's operand order shows. The stunt-object search is a do-while guarded by D_801BFA40 > 0 that skips other
+// kinds with a goto to the increment (the original's skip path jumps to the loop test). Left: &D_801AEE20 is hoisted
+// into s8 here (the original rebuilds it at each use), so the saved registers shift; and IDO folds
+// `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps the sub.s and compares with 0.0f.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -516,8 +517,11 @@ void func_801EF504(void) {
         if (gGameModes == GMODE_STUNT) {
             found = 0;
             obj = D_801BC940;
-            if (D_801BFA40 > 0) do {
-                if (obj->unk4C == 8) {
+            if (D_801BFA40 > 0) {
+                do {
+                    if (obj->unk4C != 8) {
+                        goto next; // goto: skips to the increment, as the original's skip path does
+                    }
                     dx = obj->unk0 - cam->eyeX;
                     dz = obj->unk8 - cam->eyeZ;
                     dist = sqrtf(dx * dx + dz * dz);
@@ -529,11 +533,10 @@ void func_801EF504(void) {
                         found = 1;
                         break;
                     }
-                }
-                if (0) { // FAKE: from the permuter; keeps i in a saved register
-                }
-                obj++;
-            } while (obj < &D_801BC940[D_801BFA40]);
+                next:
+                    obj++;
+                } while (obj < &D_801BC940[D_801BFA40]);
+            }
             if (found) {
                 show = 0;
             }
@@ -2828,7 +2831,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 12028 of 68000: the original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here), so every temp after the prologue is renumbered; our frame is 0x98 against 0xB8.
+// Score 11823 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here;
+// as dead stores, expression statements, register or volatile they stay deleted or turn into stores), so every temp
+// after the prologue is renumbered; our frame is 0xB0 against 0xB8.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2878,11 +2884,10 @@ void func_801FB514(Gfx** gdlp) {
         count = 0;
         if (p->unk8 < 4) {
             alpha = p->unk8 * 255 / 4;
+        } else if (p->unk8 >= 20) {
+            alpha = (23 - p->unk8) * 255 / 4;
         } else {
             alpha = 255;
-            if (p->unk8 >= 20) {
-                alpha = (23 - p->unk8) * 255 / 4;
-            }
         }
         gDPPipeSync(gdl++);
         switch (p->unk0) {

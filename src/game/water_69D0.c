@@ -85,14 +85,19 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 12708 of 49800: same frame (0xF0); x/y/z serve the cross product, both rays and the point as in the original's
-// registers. Left: three locals short between hiz and upx, so most stack slots are off by a word, and float registers
-// differ (k stays in $f24 here; the original spills k to sp+0xE4 and keeps 0.866f in $f24)
+// Score 2108 of 49800: calls, branches and the frame (0xF0) agree, and nearly every stack slot sits at the original's
+// offset. The alpha is a signed conversion ((s32) (e + 0.5f): the original has no unsigned-conversion sequence), the
+// first k (the far vertex's offset) is its own local r, and one f32 (e) serves the corner-ray temps and the alpha.
+// The dist offset spells 0.866 as .866f, a separate constant to IDO from the vertices' 0.866f (found by the
+// permuter); the ob[1] chain runs from vtx[6]. padB/padC are stack pads (the original has two more words between hiz
+// and cam). Left: float registers (the original keeps dist in $f24, spills r to sp+0xE4 across SysUtils_Round and
+// keeps 0.866f in $f24), and its integer temps start two later than here.
 void func_8004C1D0(s32 view, Vtx* vtx) {
     s32 angle;
     f32 k;
     s32 i;
     f32 d;
+    f32 r;
     f32 w;
     f32 h;
     f32 s;
@@ -103,6 +108,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 hix;
     f32 hiy;
     f32 hiz;
+    f32 padB; // stack pad
+    f32 padC; // stack pad
     camera_unk_1* cam;
     f32 x;
     f32 y;
@@ -110,7 +117,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 upx;
     f32 upy;
     f32 upz;
-    f32 a;
     f32 e;
     Vtx* vp;
 
@@ -151,15 +157,15 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     z = (cam->upZ * e) + upz;
     if ((y + hiy) > 5.0f) {
         do {} while (0); // FAKE: a block boundary with no code; moves the register allocation towards the original
-        a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
-        if (a < dist) {
-            dist = a;
+        e = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
     if ((y + loy) > 5.0f) {
-        a = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
-        if (a < dist) {
-            dist = a;
+        e = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
     e = cam->unk98 + h;
@@ -167,32 +173,32 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     y = (cam->upY * e) + upy;
     z = (cam->upZ * e) + upz;
     if ((y + hiy) > 5.0f) {
-        a = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
-        if (a < dist) {
-            dist = a;
+        e = (s / (y + hiy)) * (((x + hix) * cam->unkF0) + ((z + hiz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
     if ((y + loy) > 5.0f) {
-        a = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
-        if (a < dist) {
-            dist = a;
+        e = (s / (y + loy)) * (((x + lox) * cam->unkF0) + ((z + loz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
-    dist = (D_800D4744 * 0.866f) + dist;
+    dist = (D_800D4744 * .866f) + dist; // .866f: a separate constant from the 0.866f below (IDO keeps them apart)
     x = cam->eyeX + (dist * cam->unkF0);
     z = cam->eyeZ + (dist * cam->unkF4);
-    k = D_800D4744 * D_800D4764;
+    r = D_800D4744 * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
     vtx[5].v.ob[0] = vtx[1].v.ob[0] =
  SysUtils_Round(x - (D_800D4744 * 0.5f));
-    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * k));
+    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * r));
     vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
     vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
-    vtx[0].v.ob[1] = vtx[1].v.ob[1] = vtx[2].v.ob[1] = vtx[3].v.ob[1] = vtx[4].v.ob[1] = vtx[5].v.ob[1] =
-        vtx[6].v.ob[1] = SysUtils_Round(D_800D4740);
+    vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
+        vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
     vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
-    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * k));
+    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * r));
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
     vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
 
@@ -217,13 +223,13 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         vp = &vtx[i];
         x = vp->v.ob[0] - cam->eyeX;
         z = vp->v.ob[2] - cam->eyeZ;
-        a = (sqrtf((x * x) + (z * z)) * D_800D4738) + D_800D473C;
-        if (a < 0.5f) {
+        e = (sqrtf((x * x) + (z * z)) * D_800D4738) + D_800D473C;
+        if (e < 0.5f) {
             vp->v.cn[3] = 0;
-        } else if (a > 254.5f) {
+        } else if (e > 254.5f) {
             vp->v.cn[3] = 255;
         } else {
-            vp->v.cn[3] = a + 0.5f;
+            vp->v.cn[3] = (s32) (e + 0.5f);
         }
         vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
         vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;

@@ -5465,21 +5465,23 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 12925 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
-// floats, an unsigned conversion into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by
-// index, and the C88 entry is re-read through the rider each time (the loop reloads unk1424 after every store, as in
-// the original). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared with an int 0, a
-// separate constant to IDO (the original's zero there is not the 0.0f it keeps in ). Left: the original keeps
-// 0.0f in  across the calls (here it is rematerialised, so the frame is 8 bytes smaller and f20 is not saved), and
-// float registers and scheduling differ in the sphere code.
+// Score 7950 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
+// into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by index, and the C88 entry is
+// re-read through the rider for each component, read once into x and stored from x (the original multiplies the
+// loaded value without reloading it). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared
+// with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two statements (the original stores zero to
+// both and reads both back for unk16F0/unk16F4). Left: constant hoisting around the clear chain (the original keeps 10, 0x800
+// and 1 in registers, this C 1, 0x800, 8 and 22), the order of the chain's stores, and float register allocation
+// in the first transform.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
-    MtxF mf;
     UnkStruct_8004B0F8_1* point;
     Vec3f* tmpl;
     f32* lengths;
     f32 x;
     f32 y;
+    MtxF mf;
     f32 z;
     RiderPart* part;
     s32 i;
@@ -5522,7 +5524,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
                         rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
                             rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
-    rider->unk1604 = rider->unk16F2 = 0;
+    rider->unk1604 = 0;
+    rider->unk16F2 = 0;
     rider->unk16C8 = -1;
     rider->unk15FC = 0x800;
     rider->unk1446 = 10;
@@ -5547,9 +5550,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkBAC = 0.0f;
     rider->unkBB0 = 0.0f;
     rider->unkBB4 = 0.0f;
-    rider->unkC68 = 1;
     x = rider->unk44.x + (2.0f * rider->unk78);
     y = rider->unk44.y + (2.0f * rider->unk7C);
+    rider->unkC68 = 1;
     z = rider->unk44.z + (2.0f * rider->unk80);
     RIDER_SPHERES(rider)[0].pos.x = (rider->unk6C * 27.0f) + x;
     RIDER_SPHERES(rider)[0].pos.y = (rider->unk70 * 27.0f) + y;
@@ -5605,14 +5608,17 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
     rider->unkC10 = -27.300001f;
     rider->unkC0C = rider->unkC04 = 34.11f;
-    rider->unk1448[0].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
-    rider->unk1448[0].unk0.x = (RIDER_C88(rider)[rider->unk1424][7].unkC.x * -2.1f) +
+    x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
+    rider->unk1448[0].unkC.x = x;
+    rider->unk1448[0].unk0.x = (x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
-    rider->unk1448[0].unkC.y = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
-    rider->unk1448[0].unk0.y = (RIDER_C88(rider)[rider->unk1424][7].unkC.y * -2.1f) +
+    x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
+    rider->unk1448[0].unkC.y = x;
+    rider->unk1448[0].unk0.y = (x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.y + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y));
-    rider->unk1448[0].unkC.z = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
-    rider->unk1448[0].unk0.z = (RIDER_C88(rider)[rider->unk1424][7].unkC.z * -2.1f) +
+    x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
+    rider->unk1448[0].unkC.z = x;
+    rider->unk1448[0].unk0.z = (x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.z + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z));
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
@@ -5630,12 +5636,15 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         lengths = D_800D48E4;
     }
     for (i = 1; i < 6; i++) {
-        rider->unk1448[i].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
-        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (rider->unk1448[i].unkC.x * lengths[i - 1]);
-        rider->unk1448[i].unkC.y = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
-        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (rider->unk1448[i].unkC.y * lengths[i - 1]);
-        rider->unk1448[i].unkC.z = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
-        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (rider->unk1448[i].unkC.z * lengths[i - 1]);
+        x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
+        rider->unk1448[i].unkC.x = x;
+        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (x * lengths[i - 1]);
+        x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
+        rider->unk1448[i].unkC.y = x;
+        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (x * lengths[i - 1]);
+        x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
+        rider->unk1448[i].unkC.z = x;
+        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (x * lengths[i - 1]);
         rider->unk1448[i].unk14.x = RIDER_C88(rider)[rider->unk1424][7].unk18.x;
         rider->unk1448[i].unk14.y = RIDER_C88(rider)[rider->unk1424][7].unk18.y;
         rider->unk1448[i].unk14.z = RIDER_C88(rider)[rider->unk1424][7].unk18.z;
@@ -7025,76 +7034,66 @@ Gfx* func_80068538(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 12840 of 73400: control flow and the display lists follow the original. The original's frame (0x128) is far
-// larger than its locals need, and it saves only s0/s1, spilling the rider pointer to the stack across calls; a local
-// whose address is taken gives that shape (pad, FAKE; frame 0x138 here). Left: register allocation and scheduling.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \
-    (((c)->unk6C * ((r)->unk44.z - (c)->eyeZ)) +                                       \
-     ((((r)->unk44.x - (c)->eyeX) * (c)->unk64) + (((r)->unk44.y - (c)->eyeY) * (c)->unk68)))
+    ((((r)->unk44.x - (c)->eyeX) * (c)->unk64) + (((r)->unk44.y - (c)->eyeY) * (c)->unk68) + \
+     (((r)->unk44.z - (c)->eyeZ) * (c)->unk6C))
 
-// Near riders: one-cycle, no fog.
-#define RIDER_FOG_OFF(gdl)                                                              \
-    gDPSetCycleType(gdl++, G_CYC_1CYCLE);                                               \
-    gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);                 \
-    gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);           \
-    gSPClearGeometryMode(gdl++, G_FOG)
-
-// Far riders: two-cycle with shade fog.
-#define RIDER_FOG_ON(gdl)                                                               \
-    gDPSetCycleType(gdl++, G_CYC_2CYCLE);                                               \
-    gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);                    \
-    gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);                       \
-    gSPSetGeometryMode(gdl++, G_FOG)
-
-// Segment 2 holds two display lists of 0x148 bytes per rider.
-#define RIDER_DL(rider, lod) ((Gfx*) ((u8*) D_2000000 + (rider) * 0x290 + (lod) * 0x148))
+// Segment 2 holds two display lists of 41 commands (0x148 bytes) per rider.
+#define RIDER_DL(rider, lod) (&D_2000000[(rider) * 82 + (lod) * 41])
 
 Gfx* func_800687A4(Gfx* gdl) {
-    s32 pad[1]; // FAKE: with its address taken below, the saved registers come out as in the original
-    UnkStruct_80192690* rider;
-    camera_unk_1* cam;
     s32 i;
-    s32 idx;
     f32 d;
 
-    if (pad) {} // FAKE: takes pad's address (no code); see pad
     gSPDisplayList(gdl++, D_10079F0);
     gdl = func_800916B4(gdl);
     if (D_801CE64C == 2) {
-        RIDER_FOG_OFF(gdl);
+        gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+        gSPClearGeometryMode(gdl++, G_FOG);
         if (D_800DAB2C != 0) {
-            idx = D_80192690[gPlayer2Rider].unkB68;
+            i = D_80192690[gPlayer2Rider].unkB68;
             if (D_801CE6F4[1] != 0) {
-                idx += 4;
+                i += 4;
             }
-            gdl = Rider_DrawParts(gdl, idx, gPlayer2Rider);
+            gdl = Rider_DrawParts(gdl, i, gPlayer2Rider);
         } else {
-            idx = D_80192690[gPlayer1Rider].unkB68;
+            i = D_80192690[gPlayer1Rider].unkB68;
             if (D_801CE6F4[0] != 0) {
-                idx += 4;
+                i += 4;
             }
-            gdl = Rider_DrawParts(gdl, idx, gPlayer1Rider);
+            gdl = Rider_DrawParts(gdl, i, gPlayer1Rider);
         }
     } else if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
-        RIDER_FOG_ON(gdl);
+        gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+        gSPSetGeometryMode(gdl++, G_FOG);
         gSPDisplayList(gdl++, RIDER_DL(0, 0));
         if ((D_801CE638 != 8) || (gCourseID == SUNSET_BAY)) {
             gSPDisplayList(gdl++, RIDER_DL(0, 1));
         }
     } else if (gPlayers == TWO_PLAYERS) {
-        RIDER_FOG_OFF(gdl);
+        gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+        gSPClearGeometryMode(gdl++, G_FOG);
         if (D_800DAB2C != 0) {
             gSPDisplayList(gdl++, RIDER_DL(1, 1));
             gDPPipeSync(gdl++);
-            cam = &gCameraPerspective[D_80223934];
-            rider = &D_80192690[gPlayer1Rider];
-            d = CAM_DEPTH(cam, rider);
+            d = CAM_DEPTH(&gCameraPerspective[D_80223934], &D_80192690[gPlayer1Rider]);
             if (d > 1000.0f) {
-                RIDER_FOG_ON(gdl);
+                gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+                gSPSetGeometryMode(gdl++, G_FOG);
             } else if (d > 0.0f) {
-                RIDER_FOG_OFF(gdl);
+                gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+                gSPClearGeometryMode(gdl++, G_FOG);
             }
             if (D_800D49A8 < d) {
                 gSPDisplayList(gdl++, RIDER_DL(2, 0));
@@ -7106,13 +7105,17 @@ Gfx* func_800687A4(Gfx* gdl) {
         } else {
             gSPDisplayList(gdl++, RIDER_DL(1, 0));
             gDPPipeSync(gdl++);
-            cam = &gCameraPerspective[D_80223930];
-            rider = &D_80192690[gPlayer2Rider];
-            d = CAM_DEPTH(cam, rider);
+            d = CAM_DEPTH(&gCameraPerspective[D_80223930], &D_80192690[gPlayer2Rider]);
             if (d > 1000.0f) {
-                RIDER_FOG_ON(gdl);
+                gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+                gSPSetGeometryMode(gdl++, G_FOG);
             } else if (d > 0.0f) {
-                RIDER_FOG_OFF(gdl);
+                gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+                gSPClearGeometryMode(gdl++, G_FOG);
             }
             if (D_800D49A8 < d) {
                 gSPDisplayList(gdl++, RIDER_DL(2, 1));
@@ -7129,30 +7132,38 @@ Gfx* func_800687A4(Gfx* gdl) {
         gSPDisplayList(gdl++, RIDER_DL(gPlayer1Rider, 0));
         gSPClearGeometryMode(gdl++, G_FOG);
         for (i = 0; i < gRiders; i++) {
-            if (i != gPlayer1Rider) {
-                gDPPipeSync(gdl++);
-                rider = &D_80192690[i];
-                if (i == 1) {
-                    gdl = func_80091CD8(gdl);
-                }
-                cam = &gCameraPerspective[D_80223930];
-                d = CAM_DEPTH(cam, rider);
-                if (d > 1000.0f) {
-                    RIDER_FOG_ON(gdl);
-                } else if (d > 0.0f) {
-                    RIDER_FOG_OFF(gdl);
-                } else {
-                    continue;
-                }
-                if (D_800D49A8 < d) {
-                    gSPDisplayList(gdl++, RIDER_DL(i, 1));
-                } else {
-                    gSPDisplayList(gdl++, RIDER_DL(i, 0));
-                }
+            if (i == gPlayer1Rider) {
+                continue;
+            }
+            gDPPipeSync(gdl++);
+            if (i == 1) {
+                gdl = func_80091CD8(gdl);
+            }
+            d = CAM_DEPTH(&gCameraPerspective[D_80223930], &D_80192690[i]);
+            if (d > 1000.0f) {
+                gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+                gSPSetGeometryMode(gdl++, G_FOG);
+            } else if (d > 0.0f) {
+                gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+                gSPClearGeometryMode(gdl++, G_FOG);
+            } else {
+                continue;
+            }
+            if (D_800D49A8 < d) {
+                gSPDisplayList(gdl++, RIDER_DL(i, 1));
+            } else {
+                gSPDisplayList(gdl++, RIDER_DL(i, 0));
             }
         }
     } else {
-        RIDER_FOG_ON(gdl);
+        gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+        gSPSetGeometryMode(gdl++, G_FOG);
         gdl = Rider_DrawPartsReflect(gdl, 0);
         gdl = Rider_DrawPartsReflect(gdl, 1);
         gdl = Rider_DrawPartsReflect(gdl, 2);
@@ -7167,12 +7178,7 @@ Gfx* func_800687A4(Gfx* gdl) {
 }
 
 #undef CAM_DEPTH
-#undef RIDER_FOG_OFF
-#undef RIDER_FOG_ON
 #undef RIDER_DL
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800687A4.s")
-#endif
 
 s32 func_8006931C(UnkStruct_80192690* arg0, Mtx* arg1) {
     MtxF sp30;
