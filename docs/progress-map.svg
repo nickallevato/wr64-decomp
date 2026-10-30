@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
-<title>1288 of 1348 functions matched</title>
+<title>1290 of 1348 functions matched</title>
 <rect width="1000" height="620" rx="6" fill="#fbfbf9"/>
 <rect x="6.0" y="24.0" width="84.1" height="92.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="6.0" y="116.2" width="84.1" height="81.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -513,7 +513,7 @@
 <rect x="668.0" y="104.2" width="35.0" height="35.9" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="668.0" y="140.1" width="35.0" height="31.1" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="703.0" y="65.6" width="40.5" height="26.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="743.5" y="65.6" width="37.9" height="26.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="743.5" y="65.6" width="37.9" height="26.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="703.0" y="92.0" width="30.8" height="28.6" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="733.8" y="92.0" width="24.2" height="28.6" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="758.0" y="92.0" width="23.4" height="28.6" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -719,7 +719,7 @@
 <rect x="723.6" y="360.8" width="15.9" height="2.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="739.5" y="360.8" width="13.2" height="2.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="752.7" y="314.9" width="28.7" height="26.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="752.7" y="341.7" width="28.7" height="21.1" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="752.7" y="341.7" width="28.7" height="21.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="723.6" y="362.9" width="57.8" height="15.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="785.4" y="24.0" width="42.5" height="65.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="785.4" y="89.1" width="42.5" height="28.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1532,7 +1532,7 @@
 <rect x="969.3" y="543.0" width="24.7" height="66.9" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="609.9" width="24.7" height="4.1" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 464/501</text>
-<text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 206/219</text>
+<text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 208/219</text>
 <text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 148/151</text>
 <text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 226/228</text>
 <text x="733.5" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/libultra</text>
