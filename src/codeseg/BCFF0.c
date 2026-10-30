@@ -2702,11 +2702,6 @@ void func_801FBFB4(Gfx**);
 void func_801FAEB0(s32 arg0) {
 }
 
-#ifdef NON_MATCHING
-// Score 175 of 37200: the three hoisted float constants now take the original's saved FP registers (1.3f in f20,
-// 3.0f in f22, 1.0f in f24): in both two-player arms scale = 1.0f comes last, and in the FINAL arm w = 77 follows the
-// y test (found by a statement-order search over the four arms; 445 before). Left: the saved integer registers rotate
-// (gdl, i, the i * 4 offset, rider and w take s4, s5, s6, s2, s3 where the original has s5, s6, s4, s3, s2).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2764,6 +2759,8 @@ void func_801FAEB8(Gfx** gdlp) {
                 D_80228B70[i] = 0;
                 D_80228B68[i] &= 3;
             }
+            if (1) {} // FAKE (permuter): an empty block before the lap test; with it the saved integer registers
+                      // (gdl, i, the i * 4 offset, rider, w) are coloured as in the original
             if (rider->lapCount < D_801CE728[0]) {
                 if (gPlayers == ONE_PLAYER) {
                     x = 116;
@@ -2807,9 +2804,6 @@ void func_801FAEB8(Gfx** gdlp) {
     }
     *gdlp = gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FAEB8.s")
-#endif
 
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
     UnkStruct_80228AE0* var_v1;
