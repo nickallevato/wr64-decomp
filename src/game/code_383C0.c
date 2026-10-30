@@ -146,13 +146,14 @@ void func_8007DBC0(void) {
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
 #ifdef NON_MATCHING
-// Score 1711 of 60700: same blocks and saved registers. dot holds the squared distance before it holds the push
+// Score 566 of 60700: same blocks and saved registers. dot holds the squared distance before it holds the push
 // factor; dropping a separate d and an unused pad gives the original's frame (0x88), but the permuter's alias e2
 // (a FAKE, marked) adds a slot back (0x90 here) and still scores lower: the free-sphere block then spills pen * z
 // as the original does. The free sphere's push factor is computed once (in dot, reused) as in the original's single
 // load of D_800D49B8; each block scales x, y and z by 1/len and computes its push component right after each one.
 // The loop compares the pointers without (u32) casts; len, e2 and px sit where a declaration search put them, and
-// e->unk8 is pushed before e->unk4 (a permuter statement order).
+// e->unk8 is pushed before e->unk4 (a permuter statement order), and the free sphere's push components are
+// computed x, y, z (a move search).
 // Left: the frame, float register choice and scheduling.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
     f32 len;
@@ -195,8 +196,8 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                 e2 = e; // FAKE (permuter): an alias of e for one store, moves the spills and registers
                 e2->unk44 -= pen * z;
                 e->unk40 -= pen * y;
-                py = dot * y;
                 px = dot * x;
+                py = dot * y;
                 pz = dot * z;
                 dot = ((-x * ((UnkStruct_8004B0F8_1*) arg4)->unkC) - (y * ((UnkStruct_8004B0F8_1*) arg4)->unk10)) - (z * ((UnkStruct_8004B0F8_1*) arg4)->unk14);
                 if (arg0->unkC38 < dot) {
