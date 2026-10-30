@@ -85,7 +85,7 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 575 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// Score 555 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
 // ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
 // alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
 // spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
@@ -194,14 +194,13 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     e = D_800D4744 * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
-    vtx[5].v.ob[0] = vtx[1].v.ob[0] =
- SysUtils_Round(x - (D_800D4744 * 0.5f));
+    vtx[1].v.ob[0] = vtx[5].v.ob[0] = SysUtils_Round(x - (D_800D4744 * 0.5f));
     vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * e));
     vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
     vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
     vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
         vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
-    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
+    vtx[1].v.ob[2] = vtx[2].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
     vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * e));
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
     vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
