@@ -5465,21 +5465,22 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 12925 of 68700: the state is cleared by one long chain in the original's store order (0.0f through three
-// floats, an unsigned conversion into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by
-// index, and the C88 entry is re-read through the rider each time (the loop reloads unk1424 after every store, as in
-// the original). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared with an int 0, a
-// separate constant to IDO (the original's zero there is not the 0.0f it keeps in ). Left: the original keeps
-// 0.0f in  across the calls (here it is rematerialised, so the frame is 8 bytes smaller and f20 is not saved), and
-// float registers and scheduling differ in the sphere code.
+// Score 9855 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
+// into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by index, and the C88 entry is
+// re-read through the rider for each component, read once into x and stored from x (the original multiplies the
+// loaded value without reloading it). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared
+// with an int 0 (0.0f there costs 5000). Left: constant hoisting around the clear chain (the original keeps 10, 0x800
+// and 1 in registers, this C 1, 0x800, 8 and 22), the order of the chain's stores, and float register allocation
+// in the first transform.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
-    MtxF mf;
     UnkStruct_8004B0F8_1* point;
     Vec3f* tmpl;
     f32* lengths;
     f32 x;
     f32 y;
+    MtxF mf;
     f32 z;
     RiderPart* part;
     s32 i;
@@ -5547,9 +5548,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkBAC = 0.0f;
     rider->unkBB0 = 0.0f;
     rider->unkBB4 = 0.0f;
-    rider->unkC68 = 1;
     x = rider->unk44.x + (2.0f * rider->unk78);
     y = rider->unk44.y + (2.0f * rider->unk7C);
+    rider->unkC68 = 1;
     z = rider->unk44.z + (2.0f * rider->unk80);
     RIDER_SPHERES(rider)[0].pos.x = (rider->unk6C * 27.0f) + x;
     RIDER_SPHERES(rider)[0].pos.y = (rider->unk70 * 27.0f) + y;
@@ -5605,14 +5606,17 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
     rider->unkC10 = -27.300001f;
     rider->unkC0C = rider->unkC04 = 34.11f;
-    rider->unk1448[0].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
-    rider->unk1448[0].unk0.x = (RIDER_C88(rider)[rider->unk1424][7].unkC.x * -2.1f) +
+    x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
+    rider->unk1448[0].unkC.x = x;
+    rider->unk1448[0].unk0.x = (x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
-    rider->unk1448[0].unkC.y = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
-    rider->unk1448[0].unk0.y = (RIDER_C88(rider)[rider->unk1424][7].unkC.y * -2.1f) +
+    x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
+    rider->unk1448[0].unkC.y = x;
+    rider->unk1448[0].unk0.y = (x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.y + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y));
-    rider->unk1448[0].unkC.z = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
-    rider->unk1448[0].unk0.z = (RIDER_C88(rider)[rider->unk1424][7].unkC.z * -2.1f) +
+    x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
+    rider->unk1448[0].unkC.z = x;
+    rider->unk1448[0].unk0.z = (x * -2.1f) +
                                (RIDER_PARTS(rider)[1].unk4.z + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z));
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
@@ -5630,12 +5634,15 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         lengths = D_800D48E4;
     }
     for (i = 1; i < 6; i++) {
-        rider->unk1448[i].unkC.x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
-        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (rider->unk1448[i].unkC.x * lengths[i - 1]);
-        rider->unk1448[i].unkC.y = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
-        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (rider->unk1448[i].unkC.y * lengths[i - 1]);
-        rider->unk1448[i].unkC.z = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
-        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (rider->unk1448[i].unkC.z * lengths[i - 1]);
+        x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
+        rider->unk1448[i].unkC.x = x;
+        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (x * lengths[i - 1]);
+        x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
+        rider->unk1448[i].unkC.y = x;
+        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (x * lengths[i - 1]);
+        x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
+        rider->unk1448[i].unkC.z = x;
+        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (x * lengths[i - 1]);
         rider->unk1448[i].unk14.x = RIDER_C88(rider)[rider->unk1424][7].unk18.x;
         rider->unk1448[i].unk14.y = RIDER_C88(rider)[rider->unk1424][7].unk18.y;
         rider->unk1448[i].unk14.z = RIDER_C88(rider)[rider->unk1424][7].unk18.z;
