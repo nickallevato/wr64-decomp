@@ -1061,9 +1061,10 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 290 of 24200: the original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads
+// Score 250 of 24200: the original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads
 // entry 62 at 0x7C(s1); here the [62] address is folded into one constant, the lookup's copy lands in t2, and the
-// column pointers take v0/t1/t0 where the original has a1/a2/t1.
+// column pointers take v1/t1/t0 where the original has a1/a2/t1. The flag is cleared through pix (a permuter FAKE,
+// 290 without it): pix then takes v0 as in the original. A local for the lookup index changes nothing.
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
@@ -1087,7 +1088,8 @@ void func_8004A8B0(u16* fb) {
             }
             D_80158350[i] = (v << 11) | ((v / 2) << 6) | ((v / 3) << 1) | 1;
         }
-        D_800D4644 = 0;
+        pix = 0; // FAKE (permuter): the flag is cleared through pix, which then takes v0 as in the original
+        D_800D4644 = pix;
     }
 
     if (!D_80158350) {} // FAKE: found by the permuter; gives the lookup its own copy of &D_80158350
