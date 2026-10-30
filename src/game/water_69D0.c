@@ -85,19 +85,22 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 2108 of 49800: calls, branches and the frame (0xF0) agree, and nearly every stack slot sits at the original's
-// offset. The alpha is a signed conversion ((s32) (e + 0.5f): the original has no unsigned-conversion sequence), the
-// first k (the far vertex's offset) is its own local r, and one f32 (e) serves the corner-ray temps and the alpha.
-// The dist offset spells 0.866 as .866f, a separate constant to IDO from the vertices' 0.866f (found by the
-// permuter); the ob[1] chain runs from vtx[6]. padB/padC are stack pads (the original has two more words between hiz
-// and cam). Left: float registers (the original keeps dist in $f24, spills r to sp+0xE4 across SysUtils_Round and
-// keeps 0.866f in $f24), and its integer temps start two later than here.
+// Score 610 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
+// alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
+// spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
+// a separate constant to IDO from the vertices' 0.866f (found by the permuter); the ob[1] chain runs from vtx[6].
+// padB/padC are stack pads (the original has two more words between hiz and cam). The (u16) on each texture
+// coordinate's SysUtils_Round takes the extra integer temporary the original uses there (hack: it shifts the
+// temporaries to the original's numbering). Left: the cam->upY CSE takes $f14 (the original's $f24) and the
+// float registers after it, 0.866f is loaded later into $f20 (early into $f24 there), and the first texture
+// coordinate's D_800D475C load is t7 (t6 there).
 void func_8004C1D0(s32 view, Vtx* vtx) {
-    s32 angle;
-    f32 k;
     s32 i;
     f32 d;
-    f32 r;
+    f32 e;
+    f32 k;
+    s32 angle;
     f32 w;
     f32 h;
     f32 s;
@@ -117,7 +120,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 upx;
     f32 upy;
     f32 upz;
-    f32 e;
     Vtx* vp;
 
     if (view != 0) {
@@ -187,18 +189,18 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     dist = (D_800D4744 * .866f) + dist; // .866f: a separate constant from the 0.866f below (IDO keeps them apart)
     x = cam->eyeX + (dist * cam->unkF0);
     z = cam->eyeZ + (dist * cam->unkF4);
-    r = D_800D4744 * D_800D4764;
+    e = D_800D4744 * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
     vtx[5].v.ob[0] = vtx[1].v.ob[0] =
  SysUtils_Round(x - (D_800D4744 * 0.5f));
-    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * r));
+    vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * e));
     vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
     vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
     vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
         vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
     vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
-    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * r));
+    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * e));
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
     vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
 
@@ -231,8 +233,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = (s32) (e + 0.5f);
         }
-        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;
+        vp->v.tc[0] = (u16) SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C; // (u16): see above
+        vp->v.tc[1] = (u16) SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760;
     }
 }
 #else
