@@ -6327,7 +6327,8 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 6141 of 61400: register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
+// Score 5271 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// separate unk16D0 = 0 stores; calls and branches agree. Register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
 // so their moves to a1/a3 are hoisted; the C14..C34 block, where the original also spills the middle y to sp+0x20).
 // An 8-byte pad gives the original's frame (0x50); unkC80 is stored before unkC7E. The zero literals written as 0 and
 // .0f give the original's separate zero loads in three of the compares.
@@ -6427,9 +6428,12 @@ void func_80065C18(s32 arg0) {
     rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
     rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
     // FAKE: .0f, not 0.0f, as above
-    if ((rider->unkC7C == 0) &&
-        ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f))) {
-        rider->unk16D0++;
+    if (rider->unkC7C == 0) {
+        if ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f)) {
+            rider->unk16D0++;
+        } else {
+            rider->unk16D0 = 0;
+        }
     } else {
         rider->unk16D0 = 0;
     }
