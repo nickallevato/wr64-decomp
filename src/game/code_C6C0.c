@@ -371,11 +371,7 @@ extern struct UnkStruct_801C2938 gRiderRaceState[];
 extern struct UnkStruct_801D0798 D_801D0798[];
 extern UnkStruct_802238DC* D_802238DC[];
 extern s32 D_800DA930[];
-extern UnkStruct_80052C6C_1 D_801CE9C4;
-extern UnkStruct_80052C6C_1 D_801CE9D0;
-extern UnkStruct_80052C6C_1 D_801CE9DC;
-extern UnkStruct_80052C6C_1 D_801CE9E8;
-extern UnkStruct_80052C6C_1 D_801CE9F4;
+// D_801CE9B8 (code_4F850's DMA buffer) read as 12-byte records; records 1 to 5 were D_801CE9C4..D_801CE9F4.
 extern UnkStruct_80052C6C_1 D_801CEA00;
 extern UnkStruct_80052C6C_1 D_801CEA0C;
 extern UnkStruct_80052C6C_1 D_801CEA18;
@@ -993,7 +989,7 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
         arg3 = D_800DA930[temp_s0] - 1;
     }
     func_80098048(temp_s0, arg3);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9C4, &arg1->unk264);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[1], &arg1->unk264);
     func_80052C6C(&D_80192690[arg0], (UnkStruct_80052C6C_1*) D_801CE9B8, &arg1->unk240);
     func_80052C6C(&D_80192690[arg0], &D_801CEA6C, &arg1->unk21C);
     func_80052C6C(&D_80192690[arg0], &D_801CEA0C, &arg1->unkFC);
@@ -1005,12 +1001,12 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
     func_80052C6C(&D_80192690[arg0], &D_801CEA48, &arg1->unk1B0);
     func_80052C6C(&D_80192690[arg0], &D_801CEA18, &arg1->unk120);
     func_80052C6C(&D_80192690[arg0], &D_801CEA3C, &arg1->unk18C);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9D0, &arg1->unk48);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9F4, &arg1->unkB4);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9C4, &arg1->unk24);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9E8, &arg1->unk90);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[2], &arg1->unk48);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[5], &arg1->unkB4);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[1], &arg1->unk24);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[4], &arg1->unk90);
     func_80052C6C(&D_80192690[arg0], (UnkStruct_80052C6C_1*) D_801CE9B8, &arg1->unk0);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9DC, &arg1->unk6C);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[3], &arg1->unk6C);
     arg3 = arg3 + 1;
     if (arg3 >= D_800DA930[temp_s0]) {
         arg3 = -1;
