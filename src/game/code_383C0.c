@@ -146,13 +146,13 @@ void func_8007DBC0(void) {
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
 #ifdef NON_MATCHING
-// Score 3701 of 60700: same blocks, frame (0x88) and saved registers. The free sphere's push factor is computed
+// Score 2999 of 60700: same blocks, frame (0x88) and saved registers. dot holds the squared distance before it holds
+// the push factor (a separate d and an unused pad made the frame 0x90). The free sphere's push factor is computed
 // once (in dot, reused) as in the original's single load of D_800D49B8; each block scales x, y and z by 1/len and
 // computes its push component right after each one. The loop compares the pointers without (u32) casts; len and pen
-// sit where a declaration search put them. Left: float register choice and scheduling.
+// sit where a declaration search put them. Left: float register choice and scheduling (the original spills pen * z
+// to sp+0x5C in the free-sphere block, here pen goes to sp+0x60).
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
-    f32 d;
-    f32 k; // stack pad: unused, but removing it moves the register allocation
     struct UnkStruct_801AEE20* e;
     f32 x;
     f32 y;
@@ -171,14 +171,14 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
             }
             x = arg1 - e->unk0;
             z = arg3 - e->unk8;
-            d = SQ(x) + SQ(z);
-            if (d > 3844.0f) {
+            dot = SQ(x) + SQ(z);
+            if (dot > 3844.0f) {
                 continue;
             }
             y = arg2 - e->unk4;
-            d += SQ(y);
-            if (d < 3844.0f) {
-                len = sqrtf(d);
+            dot += SQ(y);
+            if (dot < 3844.0f) {
+                len = sqrtf(dot);
                 pen = 62.0f - len;
                 x *= 1.0f / len;
                 y *= 1.0f / len;
@@ -218,12 +218,12 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         if (e->unk98 == 3) {
             x = arg1 - e->unkC;
             z = arg3 - e->unk14;
-            d = SQ(x) + SQ(z);
-            if (d < 8464.0f) {
+            dot = SQ(x) + SQ(z);
+            if (dot < 8464.0f) {
                 y = arg2 - e->unk10;
-                d += SQ(y);
-                if (d < 8464.0f) {
-                    len = sqrtf(d);
+                dot += SQ(y);
+                if (dot < 8464.0f) {
+                    len = sqrtf(dot);
                     pen = 92.0f - len;
                     x *= 1.0f / len;
                     px = x * pen;
@@ -253,12 +253,12 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
             }
             x = arg1 - e->unk18;
             z = arg3 - e->unk20;
-            d = SQ(x) + SQ(z);
-            if (d < 8464.0f) {
+            dot = SQ(x) + SQ(z);
+            if (dot < 8464.0f) {
                 y = arg2 - e->unk1C;
-                d += SQ(y);
-                if (d < 8464.0f) {
-                    len = sqrtf(d);
+                dot += SQ(y);
+                if (dot < 8464.0f) {
+                    len = sqrtf(dot);
                     pen = 92.0f - len;
                     x *= 1.0f / len;
                     px = x * pen;
@@ -290,12 +290,12 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         }
         x = arg1 - e->unkC;
         z = arg3 - e->unk14;
-        d = SQ(x) + SQ(z);
-        if (d < 3844.0f) {
+        dot = SQ(x) + SQ(z);
+        if (dot < 3844.0f) {
             y = arg2 - e->unk10;
-            d += SQ(y);
-            if (d < 3844.0f) {
-                len = sqrtf(d);
+            dot += SQ(y);
+            if (dot < 3844.0f) {
+                len = sqrtf(dot);
                 pen = 62.0f - len;
                 x *= 1.0f / len;
                 px = x * pen;
@@ -325,12 +325,12 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
         }
         x = arg1 - e->unk18;
         z = arg3 - e->unk20;
-        d = SQ(x) + SQ(z);
-        if (d < 3844.0f) {
+        dot = SQ(x) + SQ(z);
+        if (dot < 3844.0f) {
             y = arg2 - e->unk1C;
-            d += SQ(y);
-            if (d < 3844.0f) {
-                len = sqrtf(d);
+            dot += SQ(y);
+            if (dot < 3844.0f) {
+                len = sqrtf(dot);
                 pen = 62.0f - len;
                 x *= 1.0f / len;
                 px = x * pen;
