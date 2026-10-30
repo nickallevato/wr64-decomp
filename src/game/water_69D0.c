@@ -769,11 +769,13 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 3885 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
+// Score 3490 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
 // the height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before
-// end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. Left: the
-// first pair's cells load in the other order, registers differ, and IDO here saves an extra s0
-// (never used). The last pass's bound is set in its for, as in the first two passes.
+// end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. The velocity
+// damping reads the velocity into hb first (v -= v >> D_800D4730 as hb = v; v = hb - (hb >> ...)) in the first
+// pass's last cell, the third pass's b and the final cell (from a search over which ones): that removes the extra
+// saved s0 IDO kept here. Left: the first pair's cells load in the other order, the q index is computed in a1 in the
+// original, the damping's reload goes to a1 there (a t register here), and the t registers rotate differently.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -827,7 +829,8 @@ void func_8004EAA4(void) {
         diff = (hb - ha) >> D_800D472C;
         a->unk0 += a->unk2 = (a->unk2 + diff) - mean;
         b->unk2 = (b->unk2 - diff) - mean;
-        a->unk2 -= a->unk2 >> D_800D4730;
+        hb = a->unk2;
+        a->unk2 = hb - (hb >> D_800D4730);
     }
     for (i = 0; i < gWaterWindowN; i++) {
         a = WATER_CELL_AT(p->unk0);
@@ -877,10 +880,12 @@ void func_8004EAA4(void) {
         diff = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + diff) - mean;
         b->unk0 += b->unk2 = (b->unk2 - diff) - mean;
-        b->unk2 -= b->unk2 >> D_800D4730;
+        hb = b->unk2;
+        b->unk2 = hb - (hb >> D_800D4730);
     }
-    a->unk0 += a->unk2;
-    a->unk2 -= a->unk2 >> D_800D4730;
+    hb = a->unk2;
+    a->unk0 += hb;
+    a->unk2 = hb - (hb >> D_800D4730);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
