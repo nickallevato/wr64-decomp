@@ -2498,11 +2498,9 @@ void func_801F9EA0(void) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F9EA0.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 1800 of 61800: the first two rider loops skip a cleared slot with `continue` (an if around the body keeps
-// k as the loop counter; with continue IDO replaces it by a 0x14-step offset tested against gRiders * 20, as in
-// the original), and both use k, so it lives in s3 as in the original. Left: gdl and b swap s0 and s1, 1 is in ra
-// (t5 in the original), and some scheduling in the set-up and before the third loop.
+// The three rider loops share the counter k and skip a cleared slot with `continue`: with an if around the body
+// IDO keeps k as the loop counter, with continue it replaces it by a 0x14-step offset tested against gRiders * 20,
+// as in the original.
 extern Gfx D_10147C8[];
 extern Gfx D_10149F8[];
 extern u8 D_10448D0[];
@@ -2512,7 +2510,6 @@ void func_801FA3C0(Gfx** gdlp) {
     Gfx* gdl;
     UnkStruct_80228B88* b;
     s32 i;
-    s32 j;
     s32 k;
     s32 x;
     s32 y;
@@ -2580,39 +2577,37 @@ void func_801FA3C0(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
     gDPSetRenderMode(gdl++, G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2);
     for (i = 0; i < gPlayers; i++) {
-        for (j = 0; j < gRiders; j++) {
-            b = &D_80228B88[i][j];
-            if (b->unk10 != 0) {
-                if (gPlayers == ONE_PLAYER) {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 190.0f;
-                } else if (i == 0) {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 96.0f;
-                } else {
-                    x = b->unk0 + 160.0f;
-                    y = b->unk4 + 206.0f;
-                }
-                face = 0;
-                if ((gPlayers == TWO_PLAYERS) &&
-                    (((j == gPlayer1Rider) && (D_801CE6F4[0] != 0)) || ((j == gPlayer2Rider) && (D_801CE6F4[1] != 0)))) {
-                    face = 4;
-                }
-                gDPLoadTextureBlock(gdl++, gPortraitFaces[D_80192690[j].unkB68 + face], G_IM_FMT_RGBA, G_IM_SIZ_16b,
-                                    20, 20, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
-                                    G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-                x -= 5;
-                y -= 5;
-                gSPTextureRectangle(gdl++, x << 2, y << 2, (x + 10) << 2, (y + 10) << 2, G_TX_RENDERTILE, 0, 0,
-                                    2 << 10, 2 << 10);
+        for (k = 0; k < gRiders; k++) {
+            b = &D_80228B88[i][k];
+            if (b->unk10 == 0) {
+                continue;
             }
+            if (gPlayers == ONE_PLAYER) {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 190.0f;
+            } else if (i == 0) {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 96.0f;
+            } else {
+                x = b->unk0 + 160.0f;
+                y = b->unk4 + 206.0f;
+            }
+            face = 0;
+            if ((gPlayers == TWO_PLAYERS) &&
+                (((k == gPlayer1Rider) && (D_801CE6F4[0] != 0)) || ((k == gPlayer2Rider) && (D_801CE6F4[1] != 0)))) {
+                face = 4;
+            }
+            gDPLoadTextureBlock(gdl++, gPortraitFaces[D_80192690[k].unkB68 + face], G_IM_FMT_RGBA, G_IM_SIZ_16b,
+                                20, 20, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
+                                G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            x -= 5;
+            y -= 5;
+            gSPTextureRectangle(gdl++, x << 2, y << 2, (x + 10) << 2, (y + 10) << 2, G_TX_RENDERTILE, 0, 0,
+                                2 << 10, 2 << 10);
         }
     }
     *gdlp = gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801FA3C0.s")
-#endif
 
 // Rasterise a line from (x0, y0) to (x1, y1) (Bresenham): writes the points into xs/ys and their count.
 void func_801FAD68(s32 x0, s32 y0, s32 x1, s32 y1, s32* count, s32* xs, s32* ys) {
