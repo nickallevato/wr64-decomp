@@ -690,8 +690,10 @@ void SaveLoad_UpdateMessageBox(void) {
 // stored at its first use, reloaded for the second panel and for y + 3. Written plainly (y = 186)
 // IDO folds it (score 7011); the two FAKE lines below get most of it back. The selected label's texture and
 // x offset go through two locals (tex, xoff, where the old pad2[2] was): that gives the original's t0 for the
-// D_i13_802C8DB4 load. Left: register allocation of the first call's 186 ($a3 in the original, stored to y) and
-// one hoisted lui t0, 0x600 the original keeps before a display-list block.
+// D_i13_802C8DB4 load. Left: the first call's 186 ($a3 in the original, stored to y; here t8 for y and its own li
+// for the argument, one instruction more) and one lui t0, 0x600 the original repeats before a display-list block.
+// An empty do {} while (0) at the end of the D_i13_802C8DC8 block (permuter) gives that lui, but with y's extra
+// li still there the function is then one instruction longer (225).
 Gfx* func_i13_802C711C(Gfx* gdl) {
     s32 i;
     s32 y;
