@@ -5465,12 +5465,13 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 9855 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 7950 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by index, and the C88 entry is
 // re-read through the rider for each component, read once into x and stored from x (the original multiplies the
 // loaded value without reloading it). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared
-// with an int 0 (0.0f there costs 5000). Left: constant hoisting around the clear chain (the original keeps 10, 0x800
+// with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two statements (the original stores zero to
+// both and reads both back for unk16F0/unk16F4). Left: constant hoisting around the clear chain (the original keeps 10, 0x800
 // and 1 in registers, this C 1, 0x800, 8 and 22), the order of the chain's stores, and float register allocation
 // in the first transform.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
@@ -5523,7 +5524,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
                         rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
                             rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
-    rider->unk1604 = rider->unk16F2 = 0;
+    rider->unk1604 = 0;
+    rider->unk16F2 = 0;
     rider->unk16C8 = -1;
     rider->unk15FC = 0x800;
     rider->unk1446 = 10;
