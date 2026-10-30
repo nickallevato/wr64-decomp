@@ -7035,28 +7035,16 @@ Gfx* func_80068538(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 3455 of 73400: calls, branches and instruction count agree. The segment-2 lists are indexed as Gfx
-// (i * 82 + lod * 41: the original computes i * 82 and scales it by 8), the Rider_DrawParts index shares i with the
-// rider loop (both in s1), and the loop skips the player's rider with an early continue. Left: frame 0x130 here vs
-// 0x128 (the spilled rider sits at sp+0x20, not 0x24), and where the gdl increments are scheduled.
+// Score 250 of 73400: same instructions except one scheduling slot in each two-player depth test. The segment-2
+// lists are indexed as Gfx (i * 82 + lod * 41: the original computes i * 82 and scales it by 8), the Rider_DrawParts
+// index shares i with the rider loop (both in s1), the loop skips the player's rider with an early continue, and each
+// render-mode block is written one command per line (IDO schedules by source line; as one macro line the gdl
+// increments moved). Left: frame 0x130 here vs 0x128. Dropping any one local (cam, or rider as an expression) gives
+// 0x128 but changes the depth's evaluation order.
 // Distance of rider r in front of camera c, along the camera's view axis.
 #define CAM_DEPTH(c, r)                                                                 \
     (((c)->unk6C * ((r)->unk44.z - (c)->eyeZ)) +                                       \
      ((((r)->unk44.x - (c)->eyeX) * (c)->unk64) + (((r)->unk44.y - (c)->eyeY) * (c)->unk68)))
-
-// Near riders: one-cycle, no fog.
-#define RIDER_FOG_OFF(gdl)                                                              \
-    gDPSetCycleType(gdl++, G_CYC_1CYCLE);                                               \
-    gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);                 \
-    gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);           \
-    gSPClearGeometryMode(gdl++, G_FOG)
-
-// Far riders: two-cycle with shade fog.
-#define RIDER_FOG_ON(gdl)                                                               \
-    gDPSetCycleType(gdl++, G_CYC_2CYCLE);                                               \
-    gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);                    \
-    gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);                       \
-    gSPSetGeometryMode(gdl++, G_FOG)
 
 // Segment 2 holds two display lists of 41 commands (0x148 bytes) per rider.
 #define RIDER_DL(rider, lod) (&D_2000000[(rider) * 82 + (lod) * 41])
@@ -7070,7 +7058,10 @@ Gfx* func_800687A4(Gfx* gdl) {
     gSPDisplayList(gdl++, D_10079F0);
     gdl = func_800916B4(gdl);
     if (D_801CE64C == 2) {
-        RIDER_FOG_OFF(gdl);
+        gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+        gSPClearGeometryMode(gdl++, G_FOG);
         if (D_800DAB2C != 0) {
             i = D_80192690[gPlayer2Rider].unkB68;
             if (D_801CE6F4[1] != 0) {
@@ -7085,13 +7076,19 @@ Gfx* func_800687A4(Gfx* gdl) {
             gdl = Rider_DrawParts(gdl, i, gPlayer1Rider);
         }
     } else if ((D_801CE638 == 0) || ((D_801CE638 == 8) && (gCourseID != SUNNY_BEACH))) {
-        RIDER_FOG_ON(gdl);
+        gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+        gSPSetGeometryMode(gdl++, G_FOG);
         gSPDisplayList(gdl++, RIDER_DL(0, 0));
         if ((D_801CE638 != 8) || (gCourseID == SUNSET_BAY)) {
             gSPDisplayList(gdl++, RIDER_DL(0, 1));
         }
     } else if (gPlayers == TWO_PLAYERS) {
-        RIDER_FOG_OFF(gdl);
+        gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+        gSPClearGeometryMode(gdl++, G_FOG);
         if (D_800DAB2C != 0) {
             gSPDisplayList(gdl++, RIDER_DL(1, 1));
             gDPPipeSync(gdl++);
@@ -7099,9 +7096,15 @@ Gfx* func_800687A4(Gfx* gdl) {
             rider = &D_80192690[gPlayer1Rider];
             d = CAM_DEPTH(cam, rider);
             if (d > 1000.0f) {
-                RIDER_FOG_ON(gdl);
+                gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+                gSPSetGeometryMode(gdl++, G_FOG);
             } else if (d > 0.0f) {
-                RIDER_FOG_OFF(gdl);
+                gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+                gSPClearGeometryMode(gdl++, G_FOG);
             }
             if (D_800D49A8 < d) {
                 gSPDisplayList(gdl++, RIDER_DL(2, 0));
@@ -7117,9 +7120,15 @@ Gfx* func_800687A4(Gfx* gdl) {
             rider = &D_80192690[gPlayer2Rider];
             d = CAM_DEPTH(cam, rider);
             if (d > 1000.0f) {
-                RIDER_FOG_ON(gdl);
+                gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+                gSPSetGeometryMode(gdl++, G_FOG);
             } else if (d > 0.0f) {
-                RIDER_FOG_OFF(gdl);
+                gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+                gSPClearGeometryMode(gdl++, G_FOG);
             }
             if (D_800D49A8 < d) {
                 gSPDisplayList(gdl++, RIDER_DL(2, 1));
@@ -7147,9 +7156,15 @@ Gfx* func_800687A4(Gfx* gdl) {
             cam = &gCameraPerspective[D_80223930];
             d = CAM_DEPTH(cam, rider);
             if (d > 1000.0f) {
-                RIDER_FOG_ON(gdl);
+                gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+                gSPSetGeometryMode(gdl++, G_FOG);
             } else if (d > 0.0f) {
-                RIDER_FOG_OFF(gdl);
+                gDPSetCycleType(gdl++, G_CYC_1CYCLE);
+                gDPSetRenderMode(gdl++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA);
+                gSPClearGeometryMode(gdl++, G_FOG);
             } else {
                 continue;
             }
@@ -7160,7 +7175,10 @@ Gfx* func_800687A4(Gfx* gdl) {
             }
         }
     } else {
-        RIDER_FOG_ON(gdl);
+        gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+        gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+        gDPSetCombineMode(gdl++, G_CC_MODULATERGBDECALA, G_CC_PASS2);
+        gSPSetGeometryMode(gdl++, G_FOG);
         gdl = Rider_DrawPartsReflect(gdl, 0);
         gdl = Rider_DrawPartsReflect(gdl, 1);
         gdl = Rider_DrawPartsReflect(gdl, 2);
@@ -7175,8 +7193,6 @@ Gfx* func_800687A4(Gfx* gdl) {
 }
 
 #undef CAM_DEPTH
-#undef RIDER_FOG_OFF
-#undef RIDER_FOG_ON
 #undef RIDER_DL
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800687A4.s")
