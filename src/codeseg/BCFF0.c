@@ -195,8 +195,10 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 7041 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
-// addresses in registers as in the original; the Vtx copy pointers are set up in the order found by a move search.
+// Score 6826 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
+// addresses in registers as in the original (the order of the four HUD colour globals is from a permutation search);
+// the Vtx copy pointers are set up in the order found by a move search; the D_80228B60..70 loop runs while i != 2,
+// which gives the original's bne end test.
 // Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
 // keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
 // registers there.
@@ -297,9 +299,9 @@ void func_801EED70(void) {
     } else {
         gStartLightsOffset = gStartLightsOffsetMax;
     }
-    gHudColorStep = gHudMarkerColorStep = gHudMarkerColorFrame = gHudColorFrame = 0;
+    gHudColorStep = gHudColorFrame = gHudMarkerColorStep = gHudMarkerColorFrame = 0;
     D_80228A98 = D_80228B78 = D_80228B7C = D_80228B80 = 0;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i != 2; i++) {
         D_80228B70[i] = 0;
         D_80228B68[i] = 0;
         D_80228B60[i] = 0;
