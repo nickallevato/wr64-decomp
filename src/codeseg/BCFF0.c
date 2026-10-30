@@ -1314,7 +1314,8 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6415 of 174400: y is copied into a local (py), which the original keeps in s0 (the big-digit loop still reads
+// Score 5400 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
+// instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original keeps in s0 (the big-digit loop still reads
 // y, which orders its hoisted y << 2 terms as in the original), a stack pad gives the original's 0x2C8 frame, sec is
 // reduced mod 60 before ms is taken, and the paired digit stores are chained assignments. Left: temp registers numbered
 // differently from the style 0/2 branch on.
@@ -1400,7 +1401,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
         for (i = 0; i < 6; i++) {
-            HUD_DIGIT(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16, px, y);
+            HUD_LOAD32(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16);
+            HUD_RECT(gdl, px, y, 12, 16);
             px += 13;
             if (i == 0) {
                 px += 6;
@@ -1408,8 +1410,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 px += 7;
             }
         }
-        HUD_DIGIT(gdl, D_103D2D0, 12, 16, x + 12, py);
-        HUD_DIGIT(gdl, D_103D5D0, 12, 16, x + 44, py);
+        HUD_LOAD32(gdl, D_103D2D0, 12, 16);
+        HUD_RECT(gdl, x + 12, py, 12, 16);
+        HUD_LOAD32(gdl, D_103D5D0, 12, 16);
+        HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
