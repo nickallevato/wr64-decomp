@@ -85,14 +85,15 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 600 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
+// Score 575 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
 // ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
 // alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
 // spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
 // a separate constant to IDO from the vertices' 0.866f (found by the permuter); the ob[1] chain runs from vtx[6].
 // padB/padC are stack pads (the original has two more words between hiz and cam). The (s16) on the second texture
 // coordinate's SysUtils_Round takes an extra integer temporary (hack: the original uses one more between each
-// coordinate's load and add, and this moves the temporaries towards its numbering). Left: the cam->upY CSE takes
+// coordinate's load and add, and this moves the temporaries towards its numbering). An empty test of cam->unkF4
+// after the last corner ray is a permuter FAKE (marked; it moves the float registers). Left: the cam->upY CSE takes
 // $f14 (the original's $f24) and the float registers after it, 0.866f is loaded later into $f20 (early into $f24 there), and the texture coordinates'
 // sums and second load take t7/t0 (t8/t9 there).
 void func_8004C1D0(s32 view, Vtx* vtx) {
@@ -185,6 +186,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         if (e < dist) {
             dist = e;
         }
+        if (!cam->unkF4) {} // FAKE (permuter): an empty test, for the float registers
     }
     dist = (D_800D4744 * .866f) + dist; // .866f: a separate constant from the 0.866f below (IDO keeps them apart)
     x = cam->eyeX + (dist * cam->unkF0);
