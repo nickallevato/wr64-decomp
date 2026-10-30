@@ -1403,7 +1403,7 @@ void func_80050204(s32 view, Vtx* arena) {
  */
 
 // Where the camera's view meets the water plane: the four corner rays (up vector +/- h, side +/- w) that point
-// down past -5 give a distance along (unkF0, unkF4), the nearest one capped at the D_801924A8 range; the point
+// down past -5 give a distance along (unkF0, unkF4), the nearest one (from a D_801924A8-based limit) kept; the point
 // is stored to *x / *z. cam->unk9C and cam->unk98 are read through (IDO spills its copies), e serves the ray
 // offsets and each ray's distance.
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {

@@ -160,7 +160,7 @@ Gfx* func_80093DBC(Gfx* gfxPtr, u16 red, u16 green, u16 blue);
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
 // Picks the DMA list for gGameState (and the course's entries in it), loads it with func_80095A28 when load is set,
-// patches the loaded D_80227A60 records (the ceremony's four riders among them), then for any state but boot-up
+// patches the loaded D_80227A60 records (four more in the ceremony), then for any state but boot-up
 // starts a display list. The two stack pads give the original's frame (0x68).
 void unk_game_load(void) {
     s32 pad[5]; // stack pad

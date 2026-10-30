@@ -6547,11 +6547,11 @@ void func_80065C18(s32 arg0) {
 #endif
 
 // Each rider's input (Rider_ReadController for the players, func_800616B0 otherwise) and update passes, the pan
-// between player 1 and the nearest rider for func_800BFB84 in one-player races, the water stamps behind the
-// camera(s) and the cameras' copies of each player's position and axes. rider and pan are declared in the blocks
-// that use them (that gives the original's frame); lim holds the nearest rider's distance, then the pan's side
-// offset; level is the push-apart counter and the two-player stamp flag (its first stamp passes level--); i is
-// reused for the one-player stamp level; pad keeps a stack slot.
+// between player 1 and the nearest rider for func_800BFB84 in one-player races, the water stamps D_80192498 along
+// each camera's (unkF0, unkF4) and the cameras' copies of each player's position and axes. rider and pan are
+// declared in the blocks that use them (that gives the original's frame); lim holds the nearest rider's distance,
+// then the pan's side offset; level is the push-apart counter and the two-player stamp flag (its first stamp passes
+// level--); i is reused for the one-player stamp level; pad keeps a stack slot.
 void func_800665B0(void) {
     camera_unk_1* cam;
     s32 i;
