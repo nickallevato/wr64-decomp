@@ -710,9 +710,11 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 268 of 13000: the original keeps sysz on the stack (0x1C) and cycz in f0; here cycz is the one
-// spilled (0x18), so the last products take other float registers. The empty if on szcy is a FAKE the
-// permuter found (288 without it).
+// Score 60 of 13000: the original spills sysz (0x1C) after the product and reloads it for mf[1][2] into a temporary.
+// Here a one-element array (home, a FAKE, marked) declared at sysz's place stands for that home, as in func_80049C9C,
+// and the reload goes through sysz (permuter): the schedule then matches, but the reload lands in sysz's register
+// ($f2) instead of $f10, which renames the registers of the last stores (the 60 points). Reading home[0] inline in
+// mf[1][2] gives $f10 but stores mf[1][0] one slot early (480); a separate reload local gets a second spill.
 void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -720,6 +722,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     f32 cx;
     f32 cy;
     f32 cz;
+    f32 home[1]; // FAKE: sysz's stack home (the original spills sysz there and reloads it)
     f32 sysz;
     f32 cycz;
     f32 sycz;
@@ -743,16 +746,16 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     arg1->mf[0][1] = sz * cx;
     cz = COS(az);
     arg1->mf[1][1] = cz * cx;
-    sycz = cy * cz; // FAKE: cy * cz through sycz
     sysz = sy * sz;
-    cycz = sycz;
+    home[0] = sysz; // FAKE: the spill (see home)
+    cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx
     arg1->mf[0][0] = cycz + cx;
     sycz = sy * cz;
     szcy = sz * cy;
     arg1->mf[1][0] = (sx * sycz) - szcy;
     arg1->mf[0][2] = (sx * szcy) - sycz;
-    if (!szcy) {} // FAKE: found by the permuter
+    sysz = home[0]; // FAKE (permuter): the reload, through sysz
     arg1->mf[1][2] = (sx * cycz) + sysz;
     arg1->mf[3][0] = arg5;
     arg1->mf[3][1] = arg6;
