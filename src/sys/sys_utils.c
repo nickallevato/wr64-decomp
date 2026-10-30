@@ -1054,7 +1054,9 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 // original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads entry 62 at 0x7C(s1);
 // here the [62] address is folded into one constant and the lookup adds base + index (index + base there), and
 // the column pointers and lum take a0/a3/t0/t1/a2 where the original has a3/t0/t1/a2/a3. The flag is cleared
-// through pix (a permuter FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an absolute lhu).
+// through pix (a permuter FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an
+// absolute lhu). Tried without effect: no top (col compared directly), the column loop over an index, both
+// table reads spelled as pointer sums, D_80158350 defined in the file, renaming pix/lum/v/i (web search).
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
