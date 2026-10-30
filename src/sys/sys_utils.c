@@ -653,6 +653,7 @@ void func_80049710(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 
     SysUtils_MtxFToMtx(arg1, arg0);
 }
+
 // Rotation matrix from three angles in radians (x, y, z) into arg1, converted into arg0 with SysUtils_MtxFToMtx.
 // The original spills sin(y) * sin(z) to its stack home (0x1C) and reloads it for mf[1][2]: a local (home, a FAKE)
 // at sysz's declaration slot, written through &home so that it stays in memory, gives that store and reload.
@@ -706,13 +707,8 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     SysUtils_MtxFToMtx(arg1, arg0);
 }
 
-#ifdef NON_MATCHING
-// Score 55 of 13000: the original spills sysz (0x1C) after the product and reloads it for mf[1][2] into a temporary.
-// As in the matched func_80049C9C, a volatile local (home, a FAKE, marked) at sysz's declaration slot gives that
-// store and reload, and every float register now matches. Left: from the volatile store on, the stores through arg1
-// use a0 (the call's copy) where the original keeps a1: the assembler splits its register renaming at a volatile
-// access. A one-element array instead (the old shape) needs the reload through sysz and scores 60; struct, pointer
-// and volatile-cast spellings of the home score 480 or more.
+// Rotation matrix from three angles in radians (x, y, z) with the translation (arg5, arg6, arg7) into arg1, converted
+// into arg0 with SysUtils_MtxFToMtx. The spill of sin(y) * sin(z) is written as in func_800498A4 (home, a FAKE).
 void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -720,7 +716,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     f32 cx;
     f32 cy;
     f32 cz;
-    volatile f32 home; // FAKE: sysz's stack home (0x1C): the original stores sysz there and reloads it
+    f32 home; // FAKE: sysz's stack home (0x1C): the original stores sysz there and reloads it
     f32 sysz;
     f32 cycz;
     f32 sycz;
@@ -744,7 +740,7 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     arg1->mf[0][1] = sz * cx;
     cz = COS(az);
     arg1->mf[1][1] = cz * cx;
-    home = sysz = sy * sz; // FAKE: the spill (see home)
+    (&home)[0] = sysz = sy * sz; // FAKE: the spill, written through &home so home stays in memory
     cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx
     arg1->mf[0][0] = cycz + cx;
@@ -762,9 +758,6 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     arg1->mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(arg1, arg0);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_80049A94.s")
-#endif
 
 // Rotation matrix from three angles in degrees (x, y, z), scaled by arg7, with the translation (arg4, arg5, arg6),
 // converted with SysUtils_MtxFToMtx. The original spills sin(y) * sin(z) to its stack home after the product and
