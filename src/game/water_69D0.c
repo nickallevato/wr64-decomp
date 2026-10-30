@@ -1086,12 +1086,13 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 1840 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
+// Score 1820 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
 // their own and the ring loop's counters in the pool loop's body. bot and b also hold the two wrap counts (nu, nv) and
 // set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
 // caller-saved registers and are spilled across sqrtf. The copy loop ends at &D_80192460[13] (the address of
 // gWaterWindowN, which the original does not reuse), the sqrt(3) scale is "* 2" and D_801924B8 is set before
-// D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order).
+// D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order),
+// and the first ring sets set before d, as the second does.
 // A permuter FAKE (b = 1 standing in for D_8019249C's + 1) lowers the score; it explains nothing (D_8019249C's
 // address is now built in s5 before the pool loop, early in the original).
 // Left: D_80192460's address stays in s4 from the copy loop on here (rebuilt in s2 before the pool loop there), which
@@ -1173,8 +1174,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         }
         top = gWaterWindowN;
         bot = D_8019249C - gWaterWindowN;
-        d = bot - 2;
         set = bot - 1;
+        d = bot - 2;
         b = top + 1;
         step = top + 2;
         for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
