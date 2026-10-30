@@ -654,10 +654,10 @@ void func_80049710(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
     SysUtils_MtxFToMtx(arg1, arg0);
 }
 #ifdef NON_MATCHING
-// Score 300 of 12400: the original spills sysz (0x1C, frame 0x38) after the product and reloads it for mf[1][2] into
+// Score 20 of 12400: the original spills sysz (0x1C, frame 0x38) after the product and reloads it for mf[1][2] into
 // a temporary. As in func_80049A94, a one-element array (home, a FAKE, marked) at sysz's place stands for that home and
-// the reload goes through sysz; the reload then lands in sysz's register ($f2) instead of $f4, which moves the 1.0f
-// constant and the mf[1][2] store among the zero stores. The mf[3][1] / mf[3][0] order is from a greedy move search.
+// the reload goes through sysz; the reload then lands in sysz's register ($f2) instead of $f4 (the 20 points). The
+// dead arg4++/arg4-- (permuter FAKE, marked) puts the reload and the 1.0f constant where the original has them.
 void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     f32 sx;
     f32 sy;
@@ -700,12 +700,14 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     arg1->mf[0][2] = (sx * szcy) - sycz;
     sysz = home[0]; // FAKE: the reload, through sysz (as in func_80049A94)
     arg1->mf[1][2] = (sx * cycz) + sysz;
-    arg1->mf[3][1] = 0.0f;
     arg1->mf[3][0] = 0.0f;
+    arg1->mf[3][1] = 0.0f;
     arg1->mf[3][2] = 0.0f;
     arg1->mf[0][3] = 0.0f;
     arg1->mf[1][3] = 0.0f;
     arg1->mf[2][3] = 0.0f;
+    arg4++; // FAKE (permuter): dead arithmetic that fixes the schedule of the last stores
+    arg4--; // FAKE (permuter)
     arg1->mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(arg1, arg0);
 }
