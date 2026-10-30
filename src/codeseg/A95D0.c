@@ -650,11 +650,12 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 9153 of 45800: calls and branches agree. The three speed flags are if/else assignments (the original's
-// b-to-next shape), held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); both loops walk e
-// by pointer; the speed is read through D_80228120 each time (no local). Left: frame 0xB8 here vs 0xB0 (the original
-// has two fewer locals above vec and keeps center on the stack at sp+0xA8), the hoisted 10 for % 10U, and register
-// allocation. i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
+// Score 7108 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); both loops walk e by pointer; the
+// speed is read through D_80228120 each time (no local); the first height adds the wobble to the base (operand order
+// found by the permuter). Left: frame 0xB8 here vs 0xB0 (the original has two fewer locals above vec and keeps center
+// on the stack at sp+0xA8), the hoisted 10 for % 10U (one missing divide-by-zero branch), and register allocation.
+// i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Payload1* center;
     s32 i;
@@ -672,8 +673,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
     if (i != 2) {
         return;
     }
-    D_802287A8 = 24;
     i = runner->frame - 30;
+    D_802287A8 = 24;
     if (runner->frame == 1) {
         func_800AB92C();
         for (i = 0, e = D_80228190; i < 24; i++, e++) {
@@ -684,16 +685,16 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             e->unkC[0] = center->unk0[0] - f * 30.0f - (f32) (SysUtils_Rand() % 7U) - 300.0f;
             r = SysUtils_Rand();
             g = f / 24.0f;
-            e->unkC[1] = SIN(DEG_TO_BINANG(g * 180.0f)) * ((f32) (SysUtils_Rand() & 0x3F) * 1.2f) +
-                         (center->unk0[1] - (f32) (i * (r & 0x1F)));
+            e->unkC[1] = (center->unk0[1] - (f32) (i * (r & 0x1F))) +
+                         SIN(DEG_TO_BINANG(g * 180.0f)) * ((f32) (SysUtils_Rand() & 0x3F) * 1.2f);
             e->unkC[2] = center->unk0[2] - SIN(DEG_TO_BINANG(g * 180.0f)) * (f32) (SysUtils_Rand() & 0x7F);
             e->unk14[0] = 0.0f;
             e->unk14[1] = 0.0f;
             e->unk14[2] = 1.0f;
             e->unk24[0] = 0.0f;
             e->unk30 = 0.1f;
-            e->unk24[2] = 0.0f;
             e->unk24[1] = 1.0f;
+            e->unk24[2] = 0.0f;
             if (i == 0) {
                 ((f32*) D_80228120)[i] = 17.0f;
             } else {
