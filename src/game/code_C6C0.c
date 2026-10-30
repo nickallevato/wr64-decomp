@@ -6549,16 +6549,16 @@ void func_80065C18(s32 arg0) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 440 of 76300: the frame (0x60) and every stack slot agree once rider and pan are declared in the blocks
+// Score 320 of 76300: the frame (0x60) and every stack slot agree once rider and pan are declared in the blocks
 // that use them. Player 1's x and z are read into dist and sz before the nearest-rider loop and lim holds the best
 // distance (pad keeps the stack slot of what was a separate best). Player 1's pointer (p1) is a separate variable
-// declared last so it lands in a temporary spilled across the calls.
-// The pan's scaled side offset is computed into lim first (the original keeps it in $f16), the far stamp level is set
-// to 60 in an else arm, and the two-player stamp deltas are taken dx first. The stamp radius is read from D_80192498
-// each time (the original reloads it after the first stamp), and the one-player stamp level reuses i (s0 there).
-// level also serves as the push-apart counter and the two-player stamp flag. Left: the original stores
-// D_80192660.x and .y through one lui at (here two), and schedules the two-player flag's clear (level = 0) into the
-// stamp call's delay slot.
+// declared last so it lands in a temporary spilled across the calls. The pan's scaled side offset is computed into
+// lim first (the original keeps it in $f16), the far stamp level is set to 60 in an else arm, and the two-player
+// stamp deltas are taken dx first. The first two-player stamp passes level-- (1, and clears the flag after the
+// argument set-up, so the clear lands in the call's delay slot as in the original). The stamp radius is read from
+// D_80192498 each time (the original reloads it after the first stamp), and the one-player stamp level reuses i
+// (s0 there). level also serves as the push-apart counter and the two-player stamp flag. Left: the original stores
+// D_80192660.x and .y through one lui at (here two; not reproduced in scratch tests either).
 void func_800665B0(void) {
     camera_unk_1* cam;
     s32 i;
@@ -6684,8 +6684,7 @@ void func_800665B0(void) {
             dx = sx - D_80192690[gPlayer2Rider].unk44.x;
             dz = sz - D_80192690[gPlayer2Rider].unk44.z;
             if ((f32) (D_80192498 * D_80192498) < SQ(dx) + SQ(dz)) {
-                level = 0;
-                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, 1);
+                Water_StampDiagonalSine(sx, sz, D_800D49B0, D_800D49AC, level--); // passes 1, clears the flag
             }
             cam = &gCameraPerspective[D_80223934];
             sx = gWaterWindow[1].unk0 + (D_80192498 * cam->unkF0);
