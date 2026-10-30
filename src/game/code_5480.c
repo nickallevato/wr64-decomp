@@ -168,13 +168,14 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
-// Score 160 of 30700: plain pointer compares in the loops, the sums zeroed in one chain (sx first) and each added
+// Score 90 of 30700: plain pointer compares in the loops, the sums zeroed in one chain (sx first) and each added
 // next to its difference. The 12 in s5 (multu for every D_80158450 and unk34 index) needs unk2C to be u32 like unk28:
 // IDO keeps one register for a constant only when every use has the same type. d is the link loop's scale as well as
 // the last loop's d and the count (the original's $f20, saved across sqrtf), and s carries each new position in the
 // last loop and then the new centre values and the length (its stack home is the original's sp+0x60); with the
-// declaration order (from a search) the frame and every stack slot match. Left: f0 and f2 swap (the first loop's
-// old position, s and pt->unk18 in the last loop), so fx..fz take f2, f12, f14 here (f12, f14, f16 there).
+// declaration order (from a search) the frame and every stack slot match. An empty test in the last loop (permuter
+// FAKE) gives its registers. Left: the first loop's old position takes f0 (f2 there), so fx..fz take f2, f12, f14
+// here (f12, f14, f16 there).
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     f32 dt;
     f32 dx;
@@ -241,6 +242,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
         dy = s - prev->y;
         s = pt->unk8;
         sz += s;
+        if (1) {} // FAKE (permuter)
         dz = s - prev->z;
         d = (1.0f - pt->unk18) * ((dx * arg0->unk5C) + (dy * arg0->unk60) + (dz * arg0->unk64));
         pt->unkC = (arg0->unk5C * d) + (pt->unk18 * dx);
