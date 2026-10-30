@@ -3000,10 +3000,11 @@ void func_801FB514(Gfx** gdlp) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 5485 of 25000: x * 4 (an int literal, a separate constant to IDO; from a literal search) in the first
-// rectangle coordinate. Left: w is in s3 in the original (v1 here); the original sets tex and w = 96 after reading
-// D_80228E08[i] (here tex is hoisted to the loop top unless case 1 sets them); the inner loop recomputes w << 3 where
-// IDO here hoists it. A 12-byte pad gives the original's frame (0xE0) and spill slots.
+// Score 2500 of 25000: the texture offset is j * (w * 8), so the step w * 8 is recomputed in the inner loop as in the
+// original (w stays in s3); the quarter height is its own local, computed before the loop as the original does; x * 4
+// uses the same 4.0f as the other coordinates. Left: the loop-invariant rectangle words are hoisted into s0..s2 in a
+// different order (the original: x * 4 in s0, the dsdx/dtdy word in s1, (x + width) * 4 with the opcode in s2). A
+// 12-byte pad gives the original's frame (0xE0) and spill slots.
 extern Gfx D_10146B0[];
 extern u32 D_804C008[];
 extern u32 D_804F010[];
@@ -3024,6 +3025,7 @@ void func_801FBFB4(Gfx** gdlp) {
     f32 x;
     f32 y;
     f32 nextY;
+    f32 step;
 
     gdl = *gdlp;
     gSPDisplayList(gdl++, D_10146B0);
@@ -3060,13 +3062,14 @@ void func_801FBFB4(Gfx** gdlp) {
         height = 32.0f * scale;
         width = w * scale;
         y = cy - height * 0.5f;
+        step = height * 0.25f;
         x = cx - width * 0.5f;
         for (j = 0; j < 4; j++) {
-            nextY = y + height * 0.25f;
-            gDPLoadTextureTile(gdl++, &tex[j * w * 8], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
+            nextY = y + step;
+            gDPLoadTextureTile(gdl++, &tex[j * (w * 8)], G_IM_FMT_RGBA, G_IM_SIZ_32b, w, 8, 0, 0, w - 1, 7, 0,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(gdl++, (s32) (x * 4), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f), // odd literal: int 4
+            gSPTextureRectangle(gdl++, (s32) (x * 4.0f), (s32) (y * 4.0f), (s32) ((x + width) * 4.0f),
                                 (s32) (nextY * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) ((w << 10) / width),
                                 (s32) (32768.0f / height));
             y = nextY;
