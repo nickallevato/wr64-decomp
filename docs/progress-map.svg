@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
-<title>1294 of 1348 functions matched</title>
+<title>1298 of 1348 functions matched</title>
 <rect width="1000" height="620" rx="6" fill="#fbfbf9"/>
 <rect x="6.0" y="24.0" width="84.1" height="92.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="6.0" y="116.2" width="84.1" height="81.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -510,7 +510,7 @@
 <rect x="707.9" y="24.0" width="39.3" height="41.6" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="747.2" y="24.0" width="34.2" height="41.6" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="668.0" y="65.6" width="35.0" height="38.6" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="668.0" y="104.2" width="35.0" height="35.9" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="668.0" y="104.2" width="35.0" height="35.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="668.0" y="140.1" width="35.0" height="31.1" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="703.0" y="65.6" width="40.5" height="26.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="743.5" y="65.6" width="37.9" height="26.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1321,10 +1321,10 @@
 <rect x="903.6" y="564.4" width="20.9" height="19.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="903.6" y="583.4" width="20.9" height="16.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="903.6" y="599.6" width="20.9" height="14.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="924.5" y="564.4" width="15.3" height="18.9" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="924.5" y="564.4" width="15.3" height="18.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="939.8" y="564.4" width="14.8" height="18.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="954.6" y="564.4" width="14.7" height="18.9" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="924.5" y="583.3" width="17.1" height="15.5" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="954.6" y="564.4" width="14.7" height="18.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="924.5" y="583.3" width="17.1" height="15.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="924.5" y="598.9" width="17.1" height="15.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="941.6" y="583.3" width="17.8" height="12.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="959.4" y="583.3" width="9.9" height="12.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1532,10 +1532,10 @@
 <rect x="969.3" y="543.0" width="24.7" height="66.9" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="609.9" width="24.7" height="4.1" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 466/501</text>
-<text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 209/219</text>
+<text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 210/219</text>
 <text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 148/151</text>
 <text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 227/228</text>
 <text x="733.5" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/libultra</text>
 <text x="878.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">other 55/55</text>
-<text x="878.6" y="538.0" font-size="12" font-weight="600" fill="#1c2421">src/sys 32/37</text>
+<text x="878.6" y="538.0" font-size="12" font-weight="600" fill="#1c2421">src/sys 35/37</text>
 </svg>
