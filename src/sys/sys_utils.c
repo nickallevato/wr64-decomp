@@ -768,12 +768,13 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 #endif
 
 #ifdef NON_MATCHING
-// Score 269 of 13500: the original stores sysz to its home (0x84) after the product and reloads it for mf[1][2];
+// Score 138 of 13500: the original stores sysz to its home (0x84) after the product and reloads it for mf[1][2];
 // a permuter FAKE (marked) stores it into mf[1][2] first and adds it back from there, which gives the store, the
 // reload and the registers around them, but in mf[1][2]'s slot (0x44). mf[3][3] = 1.0f is stored last (from a
 // permuter output), cos(y) and cos(z) are read after the first store that does not need them (statement moves from
 // the permuter and a move search), and the zero chain also clears sysz (a permuter FAKE, marked: it keeps the
-// chain's value in $f0 as in the original). Left: sysz's slot and one reload scheduled later.
+// chain's value in $f0 as in the original). A (0, arg7) comma in mf[1][2] (permuter FAKE, marked) schedules its
+// reload as in the original but swaps that multiply's operands. Left: sysz's slot (0x44 here, 0x84 there).
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -814,7 +815,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[1][0] = ((sx * sycz) - szcy) * arg7;
     mf.mf[0][2] = ((sx * szcy) - sycz) * arg7;
     mf.mf[1][2] = sysz; // FAKE (permuter): stores sysz and reloads it, as the original does through its home
-    mf.mf[1][2] = ((sx * cycz) + mf.mf[1][2]) * arg7;
+    mf.mf[1][2] = ((sx * cycz) + mf.mf[1][2]) * (0, arg7); // FAKE (permuter): the comma
     mf.mf[3][0] = arg4;
     mf.mf[3][1] = arg5;
     mf.mf[3][2] = arg6;
