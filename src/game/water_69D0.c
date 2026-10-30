@@ -1081,25 +1081,19 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 2300 of 52100: bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which lowers
-// their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across sqrtf.
-// The copy loop ends at &D_80192460[13] (the address of gWaterWindowN, which the original does not reuse), the
-// sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
-// for j, b and top (from a search over each pair's order). Left: the frame (0x68 here, 0x50 in the
-// original), and D_80192460's address stays in s4 from the copy loop on here (rebuilt for the pool loop there).
+// Score 2295 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
+// their own and the ring loop's counters in the pool loop's body. bot and b also hold the two wrap counts (nu, nv) and
+// set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
+// caller-saved registers and are spilled across sqrtf. The copy loop ends at &D_80192460[13] (the address of
+// gWaterWindowN, which the original does not reuse), the sqrt(3) scale is "* 2" and D_801924B8 is set before
+// D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order).
+// Left: D_80192460's address stays in s4 from the copy loop on here (rebuilt in s2 before the pool loop there), which
+// moves the pool loop's constants (0xFF, 0xB0, 0x400) to other saved registers.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
-    s32* src;
-    s32* dst;
     GfxPool* pool;
-    s32 i;
-    s32 j;
-    s32 k;
-    s32 top;
     s32 bot;
     s32 b;
-    s32 d;
-    s32 step;
 
     if (D_801CE64C == 1) {
         D_800D4724 = 10;
@@ -1123,8 +1117,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterWindow[1].unk18 = 0.0f;
     gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
         gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
-    for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192460[13];) {
-        *dst++ = *src++;
+    {
+        s32* src;
+        s32* dst;
+
+        for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192460[13];) {
+            *dst++ = *src++;
+        }
     }
     D_801924A0 = 0x8000;
     D_801924A4 = 0x8000;
@@ -1143,6 +1142,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     D_801924B4 = (D_801924AC - D_801924B0) + 1.0;
     D_801924C0 = (D_801924B8 - D_801924BC) + 1.0;
     for (pool = &D_8011F8E8[1]; pool >= D_8011F8E8; pool--) {
+        s32 i;
+        s32 j;
+        s32 k;
+        s32 top;
+        s32 d;
+        s32 step;
+
         for (i = D_8019249C + 5; i >= 0; i--) {
             pool->unk13D68[i].v.cn[0] = 0xFF;
             pool->unk13D68[i].v.cn[1] = 0xFF;
