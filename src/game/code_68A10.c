@@ -1535,7 +1535,7 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 17749 of 124000: same blocks, display-list commands and loops. The stack pads give the original's frame
+// Score 16909 of 124000: same blocks, display-list commands and loops (calls and branches now agree). The stack pads give the original's frame
 // (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. gdlh is read after the first command is
 // stored through gdl (the original reloads D_801AE94C there). Left: register allocation and scheduling (the
 // original keeps more command words in saved registers).
@@ -1598,11 +1598,13 @@ void func_800B305C(Gfx** gdl) {
             for (j = 63; j >= 0; j--) {
                 if (D_800E6D68[j].unk38 != 0) {
                     D_800E6D64 = &D_800E6D68[j];
-                    if ((((D_800E6D64->unk3C + j) & 3) + 1) == k) {
+                    if ((((D_800E6D64->unk3C + j) & 3) + 1) != k) {
+                        n += 3;
+                    } else {
                         gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][n], 3, 0);
                         gSP1Triangle(gdlh++, 0, 1, 2, 0);
+                        n += 3;
                     }
-                    n += 3;
                 }
             }
         }
@@ -1697,14 +1699,16 @@ void func_800B305C(Gfx** gdl) {
         }
         n = 0;
         k = D_800E6D60->unk1C24 / 5;
-        for (j = 0; j < k; j++) {
-            gSPVertex(gdlh++, vtx, 15, 0);
-            vtx += 15;
-            gSP1Triangle(gdlh++, 0, 1, 2, 0);
-            gSP1Triangle(gdlh++, 3, 4, 5, 0);
-            gSP1Triangle(gdlh++, 6, 7, 8, 0);
-            gSP1Triangle(gdlh++, 9, 10, 11, 0);
-            gSP1Triangle(gdlh++, 12, 13, 14, 0);
+        if (k != 0) {
+            for (j = 0; j < k; j++) {
+                gSPVertex(gdlh++, vtx, 15, 0);
+                vtx += 15;
+                gSP1Triangle(gdlh++, 0, 1, 2, 0);
+                gSP1Triangle(gdlh++, 3, 4, 5, 0);
+                gSP1Triangle(gdlh++, 6, 7, 8, 0);
+                gSP1Triangle(gdlh++, 9, 10, 11, 0);
+                gSP1Triangle(gdlh++, 12, 13, 14, 0);
+            }
         }
         k = D_800E6D60->unk1C24 % 5;
         if (k != 0) {
