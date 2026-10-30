@@ -85,12 +85,13 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 3698 of 49800: calls, branches and the frame (0xF0) agree, and nearly every stack slot sits at the original's
+// Score 2108 of 49800: calls, branches and the frame (0xF0) agree, and nearly every stack slot sits at the original's
 // offset. The alpha is a signed conversion ((s32) (e + 0.5f): the original has no unsigned-conversion sequence), the
 // first k (the far vertex's offset) is its own local r, and one f32 (e) serves the corner-ray temps and the alpha.
-// padB/padC are stack pads (the original has two more words between hiz and cam). Left: float register allocation
-// (dist lives in $f24 in the original, which spills r to sp+0xE4 across SysUtils_Round and keeps 0.866f in $f24), and
-// the original's integer temps start at t9 (three fewer used here before the view test).
+// The dist offset spells 0.866 as .866f, a separate constant to IDO from the vertices' 0.866f (found by the
+// permuter); the ob[1] chain runs from vtx[6]. padB/padC are stack pads (the original has two more words between hiz
+// and cam). Left: float registers (the original keeps dist in $f24, spills r to sp+0xE4 across SysUtils_Round and
+// keeps 0.866f in $f24), and its integer temps start two later than here.
 void func_8004C1D0(s32 view, Vtx* vtx) {
     s32 angle;
     f32 k;
@@ -183,7 +184,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
             dist = e;
         }
     }
-    dist = (D_800D4744 * 0.866f) + dist;
+    dist = (D_800D4744 * .866f) + dist; // .866f: a separate constant from the 0.866f below (IDO keeps them apart)
     x = cam->eyeX + (dist * cam->unkF0);
     z = cam->eyeZ + (dist * cam->unkF4);
     r = D_800D4744 * D_800D4764;
@@ -194,8 +195,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * r));
     vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
     vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
-    vtx[0].v.ob[1] = vtx[1].v.ob[1] = vtx[2].v.ob[1] = vtx[3].v.ob[1] = vtx[4].v.ob[1] = vtx[5].v.ob[1] =
-        vtx[6].v.ob[1] = SysUtils_Round(D_800D4740);
+    vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
+        vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
     vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
     vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * r));
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
