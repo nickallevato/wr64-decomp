@@ -405,10 +405,6 @@ void func_800C00B0(s8 vol, f32 freqMod) {
 }
 
 // chonker
-#ifdef NON_MATCHING
-// Score 640 of 105600: chan sits in t0 and the constant 3 in a3, the other way round from the original;
-// at the end of the unk3 block the original stores chan's copy to sp+0x30 on both arms, here once after the
-// join; and reusing chan for gAudioRandom % 3 at the end costs one andi.
 typedef struct UnkStruct_func_800C010C {
     /* 0x00 */ s8 unk0;
     /* 0x01 */ s8 unk1;
@@ -541,22 +537,21 @@ void func_800C010C(UnkStruct_func_800C010C* arg0, s8 arg1) {
         }
 
         if (arg0->unk3 != arg0->unk7) {
-            io = 0;
-            do { // FAKE: the do-while(0) changes how the unk3 branches are laid out
-                if (arg0->unk3 != 0) {
-                    if (arg0->unk3 > 100) {
-                        func_800BFFEC(chan + 2, 11, (arg0->unk3 / 2) + 60);
-                    } else if (arg0->unk3 > 80) {
-                        func_800BFFEC(chan + 2, 12, (arg0->unk3 / 2) + 75);
-                    } else if ((arg0->unk3 > 40) || ((arg0->unk3 > 10) && (arg0->unk1F > 30))) {
-                        func_800BFFEC(chan + 2, 13, (arg0->unk3 / 2) + 86);
-                    } else if (arg0->unk3 > 10) {
-                        func_800BFFEC(chan + 2, 14, arg0->unk3 + 80);
-                    }
-                    io = 0xFF;
-                    arg0->unk3 = 1;
+            if (arg0->unk3 != 0) {
+                if (arg0->unk3 > 100) {
+                    func_800BFFEC(chan + 2, 11, (arg0->unk3 / 2) + 60);
+                } else if (arg0->unk3 > 80) {
+                    func_800BFFEC(chan + 2, 12, (arg0->unk3 / 2) + 75);
+                } else if ((arg0->unk3 > 40) || ((arg0->unk3 > 10) && (arg0->unk1F > 30))) {
+                    func_800BFFEC(chan + 2, 13, (arg0->unk3 / 2) + 86);
+                } else if (arg0->unk3 > 10) {
+                    func_800BFFEC(chan + 2, 14, arg0->unk3 + 80);
                 }
-            } while (0); // FAKE
+                io = 0xFF;
+                arg0->unk3 = 1;
+            } else {
+                io = 0;
+            }
             arg0->unk7 = arg0->unk3;
         } else {
             io = 127 - (arg0->unkF / 4);
@@ -713,7 +708,7 @@ void func_800C010C(UnkStruct_func_800C010C* arg0, s8 arg1) {
             arg0->unk11 = 0;
         }
 
-        if ((arg0->unkC > 4) && (arg0->unk16 == arg0->unk12)) {
+        if ((arg0->unkC > 4) && (arg0->unk12 == arg0->unk16)) {
             arg0->unk13 = 0;
         }
         if (arg0->unk12 == 2) {
@@ -800,19 +795,14 @@ void func_800C010C(UnkStruct_func_800C010C* arg0, s8 arg1) {
             D_800E7CA4 = 1;
         }
 
-        // FAKE: arg1 < 2 written as a pointer comparison, which is what the original computes
-        if ((arg0->unk18 != 0) && (&D_800E7CC8[arg1] < &D_800E7CC8[2])) {
+        if ((arg0->unk18 != 0) && (arg1 < 2)) {
             func_800BFFEC(chan + 2, 1, 127);
-            chan = gAudioRandom % 3; // FAKE reuse of chan: register coloring (costs one andi)
-            func_800C33C8(chan + 0x50, 10, 80, 40);
+            func_800C33C8((gAudioRandom % 3) + 0x50, 10, 80, 40);
             arg0->unk18 = 0;
         }
         arg0->unk1F = arg0->unk0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_general/func_800C010C.s")
-#endif
 
 void func_800C118C(s32 arg0) {
     if ((D_800E7CBC == 0) || (D_800E7C94 == 4)) {
