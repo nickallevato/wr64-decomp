@@ -663,7 +663,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 16923 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
+// Score 16751 of 146400: same blocks and calls; register allocation (gCourseID in a2, not a3; the constant 1 in t5,
 // not ra) and scheduling differ, the original keeps the two empty tests in the gate block as branches (IDO drops them
 // here) and keeps dPrev in its stack slot. unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
@@ -786,8 +786,8 @@ void func_8007687C(s32 arg0) {
             if (dot <= e->unk8C) {} // an empty test, as in the original
         }
     }
-    dirX = e->unk70;
     dirZ = e->unk74;
+    dirX = e->unk70;
     dx = D_801C3780 - px;
     dz = D_801C3788 - pz;
     len = sqrtf((dx * dx) + (dz * dz));
@@ -898,8 +898,8 @@ void func_8007687C(s32 arg0) {
                 if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                     func_800C1B30();
                 } else if (gPlayers == TWO_PLAYERS) {
-                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
                     dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
                     if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                         func_800C1B30();
                     }
