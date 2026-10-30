@@ -1050,10 +1050,11 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 250 of 24200: the original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads
-// entry 62 at 0x7C(s1); here the [62] address is folded into one constant, the lookup's copy lands in t2, and the
-// column pointers take v1/t1/t0 where the original has a1/a2/t1. The flag is cleared through pix (a permuter FAKE,
-// 290 without it): pix then takes v0 as in the original. A local for the lookup index changes nothing.
+// Score 195 of 24200: pix is an s32 that also holds the lookup index (the original reuses v0 for it). Left: the
+// original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads entry 62 at 0x7C(s1);
+// here the [62] address is folded into one constant and the lookup adds base + index (index + base there), and
+// the column pointers take v1/t1/t0 where the original has a1/a2/t1. The flag is cleared through pix (a permuter
+// FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an absolute lhu).
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
@@ -1063,7 +1064,7 @@ void func_8004A8B0(u16* fb) {
     static s16 D_800D4644 = 1; // the file's .data has it as D_800D4644 for the asm
     u16* col;
     u16* p;
-    u16 pix;
+    s32 pix;
     s32 lum;
     s32 prev;
 
@@ -1095,7 +1096,8 @@ void func_8004A8B0(u16* fb) {
         do {
             pix = *p;
             lum = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
-            *p = D_80158350[((lum - prev) + 16000) >> 8];
+            pix = (lum - prev) + 16000;
+            *p = D_80158350[pix >> 8];
             prev = lum;
             p -= 320;
         } while (p >= top);
