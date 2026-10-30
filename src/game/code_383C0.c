@@ -146,19 +146,21 @@ void func_8007DBC0(void) {
 // spheres at unkC and unk18, of radius 92 when unk98 is 3 and 62 otherwise. Stops at the first hit
 // (func_8006243C gets the push).
 #ifdef NON_MATCHING
-// Score 2999 of 60700: same blocks, frame (0x88) and saved registers. dot holds the squared distance before it holds
-// the push factor (a separate d and an unused pad made the frame 0x90). The free sphere's push factor is computed
-// once (in dot, reused) as in the original's single load of D_800D49B8; each block scales x, y and z by 1/len and
-// computes its push component right after each one. The loop compares the pointers without (u32) casts; len and pen
-// sit where a declaration search put them. Left: float register choice and scheduling (the original spills pen * z
-// to sp+0x5C in the free-sphere block, here pen goes to sp+0x60).
+// Score 1817 of 60700: same blocks and saved registers. dot holds the squared distance before it holds the push
+// factor; dropping a separate d and an unused pad gives the original's frame (0x88), but the permuter's alias e2
+// (a FAKE, marked) adds a slot back (0x90 here) and still scores lower: the free-sphere block then spills pen * z
+// as the original does. The free sphere's push factor is computed once (in dot, reused) as in the original's single
+// load of D_800D49B8; each block scales x, y and z by 1/len and computes its push component right after each one.
+// The loop compares the pointers without (u32) casts; len, e2 and px sit where a declaration search put them.
+// Left: the frame, float register choice and scheduling.
 void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void* arg4, void* arg5, void* arg6) {
+    f32 len;
+    struct UnkStruct_801AEE20* e2;
     struct UnkStruct_801AEE20* e;
     f32 x;
     f32 y;
     f32 z;
     f32 px;
-    f32 len;
     f32 py;
     f32 pz;
     f32 dot;
@@ -189,7 +191,8 @@ void func_8007DF4C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3, void*
                 e->unk4 -= pen * y;
                 e->unk8 -= pen * z;
                 e->unk3C -= pen * x;
-                e->unk44 -= pen * z;
+                e2 = e; // FAKE (permuter): an alias of e for one store, moves the spills and registers
+                e2->unk44 -= pen * z;
                 e->unk40 -= pen * y;
                 py = dot * y;
                 px = dot * x;
