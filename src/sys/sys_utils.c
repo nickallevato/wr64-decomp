@@ -653,11 +653,9 @@ void func_80049710(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 
     SysUtils_MtxFToMtx(arg1, arg0);
 }
-#ifdef NON_MATCHING
-// Score 20 of 12400: the original spills sysz (0x1C, frame 0x38) after the product and reloads it for mf[1][2] into
-// a temporary. As in func_80049A94, a one-element array (home, a FAKE, marked) at sysz's place stands for that home and
-// the reload goes through sysz; the reload then lands in sysz's register ($f2) instead of $f4 (the 20 points). The
-// dead arg4++/arg4-- (permuter FAKE, marked) puts the reload and the 1.0f constant where the original has them.
+// Rotation matrix from three angles in radians (x, y, z) into arg1, converted into arg0 with SysUtils_MtxFToMtx.
+// The original spills sin(y) * sin(z) to its stack home (0x1C) and reloads it for mf[1][2]: a local (home, a FAKE)
+// at sysz's declaration slot, written through &home so that it stays in memory, gives that store and reload.
 void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     f32 sx;
     f32 sy;
@@ -665,7 +663,7 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     f32 cx;
     f32 cy;
     f32 cz;
-    f32 home[1]; // FAKE: sysz's stack home (the original spills sysz there and reloads it)
+    f32 home; // FAKE: sysz's stack home (0x1C): the original stores sysz there and reloads it
     f32 sysz;
     f32 cycz;
     f32 sycz;
@@ -689,8 +687,7 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     arg1->mf[0][1] = sz * cx;
     cz = COS(az);
     arg1->mf[1][1] = cz * cx;
-    sysz = sy * sz;
-    home[0] = sysz; // FAKE: the spill (see home)
+    (&home)[0] = sysz = sy * sz; // FAKE: the spill, written through &home so home stays in memory
     cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx
     arg1->mf[0][0] = cycz + cx;
@@ -698,22 +695,16 @@ void func_800498A4(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4) {
     szcy = sz * cy;
     arg1->mf[1][0] = (sx * sycz) - szcy;
     arg1->mf[0][2] = (sx * szcy) - sycz;
-    sysz = home[0]; // FAKE: the reload, through sysz (as in func_80049A94)
-    arg1->mf[1][2] = (sx * cycz) + sysz;
+    arg1->mf[1][2] = (sx * cycz) + home; // the reload (see home)
     arg1->mf[3][0] = 0.0f;
     arg1->mf[3][1] = 0.0f;
     arg1->mf[3][2] = 0.0f;
     arg1->mf[0][3] = 0.0f;
     arg1->mf[1][3] = 0.0f;
     arg1->mf[2][3] = 0.0f;
-    arg4++; // FAKE (permuter): dead arithmetic that fixes the schedule of the last stores
-    arg4--; // FAKE (permuter)
     arg1->mf[3][3] = 1.0f;
     SysUtils_MtxFToMtx(arg1, arg0);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_800498A4.s")
-#endif
 
 #ifdef NON_MATCHING
 // Score 55 of 13000: the original spills sysz (0x1C) after the product and reloads it for mf[1][2] into a temporary.
