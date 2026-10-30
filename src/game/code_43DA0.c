@@ -1120,10 +1120,11 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 13364 of 127200: the direction is scaled in place (both views) and one f32 (len) serves the length, the
-// 4000/len scale, the TWILIGHT_CITY distance and its falloff, which puts it in $f20 as in the original. Left: the
-// original keeps the camera direction on the stack across sqrtf (five saved FP registers, frame 0xC8; four and 0xB8
-// here), and in the D_800D988C == 1 loop it reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
+// Score 11919 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
+// (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first); the zeros are all 0.0f,
+// which IDO keeps in one saved register as the original does. Left: the original keeps dirX/dirZ in caller-saved
+// registers spilled across sqrtf (dirX lives in a saved register here), and in the D_800D988C == 1 loop it reloads
+// D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
     f32 dirX;
     camera_unk_1* cam;
@@ -1136,18 +1137,19 @@ void func_8008E794(void) {
     UnkStruct_801CB058* e;
     f32 dx;
     f32 dz;
-    f32 dirZ;
     f32 c;
     f32 s;
+    f32 dirZ;
+    f32 scale;
 
     D_800D9914 = (D_800D9914 + 1) & 3;
+    p = &D_801C43F8[D_8011F8E0];
     cam = &gCameraPerspective[D_80223930];
     dirX = cam->unk64;
     dirZ = cam->unk6C;
-    p = &D_801C43F8[D_8011F8E0];
     arena = gGfxPool->unk13D68;
     len = sqrtf((dirX * dirX) + (dirZ * dirZ));
-    if (len != 0) {
+    if (len != 0.0f) {
         len = 4000.0f / len;
         dirZ *= len;
         dirX *= len;
@@ -1180,9 +1182,9 @@ void func_8008E794(void) {
         dirZ = cam->unk6C;
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
-        len = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
-        dirZ *= len;
-        dirX *= len;
+        scale = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        dirZ *= scale;
+        dirX *= scale;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
         vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
@@ -1230,7 +1232,7 @@ void func_8008E794(void) {
             D_801C4168 = e->unkB4;
             D_801C4164 = e->unkB0;
             len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
-            if (len == 0) {
+            if (len == 0.0f) {
                 D_801C4168 = 120;
             }
             e->unkAC = (D_801C4160 / len) * 120.0f;
@@ -1276,20 +1278,23 @@ void func_8008E794(void) {
                             }
                             e->unkFC = D_801C3C54->unk0 - D_801C3C50->unk44;
                             e->unk104 = D_801C3C54->unk8 - D_801C3C50->unk4C;
-                            if (D_801C3C54->unk98 == 0) {
-                                e->unkCC = D_800D98B0[0] * len;
-                                e->unkD0 = D_800D98B0[1] * len;
-                                e->unkD4 = D_800D98B0[2] * len;
-                                e->unkD8 = (s32) ((D_800D98B0[3] - e->unkF0) * len) + e->unkF0;
-                                e->unkDC = (s32) ((D_800D98B0[4] - e->unkF4) * len) + e->unkF4;
-                                e->unkE0 = (s32) ((D_800D98B0[5] - e->unkF8) * len) + e->unkF8;
-                            } else if (D_801C3C54->unk98 == 1) {
+                            switch (D_801C3C54->unk98) {
+                            case 1:
                                 e->unkCC = D_800D9898[0] * len;
                                 e->unkD0 = D_800D9898[1] * len;
                                 e->unkD4 = D_800D9898[2] * len;
                                 e->unkD8 = (s32) ((D_800D9898[3] - e->unkF0) * len) + e->unkF0;
                                 e->unkDC = (s32) ((D_800D9898[4] - e->unkF4) * len) + e->unkF4;
                                 e->unkE0 = (s32) ((D_800D9898[5] - e->unkF8) * len) + e->unkF8;
+                                break;
+                            case 0:
+                                e->unkCC = D_800D98B0[0] * len;
+                                e->unkD0 = D_800D98B0[1] * len;
+                                e->unkD4 = D_800D98B0[2] * len;
+                                e->unkD8 = (s32) ((D_800D98B0[3] - e->unkF0) * len) + e->unkF0;
+                                e->unkDC = (s32) ((D_800D98B0[4] - e->unkF4) * len) + e->unkF4;
+                                e->unkE0 = (s32) ((D_800D98B0[5] - e->unkF8) * len) + e->unkF8;
+                                break;
                             }
                         }
                     } else {
