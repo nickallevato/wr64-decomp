@@ -201,10 +201,11 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1095 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
-// search: the 255 value (D_i3_802C6F6C/78) is set before the 170 value (D_i3_802C6F70/7C) everywhere. Left:
-// register numbering, and case 0's chain stores D_i3_802C6F6C last here, first in the original (none of the 24
-// chain orders gives that).
+// Score 1025 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
+// search: the 255 value (D_i3_802C6F6C/78) is set before the 170 value (D_i3_802C6F70/7C) everywhere. Case 0
+// clears the four values in separate statements, in the original's store order (no chain order gives it). Left:
+// the global registers: &D_i3_802C6F64, &D_i3_802C6F74, 255 and 170 take t1, t2, a2, a3 here and t2, a2, a3, t1 in
+// the original.
 Gfx* func_i3_802C5D54(Gfx* gdl) {
     TexLabel* label;
 
@@ -215,7 +216,10 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F74 = 0;
                 D_i3_802C6F68 = 0;
             }
-            D_i3_802C6F6C = D_i3_802C6F70 = D_i3_802C6F7C = D_i3_802C6F78 = 0;
+            D_i3_802C6F78 = 0;
+            D_i3_802C6F6C = 0;
+            D_i3_802C6F70 = 0;
+            D_i3_802C6F7C = 0;
             break;
 
         case 1:
