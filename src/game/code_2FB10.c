@@ -530,12 +530,13 @@ void func_800C1904(s32);
 void func_800C1A20(s32);
 
 #ifdef NON_MATCHING
-// Score 933 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
+// Score 575 of 32100: same blocks and calls. The zone test as if / else if, the Drake Lake count and player as
 // if / else give the original's branches; the Drake Lake loop counts with best and keeps its bound in wasIn (both
-// reused; the permuter found them, and with them the int registers match, except wasIn's). The declaration order
-// (from a move search) gives the 0x88 frame. Left: the stack slots of x, z, the distances, ra/isHuman and the zone
-// outputs differ, the second distance (dxp, reused) is not stored, and the float registers of the nearest-record
-// and Drake Lake blocks differ. The Drake Lake deltas reuse dx0/dz0.
+// reused; the permuter found them, and with them the int registers match, except wasIn's). The nearest-record block
+// reads D_801C3780 / D_801C3788 directly and writes the previous record's distance out twice: the original's stack
+// slots at 0x28, 0x24 and 0x20 are IDO's spilled copies of those, not locals. Left: the frame slots above them sit
+// 4 or 8 bytes off (ra/isHuman, the rider pointer, the zone outputs, bestDist and dzn), the prev deltas' registers
+// (f12/f14) swap, and the Drake Lake block's float registers differ. The Drake Lake deltas reuse dx0/dz0.
 void func_80076378(s32 arg0) {
     s32 best;
     f32 dx0;
@@ -544,21 +545,19 @@ void func_80076378(s32 arg0) {
     s32 isHuman;
     s32 zoneA;
     s32 cur;
-    f32 dxp;
-    s32 zoneB;
     s32 zoneC;
+    s32 zoneB;
     f32 dz0;
     s32 zoneD;
     f32 bestDist;
+    f32 dxp;
     f32 dzp;
     f32 dxn;
-    f32 dzn;
     s32 wasIn;
+    f32 dzn;
     s32 player;
     UnkStruct_800D8204* rect;
     RiderStruct* rider;
-    f32 x;
-    f32 z;
 
     rider = &gRiderRaceState[arg0];
     if (D_801CE638 == 2) {
@@ -574,27 +573,23 @@ void func_80076378(s32 arg0) {
     if (D_801CE638 == 1) {
         cur = rider->nearestRecord;
         best = cur;
-        x = D_801C3780;
         prev = D_801AEE20[cur].unkA8;
         next = D_801AEE20[cur].unkA0;
-        dx0 = D_801AEE20[cur].unk0 - x;
-        z = D_801C3788;
-        dzp = D_801AEE20[prev].unk8 - z;
-        dxp = D_801AEE20[prev].unk0 - x;
-        dz0 = D_801AEE20[cur].unk8 - z;
-        dxn = D_801AEE20[next].unk0 - x;
-        dzn = D_801AEE20[next].unk8 - z;
+        dx0 = D_801AEE20[cur].unk0 - D_801C3780;
+        dzp = D_801AEE20[prev].unk8 - D_801C3788;
+        dxp = D_801AEE20[prev].unk0 - D_801C3780;
+        dz0 = D_801AEE20[cur].unk8 - D_801C3788;
+        dxn = D_801AEE20[next].unk0 - D_801C3780;
+        dzn = D_801AEE20[next].unk8 - D_801C3788;
         bestDist = (dx0 * dx0) + (dz0 * dz0);
-        dxp = (dxp * dxp) + (dzp * dzp);
-        if (dxp < bestDist) {
-            bestDist = dxp;
-            if (cur && cur && cur) {} // FAKE: keeps x, z and dxp on the stack, as in the original
+        if (((dxp * dxp) + (dzp * dzp)) < bestDist) {
+            bestDist = (dxp * dxp) + (dzp * dzp);
             best = prev;
         }
         if (((dxn * dxn) + (dzn * dzn)) < bestDist) {
             best = next;
         }
-        func_80074368(x, z, &zoneA, &zoneB);
+        func_80074368(D_801C3780, D_801C3788, &zoneA, &zoneB);
         if (cur != best) {
             func_80074368(D_801AEE20[best].unk0, D_801AEE20[best].unk8, &zoneC, &zoneD);
             if ((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) {

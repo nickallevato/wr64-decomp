@@ -168,12 +168,14 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // D_80158450), runs unk24 rounds of link corrections, then sets the velocities from the moves, the centre
 // (unk44..unk4C), its change (unk50..unk58) and that change's length and direction (unk68, unk5C..unk64).
 #ifdef NON_MATCHING
-// Score 1290 of 30700: plain pointer compares in the loops, the sums zeroed in one chain and each added next to its
-// difference. The 12 in s5 (multu for every D_80158450 and unk34 index) needs unk2C to be u32 like unk28: IDO keeps
-// one register for a constant only when every use has the same type. s also holds the new centre values and the
-// length (its stack home is the original's sp+0x60); with the declaration order (from a search) the frame and every
-// stack slot match. Left: the sums sit in saved registers here (f14-f18 in the original), and the link loop's dx..dz
-// and s, dt and the zero take other float registers. dt also holds the link constant k, as the original's $f30 does.
+// Score 60 of 30700: plain pointer compares in the loops, the sums zeroed in one chain (sx first) and each added
+// next to its difference. The 12 in s5 (multu for every D_80158450 and unk34 index) needs unk2C to be u32 like unk28:
+// IDO keeps one register for a constant only when every use has the same type. d is the link loop's scale as well as
+// the last loop's d and the count (the original's $f20, saved across sqrtf), and s carries each new position in the
+// last loop and then the new centre values and the length (its stack home is the original's sp+0x60); with the
+// declaration order (from a search) the frame and every stack slot match. An empty test in the last loop (permuter
+// FAKE) gives its registers; the link forces are computed fz, fx, fy (permuter order). Left: the first loop's old
+// position takes f0 (f2 there) and fz takes f2 (f16 there).
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     f32 dt;
     f32 dx;
@@ -212,10 +214,10 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
             dx = b->unk0 - pt->unk0;
             dy = b->unk4 - pt->unk4;
             dz = b->unk8 - pt->unk8;
-            s = (link->unk8 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz))) - dt;
-            fx = dx * s;
-            fy = dy * s;
-            fz = dz * s;
+            d = (link->unk8 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz))) - dt;
+            fz = dz * d;
+            fx = dx * d;
+            fy = dy * d;
             b->unkC += fx;
             b->unk10 += fy;
             b->unk14 += fz;
@@ -229,15 +231,19 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
             pt->unk8 += pt->unk14;
         }
     }
-    sz = sy = sx = 0.0f;
+    sx = sy = sz = 0.0f;
     prev = &D_80158450[arg0->unk28];
     for (pt = &arg0->unk30[arg0->unk28]; pt >= arg0->unk30; pt--, prev--) {
-        sx += pt->unk0;
-        dx = pt->unk0 - prev->x;
-        sy += pt->unk4;
-        dy = pt->unk4 - prev->y;
-        sz += pt->unk8;
-        dz = pt->unk8 - prev->z;
+        s = pt->unk0;
+        sx += s;
+        dx = s - prev->x;
+        s = pt->unk4;
+        sy += s;
+        dy = s - prev->y;
+        s = pt->unk8;
+        sz += s;
+        if (1) {} // FAKE (permuter)
+        dz = s - prev->z;
         d = (1.0f - pt->unk18) * ((dx * arg0->unk5C) + (dy * arg0->unk60) + (dz * arg0->unk64));
         pt->unkC = (arg0->unk5C * d) + (pt->unk18 * dx);
         pt->unk10 = (arg0->unk60 * d) + (pt->unk18 * dy);
@@ -262,7 +268,7 @@ void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     dz = s - fz;
     arg0->unk58 = dz;
     d = SQ(dx) + SQ(dy) + SQ(dz);
-    if (d != 0.f) { // FAKE: 0.f instead of 0.0f, a separate zero constant to IDO (zero-spelling search)
+    if (d != 0) {
         s = sqrtf(d);
         arg0->unk68 = s;
         arg0->unk5C = dx / s;

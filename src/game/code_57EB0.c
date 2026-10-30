@@ -3475,12 +3475,6 @@ extern s32 D_800E62D0;
 extern s32 D_800E62D4;
 extern s32 D_801CB340;
 
-#ifdef NON_MATCHING
-// Score 960 of 116800: the SUNNY_BEACH loop's statements follow the GLACIER_COAST loop's order, then a move search
-// on both loops. Left: GLACIER_COAST computes the SIN term before the COS one (the original's s1/s2 and float
-// temporaries are the other way round), one unk74 store in each loop is scheduled elsewhere, and the SUNSET_BAY loop
-// loads its constants in another order (f20 and f0 swap roles). Statement order inside the cases decides which
-// constants stay in saved registers.
 void func_800AC184(void) {
     s32 pad[5]; // stack pad
     UnkStruct_80192690* rider;
@@ -3656,16 +3650,16 @@ void func_800AC184(void) {
                         D_801CF060[i].unk0 = 9;
                     }
                     D_801CF060[i].unk78 = D_801CF060[i].unk74 = 0;
-                    D_801CF060[i].unk7C = 0xFF;
                 }
                 for (i = 6; i < 11; i++) {
                     D_801CF060[i].unk0 = 3;
-                    D_801CF060[i].unk74 = 0;
+                    D_801CF060[i].unk7C = 0xFF;
                     D_801CF060[i].unk8 = 1;
                     D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 3000.0f;
                     D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + 1100.0f;
                     D_801CF060[i].unk10 = (i - 4) * 50;
                     D_801CF060[i].unk18 = 90.0f;
+                    D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
@@ -3676,14 +3670,15 @@ void func_800AC184(void) {
             if (gPlayers == ONE_PLAYER) {
                 if (D_800DAB68 == 0) {
                     for (i = 0; i < 3; i++) {
-                        D_801CF060[i].unk14 = -800.0f;
                         D_801CF060[i].unkC = -4300.0f;
+                        D_801CF060[i].unk14 = -800.0f;
                         D_801CF060[i].unk8 = 1;
                         D_801CF060[i].unk0 = 6;
                         D_801CF060[i].unk4C = 40.0f;
-                        D_801CF060[i].unk80 = COS(((i * 120) / 360) * 4096) * 200.0f;
-                        D_801CF060[i].unk84 = 100000.0; // double literal: a constant of its own, not shared with the 100000.0f
-                        D_801CF060[i].unk88 = SIN(((i * 120) / 360) * 4096) * 200.0f;
+                        // int 200 and 5000 below: a constant apart from the 200.0f / 5000.0f used elsewhere
+                        D_801CF060[i].unk80 = COS(((i * 120) / 360) * 4096) * 200;
+                        D_801CF060[i].unk84 = 100000.0f;
+                        D_801CF060[i].unk88 = SIN(((i * 120) / 360) * 4096) * 200;
                     }
                     D_801CF060[0].unk9C = 10;
                     D_801CF060[1].unk9C = 11;
@@ -3816,12 +3811,12 @@ void func_800AC184(void) {
                 for (i = 3; i < 8; i++) {
                     D_801CF060[i].unk0 = 3;
                     D_801CF060[i].unk7C = 0xFF;
-                    D_801CF060[i].unk74 = 0;
-                    D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
                     D_801CF060[i].unk8 = 1;
-                    D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 5000.0f;
+                    D_801CF060[i].unkC = (COS(i * 200) * 200.0f) + 5000;
+                    D_801CF060[i].unk14 = (SIN(i * 300) * 300.0f) + -2600.0f;
                     D_801CF060[i].unk10 = (i * 10) + 240;
                     D_801CF060[i].unk18 = 90.0f;
+                    D_801CF060[i].unk74 = 0;
                     D_801CF060[i].unk78 = SysUtils_Rand() & 0x3F;
                     D_801CF060[i].unk70 = ((SysUtils_Rand() & 0xF) * 10.0f) + 200.0f;
                 }
@@ -3871,9 +3866,6 @@ void func_800AC184(void) {
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_57EB0/func_800AC184.s")
-#endif
 
 void func_800AD3C4(void) {
     switch (gCourseID) {
