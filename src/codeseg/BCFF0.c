@@ -2703,8 +2703,10 @@ void func_801FAEB0(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 445 of 37200: only the three hoisted float constants take other saved FP registers (the original: 1.0f in f24,
-// 3.0f in f22, 1.3f in f20; here 3.0f, 1.3f, 1.0f in that order).
+// Score 175 of 37200: the three hoisted float constants now take the original's saved FP registers (1.3f in f20,
+// 3.0f in f22, 1.0f in f24): in both two-player arms scale = 1.0f comes last, and in the FINAL arm w = 77 follows the
+// y test (found by a statement-order search over the four arms; 445 before). Left: the saved integer registers rotate
+// (gdl, i, the i * 4 offset, rider and w take s4, s5, s6, s2, s3 where the original has s5, s6, s4, s3, s2).
 extern u8 D_80227744[][3];
 extern u8 D_80227754[][3];
 extern s32 D_80228B60[2];
@@ -2771,12 +2773,12 @@ void func_801FAEB8(Gfx** gdlp) {
                 } else {
                     x = 125;
                     w = 48;
-                    scale = 1.0f;
                     if (i == 0) {
                         y = 40;
                     } else {
                         y = 150;
                     }
+                    scale = 1.0f;
                 }
                 gdl = Printer_PrintScaled(gdl, 0, "LAP", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1, g1, b1, scale);
                 sprintf((char*) D_80228CF8, "%d", rider->lapCount);
@@ -2789,13 +2791,13 @@ void func_801FAEB8(Gfx** gdlp) {
                     w = 98;
                     scale = 1.3f;
                 } else {
-                    scale = 1.0f;
-                    w = 77;
                     if (i == 0) {
                         y = 40;
                     } else {
                         y = 150;
                     }
+                    w = 77;
+                    scale = 1.0f;
                 }
                 gdl = Printer_DrawString(Printer_PrintScaled(gdl, 0, "FINAL", x, y, 2, r0, g0, b0, r0, g0, b0, r1, g1, b1, r1,
                                                   g1, b1, scale),
