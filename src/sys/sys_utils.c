@@ -777,7 +777,8 @@ void func_80049A94(Mtx* arg0, MtxF* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5
 
 // Rotation matrix from three angles in degrees (x, y, z), scaled by arg7, with the translation (arg4, arg5, arg6),
 // converted with SysUtils_MtxFToMtx. The original spills sin(y) * sin(z) to its stack home after the product and
-// reloads it for mf[1][2]: a volatile local (home, a FAKE) at sysz's declaration slot gives that store and reload.
+// reloads it for mf[1][2]: a local (home, a FAKE) at sysz's declaration slot, written through &home so that it
+// stays in memory, gives that store and the reload into a temporary.
 void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7) {
     f32 sx;
     f32 sy;
@@ -785,7 +786,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     f32 cx;
     f32 cy;
     f32 cz;
-    volatile f32 home; // FAKE: sysz's stack home (0x84): the original stores sysz there and reloads it
+    f32 home; // FAKE: sysz's stack home (0x84): the original stores sysz there and reloads it
     f32 sysz;
     f32 cycz;
     f32 sycz;
@@ -809,7 +810,7 @@ void func_80049C9C(Mtx* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, 
     mf.mf[0][1] = sz * cx * arg7;
     cz = COS(ax);
     mf.mf[1][1] = cz * cx * arg7;
-    home = sysz = sy * sz; // FAKE: the spill (see home)
+    (&home)[0] = sysz = sy * sz; // FAKE: the spill, written through &home so home stays in memory
     cycz = cy * cz;
     cx = sx * sysz; // FAKE: reuses cx, as in func_80049A94
     mf.mf[0][0] = (cycz + cx) * arg7;
