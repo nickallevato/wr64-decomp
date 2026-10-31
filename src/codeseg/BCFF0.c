@@ -357,12 +357,12 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 6271 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
-// original's operand order shows. The angle goes straight into unk2D4 and is mirrored from there. The stunt-object
-// search is a do-while guarded by D_801BFA40 > 0 that skips other kinds with a goto to the increment (the
-// original's skip path jumps to the loop test). The two single-use crosses are spelled `a + -(b)`: IDO folds
-// `a - b > 0.0f` into one compare, the original keeps the sub.s and compares the result with 0.0f, which only this
-// spelling gives (odd spelling, same value).
+// Score 5841 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
+// The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
+// D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
+// test). The two single-use crosses are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original
+// keeps the sub.s and compares the result with 0.0f, which only this spelling gives (odd spelling, same value).
 // Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift;
 // the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block), and 360 - unk2D4
 // is computed before the cross test (inside it there).
@@ -389,7 +389,7 @@ void func_801EF504(void) {
     f32 dz;
     f32 fwd;
     f32 cross;
-    s32 pad; // stack pad (an unused local's slot)
+    UnkStruct_801AEE20* rec;
     s32 diff;
     s32 step;
     f32 dist;
@@ -418,15 +418,17 @@ void func_801EF504(void) {
             node = &D_801AEE20[rider->unkC];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
+            rec = node;
             if (dx * node->unk70 + dz * node->unk74 > 0.0f) {
-                node = &D_801AEE20[node->unkA0];
+                node = &D_801AEE20[rec->unkA0];
             }
         } else {
             node = &D_801AEE20[rider->nearestRecord];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
+            rec = node;
             if (dx * node->unk70 + dz * node->unk74 > -256.0f) {
-                node = &D_801AEE20[node->unkA0];
+                node = &D_801AEE20[rec->unkA0];
             }
         }
         dx = node->unk0 - cam->eyeX;
