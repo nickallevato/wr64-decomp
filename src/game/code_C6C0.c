@@ -5477,9 +5477,9 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 7950 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 6715 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
-// into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by index, and the C88 entry is
+// into unk15FA, then the s16 and s8 narrowings; with unk160A u16 the value is copied for the s16 stores, as there), the twelve points are transformed by index, and the C88 entry is
 // re-read through the rider for each component, read once into x and stored from x (the original multiplies the
 // loaded value without reloading it). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared
 // with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two statements (the original stores zero to
