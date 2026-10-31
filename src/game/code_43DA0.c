@@ -1004,11 +1004,13 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 2965 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display
-// lists). Left: the original computes the first two texture-load commands' pointers (two gdl increments) and their
-// constant words (t4, t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are computed
-// at the commands and the vertex temps rotate through t4-t9. Writing the texture commands before the vertices is far
-// worse (the stores move too). Frame and spill slots match.
+// Score 1975 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display
+// lists). An empty test after gDPLoadSync (FAKE, from the permuter) splits the block: after it the original's gdl
+// pointers alternate registers (addiu a2,a0,8; addiu a0,a2,8; ...), as they do here only with the split. Left: the
+// original computes the first two texture-load commands' pointers (two gdl increments) and their constant words (t4,
+// t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are computed at the commands and
+// the vertex temps rotate through t4-t9. Writing the texture commands before the vertices is far worse (the stores
+// move too). Frame and spill slots match.
 Gfx* func_8008DFD0(Gfx* gdl) {
     camera_unk_1* cam;
     Vtx* vtx;
@@ -1058,6 +1060,7 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     gDPSetTile(gdl++, G_IM_FMT_IA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5,
                G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
     gDPLoadSync(gdl++);
+    if (cam && cam && cam) {} // FAKE (permuter): splits the block, which gives the original's gdl registers after it
     gDPLoadBlock(gdl++, G_TX_LOADTILE, 0, 0, (((32) * (32) + G_IM_SIZ_16b_INCR) >> G_IM_SIZ_16b_SHIFT) - 1,
                  CALC_DXT(32, G_IM_SIZ_16b_BYTES));
     gDPPipeSync(gdl++);
