@@ -867,7 +867,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 26530 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 26047 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
@@ -879,7 +879,7 @@ f32 func_801ED154(f32 arg0, f32 arg1);
 // The operand orders of the view dot product and three spawn expressions are from an operand-swap search (IDO
 // orders commutative operands itself, so the written order can flip the emitted one). The velocity length reuses sideY,
 // dead after func_801EDAE0 (a merge search: 27176 -> 26654). special, g and sideX are declared where a declaration
-// search put them (26530).
+// search put them (26530); one more stack pad word sits among the locals (pad search, 26047).
 void func_800B08F8(s32 arg0) {
     s32 twoViews;
     s32 lod;
@@ -894,6 +894,7 @@ void func_800B08F8(s32 arg0) {
     f32 dy;
     s32 isHuman;
     s32 special;
+    s32 padS0; // stack pad
     f32 dz;
     f32 dist;
     f32 fwdLen[1]; // FAKE: keeps fwdLen in its stack slot across sqrtf, as the original does
