@@ -917,23 +917,23 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 7735 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// Score 7687 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
 // / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
 // rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
-// products once the divisions are done (two locals fewer give the original's frame). The declaration order (s, nx,
-// a after nz) is from a declaration-move search.
+// products once the divisions are done (two locals fewer give the original's frame). The declaration order is from
+// declaration-move searches.
 // Left: the register allocation: the original keeps x in f14 and spills it to its argument slot around each sqrtf,
 // and reloads z from its slot, where this keeps both in saved registers.
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
-    f32 c;
-    f32 len;
     f32 b;
     f32 ny;
     f32 nz;
     f32 s;
-    f32 nx;
-    f32 a;
     f32 t;
+    f32 len;
+    f32 c;
+    f32 a;
+    f32 nx;
     f32 u;
     f32 px;
     f32 py;
