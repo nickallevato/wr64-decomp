@@ -1593,8 +1593,12 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 #ifdef NON_MATCHING
 // Score 1200 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
 // registers numbered differently throughout (from the first ease update on). p and b set at the top (as in
-// func_801DF38C) put obj in s0; b declared before p and the unk24 stores through obj->base (as func_801DDEDC
-// writes them) give p's spill slot 0x28 and the original's t0/a3.
+// func_801DF38C) put obj in s0; b declared before p and the unk24 stores through obj->base (as func_801DDEDC writes
+// them) give p's spill slot 0x28 and the original's t0/a3. Without the two FAKEs (2045) only the reloads of the spilled
+// d[0] and v[0] copies (sp+0x20, 0x24) and the d[1] store are scheduled differently (two nops more), besides the float
+// registers; the original's projection factor is in $f0. Tried, none lower: a new local for the factor, every choice of
+// x or y for each of the function's float values (128), the ease updates' operand orders, obj->u.p5 and obj->base for p
+// and b in each statement, adjacent statement swaps, empty tests at every statement and joining any two lines.
 void func_801DF744(UnkA95D0_Obj* obj) {
     UnkA95D0_Base* b = &obj->base;
     UnkA95D0_Payload5* p = &obj->u.p5;
