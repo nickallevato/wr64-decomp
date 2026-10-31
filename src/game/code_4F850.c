@@ -61,21 +61,15 @@ extern UnkStruct_800DB4A8 D_800DB4A8[];
 extern UnkStruct_800DB4A8 D_800DB538[];
 extern UnkStruct_800DB4A8 D_800DB558;
 extern s32 D_800DCE18[];
-extern s16 D_801CE768[];
-extern UnkStruct_801CE7D8 D_801CE7D8[];
 extern s32* D_800DB484[];
-extern UnkStruct_801CE780 D_801CE780[];
 extern UnkStruct_800DB760* D_800DB760[6];
 extern s16 D_800DB778[][6];
-extern UnkStruct_801CE7E8 D_801CE7E8[];
 extern s32 D_800DAB90[];
 extern s32 D_800DABA0[];
 extern s32 D_800DABC0[];
 extern UnkStruct_800DACD0 D_800DACD0[];
-extern s32 D_801CE73C;
 extern DmaEntry D_800DABD0[];
 extern DmaEntry D_800DB330[];
-extern UnkStruct_801CE740 D_801CE740[];
 
 extern DmaEntry* D_800DC0E4[];
 extern DmaEntry* D_800DC108[];
@@ -114,12 +108,24 @@ extern u8* D_800DCE84[];
 extern UnkStruct_800DCE98 D_800DCE98[];
 extern s32 D_801CB330;
 extern u32 D_801CE6D0;
-extern s32 D_801CE760[2];
-extern u8* D_801CE998;
-// code_4F850's .bss from 0x801CE9A0 to 0x801CE9FF. Defined, not extern: the ceremony loop's stores to
-// D_801CE9A0[2] and [3] share one lui, as in the original. D_801CE9A0 has 24 bytes (entries 4 and 5 are not
-// referenced). D_801CE9B8 is the destination of a game_dma_copy below; its first 0x48 bytes are here, the rest (from
-// D_801CEA00, which code_C6C0 reads as 12-byte records) is still in bss2d.
+// code_4F850's .bss from 0x801CE730 to 0x801CE9FF. Defined, not extern: as1 shares one lui between stores to sym
+// and sym+4 only for a symbol defined in the file (the ceremony loop's stores to D_801CE9A0[2] and [3]).
+// code_52CD0 and code_57EB0 name parts of D_801CE768 and D_801CE780 by address (D_801CE76A..D_801CE778,
+// D_801CE798); those names are in linker_scripts/us/rev1/resolve.txt.
+s32 D_801CE730;
+s32 D_801CE734;
+s32 D_801CE738;
+s32 D_801CE73C;
+UnkStruct_801CE740 D_801CE740[8];
+s32 D_801CE760[2];
+s16 D_801CE768[12];
+UnkStruct_801CE780 D_801CE780[2];
+UnkStruct_801CE7D8 D_801CE7D8[2];
+UnkStruct_801CE7E8 D_801CE7E8[9];
+u8* D_801CE998;
+// D_801CE9A0 has 24 bytes (entries 4 and 5 are not referenced). D_801CE9B8 is the destination of a game_dma_copy
+// below; its first 0x48 bytes are here, the rest (from D_801CEA00, which code_C6C0 reads as 12-byte records) is
+// still in bss2d.
 Gfx* D_801CE9A0[6];
 u8 D_801CE9B8[0x48];
 extern UnkStruct_80227A60 D_80227A60[];
@@ -139,9 +145,6 @@ extern s32 D_800DCE3C[];
 extern s32 D_800DCE60[];
 extern s16 D_801CE60C;
 extern u32 D_801CE6E8;
-extern s32 D_801CE730;
-extern s32 D_801CE734;
-extern s32 D_801CE738;
 extern u16 D_800DCEC8[];
 extern u8 D_8000D9C;
 extern u8 D_8002C00;
