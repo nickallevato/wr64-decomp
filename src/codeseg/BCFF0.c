@@ -357,13 +357,15 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 6701 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
-// original's operand order shows. The stunt-object search is a do-while guarded by D_801BFA40 > 0 that skips other
-// kinds with a goto to the increment (the original's skip path jumps to the loop test). The two single-use crosses
-// are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original keeps the sub.s and compares the
-// result with 0.0f, which only this spelling gives (odd spelling, same value).
+// Score 6271 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// original's operand order shows. The angle goes straight into unk2D4 and is mirrored from there. The stunt-object
+// search is a do-while guarded by D_801BFA40 > 0 that skips other kinds with a goto to the increment (the
+// original's skip path jumps to the loop test). The two single-use crosses are spelled `a + -(b)`: IDO folds
+// `a - b > 0.0f` into one compare, the original keeps the sub.s and compares the result with 0.0f, which only this
+// spelling gives (odd spelling, same value).
 // Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift;
-// the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block).
+// the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block), and 360 - unk2D4
+// is computed before the cross test (inside it there).
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -387,7 +389,7 @@ void func_801EF504(void) {
     f32 dz;
     f32 fwd;
     f32 cross;
-    s32 angle;
+    s32 pad; // stack pad (an unused local's slot)
     s32 diff;
     s32 step;
     f32 dist;
@@ -447,11 +449,10 @@ void func_801EF504(void) {
         }
         fwd = dirX * dx + dirZ * dz;
         dot = fwd;
-        angle = func_801ED090(fwd);
-        rider->unk2D4 = angle;
+        rider->unk2D4 = func_801ED090(fwd);
         cross = dirX * dz + -(dirZ * dx); // odd spelling: keeps the sub.s (see the note)
         if (cross > 0.0f) {
-            rider->unk2D4 = 360 - angle;
+            rider->unk2D4 = 360 - rider->unk2D4;
         }
         diff = func_801ED388(rider->unk2D4, rider->unk2D0);
         step = diff / 8;
