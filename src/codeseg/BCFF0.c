@@ -2388,6 +2388,9 @@ void func_801F9520(Gfx** gdlp) {
 // work; 0.0F does not): sgn's 0.f is its own, while written 0.0f it shares aa > 0.0f's zero, which is then loaded in
 // both arms of sgn instead of once at the top. Left: the
 // lui of gRiders' address is scheduled two instructions later than in the original (after the b->unk4 store).
+// In the block after the oy/ox join the original fills the mtc1 stall with the lui and the b->unk10 store and puts
+// the b->unk4 store after the mul; here both stores go first and the lui after the mul. Not moved by: all 24 orders
+// of the four stores with every set of line joins (192), D_80228B88[i][j] in place of b, goto in place of continue.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
