@@ -650,7 +650,7 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 170 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// Score 50 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
 // held in c17, j and r; the sum adds them in the original's operand order (18, unk8, 16, 17); both loops walk e by
 // pointer; the speed is read through D_80228120 each time (no local); D_802287A8 is set before runner->frame is read,
 // so frame is loaded once; step keeps runner->step (v1 in the original) for step->duration, and i is computed from
@@ -726,22 +726,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             D_80228190[0].unk14[j] = vec[j] / mag;
         }
         for (i = 0, e = D_80228190; i < 24; i++, e++) {
-            if (((f32*) D_80228120)[i] > 17.0f) {
-                c17 = 1;
-            } else {
-                c17 = 0;
-            }
-            if (((f32*) D_80228120)[i] > 16.0f) {
-                j = 1;
-            } else {
-                j = 0;
-            }
-            if (((f32*) D_80228120)[i] > 18.0f) {
-                r = 1;
-            } else {
-                r = 0;
-            }
-            e->unk8 = ((s32) r + e->unk8 + j + c17 + 1) % 10; // (s32): a signed % 10, see above
+            // The flags and the sum on one line (permuter): IDO schedules by source line. (s32) r: see above.
+            if (((f32*) D_80228120)[i] > 17.0f) { c17 = 1; } else { c17 = 0; } if (((f32*) D_80228120)[i] > 16.0f) { j = 1; } else { j = 0; } if (((f32*) D_80228120)[i] > 18.0f) { r = 1; } else { r = 0; } e->unk8 = ((s32) r + e->unk8 + j + c17 + 1) % 10;
             if (i > 0) {
                 for (j = 0; j < 3; j++) {
                     vec[j] = D_80228190[0].unkC[j] - e->unkC[j];
