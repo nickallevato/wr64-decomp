@@ -279,7 +279,7 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 36867 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
+// Score 36657 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
 // default, written first, as the table's entry 0 and its block order show). The declarations follow the original's
 // stack homes (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C,
 // things 0x48, table 0x30; the pad stands for four words above them), which gives its frame (0xA0). t is zeroed
@@ -288,7 +288,8 @@ extern void* D_800D6C6C[];
 // every loop exit, which gives each capped loop its "bnez / b exit" break shape (16 missing b's); i = 0 there spills
 // i to its home here (43143). Registers differ throughout (src2 lives in s2, &gCourseID in ra). The order of
 // several independent stores and list assignments is from a statement-move search (the largest gain: unk4C = 11
-// after unk50 in the things types 10..21 case, 40902 -> 36867).
+// after unk50 in the things types 10..21 case, 40902 -> 36867). Six pairs of list assignments share a line (a line-join
+// search: IDO schedules by source line, 36867 -> 36657).
 void func_80071E70(void) {
     s32 pad[4]; // stack pad
     s32 kind;
@@ -496,14 +497,12 @@ void func_80071E70(void) {
     } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) {
         if (gPlayers == ONE_PLAYER) {
             list1 = D_800D658C[gCourseID];
-            list2 = D_800D65B4[gCourseID];
-            buoys = D_800D66F4[gCourseID];
+            list2 = D_800D65B4[gCourseID]; buoys = D_800D66F4[gCourseID];
             list0 = D_800D6564[gCourseID];
             objects = D_800D6654[gCourseID];
         } else {
             objects = D_800D667C[gCourseID];
-            list1 = D_800D6604[gCourseID];
-            list2 = D_800D662C[gCourseID];
+            list1 = D_800D6604[gCourseID]; list2 = D_800D662C[gCourseID];
             buoys = D_800D671C[gCourseID];
             list0 = D_800D65DC[gCourseID];
         }
@@ -531,12 +530,10 @@ void func_80071E70(void) {
         }
         if ((difficulty == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) {
             list0 = D_800D6334[gCourseID];
-            list1 = D_800D635C[gCourseID];
-            list2 = D_800D6384[gCourseID];
+            list1 = D_800D635C[gCourseID]; list2 = D_800D6384[gCourseID];
         } else if (difficulty == DIFFICULTY_HARD) {
             list0 = D_800D63AC[gCourseID];
-            list1 = D_800D63D4[gCourseID];
-            list2 = D_800D63FC[gCourseID];
+            list1 = D_800D63D4[gCourseID]; list2 = D_800D63FC[gCourseID];
         } else {
             list0 = D_800D6424[gCourseID];
             list1 = D_800D644C[gCourseID];
@@ -546,12 +543,10 @@ void func_80071E70(void) {
         objects = D_800D6654[gCourseID];
     }
     if (gPlayers == TWO_PLAYERS) {
-        pts = D_800D680C[gCourseID];
-        things = D_800D685C[gCourseID];
+        pts = D_800D680C[gCourseID]; things = D_800D685C[gCourseID];
         edge = D_800D67BC[gCourseID];
     } else {
-        edge = D_800D6794[gCourseID];
-        things = D_800D6834[gCourseID];
+        edge = D_800D6794[gCourseID]; things = D_800D6834[gCourseID];
         pts = D_800D67E4[gCourseID];
     }
 
