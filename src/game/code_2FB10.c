@@ -109,15 +109,15 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 4045 of 97200: same blocks, loops and calls, frame 0x80. The zeroing chains store right to left (the
-// first stores keep their addresses in registers, the leftmost goes through at), as in the original. The lap loop
-// runs on k and the checkpointTimes loop on j: j is assigned a constant again in the D_801CE638 == 8 search, which
-// keeps the 8-step loop rolled (pattern C); 8 then sits in s0 and 1 in ra, as in the original. n is set before
-// the search loop (the original computes D_801BB120 - 1 in the search loop's first branch delay slot).
+// Score 3340 of 97200: same blocks, loops and calls, frame 0x80. The zeroing chains store right to left (the
+// first stores keep their addresses in registers, the leftmost goes through at), as in the original. The
+// D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
+// constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
+// as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
+// first branch delay slot). The other loop counters' names are from a search over each loop's counter.
 // Left: the original stores gMapHalfSize with lui at in the extent loops (loads through a register), shares one lui
-// at between pairs of the unrolled D_801C26C0 stores (as if D_801C26C0 were defined in the file), and keeps the
-// D_801CE638 search's found record in the search counter's register (v1; k in t3 here). The search on k (as that
-// suggests) keeps the 8-step loop rolled with j as its counter but loses s0 (7162).
+// at between pairs of the unrolled D_801C26C0 stores (as if D_801C26C0 were defined in the file), and register
+// choices from the extent loops on.
 void func_80075310(void) {
     s32 i;
     s32 pad[2]; // stack pad: the original's frame is 0x80
@@ -135,18 +135,18 @@ void func_80075310(void) {
     if (D_800D8224 != 0) {
         D_800D8224 = 0;
         for (i = 9; i < 12; i++) {
-            for (j = 0; j < 3; j++) {
-                gBestTimes[i][j] = D_800D81B0;
+            for (n = 0; n < 3; n++) {
+                gBestTimes[i][n] = D_800D81B0;
             }
             gBestLaps[i] = D_800D81B0;
-            for (j = 0; j < 9; j++) {
-                gBestCheckpointTimes[i][j] = -1;
+            for (n = 0; n < 9; n++) {
+                gBestCheckpointTimes[i][n] = -1;
             }
             D_801C23B0[i] = D_800D81B0;
         }
         for (i = 9; i < 12; i++) {
-            for (j = 0; j < 3; j++) {
-                gStuntRecords[i][j] = D_800D81C4;
+            for (n = 0; n < 3; n++) {
+                gStuntRecords[i][n] = D_800D81C4;
             }
         }
         for (i = 0; i < 4; i++) {
@@ -222,8 +222,8 @@ void func_80075310(void) {
 
     // D_801C3890: 1 for table B records that are not reached from exactly one record
     // (unkA0 or unkA4).
-    for (i = 0; i < D_801BB120; i++) {
-        D_801C3890[i] = 0;
+    for (j = 0; j < D_801BB120; j++) {
+        D_801C3890[j] = 0;
     }
     for (i = 0; i < D_801BB120; i++) {
         D_801C3890[D_801AEE20[i].unkA0]++;
@@ -322,11 +322,11 @@ void func_80075310(void) {
         rider->raceTime = 0;
         rider->bestLapTime = 599999;
         rider->timeLeft = D_800D9280[gCourseID * 4] * 1000;
-        for (k = 0; k < 9; k++) {
-            rider->lapBuoyMisses[k] = 0;
-            rider->lapTimes[k] = 0;
-            for (j = 0; j < 8; j++) {
-                rider->checkpointTimes[k][j] = 0;
+        for (j = 0; j < 9; j++) {
+            rider->lapBuoyMisses[j] = 0;
+            rider->lapTimes[j] = 0;
+            for (k = 0; k < 8; k++) {
+                rider->checkpointTimes[j][k] = 0;
             }
         }
         rider->unk330 = 0.0f;
@@ -353,15 +353,15 @@ void func_80075310(void) {
                     break;
             }
             n = D_801BB120 - 1;
-            for (j = 0; j < D_801BB120; j++) {
-                if (type == D_801AEE20[j].unk98) {
+            for (k = 0; k < D_801BB120; k++) {
+                if (type == D_801AEE20[k].unk98) {
                     break;
                 }
             }
-            if (j >= D_801BB120) {
+            if (k >= D_801BB120) {
                 k = D_801BB12C;
             } else {
-                k = D_801AEE20[j].unkB4;
+                k = D_801AEE20[k].unkB4;
             }
             for (j = k; (D_801AEE20[j].unk98 >= 2) && (n > 0); n--) {
                 j = D_801AEE20[j].unkB4;
