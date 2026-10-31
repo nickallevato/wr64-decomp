@@ -1312,12 +1312,16 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 44672 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
+// Score 43515 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
 // gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
 // table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
 // and constants (G_CULL_BACK, the gate lists) sit in other registers. One local (slot) also serves as the
-// search counter, as in the original. Statement order in a few straight-line runs is from a greedy
-// statement-move search.
+// search counter, as in the original: each search sets slot = D_801BB120 (one load, CSE'd into a0 for all
+// three) and runs while (--slot > 0), the original's copy, decrement and bgtz shape. Statement order in a few
+// straight-line runs is from a greedy statement-move search. Left: the original holds &D_801AEE20 in s8 for
+// the whole function and does not hoist the constant 1 in visibility loop 1, so its saved registers from s3
+// on are one lower than here (a tbl local is copy-propagated away; `e->unk9C == 1U` in the second test stops
+// one hoist, 43190, not kept); its first search walks through cur (s0), 43620 here.
 void func_8006E674(Gfx** gdl) {
     s32 padA[2]; // stack pad
     s32 slot;
@@ -1380,8 +1384,9 @@ void func_8006E674(Gfx** gdl) {
     // The next buoy (not a gate, unkC8 set) from the human's next record, the one after it,
     // and the one before it; the results are not used.
     e = &D_801AEE20[cur];
+    slot = D_801BB120;
     if ((e->unk9C != 0) || (e->unkC8 == 0)) {
-        for (slot = D_801BB120 - 1; slot > 0; slot--) {
+        while (--slot > 0) {
             e = &D_801AEE20[e->unkA0];
             if ((e->unk9C == 0) && (e->unkC8 != 0)) {
                 break;
@@ -1389,8 +1394,9 @@ void func_8006E674(Gfx** gdl) {
         }
     }
     e2 = &D_801AEE20[e->unkA0];
+    slot = D_801BB120;
     if ((e2->unk9C != 0) || (e2->unkC8 == 0)) {
-        for (slot = D_801BB120 - 1; slot > 0; slot--) {
+        while (--slot > 0) {
             e2 = &D_801AEE20[e2->unkA0];
             if ((e2->unk9C == 0) && (e2->unkC8 != 0)) {
                 break;
@@ -1398,8 +1404,9 @@ void func_8006E674(Gfx** gdl) {
         }
     }
     e3 = &D_801AEE20[e->unkA8];
+    slot = D_801BB120;
     if ((e3->unk9C != 0) || (e3->unkC8 == 0)) {
-        for (slot = D_801BB120 - 1; slot > 0; slot--) {
+        while (--slot > 0) {
             e3 = &D_801AEE20[e3->unkA8];
             if ((e3->unk9C == 0) && (e3->unkC8 != 0)) {
                 break;
