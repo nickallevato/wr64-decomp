@@ -1097,7 +1097,7 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 115 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
+// Score 105 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
 // own and the ring loop's counters in the pool loop's body; the ring step reuses i (the colour loops' counter, dead by
 // then; from a search over variable merges), and the copy loop sets dst before src. In the rings bot is the loop
 // counter and j the lower edge's start (the names swapped, from a search over swaps of two names in the rings; bot is
@@ -1112,7 +1112,9 @@ void Water_FillNoise(s32 amplitude);
 // different symbol, so IDO builds the pool loop's base on its own, and the bytes are the same). Through
 // D_80192464[0..5] in the pool loop instead, the base is 0x80192464 (940); an index copy loop gives its pointers among
 // the gWaterWindow stores (1750).
-// Left: the waterLevel copy in a2 (a3 there); D_801924BC's address in v0 (v1 there); the ring loops' temporaries.
+// Left: D_801924BC's address in v0 (v1 there) and the ring loops' temporaries (the first ring's three are named one
+// step around t7-t9 from the original's; the second computes the k index before the counter's). The mode-2 test goes
+// through bot (FAKE, a permuter find), which moves waterLevel's copy to a3 as in the original.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
@@ -1129,7 +1131,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         D_800D4724 = 9;
         D_800D472C = 5;
         D_800D4730 = 6;
-        if ((D_801CE64C == 2) || (gPlayers == TWO_PLAYERS)) {
+        bot = D_801CE64C == 2; // FAKE (permuter): the test through bot gives the original's register for waterLevel
+        if (bot || (gPlayers == TWO_PLAYERS)) {
             gWaterWindowN = 10;
             set = 26;
         } else {
