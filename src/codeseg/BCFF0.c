@@ -2818,12 +2818,12 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 10643 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 10283 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8. The alpha is held in k, the digit loop's counter (from a search over the
-// locals' names). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here;
-// as dead stores, expression statements, register or volatile they stay deleted or turn into stores; an empty
-// `if (f != f) {}` after `f = 1.0f - f` keeps both, in f0 as there, but costs more elsewhere), so every temp after the
-// prologue is renumbered.
+// locals' names). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f, both in f0: IDO deletes
+// them (as dead stores, expression statements, register or volatile they stay deleted or turn into stores) unless
+// an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s where / 2.0f becomes a multiply.
+// Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2836,7 +2836,7 @@ void func_801FB514(Gfx** gdlp) {
     Gfx* gdl;
     UnkStruct_80228AE0* p;
     f32 f;
-    f32 g;
+    f32 g; // unused (its stack slot keeps the frame)
     s32 w;
     s32 x;
     s32 y;
@@ -2849,7 +2849,8 @@ void func_801FB514(Gfx** gdlp) {
 
     gdl = *gdlp;
     f = (2 - D_80228D18) / (f32) 2;
-    g = 1.0f - f;
+    f = 1.0f - f;
+    if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
     D_80228D18++;
     if (D_80228D18 >= 2) {
         D_80228D14++;
