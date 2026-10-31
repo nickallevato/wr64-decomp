@@ -357,7 +357,7 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5841 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// Score 5831 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
 // D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
@@ -414,7 +414,7 @@ void func_801EF504(void) {
         }
         if (rider->unk2F0 != 0) {
             node = &D_801AEE20[rider->unkC];
-        } else if ((rider->unkC == rider->nearestRecord) && (rider->lapCount == rider->unk320)) {
+        } else if ((rider->unkC == rider->nearestRecord) && (rider->unk320 == rider->lapCount)) {
             node = &D_801AEE20[rider->unkC];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
