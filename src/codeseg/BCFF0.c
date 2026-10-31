@@ -195,13 +195,14 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 6826 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
-// addresses in registers as in the original (the order of the four HUD colour globals is from a permutation search);
-// the Vtx copy pointers are set up in the order found by a move search; the D_80228B60..70 loop runs while i != 2,
-// which gives the original's bne end test.
-// Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
-// keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
-// registers there.
+// Score 2330 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
+// keep their addresses in registers, the last goes through at), as in the original. The Vtx copy is an index loop
+// over D_80198368[k] (a pointer walk lets IDO hoist the 0xB240.. offsets and blocks the load/store interleave); the
+// D_80228DD8 loop and the D_80228AE0 loop share k, which keeps the first rolled and fully unrolls the second (one
+// lui at per store, as in the original). The D_80228B60..70 loop runs while i != 2 (bne end test).
+// Left: gCourseID is spilled over its whole range here (loaded into t6 and stored at once); the original keeps it
+// in a3 up to the portrait loop and spills it only around that loop, so every t-register after the copy loop is one
+// off. The copy loop uses a0..t2 for the original's a1..t3.
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -236,23 +237,15 @@ void Hud_BlendColorSets(void);
 void func_801EED70(void) {
     s32 i;
     s32 j;
+    s32 k;
     s8 flag;
-    UnkStruct_801AE948* gfxPool;
-    Vtx* d0;
-    Vtx* d1;
-    Vtx* d2;
-    Vtx* d3;
-    Vtx* s0;
-    Vtx* s1;
-    Vtx* s2;
-    Vtx* s3;
+    s32 pad[3]; // stack pad: the original's frame is 0x40
 
     if (D_80227998 != 0) {
         D_80227998 = 0;
     }
     Hud_BlendColorSets();
-    D_80228B54 = D_80228B50 = 0;
-    D_80228AA4 = 0;
+    D_80228AA4 = D_80228B50 = D_80228B54 = 0;
     for (i = 0; i < 2; i++) {
         for (j = 0; j < 3; j++) {
             gHudMarkers[i].unk0[j].unk14 = 0;
@@ -263,21 +256,13 @@ void func_801EED70(void) {
             gHudMarkers[i].unk0[j].unk0 = 0.0f;
         }
     }
-    for (gfxPool = D_80198368; gfxPool < &D_80198368[2]; gfxPool++) {
-        d1 = gfxPool->unkB1C0;
-        d0 = gfxPool->unkB240;
-        s2 = D_80227788[2];
-        s3 = D_80227788[3];
-        d2 = gfxPool->unkB200;
-        d3 = gfxPool->unkB280;
-        s0 = D_80227788[0];
-        s1 = D_80227788[1];
-        do {
-            *d0++ = *s0++;
-            *d1++ = *s1++;
-            *d2++ = *s2++;
-            *d3++ = *s3++;
-        } while (s3 < D_80227788[4]);
+    for (k = 0; k < 2; k++) {
+        for (i = 0; i < 4; i++) {
+            D_80198368[k].unkB240[i] = D_80227788[0][i];
+            D_80198368[k].unkB1C0[i] = D_80227788[1][i];
+            D_80198368[k].unkB200[i] = D_80227788[2][i];
+            D_80198368[k].unkB280[i] = D_80227788[3][i];
+        }
     }
     gStartLightsState = 0;
     gStartCountdown = 60;
@@ -331,19 +316,17 @@ void func_801EED70(void) {
             gPortraitPos[i][j].y = gPortraitPos[i][j].unkC;
         }
     }
-    for (i = 0; i < 4; i++) {
-        D_80228DD8[i] = 0;
-        D_80228DC8[i] = 0;
-        D_80228DE8[i] = 1;
+    for (k = 0; k < 4; k++) {
+        D_80228DD8[k] = 0;
+        D_80228DC8[k] = 0;
+        D_80228DE8[k] = 1;
     }
-    D_80228AE0[0].unk0 = 0;
-    D_80228AE0[1].unk0 = 0;
-    D_80228AE0[2].unk0 = 0;
-    D_80228AE0[3].unk0 = 0;
-    D_80228A9C = 0;
+    for (k = 0; k < 4; k++) {
+        D_80228AE0[k].unk0 = 0;
+    }
     D_80228A94 = 0;
-    D_80228DFC = 0;
-    D_80228DF8 = 0;
+    D_80228A9C = 0;
+    D_80228DF8 = D_80228DFC = 0;
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
             D_80228B88[i][j].unkC = 0;
