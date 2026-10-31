@@ -917,11 +917,13 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 7793 of 31600: control flow and arithmetic follow the original. The angle is halved with / 2.0f, which IDO
-// turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the rounding term); x * x
-// is computed in each branch. The declaration order (s, nx, a after nz) is from a declaration-move search.
+// Score 7735 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
+// rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
+// products once the divisions are done (two locals fewer give the original's frame). The declaration order (s, nx,
+// a after nz) is from a declaration-move search.
 // Left: the register allocation: the original keeps x in f14 and spills it to its argument slot around each sqrtf,
-// and reloads z from its slot, where this keeps both in saved registers (frame 0xB8 here, 0xB0 there).
+// and reloads z from its slot, where this keeps both in saved registers.
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 c;
     f32 len;
@@ -933,8 +935,6 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 a;
     f32 t;
     f32 u;
-    f32 v;
-    f32 w;
     f32 px;
     f32 py;
     f32 qx;
@@ -999,12 +999,12 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[1][0] = t;
         u = s * b;
         arg1->mf[0][1] = -t;
-        v = c * nx;
+        len = c * nx;
         arg1->mf[2][0] = u;
         arg1->mf[0][2] = -u;
-        arg1->mf[1][1] = (v * nx) + (b * b);
+        arg1->mf[1][1] = (len * nx) + (b * b);
         arg1->mf[2][2] = (c * b * b) + (a * a);
-        t = (v * b) + (b * a);
+        t = (len * b) + (b * a);
         arg1->mf[2][1] = t;
         arg1->mf[1][2] = t;
     } else {
@@ -1026,13 +1026,13 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         u = ((qy * py) - (qx * px)) * s;
         arg1->mf[1][0] = t + u;
         arg1->mf[0][1] = t - u;
-        w = s * qz;
+        len = s * qz;
         t = (c * qx * qz) + (nx * nz);
-        u = w * py;
+        u = len * py;
         arg1->mf[2][0] = t + u;
         arg1->mf[0][2] = t - u;
         t = (c * qy * qz) + (ny * nz);
-        u = w * px;
+        u = len * px;
         arg1->mf[2][1] = t + u;
         arg1->mf[1][2] = t - u;
     }
