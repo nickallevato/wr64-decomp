@@ -1119,6 +1119,9 @@ void Water_FillNoise(s32 amplitude);
 // there). Tried for it, none lower: every order of the six D_801924AC..C0 statements, the BC and C0 expressions
 // respelled, pool set before the loop at each statement, swaps of set, bot and b, and an empty test or do-while at
 // every statement.
+// Also not lower: three empty ifs at every statement, the six globals as one array or two three-float arrays
+// (IDO then addresses them from one base), the copy pointers at function scope or reused as the colour-loop
+// pointer.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
