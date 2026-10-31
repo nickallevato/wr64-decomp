@@ -867,7 +867,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 27176 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 26654 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
@@ -877,7 +877,8 @@ f32 func_801ED154(f32 arg0, f32 arg1);
 // compares exactly (c. 61 = 61, the 1.0f materialised once, the sub.s kept), but scores 28830. Two independent
 // store orders (unk0 before unk8 in the record update, unk18 after unk20 in the spawn) are from a move search.
 // The operand orders of the view dot product and three spawn expressions are from an operand-swap search (IDO
-// orders commutative operands itself, so the written order can flip the emitted one).
+// orders commutative operands itself, so the written order can flip the emitted one). The velocity length reuses sideY,
+// dead after func_801EDAE0 (a merge search: 27176 -> 26654).
 void func_800B08F8(s32 arg0) {
     s32 twoViews;
     s32 special;
@@ -894,7 +895,6 @@ void func_800B08F8(s32 arg0) {
     s32 isHuman;
     f32 dz;
     f32 dist;
-    f32 velLen;
     f32 fwdLen[1]; // FAKE: keeps fwdLen in its stack slot across sqrtf, as the original does
     f32 base;
     f32 tilt;
@@ -930,6 +930,7 @@ void func_800B08F8(s32 arg0) {
     f32 sideX;
     f32 sideY;
     f32 sideZ;
+
     isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
     twoViews = (gPlayers == TWO_PLAYERS) && (D_801CE638 == 1);
     special = (D_801CE638 == 4) || (D_801CE638 == 10);
@@ -988,9 +989,9 @@ void func_800B08F8(s32 arg0) {
         fwdZ = 0.0f;
         fwdX = 0.0f;
     }
-    velLen = sqrtf((D_801D79C8 * D_801D79C8) + (D_801D79D0 * D_801D79D0));
-    if ((fwdLen[0] > 0.0f) && (velLen > 0.0f)) {
-        cosA = (((D_801D79E0 * D_801D79C8) + (D_801D79E8 * D_801D79D0)) / fwdLen[0]) / velLen;
+    sideY = sqrtf((D_801D79C8 * D_801D79C8) + (D_801D79D0 * D_801D79D0));
+    if ((fwdLen[0] > 0.0f) && (sideY > 0.0f)) {
+        cosA = (((D_801D79E0 * D_801D79C8) + (D_801D79E8 * D_801D79D0)) / fwdLen[0]) / sideY;
     } else {
         cosA = 1.0f;
     }
