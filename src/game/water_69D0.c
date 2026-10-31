@@ -1264,9 +1264,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 8914 of 60500: frame, the row loops, both skirt loops and the first skirt loop match in shape; the second
+// Score 8679 of 60500: frame, the row loops, both skirt loops and the first skirt loop match in shape; the second
 // skirt loop compares with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). Left: callee-saved
-// register choice (vtx, lo, sx and sz land in other s registers).
+// register choice (vtx, lo, sx and sz land in other s registers). In the second skirt loop hB holds the lower
+// neighbour and hA the upper one (the reverse of the row loops), from a search over the loops' variable names.
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
     f32 dx;
@@ -1334,10 +1335,10 @@ void func_80050204(s32 view, Vtx* arena) {
     e++;
     vtx++;
     for (end = e + ((gWaterWindowN * 2) - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + 1)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0 >> 7;
-            sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
-            sz = (hA - hB) * 55;
+            hB = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + 1)))->unk0)->unk0 >> 7;
+            hA = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0 >> 7;
+            sx = (((hB + hA) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (hB - hA) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
             e++;
             vtx++;
