@@ -195,15 +195,15 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 240 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
+// Score 215 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
 // keep their addresses in registers, the last goes through at), as in the original. The Vtx copy is an index loop
 // over D_80198368[k] (a pointer walk lets IDO hoist the 0xB240.. offsets and blocks the load/store interleave); the
 // D_80228DD8 loop and the D_80228AE0 loop share k, which keeps the first rolled and fully unrolls the second (one
 // lui at per store, as in the original). The D_80228B60..70 loop runs while i != 2 (bne end test). The flag for
-// D_80228B58 is held in j; gCourseID is then spilled only around the portrait loop, as in the original. The loop
-// counters (marker loop j/i, copy loop k/j) are from a search over each loop's counter names.
+// D_80228B58 is held in k; gCourseID is then spilled only around the portrait loop, as in the original. The loop
+// counters (marker loop j/i, copy loop k/j, flag and B60 loops j) are from a search over each loop's counter names.
 // Left: the marker loop's registers (inner counter, its bound 3 and the row pointers rotate among v1, a0..a2), the
-// flag in a0 (v1 there) and the B50/B54 store order.
+// B50/B54 address order and the D_80228DD8 loop's pointers (a0/a2 swapped).
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -267,12 +267,12 @@ void func_801EED70(void) {
     gStartLightsState = 0;
     gStartCountdown = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
-        j = 1; // the flag reuses j (permuter find; a separate s8 flag shifts every register after it)
+        k = 1; // the flag reuses k (a separate s8 flag shifts every register after it)
     } else {
-        j = 0;
+        k = 0;
     }
-    for (i = 0; i < gRiders; i++) {
-        D_80228B58[i] = j;
+    for (j = 0; j < gRiders; j++) {
+        D_80228B58[j] = k;
     }
     if (gPlayers == ONE_PLAYER) {
         gStartLightsOffsetMax = 100;
@@ -286,10 +286,10 @@ void func_801EED70(void) {
     }
     gHudColorStep = gHudColorFrame = gHudMarkerColorStep = gHudMarkerColorFrame = 0;
     D_80228A98 = D_80228B78 = D_80228B7C = D_80228B80 = 0;
-    for (i = 0; i != 2; i++) {
-        D_80228B70[i] = 0;
-        D_80228B68[i] = 0;
-        D_80228B60[i] = 0;
+    for (j = 0; j != 2; j++) {
+        D_80228B70[j] = 0;
+        D_80228B68[j] = 0;
+        D_80228B60[j] = 0;
     }
     D_80228AA0 = 0;
     for (i = 0; i < gPlayers; i++) {
