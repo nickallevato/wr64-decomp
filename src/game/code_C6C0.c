@@ -6326,15 +6326,16 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 5020 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
-// separate unk16D0 = 0 stores; calls and branches agree. The middle y of the C14..C34 block goes through home, whose
-// address use keeps it in memory: the original stores it to its stack slot (sp+0x20, which also gives the 0x50 frame
-// without a pad) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E
-// stored first. Register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14, so their
-// moves to a1/a3 are hoisted; the C14..C34 block's doubles in $f0/$f12 rather than $f14/$f18, and the old C14/C20
-// values loaded late; the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for
-// each compare). The zero literals written as 0 and .0f give the original's separate zero loads in three of the
-// compares.
+// Score 3336 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// separate unk16D0 = 0 stores; calls and branches agree. The first player's camera is written through
+// gCameraPerspective[D_80223930] directly and the second's through cam (the permuter found the first): with cam in
+// both, IDO moves dx and dz to a1/a3 early and the registers after differ. The middle y of the C14..C34 block goes
+// through home, whose address use keeps it in memory: the original stores it to its stack slot (sp+0x20, which also
+// gives the 0x50 frame without a pad) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in
+// count, with unkC7E stored first. The zero literals written as 0 and .0f give the original's separate zero loads in
+// three of the compares. Left: dx/dz in $f2/$f0 ($f16/$f14 there); in the C14..C34 block the doubles in $f0/$f12
+// ($f14/$f18 there) and the old C14/C20 values loaded late; the zero of the unk16B4 test reused in the unk16D0 test,
+// where the original loads it again for each compare.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     camera_unk_1* cam;
@@ -6366,9 +6367,8 @@ void func_80065C18(s32 arg0) {
     rider->unkBF0 = dx;
     rider->unkBF4 = dz;
     if (arg0 == gPlayer1Rider) {
-        cam = &gCameraPerspective[D_80223930];
-        cam->eyeX += dx;
-        cam->eyeZ += dz;
+        gCameraPerspective[D_80223930].eyeX += dx;
+        gCameraPerspective[D_80223930].eyeZ += dz;
     } else if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
         cam = &gCameraPerspective[D_80223934];
         cam->eyeX += dx;
