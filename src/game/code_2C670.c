@@ -279,12 +279,13 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 36328 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
+// Score 36312 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
 // default, written first, as the table's entry 0 and its block order show). The declarations follow the original's
 // stack homes (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C,
-// things 0x48, table 0x30; the pad stands for four words above them), which gives its frame (0xA0). t is zeroed
-// right after the D_801CE638 == 21 return and the pts loop's counter is zeroed before its test, as the original sets
-// both. The edge and pts loops count with n (dead after table B; a merge search, 36657 -> 36328).
+// things 0x48, table 0x30; the pad stands for four words above them), which gives its frame (0xA0); table is
+// declared after e (a declaration search, 36312). t is zeroed right after the D_801CE638 == 21 return and the pts
+// loop's counter is zeroed before its test, as the original sets both. The edge and pts loops count with n (dead
+// after table B; a merge search, 36657 -> 36328).
 // Left: the original also keeps a zero (the edge-loop counter) live in a1 from that return on and rematerialises it
 // at every loop exit, which gives each capped loop its "bnez / b exit" break shape (16 missing b's); zeroing the
 // counter there spills it to its home here (43143 on an older base). Registers differ throughout (src2 lives in s2,
@@ -315,8 +316,8 @@ void func_80071E70(void) {
     s32 t;
     s32 n;
     CourseBuoySrc* b;
-    UnkStruct_801AEE20* table;
     UnkStruct_801AEE20* e;
+    UnkStruct_801AEE20* table;
     UnkStruct_801BC940* o;
     UnkStruct_801BB138* a;
 
