@@ -637,6 +637,8 @@ void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 // which takes the one temporary the original uses there, so the loop's later temporaries match (without it t7
 // where the original has t9, and so on). A dead store of 0xDF to the vertex's alpha gives the li but the sb stays
 // (330 with the old pointer store, 400 with this one); right before the 0xFF store it is removed with its li.
+// Near miss: `vtx->v.cn[3] = 0xDF; vtx++; vtx[-1].v.cn[3] = 0xFF;` after the first vertex's ob[2] keeps the li in t0
+// and every register as in the original (405): only the dead sb t0 and the extra pointer sw are left.
 // The index j and the pad give the original's frame (0xE8) and its a0 for the index.
 void func_800AFBD0(s32 arg0) {
     s32 i;
