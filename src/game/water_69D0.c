@@ -244,6 +244,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
 #endif
 
 extern s32 D_80192460[];
+extern s32 D_80192464[];
 extern f32 D_801924CC;
 extern f32 D_801924D0;
 
@@ -1088,17 +1089,21 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 1820 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
+// Score 940 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
 // their own and the ring loop's counters in the pool loop's body. bot and b also hold the two wrap counts (nu, nv) and
 // set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
 // caller-saved registers and are spilled across sqrtf. The copy loop ends at &D_80192460[13] (the address of
-// gWaterWindowN, which the original does not reuse), the sqrt(3) scale is "* 2" and D_801924B8 is set before
-// D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order),
-// and the first ring sets set before d, as the second does.
-// A permuter FAKE (b = 1 standing in for D_8019249C's + 1) lowers the score; it explains nothing (D_8019249C's
-// address is now built in s5 before the pool loop, early in the original).
-// Left: D_80192460's address stays in s4 from the copy loop on here (rebuilt in s2 before the pool loop there), which
-// moves the pool loop's constants (0xFF, 0xB0, 0x400) to other saved registers.
+// gWaterWindowN), the sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written
+// tc[0] = tc[1] for j, b and top (from a search over each pair's order), and the first ring sets set before d, as the
+// second does.
+// The original builds D_80192460's address twice: for the copy loop (v0) and again before the pool loop (s2). Read as
+// D_80192460[1..6] in the pool loop, IDO keeps the copy loop's address in s4 throughout (1820 with a FAKE, 2305
+// without). Read through D_80192464[0..5] (the six-entry array func_80050204 names on its own) the pool loop gets its
+// own base in s2 and every saved register agrees, but the base is 0x80192464 here (0x80192460 there, offsets 4 to
+// 0x18), so this is not the original's spelling. An index copy loop also gives the second base (with D_80192460[1..6],
+// 1750), but its induction pointers are set up among the gWaterWindow stores (after them there) with the source and
+// end registers swapped.
+// Left: the waterLevel copy in a3 (a2 here) and the wrap count in a2 (v1 here); the ring loops' temporaries.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
@@ -1127,7 +1132,6 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterWindow[1].unk18 = 0.0f;
     gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
         gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
-    b = 1; // FAKE (permuter): b stands in for the 1 added to D_8019249C below
     {
         s32* src;
         s32* dst;
@@ -1140,7 +1144,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     D_801924A4 = 0x8000;
     D_801924A8 = 0x800;
     D_80192498 = gWaterWindowN << 6;
-    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + b; // FAKE: b is 1 (see above)
+    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + 1;
     gWaterLevel = waterLevel;
     Water_BuildCellLists();
     Water_FillNoise(amplitude);
@@ -1191,12 +1195,12 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
             d -= step;
             step++;
         }
-        pool->unk13D68[D_80192460[1]].v.tc[0] = pool->unk13D68[D_80192460[1]].v.tc[1] =
-            pool->unk13D68[D_80192460[2]].v.tc[0] = pool->unk13D68[D_80192460[2]].v.tc[1] =
-                pool->unk13D68[D_80192460[3]].v.tc[0] = pool->unk13D68[D_80192460[3]].v.tc[1] =
-                    pool->unk13D68[D_80192460[4]].v.tc[0] = pool->unk13D68[D_80192460[4]].v.tc[1] =
-                        pool->unk13D68[D_80192460[5]].v.tc[0] = pool->unk13D68[D_80192460[5]].v.tc[1] =
-                            pool->unk13D68[D_80192460[6]].v.tc[0] = pool->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
+        pool->unk13D68[D_80192464[0]].v.tc[0] = pool->unk13D68[D_80192464[0]].v.tc[1] =
+            pool->unk13D68[D_80192464[1]].v.tc[0] = pool->unk13D68[D_80192464[1]].v.tc[1] =
+                pool->unk13D68[D_80192464[2]].v.tc[0] = pool->unk13D68[D_80192464[2]].v.tc[1] =
+                    pool->unk13D68[D_80192464[3]].v.tc[0] = pool->unk13D68[D_80192464[3]].v.tc[1] =
+                        pool->unk13D68[D_80192464[4]].v.tc[0] = pool->unk13D68[D_80192464[4]].v.tc[1] =
+                            pool->unk13D68[D_80192464[5]].v.tc[0] = pool->unk13D68[D_80192464[5]].v.tc[1] = 0x400;
         if (gPlayers == TWO_PLAYERS) {
             top = gWaterWindowN;
             bot = D_8019249C - gWaterWindowN;
@@ -1215,12 +1219,12 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                 d -= step;
                 step++;
             }
-            pool->unk170D8[D_80192460[1]].v.tc[0] = pool->unk170D8[D_80192460[1]].v.tc[1] =
-                pool->unk170D8[D_80192460[2]].v.tc[0] = pool->unk170D8[D_80192460[2]].v.tc[1] =
-                    pool->unk170D8[D_80192460[3]].v.tc[0] = pool->unk170D8[D_80192460[3]].v.tc[1] =
-                        pool->unk170D8[D_80192460[4]].v.tc[0] = pool->unk170D8[D_80192460[4]].v.tc[1] =
-                            pool->unk170D8[D_80192460[5]].v.tc[0] = pool->unk170D8[D_80192460[5]].v.tc[1] =
-                                pool->unk170D8[D_80192460[6]].v.tc[0] = pool->unk170D8[D_80192460[6]].v.tc[1] = 0x400;
+            pool->unk170D8[D_80192464[0]].v.tc[0] = pool->unk170D8[D_80192464[0]].v.tc[1] =
+                pool->unk170D8[D_80192464[1]].v.tc[0] = pool->unk170D8[D_80192464[1]].v.tc[1] =
+                    pool->unk170D8[D_80192464[2]].v.tc[0] = pool->unk170D8[D_80192464[2]].v.tc[1] =
+                        pool->unk170D8[D_80192464[3]].v.tc[0] = pool->unk170D8[D_80192464[3]].v.tc[1] =
+                            pool->unk170D8[D_80192464[4]].v.tc[0] = pool->unk170D8[D_80192464[4]].v.tc[1] =
+                                pool->unk170D8[D_80192464[5]].v.tc[0] = pool->unk170D8[D_80192464[5]].v.tc[1] = 0x400;
         }
     }
 }
