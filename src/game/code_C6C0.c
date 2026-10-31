@@ -1016,10 +1016,11 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 9636 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
-// are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the
-// original's frame is 0x70 (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered
-// differently.
+// Score 8225 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. e[2] and
+// c[0] go through len (two permuter FAKEs, marked): with them IDO uses three saved float registers, as the original.
+// Left: the original's frame is 0x70 (0x78 here); it stores d once, where IDO here re-stores d in each block; it
+// also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1037,15 +1038,17 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
         t = (0.5 / len) * ((arg9 - arg10) + len);
         m[2] = (t * d[2]) + arg3;
         e[2] = m[2] - arg3;
+        len = e[2]; // FAKE (permuter): e[2] and c[0] through len move the float registers toward the original's
         m[1] = (t * d[1]) + arg4;
         e[1] = m[1] - arg4;
         m[0] = (t * d[0]) + arg5;
         e[0] = m[0] - arg5;
-        t = ((arg9 - SQ(e[2])) - SQ(e[1])) - SQ(e[0]);
+        t = ((arg9 - SQ(len)) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
             c[2] = (arg12 * d[0]) - (arg13 * d[1]);
             c[1] = (arg13 * d[2]) - (arg11 * d[0]);
-            c[0] = (arg11 * d[1]) - (arg12 * d[2]);
+            len = (arg11 * d[1]) - (arg12 * d[2]); // FAKE (permuter), see above
+            c[0] = len;
             arg11 = (d[1] * c[0]) - (d[0] * c[1]);
             arg12 = (d[0] * c[2]) - (d[2] * c[0]);
             arg13 = (d[2] * c[1]) - (d[1] * c[2]);
