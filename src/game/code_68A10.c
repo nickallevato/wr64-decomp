@@ -1542,10 +1542,12 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 16909 of 124000: same blocks, display-list commands and loops (calls and branches now agree). The stack pads give the original's frame
+// Score 14269 of 124000: same blocks, display-list commands and loops (calls and branches now agree). The stack pads give the original's frame
 // (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. gdlh is read after the first command is
-// stored through gdl (the original reloads D_801AE94C there). Left: register allocation and scheduling (the
-// original keeps more command words in saved registers).
+// stored through gdl (the original reloads D_801AE94C there). The first command is stored through *gdl before *gdl
+// is advanced (the original stores the advanced pointer after both words; a local copy of *gdl gives exactly that
+// but costs 1700 elsewhere). Left: register allocation and scheduling (the original keeps more command words in
+// saved registers; its first-loop counter is s4 and the D_1048468 address is set after the loop guard).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1562,7 +1564,8 @@ void func_800B305C(Gfx** gdl) {
 
     D_801D7B38 = osGetTime();
     // The effects go into their own display list at D_801AE94C, called from here.
-    gSPDisplayList((*gdl)++, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
+    gSPDisplayList(*gdl, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
+    (*gdl)++;
     gdlh = D_801AE94C;
     gSPDisplayList(gdlh++, &D_10514D0);
     view = D_800DAB2C * 2;
