@@ -283,9 +283,10 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 1035 of 30700: register allocation only. The original computes the B test in t5 and
+// Score 1020 of 30700: register allocation only. The original computes the B test in t5 and
 // D_i0_802C6BCC * 4 once for both history stores; this C gets the B test in t9, recomputes the
-// index, and its temporaries are numbered one off from the switch on.
+// index, and its temporaries are numbered one off from the switch on. The new menu index goes through j (FAKE,
+// from a search that routes each assignment through a free local): 1035 -> 1020.
 void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
@@ -377,7 +378,8 @@ void func_i0_802C63AC(void) {
             AudioGeneral_PlaySound(0x37, 0);
             MainMenu_Leave(next);
         } else {
-            D_i0_802C6EE0 = item->unk0;
+            j = item->unk0; // FAKE: through j (a search routing each assignment through a free local)
+            D_i0_802C6EE0 = j;
             D_i0_802C6EE4 = 0;
             switch (item->unk16) {
                 case 1:
