@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
-<title>1298 of 1348 functions matched</title>
+<title>1302 of 1348 functions matched</title>
 <rect width="1000" height="620" rx="6" fill="#fbfbf9"/>
 <rect x="6.0" y="24.0" width="84.1" height="92.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="6.0" y="116.2" width="84.1" height="81.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -9,7 +9,7 @@
 <rect x="205.9" y="24.0" width="51.9" height="53.0" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="257.9" y="24.0" width="48.4" height="53.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="90.1" y="77.0" width="48.7" height="46.9" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="90.1" y="123.9" width="48.7" height="43.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="90.1" y="123.9" width="48.7" height="43.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="90.1" y="167.3" width="48.7" height="41.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="90.1" y="209.1" width="48.7" height="39.1" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="138.8" y="77.0" width="45.1" height="39.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -188,7 +188,7 @@
 <rect x="177.8" y="583.5" width="27.7" height="30.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="205.6" y="514.7" width="26.5" height="31.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="232.0" y="514.7" width="26.0" height="31.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="258.0" y="514.7" width="23.2" height="31.1" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="258.0" y="514.7" width="23.2" height="31.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="205.6" y="545.8" width="25.1" height="25.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="205.6" y="571.2" width="25.1" height="21.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="205.6" y="593.2" width="25.1" height="20.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -205,7 +205,7 @@
 <rect x="348.4" y="248.2" width="51.3" height="60.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="281.3" y="308.6" width="45.6" height="62.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="326.9" y="308.6" width="42.9" height="62.7" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="369.9" y="308.6" width="29.8" height="29.8" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="369.9" y="308.6" width="29.8" height="29.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="369.9" y="338.4" width="29.8" height="18.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="369.9" y="356.4" width="15.3" height="14.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="385.2" y="356.4" width="14.5" height="8.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -344,7 +344,7 @@
 <rect x="348.6" y="469.8" width="7.7" height="14.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="356.4" y="469.8" width="7.4" height="14.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="363.8" y="371.3" width="77.1" height="48.3" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="363.8" y="419.7" width="36.2" height="48.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="363.8" y="419.7" width="36.2" height="48.2" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="363.8" y="467.9" width="36.2" height="16.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="399.9" y="419.7" width="26.9" height="18.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="426.8" y="419.7" width="14.1" height="18.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1531,7 +1531,7 @@
 <rect x="875.6" y="543.0" width="93.7" height="71.0" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="543.0" width="24.7" height="66.9" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="609.9" width="24.7" height="4.1" fill="none" stroke="#fbfbf9" stroke-width="2"/>
-<text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 466/501</text>
+<text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 470/501</text>
 <text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 210/219</text>
 <text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 148/151</text>
 <text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 227/228</text>
