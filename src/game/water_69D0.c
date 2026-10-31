@@ -1264,7 +1264,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 8938 of 60500: frame, the row loops, both skirt loops and the first skirt loop match in shape; the second
+// Score 8914 of 60500: frame, the row loops, both skirt loops and the first skirt loop match in shape; the second
 // skirt loop compares with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). Left: callee-saved
 // register choice (vtx, lo, sx and sz land in other s registers).
 void func_80050204(s32 view, Vtx* arena) {
@@ -1276,8 +1276,8 @@ void func_80050204(s32 view, Vtx* arena) {
     s32 sz;
     s32 sx;
     s32 hB;
-    s32 hA;
     s32 i;
+    s32 hA;
     f32 dz;
     UnkStruct_80160A98* hi;
     UnkStruct_80160A98* lo;
