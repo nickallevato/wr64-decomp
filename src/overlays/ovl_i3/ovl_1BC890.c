@@ -201,11 +201,12 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 455 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
+// Score 380 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
 // search: the 255 value (D_i3_802C6F6C/78) is set before the 170 value (D_i3_802C6F70/7C) everywhere. Case 0
 // clears the four values in separate statements, in the original's store order (no chain order gives it). Cases 0
 // and 2 take the incremented counter into n (a search over n in each case and n for the later reads: 1025 -> 455;
-// all four cases give 660). Left: the global registers: &D_i3_802C6F64, &D_i3_802C6F74, 255 and 170 take t1, t2,
+// all four cases give 660). Case 3 clears the counter and state in one chain, and its 170 product goes through n
+// (a permuter FAKE; 380). Left: the global registers: &D_i3_802C6F64, &D_i3_802C6F74, 255 and 170 take t1, t2,
 // a2, a3 here and t2, a2, a3, t1 in the original (-S: the original colours 170 first), and the temporaries after.
 Gfx* func_i3_802C5D54(Gfx* gdl) {
     TexLabel* label;
@@ -265,14 +266,14 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
 
         case 3:
             if (++D_i3_802C6F68 >= 10) {
-                D_i3_802C6F64 = 0;
-                D_i3_802C6F68 = 0;
+                D_i3_802C6F68 = D_i3_802C6F64 = 0;
                 D_i3_802C6F6C = 0;
                 D_i3_802C6F70 = 0;
                 D_i3_802C7028 = 1;
             } else {
                 D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
-                D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
+                n = (10 - D_i3_802C6F68) * 170; // FAKE (permuter): the product through n
+                D_i3_802C6F70 = n / 10;
             }
             D_i3_802C6F78 = D_i3_802C6F6C;
             D_i3_802C6F7C = D_i3_802C6F70;
