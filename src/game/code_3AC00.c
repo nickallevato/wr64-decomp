@@ -1291,6 +1291,10 @@ void func_80085408(void) {
 // (dead after its test), from a partition search (155 -> 105); a dead copy of the dot product into var_f0 before the
 // ABS chain (40) and a copy of cross into c in its test (30) are permuter FAKEs, marked. Left: the dot product
 // (var_f0) and cross swap $f0 and $f16. Upstream's 105 above is decomp.me's scale.
+// The original's registers give the m2c roles: var_f0 ($f0) holds the dot product, both ABS values, the scaled
+// steering value and the float unkB52; var_f12 ($f12) the copy and the difference; cross ($f16) only the cross
+// product. Written that way without any FAKE it scores 280 (the same code without the FAKEs and with the cross
+// reuse: 1330); with the FAKEs kept, 85-135.
 #ifdef NON_MATCHING
 void func_80085510(void) {
     f32 sp4C;
