@@ -2069,9 +2069,9 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 7835 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
-// the original loads the same float constant twice; three angle conversions use t (from a search over the s32
-// locals' names in each block). The 11.0f compare is single precision (c.lt.s) as in the
+// Score 7800 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
+// the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
+// uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision (c.lt.s) as in the
 // original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts p before i. cam declared after five locals and sp4C/sp48 last put them at
 // 0x58/0x4C/0x48 as in the original; D_801D0774's offset is stored before it is scaled; statement order from a move
 // search. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
@@ -2301,14 +2301,14 @@ void func_800A68A4(s32 arg0) {
                 if (D_801B2F20[D_801CF060[arg0].unk9C - 1].unk98 == 9) {
                     D_801CF060[arg0].unk74 = 0;
                     D_801CF060[arg0].unk78 = 0;
-                    t = (s16) D_800DAA00 % 9;
-                    if ((t >= 0) && (t < 3)) {
+                    angle = (s16) D_800DAA00 % 9;
+                    if ((angle >= 0) && (angle < 3)) {
                         D_801CF060[arg0].unk50 = 0x11;
                     }
-                    if ((t >= 3) && (t < 6)) {
+                    if ((angle >= 3) && (angle < 6)) {
                         D_801CF060[arg0].unk50 = 3;
                     }
-                    if ((t >= 6) && (t < 9)) {
+                    if ((angle >= 6) && (angle < 9)) {
                         D_801CF060[arg0].unk50 = 4;
                     }
                     D_801CF060[arg0].unk54 = 0;
