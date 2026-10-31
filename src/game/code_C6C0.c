@@ -6326,15 +6326,18 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 5271 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
-// separate unk16D0 = 0 stores; calls and branches agree. Register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
-// so their moves to a1/a3 are hoisted; the C14..C34 block, where the original also spills the middle y to sp+0x20).
-// An 8-byte pad gives the original's frame (0x50); unkC80 is stored before unkC7E. The zero literals written as 0 and
-// .0f give the original's separate zero loads in three of the compares.
+// Score 5020 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// separate unk16D0 = 0 stores; calls and branches agree. The middle y of the C14..C34 block goes through home, whose
+// address use keeps it in memory: the original stores it to its stack slot (sp+0x20, which also gives the 0x50 frame
+// without a pad) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E
+// stored first. Register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14, so their
+// moves to a1/a3 are hoisted; the C14..C34 block's doubles in $f0/$f12 rather than $f14/$f18, and the old C14/C20
+// values loaded late; the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for
+// each compare). The zero literals written as 0 and .0f give the original's separate zero loads in three of the
+// compares.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     camera_unk_1* cam;
-    s32 pad[2]; // stack pad: the frame is 0x50 as in the original
     UnkStruct_8004B0F8_1* point;
     f32 dx;
     f32 dz;
@@ -6344,6 +6347,7 @@ void func_80065C18(s32 arg0) {
     f32 len;
     f32 scale;
     s32 count;
+    f32 home; // the middle y's stack home (sp+0x20)
 
     if (rider->unk44.x < D_801924B0) {
         dx = D_801924B4;
@@ -6401,10 +6405,10 @@ void func_80065C18(s32 arg0) {
         rider->unkC2C = y - rider->unkC20;
         rider->unkC20 = y;
         x = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
-        y = x - rider->unkC18;
+        (&home)[0] = x - rider->unkC18; // FAKE: y in memory, as the original spills it
         rider->unkC18 = x;
-        rider->unkC30 = y - rider->unkC24;
-        rider->unkC24 = y;
+        rider->unkC30 = home - rider->unkC24;
+        rider->unkC24 = home;
         x = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
         y = x - rider->unkC1C;
         rider->unkC1C = x;
@@ -6424,8 +6428,9 @@ void func_80065C18(s32 arg0) {
         rider->unkC7C = 0;
     }
     rider->unkC78 = count;
-    rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
-    rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
+    count = rider->unkC82 ^ rider->unkC7C;
+    rider->unkC7E = rider->unkC7C & count;
+    rider->unkC80 = rider->unkC82 & count;
     // FAKE: .0f, not 0.0f, as above
     if (rider->unkC7C == 0) {
         if ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f)) {
