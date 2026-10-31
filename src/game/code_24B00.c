@@ -1312,7 +1312,7 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 41070 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
+// Score 41020 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
 // gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
 // table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
 // and constants (G_CULL_BACK, the gate lists) sit in other registers. One local (slot) also serves as the
@@ -1657,8 +1657,8 @@ void func_8006E674(Gfx** gdl) {
             continue;
         }
         if (D_801AEE20[i].unk9C == 0) {
-            dy = cam->eyeY - rec->unk4;
             dx = cam->eyeX - rec->unk0;
+            dy = cam->eyeY - rec->unk4;
             dz = cam->eyeZ - rec->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
