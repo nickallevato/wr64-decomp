@@ -195,14 +195,15 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 860 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
+// Score 240 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
 // keep their addresses in registers, the last goes through at), as in the original. The Vtx copy is an index loop
 // over D_80198368[k] (a pointer walk lets IDO hoist the 0xB240.. offsets and blocks the load/store interleave); the
 // D_80228DD8 loop and the D_80228AE0 loop share k, which keeps the first rolled and fully unrolls the second (one
 // lui at per store, as in the original). The D_80228B60..70 loop runs while i != 2 (bne end test). The flag for
-// D_80228B58 is held in j; gCourseID is then spilled only around the portrait loop, as in the original.
-// Left: register numbering is one off from the copy loop on (a0..t2 for the original's a1..t3; the original keeps
-// a0 out of the copy loop).
+// D_80228B58 is held in j; gCourseID is then spilled only around the portrait loop, as in the original. The loop
+// counters (marker loop j/i, copy loop k/j) are from a search over each loop's counter names.
+// Left: the marker loop's registers (inner counter, its bound 3 and the row pointers rotate among v1, a0..a2), the
+// flag in a0 (v1 there) and the B50/B54 store order.
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -245,22 +246,22 @@ void func_801EED70(void) {
     }
     Hud_BlendColorSets();
     D_80228AA4 = D_80228B50 = D_80228B54 = 0;
-    for (i = 0; i < 2; i++) {
-        for (j = 0; j < 3; j++) {
-            gHudMarkers[i].unk0[j].unk14 = 0;
-            gHudMarkers[i].unk0[j].unk18 = 0;
-            gHudMarkers[i].unk0[j].unkC = 0.0f;
-            gHudMarkers[i].unk0[j].unk8 = 0.0f;
-            gHudMarkers[i].unk0[j].unk4 = 0.0f;
-            gHudMarkers[i].unk0[j].unk0 = 0.0f;
+    for (j = 0; j < 2; j++) {
+        for (i = 0; i < 3; i++) {
+            gHudMarkers[j].unk0[i].unk14 = 0;
+            gHudMarkers[j].unk0[i].unk18 = 0;
+            gHudMarkers[j].unk0[i].unkC = 0.0f;
+            gHudMarkers[j].unk0[i].unk8 = 0.0f;
+            gHudMarkers[j].unk0[i].unk4 = 0.0f;
+            gHudMarkers[j].unk0[i].unk0 = 0.0f;
         }
     }
     for (k = 0; k < 2; k++) {
-        for (i = 0; i < 4; i++) {
-            D_80198368[k].unkB240[i] = D_80227788[0][i];
-            D_80198368[k].unkB1C0[i] = D_80227788[1][i];
-            D_80198368[k].unkB200[i] = D_80227788[2][i];
-            D_80198368[k].unkB280[i] = D_80227788[3][i];
+        for (j = 0; j < 4; j++) {
+            D_80198368[k].unkB240[j] = D_80227788[0][j];
+            D_80198368[k].unkB1C0[j] = D_80227788[1][j];
+            D_80198368[k].unkB200[j] = D_80227788[2][j];
+            D_80198368[k].unkB280[j] = D_80227788[3][j];
         }
     }
     gStartLightsState = 0;
