@@ -650,7 +650,7 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 1095 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// Score 695 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
 // held in c17, j and r; the sum adds them in the original's operand order (18, unk8, 16, 17); both loops walk e by
 // pointer; the speed is read through D_80228120 each time (no local); D_802287A8 is set before runner->frame is read,
 // so frame is loaded once; step keeps runner->step (v1 in the original) for step->duration, and i is computed from
@@ -658,19 +658,21 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 // into j before vec[0] is stored, as the original reads it first (a1, j's register); f / 24.0f is written out (no
 // local). The two random sine terms are written rand * SIN(...): IDO swaps the operands, so this gives the
 // original's SIN-first mul.s (the first height adds the wobble to the base, an operand order found by the permuter);
-// unk30 is stored after unk24, center is set after step and vec[2] after vec[0] (statement-move search). The FAKE
+// vec[2]'s blend is written base * 7 + vec / mag for the same reason (an operand-swap search); center is declared
+// after mag, which puts its stack home at the original's sp+0xA8 (declaration search); unk30 is stored after unk24,
+// center is set after step and vec[2] after vec[0] (statement-move search). The FAKE
 // empty test (permuter) makes IDO keep &D_80228190 in fp and leave center in its stack home, as the original does.
-// Left: frame 0xB8 here vs 0xB0 (center sits at sp+0xA8 there, 0xB4 here: the original has two fewer locals; f as an
-// expression and step reused as the 17 flag give the frame, 4058); the original keeps the third Rand in s3 and the
+// Left: frame 0xB8 here vs 0xB0 (the original has two fewer locals; f as an expression and step reused as the 17
+// flag give the frame, 4058 on an older base); the original keeps the third Rand in s3 and the
 // sine address in s0 (swapped here), and the 16 flag in s3 (a1 here), and some float temporaries. The (s32) r makes
 // the second % 10 signed (div, as in the original); with both % 10 unsigned IDO treats the two 10s as one constant
 // and no longer keeps 10U in s5 for the first loop.
 // i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
-    UnkA95D0_Payload1* center;
     UnkA95D0_Step* step;
     s32 i;
     f32 mag;
+    UnkA95D0_Payload1* center;
     f32 f;
     f32 vec[3];
     s32 j;
@@ -753,7 +755,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                 }
                 vec[0] = (vec[0] / mag + D_80228190[0].unk14[0] * 7.0f) * 0.125f;
                 vec[1] = (vec[1] / mag + D_80228190[0].unk14[1] * 5.0f) / 6.0f;
-                vec[2] = (vec[2] / mag + D_80228190[0].unk14[2] * 7.0f) * 0.125f;
+                vec[2] = (D_80228190[0].unk14[2] * 7.0f + vec[2] / mag) * 0.125f;
                 mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
                 for (j = 0; j < 3; j++) {
                     e->unk14[j] = vec[j] / mag;
