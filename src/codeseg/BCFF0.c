@@ -362,11 +362,13 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 7828 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// Score 6701 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
 // original's operand order shows. The stunt-object search is a do-while guarded by D_801BFA40 > 0 that skips other
-// kinds with a goto to the increment (the original's skip path jumps to the loop test). Left: &D_801AEE20 is hoisted
-// into s8 here (the original rebuilds it at each use), so the saved registers shift; and IDO folds
-// `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps the sub.s and compares with 0.0f.
+// kinds with a goto to the increment (the original's skip path jumps to the loop test). The two single-use crosses
+// are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original keeps the sub.s and compares the
+// result with 0.0f, which only this spelling gives (odd spelling, same value).
+// Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift;
+// the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block).
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -452,7 +454,7 @@ void func_801EF504(void) {
         dot = fwd;
         angle = func_801ED090(fwd);
         rider->unk2D4 = angle;
-        cross = dirX * dz - dirZ * dx;
+        cross = dirX * dz + -(dirZ * dx); // odd spelling: keeps the sub.s (see the note)
         if (cross > 0.0f) {
             rider->unk2D4 = 360 - angle;
         }
@@ -484,7 +486,7 @@ void func_801EF504(void) {
                     dx /= dist;
                     dz /= dist;
                 }
-                if ((cross < 0.0f) && (dirX * dz - dirZ * dx > 0.0f)) {
+                if ((cross < 0.0f) && (dirX * dz + -(dirZ * dx) > 0.0f)) {
                     dot = 1.0f;
                 } else {
                     dot = dirX * dx + dirZ * dz;
