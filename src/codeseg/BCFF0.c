@@ -2821,12 +2821,13 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 10235 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
-// original's b-to-next), frame 0xB8. The alpha is held in k, the digit loop's counter (from a search over the
-// locals' names); the declaration order is from a declaration-move search. The original keeps the unused
-// (2 - D_80228D18) / 2.0f and 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements,
-// register or volatile they stay deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE,
-// marked); f / (f32) 2 stays a div.s where / 2.0f becomes a multiply.
+// Score 9790 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
+// count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the
+// declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
+// 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements, register or volatile they stay
+// deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
+// where / 2.0f becomes a multiply.
 // Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
@@ -2845,7 +2846,8 @@ void func_801FB514(Gfx** gdlp) {
     s32 x;
     s32 n;
     s32 w;
-    s32 pad[3]; // stack pad: the original's frame is 0xB8
+    s32 alpha;
+    s32 pad[2]; // stack pad: the original's frame is 0xB8
     s32 count;
     s32 k;
     s8* digit;
@@ -2875,13 +2877,13 @@ void func_801FB514(Gfx** gdlp) {
         if (p->unk0 == 0) {
             continue;
         }
-        count = 0;
+        k = 0;
         if (p->unk8 < 4) {
-            k = p->unk8 * 255 / 4; // the alpha, held in k (the digit loop's counter)
+            alpha = p->unk8 * 255 / 4;
         } else if (p->unk8 >= 20) {
-            k = (23 - p->unk8) * 255 / 4;
+            alpha = (23 - p->unk8) * 255 / 4;
         } else {
-            k = 255;
+            alpha = 255;
         }
         gDPPipeSync(gdl++);
         switch (p->unk0) {
@@ -2889,19 +2891,19 @@ void func_801FB514(Gfx** gdlp) {
                 img = D_80246D0;
                 w = 32;
                 x = 144;
-                gDPSetEnvColor(gdl++, 255, 133, 255, k);
+                gDPSetEnvColor(gdl++, 255, 133, 255, alpha);
                 break;
             case 2:
                 img = D_8024858;
                 w = 40;
                 x = 140;
-                gDPSetEnvColor(gdl++, 100, 255, 100, k);
+                gDPSetEnvColor(gdl++, 100, 255, 100, alpha);
                 break;
             case 3:
                 img = D_8024A40;
                 w = 32;
                 x = 144;
-                gDPSetEnvColor(gdl++, 255, 255, 128, k);
+                gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
                 break;
         }
         gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
@@ -2918,13 +2920,13 @@ void func_801FB514(Gfx** gdlp) {
             if (n == 0) {
                 break;
             }
-            count++;
+            k++;
             digit--;
-            if (count >= 5) {
+            if (k >= 5) {
                 break;
             }
         }
-        count++;
+        count = k + 1;
         if (count >= 6) {
             count = 5;
         }
