@@ -650,7 +650,7 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 455 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// Score 170 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
 // held in c17, j and r; the sum adds them in the original's operand order (18, unk8, 16, 17); both loops walk e by
 // pointer; the speed is read through D_80228120 each time (no local); D_802287A8 is set before runner->frame is read,
 // so frame is loaded once; step keeps runner->step (v1 in the original) for step->duration, and i is computed from
@@ -660,13 +660,14 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 // original's SIN-first mul.s (the first height adds the wobble to the base, an operand order found by the permuter);
 // the three vec blends are written base * k + vec / mag for the same reason (operand-swap search, permuter).
 // center is declared after mag, which puts its stack home at the original's sp+0xA8 (declaration search); unk30 is
-// stored after unk24, center is set after step and vec[2] after vec[0] (statement-move search). The FAKE empty test
-// (permuter) makes IDO keep &D_80228190 in fp and leave center in its stack home, as the original does.
+// stored after unk24, center is set after step and vec[2] after vec[0] (statement-move search). The two FAKE empty
+// tests (permuter) make IDO keep &D_80228190 in fp and leave center in its stack home, as the original does (6687
+// without either, 455 with the first only; replacing e-> by D_80228190[i] at any one site does not do it).
 // Left: frame 0xB8 here vs 0xB0 (the original has two fewer locals; f as an expression and step reused as the 17
 // flag give the frame, but cost 25 at 695); the original keeps the third Rand in s3 and the sine address in s0
-// (swapped here), the 16 flag in s3 (a1 here), and some float temporaries. The (s32) r makes the second % 10 signed
-// (div, as in the original); with both % 10 unsigned IDO treats the two 10s as one constant and no longer keeps 10U
-// in s5 for the first loop.
+// (swapped here), the 16 flag in s3 (a1 here) and the % 10 constant loaded before the first flag test. The (s32) r
+// makes the second % 10 signed (div, as in the original); with both % 10 unsigned IDO treats the two 10s as one
+// constant and no longer keeps 10U in s5 for the first loop.
 // i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Step* step;
@@ -749,8 +750,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                 if (mag < 0.1f) {
                     for (j = 0; j < 3; j++) {
                         vec[j] = D_80228190[0].unk14[j];
-                        // FAKE (permuter): never true; keeps &D_80228190 in fp and center on the stack
-                        if (!D_80228190[0].unk14) {}
+                        if (!D_80228190[0].unk14) {} // FAKE (permuter): never true; keeps &D_80228190 in fp, center on the stack
                     }
                     mag = 1.0f;
                 }
@@ -761,6 +761,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                 for (j = 0; j < 3; j++) {
                     e->unk14[j] = vec[j] / mag;
                 }
+                // FAKE (permuter): never true; a second reference of the same kind (see the first)
+                if (!D_80228190[0].unk14) {}
             }
             for (j = 0; j < 3; j++) {
                 e->unkC[j] += e->unk14[j] * ((f32*) D_80228120)[i];
