@@ -1312,7 +1312,7 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 43515 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
+// Score 41070 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
 // gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
 // table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
 // and constants (G_CULL_BACK, the gate lists) sit in other registers. One local (slot) also serves as the
@@ -1322,6 +1322,8 @@ void func_800B4ABC(Gfx** gdl);
 // the whole function and does not hoist the constant 1 in visibility loop 1, so its saved registers from s3
 // on are one lower than here (a tbl local is copy-propagated away; `e->unk9C == 1U` in the second test stops
 // one hoist, 43190, not kept); its first search walks through cur (s0), 43620 here.
+// The three SysUtils_MatrixLookAt calls pass an int 0 for the first up component (a respelling search: the
+// same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f).
 void func_8006E674(Gfx** gdl) {
     s32 padA[2]; // stack pad
     s32 slot;
@@ -1530,7 +1532,7 @@ void func_8006E674(Gfx** gdl) {
             upY = 0.0f;
             upZ = 1.0f;
         }
-        SysUtils_MatrixLookAt(&D_801AE948->unkA1C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, b->unk0,
+        SysUtils_MatrixLookAt(&D_801AE948->unkA1C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0, upY, upZ, b->unk0,
                               b->unk4, b->unk8);
         D_801C0B80[i] = slot;
         if (++slot >= 32) {
@@ -1665,7 +1667,7 @@ void func_8006E674(Gfx** gdl) {
                 upY = 0.0f;
                 upZ = 1.0f;
             }
-            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, rec->unk0,
+            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0, upY, upZ, rec->unk0,
                                   rec->unk4, rec->unk8);
             dx = rec->unk60 - rec->unk0;
             dy = (rec->unk64 + gWaterLevel) - rec->unk4;
@@ -1677,7 +1679,7 @@ void func_8006E674(Gfx** gdl) {
                 upY = 0.0f;
                 upZ = 1.0f;
             }
-            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, rec->unk0,
+            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0, upY, upZ, rec->unk0,
                                   rec->unk4, rec->unk8);
         } else {
             rec->unk0 = (rec->unkC + rec->unk18) * 0.5f;
