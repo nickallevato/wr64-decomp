@@ -195,14 +195,14 @@ void Hud_BlendColorSets(void) {
 
 // HUD_Init
 #ifdef NON_MATCHING
-// Score 2330 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
+// Score 860 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
 // keep their addresses in registers, the last goes through at), as in the original. The Vtx copy is an index loop
 // over D_80198368[k] (a pointer walk lets IDO hoist the 0xB240.. offsets and blocks the load/store interleave); the
 // D_80228DD8 loop and the D_80228AE0 loop share k, which keeps the first rolled and fully unrolls the second (one
-// lui at per store, as in the original). The D_80228B60..70 loop runs while i != 2 (bne end test).
-// Left: gCourseID is spilled over its whole range here (loaded into t6 and stored at once); the original keeps it
-// in a3 up to the portrait loop and spills it only around that loop, so every t-register after the copy loop is one
-// off. The copy loop uses a0..t2 for the original's a1..t3.
+// lui at per store, as in the original). The D_80228B60..70 loop runs while i != 2 (bne end test). The flag for
+// D_80228B58 is held in j; gCourseID is then spilled only around the portrait loop, as in the original.
+// Left: register numbering is one off from the copy loop on (a0..t2 for the original's a1..t3; the original keeps
+// a0 out of the copy loop).
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -238,8 +238,7 @@ void func_801EED70(void) {
     s32 i;
     s32 j;
     s32 k;
-    s8 flag;
-    s32 pad[3]; // stack pad: the original's frame is 0x40
+    s32 pad[4]; // stack pad: the original's frame is 0x40
 
     if (D_80227998 != 0) {
         D_80227998 = 0;
@@ -267,12 +266,12 @@ void func_801EED70(void) {
     gStartLightsState = 0;
     gStartCountdown = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
-        flag = 1;
+        j = 1; // the flag reuses j (permuter find; a separate s8 flag shifts every register after it)
     } else {
-        flag = 0;
+        j = 0;
     }
     for (i = 0; i < gRiders; i++) {
-        D_80228B58[i] = flag;
+        D_80228B58[i] = j;
     }
     if (gPlayers == ONE_PLAYER) {
         gStartLightsOffsetMax = 100;
