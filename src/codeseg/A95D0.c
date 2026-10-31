@@ -1591,7 +1591,7 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 1200 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
+// Score 1190 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
 // registers numbered differently throughout (from the first ease update on). p and b set at the top (as in
 // func_801DF38C) put obj in s0; b declared before p and the unk24 stores through obj->base (as func_801DDEDC writes
 // them) give p's spill slot 0x28 and the original's t0/a3. Without the two FAKEs (2045) only the reloads of the spilled
@@ -1601,7 +1601,8 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 // and b in each statement, adjacent statement swaps, empty tests at every statement and joining any two lines.
 // mid3: the first ease update's float temporaries depend on the code after it: the function cut after the v[]
 // lines starts with $f4 as the original does, cut later $f6/$f8, whole $f18. A partition over x, y and a third
-// float for each of the function's x/y values (1459 variants) found nothing below 1200.
+// float for each of the function's x/y values (1459 variants) found nothing below 1200; p->unk0[..] + d[k] in the
+// two b->unk0 sums (operand-order search) gives 1190.
 void func_801DF744(UnkA95D0_Obj* obj) {
     UnkA95D0_Base* b = &obj->base;
     UnkA95D0_Payload5* p = &obj->u.p5;
@@ -1646,8 +1647,8 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         d[0] *= x;
         d[1] *= x;
     }
-    b->unk0[p->unk74[0]] = d[0] + p->unk0[p->unk74[0]];
-    b->unk0[p->unk74[1]] = d[1] + p->unk0[p->unk74[1]];
+    b->unk0[p->unk74[0]] = p->unk0[p->unk74[0]] + d[0];
+    b->unk0[p->unk74[1]] = p->unk0[p->unk74[1]] + d[1];
     if (p->unk80 != 0) {
         obj->base.unk24[0] = d[0] * p->unk70;
         obj->base.unk24[1] = p->unk30;
