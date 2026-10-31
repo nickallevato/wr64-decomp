@@ -1195,6 +1195,9 @@ void Hud_UpdateOffCourseCountdown(void) {
 // in v0 for both index products, as the original. The pointer to gPlayer1Rider and the copy t are FAKEs found by the
 // permuter: they take the extra early temp the original spends. The s32 return type with no return statement (its caller,
 // func_801FC4D4, ignores the result) keeps v0 live to the end, so the assembler moves the load into v0 instead of t8.
+// Without the FAKEs (300) only the temporaries after the load are off by one: the original spends one more
+// temporary in the i == 0 arm. Not lower: casts on the index, chains and comma forms, the pointer set in the arm,
+// a dead copy of gPlayer1Rider, empty ifs and do-whiles at every line, the permuter from the FAKE-free base.
 
 s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
     RiderStruct* rider;
