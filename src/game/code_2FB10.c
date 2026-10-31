@@ -109,13 +109,15 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 4110 of 97200: same blocks, loops and calls, frame 0x80. The zeroing chains store right to left (the
+// Score 4045 of 97200: same blocks, loops and calls, frame 0x80. The zeroing chains store right to left (the
 // first stores keep their addresses in registers, the leftmost goes through at), as in the original. The lap loop
 // runs on k and the checkpointTimes loop on j: j is assigned a constant again in the D_801CE638 == 8 search, which
-// keeps the 8-step loop rolled (pattern C); 8 then sits in s0 and 1 in ra, as in the original.
+// keeps the 8-step loop rolled (pattern C); 8 then sits in s0 and 1 in ra, as in the original. n is set before
+// the search loop (the original computes D_801BB120 - 1 in the search loop's first branch delay slot).
 // Left: the original stores gMapHalfSize with lui at in the extent loops (loads through a register), shares one lui
 // at between pairs of the unrolled D_801C26C0 stores (as if D_801C26C0 were defined in the file), and keeps the
-// D_801CE638 search's found record in the search counter's register (v1).
+// D_801CE638 search's found record in the search counter's register (v1; k in t3 here). The search on k (as that
+// suggests) keeps the 8-step loop rolled with j as its counter but loses s0 (7162).
 void func_80075310(void) {
     s32 i;
     s32 pad[2]; // stack pad: the original's frame is 0x80
@@ -350,6 +352,7 @@ void func_80075310(void) {
                     type = 14;
                     break;
             }
+            n = D_801BB120 - 1;
             for (j = 0; j < D_801BB120; j++) {
                 if (type == D_801AEE20[j].unk98) {
                     break;
@@ -360,7 +363,7 @@ void func_80075310(void) {
             } else {
                 k = D_801AEE20[j].unkB4;
             }
-            for (j = k, n = D_801BB120 - 1; (D_801AEE20[j].unk98 >= 2) && (n > 0); n--) {
+            for (j = k; (D_801AEE20[j].unk98 >= 2) && (n > 0); n--) {
                 j = D_801AEE20[j].unkB4;
             }
             rider->unkC = rider->nearestRecord = j;
