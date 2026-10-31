@@ -2069,8 +2069,9 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 8115 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
-// the original loads the same float constant twice. The 11.0f compare is single precision (c.lt.s) as in the
+// Score 7835 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
+// the original loads the same float constant twice; three angle conversions use t (from a search over the s32
+// locals' names in each block). The 11.0f compare is single precision (c.lt.s) as in the
 // original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts p before i. cam declared after five locals and sp4C/sp48 last put them at
 // 0x58/0x4C/0x48 as in the original; D_801D0774's offset is stored before it is scaled; statement order from a move
 // search. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
@@ -2343,9 +2344,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->eyeX;
-                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->eyeZ;
+                t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                D_801CF060[arg0].unkC = (COS(t) * 200.0f) + cam->eyeX;
+                D_801CF060[arg0].unk14 = (SIN(t) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
@@ -2358,9 +2359,9 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unkA4 = 0;
             D_800E62D0 = 0;
             D_801D0764 = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
-            angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-            D_801D0754 = (COS(angle) * 600.0f) + D_801D06BC;
-            D_801D0758 = (SIN(angle) * 600.0f) + D_801D06C4;
+            t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+            D_801D0754 = (COS(t) * 600.0f) + D_801D06BC;
+            D_801D0758 = (SIN(t) * 600.0f) + D_801D06C4;
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
             D_801D0760 = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
             if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
@@ -2531,9 +2532,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->eyeX;
-                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->eyeZ;
+                t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                D_801CF060[arg0].unkC = (COS(t) * 200.0f) + cam->eyeX;
+                D_801CF060[arg0].unk14 = (SIN(t) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
