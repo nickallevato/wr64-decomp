@@ -867,7 +867,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 27546 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 27176 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
@@ -876,6 +876,8 @@ f32 func_801ED154(f32 arg0, f32 arg1);
 // argument, and the cross-product test through a local (cross = ...; if (cross >= 0.0f)), gives the original's
 // compares exactly (c. 61 = 61, the 1.0f materialised once, the sub.s kept), but scores 28830. Two independent
 // store orders (unk0 before unk8 in the record update, unk18 after unk20 in the spawn) are from a move search.
+// The operand orders of the view dot product and three spawn expressions are from an operand-swap search (IDO
+// orders commutative operands itself, so the written order can flip the emitted one).
 void func_800B08F8(s32 arg0) {
     s32 twoViews;
     s32 special;
@@ -946,7 +948,7 @@ void func_800B08F8(s32 arg0) {
         dz /= dist;
         dx /= dist;
         if ((gPlayers == TWO_PLAYERS) ||
-            (((dx * D_801D7974) + (dy * D_801D7978) + (dz * D_801D797C)) > 0.707107f)) {
+            (((dy * D_801D7978) + (dz * D_801D797C) + (dx * D_801D7974)) > 0.707107f)) {
             D_800E6D60->unk1C4C = 1;
             if (special || ((gPlayers == ONE_PLAYER) && (arg0 == gPlayer1Rider) && (gRiderRaceState[arg0].unk2F4 != 0))) {
                 if (dist < 200.0f) {
@@ -1225,7 +1227,7 @@ void func_800B08F8(s32 arg0) {
                 len = (2.0f * ((((f32) a / (half - 1)) - 1.0f) * len)) + 1.0f;
                 D_800E6D64->unk30 = ((len + 0.5f) * rate) + 2.0f;
                 D_800E6D64->unk34 = rate * 1.2f;
-                depth = (32.0f - (len * 16.0f)) - (f * 16.0f * 0.5f);
+                depth = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
                 if (n < half) {
                     side = -1;
                 } else {
@@ -1251,13 +1253,13 @@ void func_800B08F8(s32 arg0) {
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
                 D_800E6D64->unk8 =
                     (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
-                D_800E6D64->unk4 = (D_801D79C0 + 4.0f) - rate;
+                D_800E6D64->unk4 = (4.0f + D_801D79C0) - rate;
                 D_800E6D64->unk24 = h * side;
                 D_800E6D64->unk2C = vy * 1.2f;
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
                 D_800E6D64->unk14 =
-                    (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.50f * D_801D79E8); // 0.50f: its own constant (respelling search)
+                    (D_800E6D64->unk24 * D_801D79F4) + (0.50f * D_801D79E8 * D_800E6D64->unk2C); // 0.50f: its own constant (respelling search)
                 D_800E6D64->unk10 = (Math_FloatRand(0.5f) + 1.0f) * height;
                 n++;
                 if (n >= count) {
