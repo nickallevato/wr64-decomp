@@ -2819,11 +2819,12 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 10283 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 10235 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8. The alpha is held in k, the digit loop's counter (from a search over the
-// locals' names). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f, both in f0: IDO deletes
-// them (as dead stores, expression statements, register or volatile they stay deleted or turn into stores) unless
-// an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s where / 2.0f becomes a multiply.
+// locals' names); the declaration order is from a declaration-move search. The original keeps the unused
+// (2 - D_80228D18) / 2.0f and 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements,
+// register or volatile they stay deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE,
+// marked); f / (f32) 2 stays a div.s where / 2.0f becomes a multiply.
 // Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
@@ -2834,15 +2835,15 @@ extern s32 D_80228A94;
 
 // Draw the stunt-score popups (D_80228AE0) and add them to the stunt totals as they finish.
 void func_801FB514(Gfx** gdlp) {
+    s32 y;
     Gfx* gdl;
     UnkStruct_80228AE0* p;
     f32 f;
     f32 g; // unused (its stack slot keeps the frame)
-    s32 w;
     s32 x;
-    s32 y;
-    s32 pad[3]; // stack pad: the original's frame is 0xB8
     s32 n;
+    s32 w;
+    s32 pad[3]; // stack pad: the original's frame is 0xB8
     s32 count;
     s32 k;
     s8* digit;
