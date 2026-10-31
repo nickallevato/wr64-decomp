@@ -90,6 +90,11 @@ void func_80088EA8(void) {
 #ifdef NON_MATCHING
 // Score 55 of 18900: register allocation only. In the first loop the D_80192690 step pointer and the unkB64 switch
 // value take each other's registers (v0/v1). The vertex pointers as v = va; v += i put the base first in the adds.
+// In the original the step pointer is coloured before the switch value and the D_801C3C60 pointer after it. The
+// switch value through j (shared with the later j loops) gives the step pointer v0 but moves &D_801C3C50, the
+// D_801C3C60 pointer and the value (125). Not lower: the value in its own local (any type, any declaration place),
+// a product search over the loop counters' and the value's names, if-chains, (void*) casts, empty ifs and empty
+// do-whiles at every line, the permuter (58800 iterations).
 void func_800890B4(void) {
     s32 i;
     s32 j;

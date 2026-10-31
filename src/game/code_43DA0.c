@@ -903,6 +903,9 @@ Gfx* func_8008CFEC(Gfx* gdl) {
 // Score 70 of 31800: same instructions and schedule; register allocation only: x is in t3, not t2, and the
 // second rectangle's copy of x - 12 is in t2, not t3. The s/t terms come from gSPScisTextureRectangle's xl*dsdx
 // with dsdx written 3 << 9 (0x600).
+// Not lower: locals for any of the four rectangle arguments in either rectangle (256 combinations), l assigned
+// again before each rectangle, l dropped (620), t used for the first rectangle's y - 12 (70, same), empty ifs and
+// empty do-whiles at every line.
 Gfx* func_8008D454(Gfx* gdl) {
     s32 y;
     s32 x;

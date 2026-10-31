@@ -176,6 +176,9 @@ void func_8004B0F8(struct UnkStruct_8004B0F8* arg0) {
 // declaration order (from a search) the frame and every stack slot match. An empty test in the last loop (permuter
 // FAKE) gives its registers; the link forces are computed fz, fx, fy (permuter order). Left: the first loop's old
 // position takes f0 (f2 there) and fz takes f2 (f16 there).
+// In the original the first loop's old position sits in s's register ($f2) and fz in sy's ($f16). Not lower: the
+// first loop through s or any other float local (s then takes $f0 in both loops), fx..fz renamed to sx..sz, pt->unk18
+// through a local, renames of the last loop's and the centre's webs, empty ifs (one or three) at every line.
 void func_8004B1B4(struct UnkStruct_8004B0F8* arg0) {
     f32 dt;
     f32 dx;
