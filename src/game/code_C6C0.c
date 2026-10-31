@@ -6326,17 +6326,18 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1325 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
-// separate unk16D0 = 0 stores; calls and branches agree. The x offset into the course box shares x with the later
-// position deltas (the original keeps both in $f16; the permuter found the merge). The first player's camera is
-// written through gCameraPerspective[D_80223930] directly and the second's through cam (the permuter found the
-// first): with cam in both, IDO moves the offsets to a1/a3 early. In the C14..C34 block the old values are read into z
-// and len before each new position is computed (the original loads them early; from a search over which of the six to
-// read ahead), and the middle y goes through home, whose address use keeps it in memory: the original stores it to its
-// stack slot (sp+0x20) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E
-// stored first. Declaration order (a search) and one stack pad give the stack slots. The zero literals written as 0
-// and .0f give the original's separate zero loads in three of the compares. Left: dz in $f0 ($f14 there) and the float
-// registers of the C14..C34 block; the old C18 is loaded with the others there; unkB94 = unkB90 reloads unkB90 here;
+// Score 1160 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// separate unk16D0 = 0 stores; calls and branches agree. The function reuses its float locals as the original's
+// registers show (from searches over merges and roles; the permuter found the first): the x offset into the course
+// box shares x with the later position deltas ($f16 for both there), and in the C14..C34 block the old positions go
+// through dz, the old deltas through y, the new positions through scale and the new deltas through len. The first
+// player's camera is written through gCameraPerspective[D_80223930] directly and the second's through cam (the
+// permuter found the first): with cam in both, IDO moves the offsets to a1/a3 early. The C14..C34 block reads the
+// old values before each new position is computed (the original loads them early), and the middle delta goes through
+// home, whose address use keeps it in memory: the original stores it to its stack slot (sp+0x20) and reloads it for
+// both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E stored first. Declaration order (a
+// search) and one stack pad give the stack slots. The zero literals written as 0 and .0f give the original's separate
+// zero loads in three of the compares. Left: dz in $f0 ($f14 there) at the top; unkB94 = unkB90 reloads unkB90 here;
 // the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each compare.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
@@ -6350,7 +6351,7 @@ void func_80065C18(s32 arg0) {
     camera_unk_1* cam;
     f32 scale;
     s32 count;
-    f32 home; // the middle y's stack home (sp+0x20)
+    f32 home; // the middle delta's stack home (sp+0x20)
 
     if (rider->unk44.x < D_801924B0) {
         x = D_801924B4;
@@ -6401,26 +6402,26 @@ void func_80065C18(s32 arg0) {
         rider->unk16B4 = 0;
     }
     if (gRiderGameModes != PAUSE_MODE) {
-        z = rider->unkC14;
-        len = rider->unkC20;
-        x = rider->unk44.x + (0.1806645 * rider->unk78) + (-26.9998535 * rider->unk6C);
-        y = x - z;
-        rider->unkC14 = x;
-        rider->unkC2C = y - len;
-        rider->unkC20 = y;
-        len = rider->unkC24;
-        x = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
-        (&home)[0] = x - rider->unkC18; // FAKE: y in memory, as the original spills it
-        rider->unkC18 = x;
-        rider->unkC30 = home - len;
+        dz = rider->unkC14;
+        y = rider->unkC20;
+        scale = rider->unk44.x + (0.1806645 * rider->unk78) + (-26.9998535 * rider->unk6C);
+        len = scale - dz;
+        rider->unkC14 = scale;
+        rider->unkC2C = len - y;
+        rider->unkC20 = len;
+        y = rider->unkC24;
+        scale = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
+        (&home)[0] = scale - rider->unkC18; // FAKE: the middle delta in memory, as the original spills it
+        rider->unkC18 = scale;
+        rider->unkC30 = home - y;
         rider->unkC24 = home;
-        z = rider->unkC1C;
-        len = rider->unkC28;
-        x = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
-        y = x - z;
-        rider->unkC1C = x;
-        rider->unkC34 = y - len;
-        rider->unkC28 = y;
+        dz = rider->unkC1C;
+        y = rider->unkC28;
+        scale = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
+        len = scale - dz;
+        rider->unkC1C = scale;
+        rider->unkC34 = len - y;
+        rider->unkC28 = len;
     }
     count = 0;
     for (point = &rider->unk90[11]; point >= rider->unk90; point--) {
