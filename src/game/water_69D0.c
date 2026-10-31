@@ -1105,7 +1105,8 @@ void Water_FillNoise(s32 amplitude);
 // where each ring sets it). bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which
 // lowers their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across
 // sqrtf. The sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
-// for j, b and top (from a search over each pair's order), and the first ring sets set before d, as the second does.
+// for the counter, b and top (from a search over each pair's order), and the first ring sets set before d, as the
+// second does.
 // The original builds D_80192460's address twice: for the copy loop (v0) and again before the pool loop (s2), for the
 // six skirt indices D_80192460[1..6]. With the copy loop written through D_80192460 too, IDO keeps one address in s4
 // from the copy loop on. Here the copy runs from D_80192464 - 1 to &D_80192464[12] (FAKE: the same 13 words; a
@@ -1115,7 +1116,9 @@ void Water_FillNoise(s32 amplitude);
 // Two permuter FAKEs (marked) give the rings' temporaries: everything after the first colour loop goes through gp, a
 // copy of pool declared with the block's counters, and an empty do-while closes the two-player colour loop. The mode-2
 // test goes through bot (FAKE, a permuter find), which moves waterLevel's copy to a3 as in the original. Left:
-// D_801924BC's address in v0 (v1 there).
+// D_801924BC's address in v0 (v1 there). Tried for it, none lower: every order of the six D_801924AC..C0 statements,
+// the BC and C0 expressions respelled, pool set before the loop at each statement, swaps of set, bot and b, and an
+// empty test or do-while at every statement.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
