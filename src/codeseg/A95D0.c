@@ -1599,6 +1599,9 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 // registers; the original's projection factor is in $f0. Tried, none lower: a new local for the factor, every choice of
 // x or y for each of the function's float values (128), the ease updates' operand orders, obj->u.p5 and obj->base for p
 // and b in each statement, adjacent statement swaps, empty tests at every statement and joining any two lines.
+// mid3: the first ease update's float temporaries depend on the code after it: the function cut after the v[]
+// lines starts with $f4 as the original does, cut later $f6/$f8, whole $f18. A partition over x, y and a third
+// float for each of the function's x/y values (1459 variants) found nothing below 1200.
 void func_801DF744(UnkA95D0_Obj* obj) {
     UnkA95D0_Base* b = &obj->base;
     UnkA95D0_Payload5* p = &obj->u.p5;
