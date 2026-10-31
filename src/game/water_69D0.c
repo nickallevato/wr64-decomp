@@ -1097,11 +1097,12 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 175 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
+// Score 115 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
 // own and the ring loop's counters in the pool loop's body; the ring step reuses i (the colour loops' counter, dead by
 // then; from a search over variable merges), and the copy loop sets dst before src. In the rings bot is the loop
 // counter and j the lower edge's start (the names swapped, from a search over swaps of two names in the rings; bot is
-// dead there otherwise). bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which
+// dead there otherwise); the first ring sets its counter before the other ring values, outside the for (a search over
+// where each ring sets it). bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which
 // lowers their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across
 // sqrtf. The sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
 // for j, b and top (from a search over each pair's order), and the first ring sets set before d, as the second does.
@@ -1185,13 +1186,14 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                 pool->unk170D8[i].v.cn[3] = 0xB0;
             }
         }
+        bot = gWaterWindowN - 1;
         top = gWaterWindowN;
         j = D_8019249C - gWaterWindowN;
         set = j - 1;
         d = j - 2;
         b = top + 1;
         i = top + 2;
-        for (bot = gWaterWindowN - 1, k = D_8019249C - 1; bot >= 0; bot--, k--) {
+        for (k = D_8019249C - 1; bot >= 0; bot--, k--) {
             pool->unk13D68[bot].v.tc[0] = pool->unk13D68[bot].v.tc[1] = pool->unk13D68[b].v.tc[0] = pool->unk13D68[b].v.tc[1] =
                 pool->unk13D68[top].v.tc[0] = pool->unk13D68[top].v.tc[1] = pool->unk13D68[set].v.tc[0] =
                     pool->unk13D68[set].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
