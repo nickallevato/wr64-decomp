@@ -867,10 +867,14 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 29254 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
-// compare); register allocation differs from the start: isHuman stays in
-// s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
-// into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
+// Score 27601 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
+// Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
+// (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
+// spilled, and the float registers and scheduling of the spawn loops differ. The original keeps lod and count in
+// one register (s2), but writing count as lod costs 1400. Writing 1.00f in the cosA * cosA < 1 test and its sqrtf
+// argument, and the cross-product test through a local (cross = ...; if (cross >= 0.0f)), gives the original's
+// compares exactly (c. 61 = 61, the 1.0f materialised once, the sub.s kept), but scores 28830.
 void func_800B08F8(s32 arg0) {
     s32 twoViews;
     s32 special;
@@ -1159,8 +1163,12 @@ void func_800B08F8(s32 arg0) {
     left = 2.0f * (rate * split);
     right = 2.0f * (rate * (1.0f - split));
     if ((rate > 0.1f) && spawn && (lod != 0)) {
-        if (!twoViews && (lod == 3)) {
-            count = 6;
+        if (!twoViews) {
+            if (lod == 3U) { // 3U: not shared with the 3 in "3 - n" below (the original rematerialises both)
+                count = 6;
+            } else {
+                count = 4;
+            }
         } else {
             count = 4;
         }
