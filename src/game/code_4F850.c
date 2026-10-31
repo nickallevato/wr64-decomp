@@ -61,21 +61,15 @@ extern UnkStruct_800DB4A8 D_800DB4A8[];
 extern UnkStruct_800DB4A8 D_800DB538[];
 extern UnkStruct_800DB4A8 D_800DB558;
 extern s32 D_800DCE18[];
-extern s16 D_801CE768[];
-extern UnkStruct_801CE7D8 D_801CE7D8[];
 extern s32* D_800DB484[];
-extern UnkStruct_801CE780 D_801CE780[];
 extern UnkStruct_800DB760* D_800DB760[6];
 extern s16 D_800DB778[][6];
-extern UnkStruct_801CE7E8 D_801CE7E8[];
 extern s32 D_800DAB90[];
 extern s32 D_800DABA0[];
 extern s32 D_800DABC0[];
 extern UnkStruct_800DACD0 D_800DACD0[];
-extern s32 D_801CE73C;
 extern DmaEntry D_800DABD0[];
 extern DmaEntry D_800DB330[];
-extern UnkStruct_801CE740 D_801CE740[];
 
 extern DmaEntry* D_800DC0E4[];
 extern DmaEntry* D_800DC108[];
@@ -114,12 +108,24 @@ extern u8* D_800DCE84[];
 extern UnkStruct_800DCE98 D_800DCE98[];
 extern s32 D_801CB330;
 extern u32 D_801CE6D0;
-extern s32 D_801CE760[2];
-extern u8* D_801CE998;
-// code_4F850's .bss from 0x801CE9A0 to 0x801CE9FF. Defined, not extern: the ceremony loop's stores to
-// D_801CE9A0[2] and [3] share one lui, as in the original. D_801CE9A0 has 24 bytes (entries 4 and 5 are not
-// referenced). D_801CE9B8 is the destination of a game_dma_copy below; its first 0x48 bytes are here, the rest (from
-// D_801CEA00, which code_C6C0 reads as 12-byte records) is still in bss2d.
+// code_4F850's .bss from 0x801CE730 to 0x801CE9FF. Defined, not extern: as1 shares one lui between stores to sym
+// and sym+4 only for a symbol defined in the file (the ceremony loop's stores to D_801CE9A0[2] and [3]).
+// code_52CD0 and code_57EB0 name parts of D_801CE768 and D_801CE780 by address (D_801CE76A..D_801CE778,
+// D_801CE798); those names are in linker_scripts/us/rev1/resolve.txt.
+s32 D_801CE730;
+s32 D_801CE734;
+s32 D_801CE738;
+s32 D_801CE73C;
+UnkStruct_801CE740 D_801CE740[8];
+s32 D_801CE760[2];
+s16 D_801CE768[12];
+UnkStruct_801CE780 D_801CE780[2];
+UnkStruct_801CE7D8 D_801CE7D8[2];
+UnkStruct_801CE7E8 D_801CE7E8[9];
+u8* D_801CE998;
+// D_801CE9A0 has 24 bytes (entries 4 and 5 are not referenced). D_801CE9B8 is the destination of a game_dma_copy
+// below; its first 0x48 bytes are here, the rest (from D_801CEA00, which code_C6C0 reads as 12-byte records) is
+// still in bss2d.
 Gfx* D_801CE9A0[6];
 u8 D_801CE9B8[0x48];
 extern UnkStruct_80227A60 D_80227A60[];
@@ -139,9 +145,6 @@ extern s32 D_800DCE3C[];
 extern s32 D_800DCE60[];
 extern s16 D_801CE60C;
 extern u32 D_801CE6E8;
-extern s32 D_801CE730;
-extern s32 D_801CE734;
-extern s32 D_801CE738;
 extern u16 D_800DCEC8[];
 extern u8 D_8000D9C;
 extern u8 D_8002C00;
@@ -978,15 +981,23 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1493 of 134600: the original's case 2 shares one lui at between each pair of D_801CE740[].unk2 stores (here
-// one lui per store, two instructions longer), and the first loop places the D_801CE740 pointer step at the end of
-// the struct-copy block with the `4` for dst->flag loaded early (in the unk2 test's delay slot) and the D_800DABA0
-// address in the beq delay slot (here a nop, one more instruction). Case 2 clears unk2 in a loop of four like case 3
-// (IDO unrolls it into lui at stores; four separate stores use one base register). The chained D_801CE760 store
-// shares one -1 as in the original. Reading alts[i] through the pointer ap gives the display-list loop's reload after
-// each store, and alts declared after dl puts it at 0x40 as in the original. The order of each chained alts store
-// (alts[1] = alts[2], alts[3] = alts[4], alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the
-// original's store order and the registers for the 1.
+// Score 868 of 134600: the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after the
+// D_801CE73C load, with the D_800DABA0 address (lui, addu) after it and the addu in the beq delay slot; here the step
+// follows the rider store and the address is scheduled into the copy (one nop more), and the switch(arg0) temp takes
+// 0x18 (0x1C there). A real pointer (ap stepped after the copy) puts the step in the copy block and the temp at 0x1C,
+// but it is set before the loop guard (the original's after it, a derived induction variable) and the copy's first load
+// moves into a beqzl (1110). With D_801CE740 defined in the file the paired unk2 stores share one lui at; cases 2 and 3
+// clear unk2 in do-while loops (a for loop of four is unrolled with [1] stored before [0], and the loop of eight is
+// unrolled with the first store in the delay slot). The chained D_801CE760 store shares one -1 as in the original.
+// Reading alts[i] through the pointer ap gives the display-list loop's reload after each store, and alts declared after
+// dl puts it at 0x40 as in the original. The order of each chained alts store (alts[1] = alts[2], alts[3] = alts[4],
+// alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the original's store order and the registers for the
+// 1. IDO puts a derived induction variable's step right after its last use (with the rider store moved after the copy,
+// as a test, the step lands in the copy block), so the original seems to use D_801CE740[i] or its pointer in that
+// block. Tried, none lower: the store in both arms of the unk2 test, the copy written field by field, dst as an
+// explicit pointer (8898), ap set from &D_801CE740[i] each pass, empty tests at every statement, merging any two of i,
+// count, models, rider and offset, and joining any two lines. The whole loop on one source line gives 728 (IDO
+// schedules by line), which is not kept.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
@@ -1020,16 +1031,18 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
         case 2:
-            for (i = 0; i < 4; i++) {
+            i = 0;
+            do {
                 D_801CE740[i].unk2 = 0;
-            }
+            } while (++i < 4);
             count = 4;
             models = 4;
             break;
         case 3:
-            for (i = 0; i < 8; i++) {
+            i = 0;
+            do {
                 D_801CE740[i].unk2 = 0;
-            }
+            } while (++i < 8);
             count = 8;
             models = 8;
             break;

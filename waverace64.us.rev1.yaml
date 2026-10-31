@@ -350,9 +350,9 @@ segments:
       # bss2b and bss2c
       - { type: .bss, start: 0xA95D0, vram: 0x801C4170, name: game/code_43DA0 }
       - { type: bss, start: 0xA95D0, vram: 0x801C41A0, name: bss2c }
-      # code_4F850's .bss from 0x801CE9A0 to 0x801CE9FF (D_801CE9A0, D_801CE9B8 and the records up to D_801CE9F4);
-      # the rest of bss2c continues in bss2d
-      - { type: .bss, start: 0xA95D0, vram: 0x801CE9A0, name: game/code_4F850 }
+      # code_4F850's .bss from 0x801CE730 to 0x801CE9FF (D_801CE730 up to D_801CE9A0, D_801CE9B8 and the records up
+      # to D_801CE9F4); the rest of bss2c continues in bss2d
+      - { type: .bss, start: 0xA95D0, vram: 0x801CE730, name: game/code_4F850 }
       - { type: bss, start: 0xA95D0, vram: 0x801CEA00, name: bss2d }
       # code_68A10's .bss, 0x801D0790..0x801D7B6F
       - { type: .bss, start: 0xA95D0, vram: 0x801D0790, name: game/code_68A10 }

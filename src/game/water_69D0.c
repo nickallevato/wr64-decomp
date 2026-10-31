@@ -244,6 +244,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
 #endif
 
 extern s32 D_80192460[];
+extern s32 D_80192464[];
 extern f32 D_801924CC;
 extern f32 D_801924D0;
 
@@ -771,13 +772,21 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 3490 of 32400: heights held in ha/hb as the original keeps them in registers. Adding the new velocity to
-// the height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before
-// end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. The velocity
-// damping reads the velocity into hb first (v -= v >> D_800D4730 as hb = v; v = hb - (hb >> ...)) in the first
-// pass's last cell, the third pass's b and the final cell (from a search over which ones): that removes the extra
-// saved s0 IDO kept here. Left: the first pair's cells load in the other order, the q index is computed in a1 in the
-// original, the damping's reload goes to a1 there (a t register here), and the t registers rotate differently.
+// Score 1780 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
+// v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The second
+// pass sets q first (a permuter find) and its end is p + (N << 1) - i: the original computes it from N << 4 and i << 3
+// apart from q's index (with N * 2 the two share 2N - i). An empty test after the first pair's lookups (FAKE, from a
+// search over where an empty test lowers the score) gives the original's order for them. Adding the new velocity to the
+// height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before end in
+// the second pass and end as p + 2N + i in the first follow the original's address arithmetic. The velocity damping
+// reads the velocity into hb first (v -= v >> D_800D4730 as hb = v; v = hb - (hb >> ...)) in the first pass's last
+// cell, the third pass's b and the final cell (from a search over which ones): that removes the extra saved s0 IDO kept
+// here. The first pair of the first pass holds its mean in diff and its difference in mean (a search over each pair's
+// two names). Most pairs compute their difference into whichever of ha and hb is reassigned before its next use (the
+// original puts the difference in that height's register; a greedy search over the ten pairs kept seven, not the
+// loop-closing pairs nor the first). Left: the first pass loads p->unk0 one slot later here; the second pass's q index
+// is built in a1 and added to p after the loop test there (one instruction more: a copy), here before; the damping's
+// reload goes to a1 there (a t register here), and the t registers rotate differently.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -796,26 +805,28 @@ void func_8004EAA4(void) {
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
+        if (a && a && a) {} // FAKE: an empty test that splits the block (the original loads p->unk0 first)
         hb = b->unk0;
-        mean = (ha + hb) >> D_800D4724;
-        diff = (hb - ha) >> D_800D472C;
-        a->unk2 = (a->unk2 + diff) - mean;
-        b->unk2 = (b->unk2 - diff) - mean;
+        // The first pair's mean and difference go through the other variable each (the original's registers).
+        diff = (ha + hb) >> D_800D4724;
+        mean = (hb - ha) >> D_800D472C;
+        a->unk2 = (a->unk2 + mean) - diff;
+        b->unk2 = (b->unk2 - mean) - diff;
         for (end = p + (gWaterWindowN * 2) + i; p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
-            diff = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + diff) - mean;
+            ha = (hb - ha) >> D_800D472C;
+            a->unk2 = (a->unk2 + ha) - mean;
             q++;
-            b->unk2 = (b->unk2 - diff) - mean;
+            b->unk2 = (b->unk2 - ha) - mean;
             a = WATER_CELL_AT(p->unk0);
             ha = a->unk0;
             mean = (ha + hb) >> D_800D4724;
-            diff = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + diff) - mean;
-            b->unk2 = (b->unk2 - diff) - mean;
+            hb = (hb - ha) >> D_800D472C;
+            a->unk2 = (a->unk2 + hb) - mean;
+            b->unk2 = (b->unk2 - hb) - mean;
             b = WATER_CELL_AT(p[-1].unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
@@ -828,31 +839,30 @@ void func_8004EAA4(void) {
         hb = b->unk0;
         p++;
         mean = (ha + hb) >> D_800D4724;
-        diff = (hb - ha) >> D_800D472C;
-        a->unk0 += a->unk2 = (a->unk2 + diff) - mean;
-        b->unk2 = (b->unk2 - diff) - mean;
-        hb = a->unk2;
-        a->unk2 = hb - (hb >> D_800D4730);
+        hb = (hb - ha) >> D_800D472C;
+        a->unk0 += a->unk2 = (a->unk2 + hb) - mean;
+        b->unk2 = (b->unk2 - hb) - mean;
+        hb = a->unk2; a->unk2 = hb - (hb >> D_800D4730);
     }
     for (i = 0; i < gWaterWindowN; i++) {
+        q = p + (((gWaterWindowN * 2) - i) + 1);
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
-        q = p + (((gWaterWindowN * 2) - i) + 1);
-        for (end = p + ((gWaterWindowN * 2) - i); p < end;) {
+        for (end = (p + (gWaterWindowN << 1)) - i; p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
-            diff = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + diff) - mean;
+            ha = (hb - ha) >> D_800D472C;
+            a->unk2 = (a->unk2 + ha) - mean;
             q++;
-            b->unk2 = (b->unk2 - diff) - mean;
+            b->unk2 = (b->unk2 - ha) - mean;
             a = WATER_CELL_AT(p->unk0);
             ha = a->unk0;
             mean = (ha + hb) >> D_800D4724;
-            diff = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + diff) - mean;
-            b->unk2 = (b->unk2 - diff) - mean;
+            hb = (hb - ha) >> D_800D472C;
+            a->unk2 = (a->unk2 + hb) - mean;
+            b->unk2 = (b->unk2 - hb) - mean;
             b = WATER_CELL_AT(p[-1].unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
@@ -872,18 +882,17 @@ void func_8004EAA4(void) {
         hb = b->unk0;
         p += 2;
         mean = (ha + hb) >> D_800D4724;
-        diff = (hb - ha) >> D_800D472C;
-        a->unk0 += a->unk2 = (a->unk2 + diff) - mean;
-        b->unk2 = (b->unk2 - diff) - mean;
+        ha = (hb - ha) >> D_800D472C;
+        a->unk0 += a->unk2 = (a->unk2 + ha) - mean;
+        b->unk2 = (b->unk2 - ha) - mean;
         a->unk2 -= a->unk2 >> D_800D4730;
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         mean = (ha + hb) >> D_800D4724;
-        diff = (hb - ha) >> D_800D472C;
-        a->unk2 = (a->unk2 + diff) - mean;
-        b->unk0 += b->unk2 = (b->unk2 - diff) - mean;
-        hb = b->unk2;
-        b->unk2 = hb - (hb >> D_800D4730);
+        hb = (hb - ha) >> D_800D472C;
+        a->unk2 = (a->unk2 + hb) - mean;
+        b->unk0 += b->unk2 = (b->unk2 - hb) - mean;
+        hb = b->unk2; b->unk2 = hb - (hb >> D_800D4730);
     }
     hb = a->unk2;
     a->unk0 += hb;
@@ -1088,17 +1097,28 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 1820 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
-// their own and the ring loop's counters in the pool loop's body. bot and b also hold the two wrap counts (nu, nv) and
-// set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
-// caller-saved registers and are spilled across sqrtf. The copy loop ends at &D_80192460[13] (the address of
-// gWaterWindowN, which the original does not reuse), the sqrt(3) scale is "* 2" and D_801924B8 is set before
-// D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order),
-// and the first ring sets set before d, as the second does.
-// A permuter FAKE (b = 1 standing in for D_8019249C's + 1) lowers the score; it explains nothing (D_8019249C's
-// address is now built in s5 before the pool loop, early in the original).
-// Left: D_80192460's address stays in s4 from the copy loop on here (rebuilt in s2 before the pool loop there), which
-// moves the pool loop's constants (0xFF, 0xB0, 0x400) to other saved registers.
+// Score 25 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
+// own and the ring loop's counters in the pool loop's body; the ring step reuses i (the colour loops' counter, dead by
+// then; from a search over variable merges), and the copy loop sets dst before src. In the rings bot is the loop
+// counter and j the lower edge's start (the names swapped, from a search over swaps of two names in the rings; bot is
+// dead there otherwise); the first ring sets its counter before the other ring values, outside the for (a search over
+// where each ring sets it). bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which
+// lowers their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across
+// sqrtf. The sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
+// for the counter, b and top (from a search over each pair's order), and the first ring sets set before d, as the
+// second does.
+// The original builds D_80192460's address twice: for the copy loop (v0) and again before the pool loop (s2), for the
+// six skirt indices D_80192460[1..6]. With the copy loop written through D_80192460 too, IDO keeps one address in s4
+// from the copy loop on. Here the copy runs from D_80192464 - 1 to &D_80192464[12] (FAKE: the same 13 words; a
+// different symbol, so IDO builds the pool loop's base on its own, and the bytes are the same). Through
+// D_80192464[0..5] in the pool loop instead, the base is 0x80192464 (940); an index copy loop gives its pointers among
+// the gWaterWindow stores (1750).
+// Two permuter FAKEs (marked) give the rings' temporaries: the two rings go through gp, a copy of pool declared with
+// the block's counters, and an empty do-while closes the two-player colour loop. The mode-2 test goes through bot
+// (FAKE, a permuter find), which moves waterLevel's copy to a3 as in the original. Left: D_801924BC's address in v0 (v1
+// there). Tried for it, none lower: every order of the six D_801924AC..C0 statements, the BC and C0 expressions
+// respelled, pool set before the loop at each statement, swaps of set, bot and b, and an empty test or do-while at
+// every statement.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
@@ -1115,7 +1135,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         D_800D4724 = 9;
         D_800D472C = 5;
         D_800D4730 = 6;
-        if ((D_801CE64C == 2) || (gPlayers == TWO_PLAYERS)) {
+        bot = D_801CE64C == 2; // FAKE (permuter): the test through bot gives the original's register for waterLevel
+        if (bot || (gPlayers == TWO_PLAYERS)) {
             gWaterWindowN = 10;
             set = 26;
         } else {
@@ -1127,12 +1148,11 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     gWaterWindow[1].unk18 = 0.0f;
     gWaterWindow[0].unk8 = gWaterWindow[0].unkC = gWaterWindow[0].unk10 = gWaterWindow[0].unk14 = gWaterWindow[0].unk18 =
         gWaterWindow[1].unk8 = gWaterWindow[1].unkC = gWaterWindow[1].unk10 = gWaterWindow[1].unk14 = gWaterWindow[1].unk18;
-    b = 1; // FAKE (permuter): b stands in for the 1 added to D_8019249C below
     {
         s32* src;
         s32* dst;
 
-        for (src = &D_800D4684[set], dst = D_80192460; dst < &D_80192460[13];) {
+        for (dst = D_80192464 - 1, src = &D_800D4684[set]; dst < &D_80192464[12];) {
             *dst++ = *src++;
         }
     }
@@ -1140,7 +1160,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     D_801924A4 = 0x8000;
     D_801924A8 = 0x800;
     D_80192498 = gWaterWindowN << 6;
-    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + b; // FAKE: b is 1 (see above)
+    D_8019249C = (gWaterWindowN * 3 * (gWaterWindowN + 1)) + 1;
     gWaterLevel = waterLevel;
     Water_BuildCellLists();
     Water_FillNoise(amplitude);
@@ -1158,7 +1178,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         s32 k;
         s32 top;
         s32 d;
-        s32 step;
+        GfxPool* gp; // FAKE (permuter): a copy of pool for the two rings
 
         for (i = D_8019249C + 5; i >= 0; i--) {
             pool->unk13D68[i].v.cn[0] = 0xFF;
@@ -1173,23 +1193,26 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                 pool->unk170D8[i].v.cn[2] = 0xFF;
                 pool->unk170D8[i].v.cn[3] = 0xB0;
             }
+            do {} while (0); // FAKE (permuter)
         }
+        gp = pool;
+        bot = gWaterWindowN - 1;
         top = gWaterWindowN;
-        bot = D_8019249C - gWaterWindowN;
-        set = bot - 1;
-        d = bot - 2;
+        j = D_8019249C - gWaterWindowN;
+        set = j - 1;
+        d = j - 2;
         b = top + 1;
-        step = top + 2;
-        for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
-            pool->unk13D68[j].v.tc[0] = pool->unk13D68[j].v.tc[1] = pool->unk13D68[b].v.tc[0] = pool->unk13D68[b].v.tc[1] =
-                pool->unk13D68[top].v.tc[0] = pool->unk13D68[top].v.tc[1] = pool->unk13D68[set].v.tc[0] =
-                    pool->unk13D68[set].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
-                        pool->unk13D68[k].v.tc[0] = pool->unk13D68[k].v.tc[1] = 0x400;
-            b += step;
-            top += step;
-            set -= step;
-            d -= step;
-            step++;
+        i = top + 2;
+        for (k = D_8019249C - 1; bot >= 0; bot--, k--) {
+            gp->unk13D68[bot].v.tc[0] = gp->unk13D68[bot].v.tc[1] = gp->unk13D68[b].v.tc[0] = gp->unk13D68[b].v.tc[1] =
+                gp->unk13D68[top].v.tc[0] = gp->unk13D68[top].v.tc[1] = gp->unk13D68[set].v.tc[0] =
+                    gp->unk13D68[set].v.tc[1] = gp->unk13D68[d].v.tc[1] = gp->unk13D68[d].v.tc[0] =
+                        gp->unk13D68[k].v.tc[0] = gp->unk13D68[k].v.tc[1] = 0x400;
+            b += i;
+            top += i;
+            set -= i;
+            d -= i;
+            i++;
         }
         pool->unk13D68[D_80192460[1]].v.tc[0] = pool->unk13D68[D_80192460[1]].v.tc[1] =
             pool->unk13D68[D_80192460[2]].v.tc[0] = pool->unk13D68[D_80192460[2]].v.tc[1] =
@@ -1199,21 +1222,21 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                             pool->unk13D68[D_80192460[6]].v.tc[0] = pool->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
         if (gPlayers == TWO_PLAYERS) {
             top = gWaterWindowN;
-            bot = D_8019249C - gWaterWindowN;
-            set = bot - 1;
-            d = bot - 2;
+            j = D_8019249C - gWaterWindowN;
+            set = j - 1;
+            d = j - 2;
             b = top + 1;
-            step = top + 2;
-            for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
-                pool->unk170D8[j].v.tc[0] = pool->unk170D8[j].v.tc[1] = pool->unk170D8[b].v.tc[0] = pool->unk170D8[b].v.tc[1] =
-                    pool->unk170D8[top].v.tc[0] = pool->unk170D8[top].v.tc[1] = pool->unk170D8[set].v.tc[0] =
-                        pool->unk170D8[set].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
-                            pool->unk170D8[k].v.tc[0] = pool->unk170D8[k].v.tc[1] = 0x400;
-                b += step;
-                top += step;
-                set -= step;
-                d -= step;
-                step++;
+            i = top + 2;
+            for (bot = gWaterWindowN - 1, k = D_8019249C - 1; bot >= 0; bot--, k--) {
+                gp->unk170D8[bot].v.tc[0] = gp->unk170D8[bot].v.tc[1] = gp->unk170D8[b].v.tc[0] = gp->unk170D8[b].v.tc[1] =
+                    gp->unk170D8[top].v.tc[0] = gp->unk170D8[top].v.tc[1] = gp->unk170D8[set].v.tc[0] =
+                        gp->unk170D8[set].v.tc[1] = gp->unk170D8[d].v.tc[1] = gp->unk170D8[d].v.tc[0] =
+                            gp->unk170D8[k].v.tc[0] = gp->unk170D8[k].v.tc[1] = 0x400;
+                b += i;
+                top += i;
+                set -= i;
+                d -= i;
+                i++;
             }
             pool->unk170D8[D_80192460[1]].v.tc[0] = pool->unk170D8[D_80192460[1]].v.tc[1] =
                 pool->unk170D8[D_80192460[2]].v.tc[0] = pool->unk170D8[D_80192460[2]].v.tc[1] =

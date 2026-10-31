@@ -6326,31 +6326,39 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 5271 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
-// separate unk16D0 = 0 stores; calls and branches agree. Register allocation and scheduling differ in places (dx/dz in $f2/$f0 rather than $f16/$f14,
-// so their moves to a1/a3 are hoisted; the C14..C34 block, where the original also spills the middle y to sp+0x20).
-// An 8-byte pad gives the original's frame (0x50); unkC80 is stored before unkC7E. The zero literals written as 0 and
-// .0f give the original's separate zero loads in three of the compares.
+// Score 1160 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// separate unk16D0 = 0 stores; calls and branches agree. The function reuses its float locals as the original's
+// registers show (from searches over merges and roles; the permuter found the first): the x offset into the course
+// box shares x with the later position deltas ($f16 for both there), and in the C14..C34 block the old positions go
+// through dz, the old deltas through y, the new positions through scale and the new deltas through len. The first
+// player's camera is written through gCameraPerspective[D_80223930] directly and the second's through cam (the
+// permuter found the first): with cam in both, IDO moves the offsets to a1/a3 early. The C14..C34 block reads the
+// old values before each new position is computed (the original loads them early), and the middle delta goes through
+// home, whose address use keeps it in memory: the original stores it to its stack slot (sp+0x20) and reloads it for
+// both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E stored first. Declaration order (a
+// search) and one stack pad give the stack slots. The zero literals written as 0 and .0f give the original's separate
+// zero loads in three of the compares. Left: dz in $f0 ($f14 there) at the top; unkB94 = unkB90 reloads unkB90 here;
+// the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each compare.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
-    camera_unk_1* cam;
-    s32 pad[2]; // stack pad: the frame is 0x50 as in the original
-    UnkStruct_8004B0F8_1* point;
-    f32 dx;
+    s32 pad; // stack pad
     f32 dz;
     f32 x;
     f32 y;
     f32 z;
     f32 len;
+    UnkStruct_8004B0F8_1* point;
+    camera_unk_1* cam;
     f32 scale;
     s32 count;
+    f32 home; // the middle delta's stack home (sp+0x20)
 
     if (rider->unk44.x < D_801924B0) {
-        dx = D_801924B4;
+        x = D_801924B4;
     } else if (D_801924AC < rider->unk44.x) {
-        dx = -D_801924B4;
+        x = -D_801924B4;
     } else {
-        dx = 0.0f;
+        x = 0.0f;
     }
     if (rider->unk44.z < D_801924BC) {
         dz = D_801924C0;
@@ -6359,18 +6367,17 @@ void func_80065C18(s32 arg0) {
     } else {
         dz = 0.0f;
     }
-    rider->unkBF0 = dx;
+    rider->unkBF0 = x;
     rider->unkBF4 = dz;
     if (arg0 == gPlayer1Rider) {
-        cam = &gCameraPerspective[D_80223930];
-        cam->eyeX += dx;
-        cam->eyeZ += dz;
+        gCameraPerspective[D_80223930].eyeX += x;
+        gCameraPerspective[D_80223930].eyeZ += dz;
     } else if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
         cam = &gCameraPerspective[D_80223934];
-        cam->eyeX += dx;
+        cam->eyeX += x;
         cam->eyeZ += dz;
     }
-    Rider_MovePoints(rider, dx, 0.0f, dz);
+    Rider_MovePoints(rider, x, 0.0f, dz);
     if (gRiderGameModes != PAUSE_MODE) {
         x = rider->unk44.x - rider->unkBE4;
         rider->unkB84 = x - rider->unkB78;
@@ -6395,21 +6402,26 @@ void func_80065C18(s32 arg0) {
         rider->unk16B4 = 0;
     }
     if (gRiderGameModes != PAUSE_MODE) {
-        x = rider->unk44.x + (0.1806645 * rider->unk78) + (-26.9998535 * rider->unk6C);
-        y = x - rider->unkC14;
-        rider->unkC14 = x;
-        rider->unkC2C = y - rider->unkC20;
-        rider->unkC20 = y;
-        x = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
-        y = x - rider->unkC18;
-        rider->unkC18 = x;
-        rider->unkC30 = y - rider->unkC24;
-        rider->unkC24 = y;
-        x = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
-        y = x - rider->unkC1C;
-        rider->unkC1C = x;
-        rider->unkC34 = y - rider->unkC28;
-        rider->unkC28 = y;
+        dz = rider->unkC14;
+        y = rider->unkC20;
+        scale = rider->unk44.x + (0.1806645 * rider->unk78) + (-26.9998535 * rider->unk6C);
+        len = scale - dz;
+        rider->unkC14 = scale;
+        rider->unkC2C = len - y;
+        rider->unkC20 = len;
+        y = rider->unkC24;
+        scale = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
+        (&home)[0] = scale - rider->unkC18; // FAKE: the middle delta in memory, as the original spills it
+        rider->unkC18 = scale;
+        rider->unkC30 = home - y;
+        rider->unkC24 = home;
+        dz = rider->unkC1C;
+        y = rider->unkC28;
+        scale = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
+        len = scale - dz;
+        rider->unkC1C = scale;
+        rider->unkC34 = len - y;
+        rider->unkC28 = len;
     }
     count = 0;
     for (point = &rider->unk90[11]; point >= rider->unk90; point--) {
@@ -6424,8 +6436,9 @@ void func_80065C18(s32 arg0) {
         rider->unkC7C = 0;
     }
     rider->unkC78 = count;
-    rider->unkC80 = rider->unkC82 & (rider->unkC82 ^ rider->unkC7C);
-    rider->unkC7E = rider->unkC7C & (rider->unkC82 ^ rider->unkC7C);
+    count = rider->unkC82 ^ rider->unkC7C;
+    rider->unkC7E = rider->unkC7C & count;
+    rider->unkC80 = rider->unkC82 & count;
     // FAKE: .0f, not 0.0f, as above
     if (rider->unkC7C == 0) {
         if ((rider->unkC4C != .0f) || ((rider->unkC48 != .0f) && (rider->unk15DE == 0)) || (rider->unkC44 != 0.0f)) {
