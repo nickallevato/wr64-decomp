@@ -650,11 +650,12 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 4195 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// Score 3975 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
 // held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); the sum adds them in the original's
 // operand order (18, unk8, 16, 17); both loops walk e by pointer; the speed is read through D_80228120 each time (no
 // local); D_802287A8 is set before runner->frame is read, so frame is loaded once; step keeps runner->step (v1 in
-// the original) for step->duration; f / 24.0f is written out (no local); the first height adds the wobble to the base
+// the original) for step->duration, and i is computed from runner->step itself (IDO reuses the load; through step,
+// i's first web leaves s4); f / 24.0f is written out (no local); the first height adds the wobble to the base
 // (operand order found by the permuter); center is set after step and vec[2] after vec[0] (statement-move search).
 // The FAKE empty test (permuter) makes IDO keep &D_80228190 in fp and leave center in its stack home, as the
 // original does (6728 without it). Left: frame 0xB8 here vs 0xB0 (center sits at sp+0xA8 there, 0xB4 here: the
@@ -676,7 +677,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
 
     step = runner->step;
     center = &runner->obj->u.p1;
-    i = step - D_802241E0;
+    i = runner->step - D_802241E0;
     if (i != 2) {
         return;
     }
