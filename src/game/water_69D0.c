@@ -1095,21 +1095,21 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 205 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
+// Score 175 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of their
 // own and the ring loop's counters in the pool loop's body; the ring step reuses i (the colour loops' counter, dead by
-// then; from a search over variable merges), and the copy loop sets dst before src. bot and b also hold the two wrap
-// counts (nu, nv) and set also walks the lower edge, which lowers their priority as in the original, where the wrap
-// counts sit in caller-saved registers and are spilled across sqrtf. The sqrt(3) scale is "* 2" and D_801924B8 is set
-// before D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order),
-// and the first ring sets set before d, as the second does.
+// then; from a search over variable merges), and the copy loop sets dst before src. In the rings bot is the loop
+// counter and j the lower edge's start (the names swapped, from a search over swaps of two names in the rings; bot is
+// dead there otherwise). bot and b also hold the two wrap counts (nu, nv) and set also walks the lower edge, which
+// lowers their priority as in the original, where the wrap counts sit in caller-saved registers and are spilled across
+// sqrtf. The sqrt(3) scale is "* 2" and D_801924B8 is set before D_801924B0; the ring chains are written tc[0] = tc[1]
+// for j, b and top (from a search over each pair's order), and the first ring sets set before d, as the second does.
 // The original builds D_80192460's address twice: for the copy loop (v0) and again before the pool loop (s2), for the
 // six skirt indices D_80192460[1..6]. With the copy loop written through D_80192460 too, IDO keeps one address in s4
 // from the copy loop on. Here the copy runs from D_80192464 - 1 to &D_80192464[12] (FAKE: the same 13 words; a
 // different symbol, so IDO builds the pool loop's base on its own, and the bytes are the same). Through
 // D_80192464[0..5] in the pool loop instead, the base is 0x80192464 (940); an index copy loop gives its pointers among
 // the gWaterWindow stores (1750).
-// Left: the waterLevel copy in a2 (a3 there) and the wrap count in a1 (a2 there); D_801924BC's address in v0 (v1
-// there); the ring loops' temporaries.
+// Left: the waterLevel copy in a2 (a3 there); D_801924BC's address in v0 (v1 there); the ring loops' temporaries.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
@@ -1184,13 +1184,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
             }
         }
         top = gWaterWindowN;
-        bot = D_8019249C - gWaterWindowN;
-        set = bot - 1;
-        d = bot - 2;
+        j = D_8019249C - gWaterWindowN;
+        set = j - 1;
+        d = j - 2;
         b = top + 1;
         i = top + 2;
-        for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
-            pool->unk13D68[j].v.tc[0] = pool->unk13D68[j].v.tc[1] = pool->unk13D68[b].v.tc[0] = pool->unk13D68[b].v.tc[1] =
+        for (bot = gWaterWindowN - 1, k = D_8019249C - 1; bot >= 0; bot--, k--) {
+            pool->unk13D68[bot].v.tc[0] = pool->unk13D68[bot].v.tc[1] = pool->unk13D68[b].v.tc[0] = pool->unk13D68[b].v.tc[1] =
                 pool->unk13D68[top].v.tc[0] = pool->unk13D68[top].v.tc[1] = pool->unk13D68[set].v.tc[0] =
                     pool->unk13D68[set].v.tc[1] = pool->unk13D68[d].v.tc[1] = pool->unk13D68[d].v.tc[0] =
                         pool->unk13D68[k].v.tc[0] = pool->unk13D68[k].v.tc[1] = 0x400;
@@ -1208,13 +1208,13 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                             pool->unk13D68[D_80192460[6]].v.tc[0] = pool->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
         if (gPlayers == TWO_PLAYERS) {
             top = gWaterWindowN;
-            bot = D_8019249C - gWaterWindowN;
-            set = bot - 1;
-            d = bot - 2;
+            j = D_8019249C - gWaterWindowN;
+            set = j - 1;
+            d = j - 2;
             b = top + 1;
             i = top + 2;
-            for (j = gWaterWindowN - 1, k = D_8019249C - 1; j >= 0; j--, k--) {
-                pool->unk170D8[j].v.tc[0] = pool->unk170D8[j].v.tc[1] = pool->unk170D8[b].v.tc[0] = pool->unk170D8[b].v.tc[1] =
+            for (bot = gWaterWindowN - 1, k = D_8019249C - 1; bot >= 0; bot--, k--) {
+                pool->unk170D8[bot].v.tc[0] = pool->unk170D8[bot].v.tc[1] = pool->unk170D8[b].v.tc[0] = pool->unk170D8[b].v.tc[1] =
                     pool->unk170D8[top].v.tc[0] = pool->unk170D8[top].v.tc[1] = pool->unk170D8[set].v.tc[0] =
                         pool->unk170D8[set].v.tc[1] = pool->unk170D8[d].v.tc[1] = pool->unk170D8[d].v.tc[0] =
                             pool->unk170D8[k].v.tc[0] = pool->unk170D8[k].v.tc[1] = 0x400;
