@@ -194,16 +194,12 @@ void Hud_BlendColorSets(void) {
 }
 
 // HUD_Init
-#ifdef NON_MATCHING
-// Score 215 of 40500: the zeroing runs are chained assignments (stored last to first; the first stores of a chain
-// keep their addresses in registers, the last goes through at), as in the original. The Vtx copy is an index loop
-// over D_80198368[k] (a pointer walk lets IDO hoist the 0xB240.. offsets and blocks the load/store interleave); the
-// D_80228DD8 loop and the D_80228AE0 loop share k, which keeps the first rolled and fully unrolls the second (one
-// lui at per store, as in the original). The D_80228B60..70 loop runs while i != 2 (bne end test). The flag for
-// D_80228B58 is held in k; gCourseID is then spilled only around the portrait loop, as in the original. The loop
-// counters (marker loop j/i, copy loop k/j, flag and B60 loops j) are from a search over each loop's counter names.
-// Left: the marker loop's registers (inner counter, its bound 3 and the row pointers rotate among v1, a0..a2), the
-// B50/B54 address order and the D_80228DD8 loop's pointers (a0/a2 swapped).
+// The zeroing runs are chained assignments (stored last to first: the first stores of a chain keep their addresses
+// in registers, the last goes through at). The Vtx copy is an index loop over D_80198368[k] (a pointer walk lets IDO
+// hoist the 0xB240.. offsets and blocks the load/store interleave). The D_80228DD8 and D_80228AE0 loops share their
+// counter, which keeps the first rolled and fully unrolls the second (one lui at per store). The D_80228B58 flag is
+// held in k. The loop counters' names decide the register choices throughout; they are from a search over each
+// loop's counter (the marker loop's inner counter n is a variable of its own).
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -239,7 +235,8 @@ void func_801EED70(void) {
     s32 i;
     s32 j;
     s32 k;
-    s32 pad[4]; // stack pad: the original's frame is 0x40
+    s32 n;
+    s32 pad[3]; // stack pad: the original's frame is 0x40
 
     if (D_80227998 != 0) {
         D_80227998 = 0;
@@ -247,13 +244,13 @@ void func_801EED70(void) {
     Hud_BlendColorSets();
     D_80228AA4 = D_80228B50 = D_80228B54 = 0;
     for (j = 0; j < 2; j++) {
-        for (i = 0; i < 3; i++) {
-            gHudMarkers[j].unk0[i].unk14 = 0;
-            gHudMarkers[j].unk0[i].unk18 = 0;
-            gHudMarkers[j].unk0[i].unkC = 0.0f;
-            gHudMarkers[j].unk0[i].unk8 = 0.0f;
-            gHudMarkers[j].unk0[i].unk4 = 0.0f;
-            gHudMarkers[j].unk0[i].unk0 = 0.0f;
+        for (n = 0; n < 3; n++) {
+            gHudMarkers[j].unk0[n].unk14 = 0;
+            gHudMarkers[j].unk0[n].unk18 = 0;
+            gHudMarkers[j].unk0[n].unkC = 0.0f;
+            gHudMarkers[j].unk0[n].unk8 = 0.0f;
+            gHudMarkers[j].unk0[n].unk4 = 0.0f;
+            gHudMarkers[j].unk0[n].unk0 = 0.0f;
         }
     }
     for (k = 0; k < 2; k++) {
@@ -267,7 +264,7 @@ void func_801EED70(void) {
     gStartLightsState = 0;
     gStartCountdown = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
-        k = 1; // the flag reuses k (a separate s8 flag shifts every register after it)
+        k = 1; // the flag is held in k (a separate s8 flag shifts every register after it)
     } else {
         k = 0;
     }
@@ -316,13 +313,13 @@ void func_801EED70(void) {
             gPortraitPos[i][j].y = gPortraitPos[i][j].unkC;
         }
     }
-    for (k = 0; k < 4; k++) {
-        D_80228DD8[k] = 0;
-        D_80228DC8[k] = 0;
-        D_80228DE8[k] = 1;
+    for (j = 0; j < 4; j++) {
+        D_80228DD8[j] = 0;
+        D_80228DC8[j] = 0;
+        D_80228DE8[j] = 1;
     }
-    for (k = 0; k < 4; k++) {
-        D_80228AE0[k].unk0 = 0;
+    for (j = 0; j < 4; j++) {
+        D_80228AE0[j].unk0 = 0;
     }
     D_80228A94 = 0;
     D_80228A9C = 0;
@@ -346,9 +343,6 @@ void func_801EED70(void) {
         D_80228E00[i] = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EED70.s")
-#endif
 
 // Set up the HUD projection matrices in the current Gfx pool.
 
