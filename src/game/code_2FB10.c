@@ -109,14 +109,16 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 6835 of 97200: same blocks, loops and calls; five zeroing chains (all s32 globals) store in ascending
-// address order (from a chain-order search); in the D_801CE638 == 8 search k holds the found record and j walks.
-// -1 sits in ra here (t5 in the original) and most registers are renamed from the extent loops on; the original
-// stores gMapHalfSize with lui at in the extent loops, keeps 8 in s0 for the D_801CE638 test, and does not unroll
-// the 8-step checkpointTimes loop (unrolled here). IDO keeps that loop rolled, as the original's, when its counter
-// is the switch's `type` variable (or k becomes the switch variable), but the registers then shift (score 8121).
+// Score 4110 of 97200: same blocks, loops and calls, frame 0x80. The zeroing chains store right to left (the
+// first stores keep their addresses in registers, the leftmost goes through at), as in the original. The lap loop
+// runs on k and the checkpointTimes loop on j: j is assigned a constant again in the D_801CE638 == 8 search, which
+// keeps the 8-step loop rolled (pattern C); 8 then sits in s0 and 1 in ra, as in the original.
+// Left: the original stores gMapHalfSize with lui at in the extent loops (loads through a register), shares one lui
+// at between pairs of the unrolled D_801C26C0 stores (as if D_801C26C0 were defined in the file), and keeps the
+// D_801CE638 search's found record in the search counter's register (v1).
 void func_80075310(void) {
     s32 i;
+    s32 pad[2]; // stack pad: the original's frame is 0x80
     s32 j;
     s32 k;
     s32 depth;
@@ -318,11 +320,11 @@ void func_80075310(void) {
         rider->raceTime = 0;
         rider->bestLapTime = 599999;
         rider->timeLeft = D_800D9280[gCourseID * 4] * 1000;
-        for (j = 0; j < 9; j++) {
-            rider->lapBuoyMisses[j] = 0;
-            rider->lapTimes[j] = 0;
-            for (k = 0; k < 8; k++) {
-                rider->checkpointTimes[j][k] = 0;
+        for (k = 0; k < 9; k++) {
+            rider->lapBuoyMisses[k] = 0;
+            rider->lapTimes[k] = 0;
+            for (j = 0; j < 8; j++) {
+                rider->checkpointTimes[k][j] = 0;
             }
         }
         rider->unk330 = 0.0f;
@@ -402,25 +404,24 @@ void func_80075310(void) {
     D_801C2930 = 0;
     if (gGameModes == GMODE_STUNT) {
         D_801C26D0 = D_801C26D4 = D_801C26D8 = D_801C26DC = 0;
-        D_801C26E4 = D_801C26E0 = 0;
+        D_801C26E0 = D_801C26E4 = 0;
         D_801C39CC = D_801C39D0 = D_801C39D4 = 0;
-        D_801C39E4 = D_801C39E0 = D_801C39DC = D_801C39D8 = 0;
-        D_801C39F8 = D_801C39F4 = D_801C39F0 = D_801C39EC = D_801C39E8 = 0;
-        D_801C3A00 = 0;
+        D_801C39D8 = D_801C39DC = D_801C39E0 = D_801C39E4 = 0;
+        D_801C39E8 = D_801C39EC = D_801C39F0 = D_801C39F4 = D_801C39F8 = 0;
+        D_801C3A00 = D_801C3A04 = 0;
         D_801C39FC = D_801C3A00;
-        D_801C39C8 = 0;
-        D_801C3A04 = 0;
         D_801C292C = 0;
+        D_801C39C8 = 0;
     }
     D_801C39B0 = 100000.0f;
     D_801C39B4 = -100000.0f;
     D_801C2650 = D_801C2654 = D_801C2658 = D_801C2928 = 0;
     if (D_800DAB68 == 0) {
         D_801C1FE4 = gBestTimes[gCourseID][0].time;
-        D_801C1FE8 = D_801C1FE0 = gBestLaps[gCourseID].time;
+        D_801C1FE0 = D_801C1FE8 = gBestLaps[gCourseID].time;
     } else {
         D_801C1FE4 = D_801C23B0[gCourseID].time;
-        D_801C1FE8 = D_801C1FE0 = 0;
+        D_801C1FE0 = D_801C1FE8 = 0;
     }
 
     // The starting order D_801C26C0.
