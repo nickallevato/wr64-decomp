@@ -1352,6 +1352,13 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
 // unk168 then unk1D4. A permuter FAKE (three empty ifs after dx *= s) gives mx, s and mz the original's $f14, $f12,
 // $f2 (65 to 15). Left: my takes $f0 where the original has $f16. Also tried: renaming s per block (using mz for the
 // first squared distance gives 50 without the FAKE, 30 with it), declaration order, line joins in the midpoint block.
+// In the original each midpoint value sits in the register of a value from the clamp blocks: 7/sqrt in $f12 (the
+// sqrtf argument), mx in $f14 and my in $f16 (the reloaded unk168 x/y), mz in $f2 (the clamp scale s). Without the
+// FAKE, holding mz in s (the 7/sqrt value in mz) gives 50 and puts my in $f16; one empty if after the 7/sqrt line
+// then gives 35 (mx and my right; only 7/sqrt and mz swap $f12/$f2). Not lower: other names for 7/sqrt (a new local
+// adds a stack slot), the squared lengths in their own variable, every order of the seven float declarations, the
+// midpoint statements moved (107 orders of my/mz, FAKE-free base), loop forms (do-while, while, counter outside), empty ifs at
+// every line on both bases, the permuter on the 35 base.
 s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     UnkStruct_80192690* rider;
     s32 pad[1]; // stack pad: the original's spill slots
