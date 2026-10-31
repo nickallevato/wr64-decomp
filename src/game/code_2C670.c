@@ -279,17 +279,18 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 36657 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
+// Score 36328 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
 // default, written first, as the table's entry 0 and its block order show). The declarations follow the original's
 // stack homes (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C,
 // things 0x48, table 0x30; the pad stands for four words above them), which gives its frame (0xA0). t is zeroed
-// right after the D_801CE638 == 21 return and the pts loop's i = 0 sits before its test, as the original sets both.
-// Left: the original also keeps a zero (the edge index i) live in a1 from that return on and rematerialises it at
-// every loop exit, which gives each capped loop its "bnez / b exit" break shape (16 missing b's); i = 0 there spills
-// i to its home here (43143). Registers differ throughout (src2 lives in s2, &gCourseID in ra). The order of
-// several independent stores and list assignments is from a statement-move search (the largest gain: unk4C = 11
-// after unk50 in the things types 10..21 case, 40902 -> 36867). Six pairs of list assignments share a line (a line-join
-// search: IDO schedules by source line, 36867 -> 36657).
+// right after the D_801CE638 == 21 return and the pts loop's counter is zeroed before its test, as the original sets
+// both. The edge and pts loops count with n (dead after table B; a merge search, 36657 -> 36328).
+// Left: the original also keeps a zero (the edge-loop counter) live in a1 from that return on and rematerialises it
+// at every loop exit, which gives each capped loop its "bnez / b exit" break shape (16 missing b's); zeroing the
+// counter there spills it to its home here (43143 on an older base). Registers differ throughout (src2 lives in s2,
+// &gCourseID in ra). The order of several independent stores and list assignments is from a statement-move search
+// (the largest gain: unk4C = 11 after unk50 in the things types 10..21 case, 40902 -> 36867). Six pairs of list
+// assignments share a line (a line-join search: IDO schedules by source line, 36867 -> 36657).
 void func_80071E70(void) {
     s32 pad[4]; // stack pad
     s32 kind;
@@ -312,7 +313,6 @@ void func_80071E70(void) {
     CourseThingSrc* things;
     s32 type;
     s32 t;
-    s32 i;
     s32 n;
     CourseBuoySrc* b;
     UnkStruct_801AEE20* table;
@@ -825,7 +825,7 @@ void func_80071E70(void) {
 
     // Table A (gCoursePoints, at most 256): the small buoys by type and difficulty, the course-edge
     // points (type 1), and the points with a height (type 5).
-    i = 0;
+    n = 0;
     for (b = buoys; b->type != -1; b++) {
         switch (b->type) {
             case 0:
@@ -866,15 +866,15 @@ void func_80071E70(void) {
         do {
             a = &gCoursePoints[D_801BC938];
             a->unk10 = 1;
-            a->unk0 = edge[i * 2];
-            a->unk8 = edge[i * 2 + 1];
+            a->unk0 = edge[n * 2];
+            a->unk8 = edge[n * 2 + 1];
             if (++D_801BC938 >= 256) {
                 break;
             }
-            i++;
-        } while ((edge[i * 2] != -1) || (edge[i * 2 + 1] != -1));
+            n++;
+        } while ((edge[n * 2] != -1) || (edge[n * 2 + 1] != -1));
     }
-    i = 0;
+    n = 0;
     if ((pts[0] != -1) || (pts[2] != -1)) {
         do {
             if (D_801BC938 >= 256) {
@@ -883,11 +883,11 @@ void func_80071E70(void) {
             a = &gCoursePoints[D_801BC938];
             D_801BC938++;
             a->unk10 = 5;
-            a->unk0 = pts[i * 3];
-            a->unk4 = pts[i * 3 + 1];
-            a->unk8 = pts[i * 3 + 2];
-            i++;
-        } while ((pts[i * 3] != -1) || (pts[i * 3 + 2] != -1));
+            a->unk0 = pts[n * 3];
+            a->unk4 = pts[n * 3 + 1];
+            a->unk8 = pts[n * 3 + 2];
+            n++;
+        } while ((pts[n * 3] != -1) || (pts[n * 3 + 2] != -1));
     }
     if (D_801CE638 == 21) {
         D_801BC938 = 0;
