@@ -981,15 +981,18 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1493 of 134600: the original's case 2 shares one lui at between each pair of D_801CE740[].unk2 stores (here
-// one lui per store, two instructions longer), and the first loop places the D_801CE740 pointer step at the end of
-// the struct-copy block with the `4` for dst->flag loaded early (in the unk2 test's delay slot) and the D_800DABA0
-// address in the beq delay slot (here a nop, one more instruction). Case 2 clears unk2 in a loop of four like case 3
-// (IDO unrolls it into lui at stores; four separate stores use one base register). The chained D_801CE760 store
-// shares one -1 as in the original. Reading alts[i] through the pointer ap gives the display-list loop's reload after
-// each store, and alts declared after dl puts it at 0x40 as in the original. The order of each chained alts store
-// (alts[1] = alts[2], alts[3] = alts[4], alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the
-// original's store order and the registers for the 1.
+// Score 868 of 134600: the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after
+// the D_801CE73C load, with the D_800DABA0 address (lui, addu) after it and the addu in the beq delay slot; here the
+// step follows the rider store and the address is scheduled into the copy (one nop more), and the switch(arg0) temp
+// takes 0x18 (0x1C there). A real pointer (ap stepped after the copy) puts the step in the copy block and the temp at
+// 0x1C, but it is set before the loop guard (the original's after it, a derived induction variable) and the copy's
+// first load moves into a beqzl (1110). With D_801CE740 defined in the file the paired unk2 stores share one lui at;
+// cases 2 and 3 clear unk2 in do-while loops (a for loop of four is unrolled with [1] stored before [0], and the loop
+// of eight is unrolled with the first store in the delay slot). The chained D_801CE760 store shares one -1 as in the
+// original. Reading alts[i] through the pointer ap gives the display-list loop's reload after each store, and alts
+// declared after dl puts it at 0x40 as in the original. The order of each chained alts store (alts[1] = alts[2],
+// alts[3] = alts[4], alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the original's store order and
+// the registers for the 1.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
@@ -1023,16 +1026,18 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
         case 2:
-            for (i = 0; i < 4; i++) {
+            i = 0;
+            do {
                 D_801CE740[i].unk2 = 0;
-            }
+            } while (++i < 4);
             count = 4;
             models = 4;
             break;
         case 3:
-            for (i = 0; i < 8; i++) {
+            i = 0;
+            do {
                 D_801CE740[i].unk2 = 0;
-            }
+            } while (++i < 8);
             count = 8;
             models = 8;
             break;
