@@ -2071,10 +2071,11 @@ void func_800C1EB8(s32);
 #ifdef NON_MATCHING
 // Score 7800 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
 // the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
-// uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision (c.lt.s) as in the
-// original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts p before i. cam declared after five locals and sp4C/sp48 last put them at
-// 0x58/0x4C/0x48 as in the original; D_801D0774's offset is stored before it is scaled; statement order from a move
-// search. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
+// uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision
+// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts
+// p before i. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
+// D_801D0774's offset is stored before it is scaled; statement order from a move search. D_801B2EB4 reads are
+// written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
     UnkStruct_801CE780_unk4_unk4* node;
     s32 angle;
@@ -2133,7 +2134,8 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unk4C =
                 func_8009D4A8(D_801D0754 - D_801CF060[arg0].unkC, D_801D075C - D_801CF060[arg0].unk14) / 10.0f;
             if (D_801CF060[arg0].unk4C > 80.0f) {
-                D_801CF060[arg0].unk4C = 80; // int 80: a separate constant from the test's 80.0f, as the original's two loads
+                // int 80: a separate constant from the test's 80.0f, as the original's two loads show
+                D_801CF060[arg0].unk4C = 80;
             }
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
