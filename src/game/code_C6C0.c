@@ -5720,6 +5720,9 @@ void func_8006390C(s32 arg0, void* arg1) {
 // stats and the constant 1 to a2/a3 as in the original, and tbl gives the original's extra stack slot; f, d and speed
 // are each reused for a second value, as the original's stack homes show (f also holds 1 - speed / 16.666668f); integer
 // literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads.
+// Also not lower: no tbl (pad[5]; 40, same), ang as u32/s16/u16 or in a function-level local (88-112, spill slots
+// move), ang in c54 (163), the table pointer held in stats (88), empty ifs (one or three) and empty do-whiles at
+// every line.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
     if ((r)->unk16E2 == 0) {    \
