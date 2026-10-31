@@ -1551,11 +1551,12 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 11621 of 124000: same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// Score 11611 of 124000: same blocks, display-list commands and loops (calls and branches agree). The stack pads give
 // the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
 // through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
-// D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here). Left: register allocation and
+// D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
+// with the default (the original's table has 7 entries). Left: register allocation and
 // scheduling (the original keeps more command words in saved registers; its first-loop counter is s4 and the
 // D_1048468 address is set after the loop guard).
 void func_800B305C(Gfx** gdl) {
@@ -1663,6 +1664,7 @@ void func_800B305C(Gfx** gdl) {
                     case 6:
                         tex = (u8*) &D_104C4A8;
                         break;
+                    case 7:
                     default:
                         tex = (u8*) &D_104CCB0;
                         break;
