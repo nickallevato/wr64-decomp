@@ -1004,8 +1004,8 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 1975 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display
-// lists). An empty test after gDPLoadSync (FAKE, from the permuter) splits the block: after it the original's gdl
+// Score 1935 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display
+// lists); gDPSetRenderMode and gDPSetCombineLERP share a line (a search over joined lines). An empty test after gDPLoadSync (FAKE, from the permuter) splits the block: after it the original's gdl
 // pointers alternate registers (addiu a2,a0,8; addiu a0,a2,8; ...), as they do here only with the split. Left: the
 // original computes the first two texture-load commands' pointers (two gdl increments) and their constant words (t4,
 // t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are computed at the commands and
@@ -1025,8 +1025,8 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
     gDPPipeSync(gdl++);
     gDPSetCycleType(gdl++, G_CYC_1CYCLE);
-    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
+    // On one line: IDO schedules by source line, and the original's order for these two commands needs them together.
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2); gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
     gDPSetTexturePersp(gdl++, G_TP_PERSP);
 
     cam = &gCameraPerspective[D_80223930];
