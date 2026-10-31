@@ -371,11 +371,7 @@ extern struct UnkStruct_801C2938 gRiderRaceState[];
 extern struct UnkStruct_801D0798 D_801D0798[];
 extern UnkStruct_802238DC* D_802238DC[];
 extern s32 D_800DA930[];
-extern UnkStruct_80052C6C_1 D_801CE9C4;
-extern UnkStruct_80052C6C_1 D_801CE9D0;
-extern UnkStruct_80052C6C_1 D_801CE9DC;
-extern UnkStruct_80052C6C_1 D_801CE9E8;
-extern UnkStruct_80052C6C_1 D_801CE9F4;
+// D_801CE9B8 (code_4F850's DMA buffer) read as 12-byte records; records 1 to 5 were D_801CE9C4..D_801CE9F4.
 extern UnkStruct_80052C6C_1 D_801CEA00;
 extern UnkStruct_80052C6C_1 D_801CEA0C;
 extern UnkStruct_80052C6C_1 D_801CEA18;
@@ -438,10 +434,12 @@ extern f32 D_800D49A4;
 extern f32 D_800D49A8;
 extern s32 D_800D4924;
 extern u16 D_800D4968;
-extern Vec3f D_80192650;
-extern Vec3f D_80192660;
-extern Vec3f D_80192670;
-extern Vec3f D_80192680;
+// code_C6C0's .bss, 0x80192650..0x8019268F (each 8-aligned, so 16 apart). Defined, not extern: func_800665B0 stores
+// D_80192660.x and .y through one lui, as in the original.
+Vec3f D_80192650;
+Vec3f D_80192660;
+Vec3f D_80192670;
+Vec3f D_80192680;
 extern UnkStruct_80192420 gWaterWindow[];
 extern s32 D_80192498;
 extern f32 D_801C1FB4;
@@ -991,7 +989,7 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
         arg3 = D_800DA930[temp_s0] - 1;
     }
     func_80098048(temp_s0, arg3);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9C4, &arg1->unk264);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[1], &arg1->unk264);
     func_80052C6C(&D_80192690[arg0], (UnkStruct_80052C6C_1*) D_801CE9B8, &arg1->unk240);
     func_80052C6C(&D_80192690[arg0], &D_801CEA6C, &arg1->unk21C);
     func_80052C6C(&D_80192690[arg0], &D_801CEA0C, &arg1->unkFC);
@@ -1003,12 +1001,12 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
     func_80052C6C(&D_80192690[arg0], &D_801CEA48, &arg1->unk1B0);
     func_80052C6C(&D_80192690[arg0], &D_801CEA18, &arg1->unk120);
     func_80052C6C(&D_80192690[arg0], &D_801CEA3C, &arg1->unk18C);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9D0, &arg1->unk48);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9F4, &arg1->unkB4);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9C4, &arg1->unk24);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9E8, &arg1->unk90);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[2], &arg1->unk48);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[5], &arg1->unkB4);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[1], &arg1->unk24);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[4], &arg1->unk90);
     func_80052C6C(&D_80192690[arg0], (UnkStruct_80052C6C_1*) D_801CE9B8, &arg1->unk0);
-    func_80052C6C(&D_80192690[arg0], &D_801CE9DC, &arg1->unk6C);
+    func_80052C6C(&D_80192690[arg0], &((UnkStruct_80052C6C_1*) D_801CE9B8)[3], &arg1->unk6C);
     arg3 = arg3 + 1;
     if (arg3 >= D_800DA930[temp_s0]) {
         arg3 = -1;
@@ -6548,17 +6546,12 @@ void func_80065C18(s32 arg0) {
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80065C18.s")
 #endif
 
-#ifdef NON_MATCHING
-// Score 320 of 76300: the frame (0x60) and every stack slot agree once rider and pan are declared in the blocks
-// that use them. Player 1's x and z are read into dist and sz before the nearest-rider loop and lim holds the best
-// distance (pad keeps the stack slot of what was a separate best). Player 1's pointer (p1) is a separate variable
-// declared last so it lands in a temporary spilled across the calls. The pan's scaled side offset is computed into
-// lim first (the original keeps it in $f16), the far stamp level is set to 60 in an else arm, and the two-player
-// stamp deltas are taken dx first. The first two-player stamp passes level-- (1, and clears the flag after the
-// argument set-up, so the clear lands in the call's delay slot as in the original). The stamp radius is read from
-// D_80192498 each time (the original reloads it after the first stamp), and the one-player stamp level reuses i
-// (s0 there). level also serves as the push-apart counter and the two-player stamp flag. Left: the original stores
-// D_80192660.x and .y through one lui at (here two; not reproduced in scratch tests either).
+// Each rider's input (Rider_ReadController for the players, func_800616B0 otherwise) and update passes, the pan
+// between player 1 and the nearest rider for func_800BFB84 in one-player races, the water stamps D_80192498 along
+// each camera's (unkF0, unkF4) and the cameras' copies of each player's position and axes. rider and pan are
+// declared in the blocks that use them (that gives the original's frame); lim holds the nearest rider's distance,
+// then the pan's side offset; level is the push-apart counter and the two-player stamp flag (its first stamp passes
+// level--); i is reused for the one-player stamp level; pad keeps a stack slot.
 void func_800665B0(void) {
     camera_unk_1* cam;
     s32 i;
@@ -6737,9 +6730,6 @@ void func_800665B0(void) {
         cam->unk3C = D_80192690[gPlayer2Rider].unk8C;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800665B0.s")
-#endif
 
 Gfx* Rider_DrawPartsReflect(Gfx* gdl, s32 arg1) {
     gSPClearGeometryMode(gdl++, G_CULL_FRONT);

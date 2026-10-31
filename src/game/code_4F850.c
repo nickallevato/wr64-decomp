@@ -116,7 +116,12 @@ extern s32 D_801CB330;
 extern u32 D_801CE6D0;
 extern s32 D_801CE760[2];
 extern u8* D_801CE998;
-extern Gfx* D_801CE9A0[];
+// code_4F850's .bss from 0x801CE9A0 to 0x801CE9FF. Defined, not extern: the ceremony loop's stores to
+// D_801CE9A0[2] and [3] share one lui, as in the original. D_801CE9A0 has 24 bytes (entries 4 and 5 are not
+// referenced). D_801CE9B8 is the destination of a game_dma_copy below; its first 0x48 bytes are here, the rest (from
+// D_801CEA00, which code_C6C0 reads as 12-byte records) is still in bss2d.
+Gfx* D_801CE9A0[6];
+u8 D_801CE9B8[0x48];
 extern UnkStruct_80227A60 D_80227A60[];
 extern Gfx* D_80227AD4;
 extern Gfx* D_80227AD8;
@@ -154,10 +159,9 @@ Gfx* func_80093DBC(Gfx* gfxPtr, u16 red, u16 green, u16 blue);
 
 extern void game_dma_copy(uintptr_t devAddr, void* vAddr, u32 nbytes);
 
-#ifdef NON_MATCHING
-// Score 270 of 63000: one instruction. In the unrolled ceremony loop the original stores D_801CE9A0[3] through
-// the at it already holds and moves the second src step (+0x88) up two stores; here another lui at is emitted.
-// The two stack pads give the original's frame (0x68).
+// Picks the DMA list for gGameState (and the course's entries in it), loads it with func_80095A28 when load is set,
+// patches the loaded D_80227A60 records (four more in the ceremony), then for any state but boot-up
+// starts a display list. The two stack pads give the original's frame (0x68).
 void unk_game_load(void) {
     s32 pad[5]; // stack pad
     s32 fromState67;
@@ -482,9 +486,6 @@ void unk_game_load(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/unk_game_load.s")
-#endif
 
 void func_80095A28(DmaEntry* entry) {
     u32 size;

@@ -85,20 +85,22 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 575 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. The alpha is a signed conversion
-// ((s32) (e + 0.5f): the original has no unsigned-conversion sequence). One f32 (e) serves the corner-ray temps, the
-// alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4), where the offset is
-// spilled across SysUtils_Round as in the original. The dist offset spells 0.866 as .866f,
-// a separate constant to IDO from the vertices' 0.866f (found by the permuter); the ob[1] chain runs from vtx[6].
-// padB/padC are stack pads (the original has two more words between hiz and cam). The (s16) on the second texture
-// coordinate's SysUtils_Round takes an extra integer temporary (hack: the original uses one more between each
-// coordinate's load and add, and this moves the temporaries towards its numbering). An empty test of cam->unkF4
-// after the last corner ray is a permuter FAKE (marked; it moves the float registers). Left: the cam->upY CSE takes
-// $f14 (the original's $f24) and the float registers after it, 0.866f is loaded later into $f20 (early into $f24 there), and the texture coordinates'
-// sums and second load take t7/t0 (t8/t9 there).
+// Score 485 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
+// cam->unk9C is read through (no d local; pd keeps its stack word), which gives the d multiplies the original's
+// operand order. The alpha is a signed conversion ((s32) (e + 0.5f)). One f32 (e) serves the corner-ray temps,
+// the alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4). vp declared after
+// hiz and padB (a stack pad) give the up-vector products' slots (declaration search). The dist offset spells 0.866
+// as .866f, a separate constant to IDO from the vertices' 0.866f; the ob[1] chain runs from vtx[6]; the ob[0] and
+// ob[2] chains store vtx[1] first. The (s16) on the second texture coordinate's SysUtils_Round takes an extra
+// integer temporary (hack). The do {} while (0) in the first corner ray and the empty test of cam->unkF4 after
+// the last one are FAKEs (marked; without them the float temporaries rotate from the first instruction on, 4800).
+// The cross product's y through k (FAKE, from a search that routes each assignment through a free local): 485.
+// Left: the cam->upY CSE takes $f14 (the original's $f24) and the float registers after it rotate (unk6C, unk68,
+// unk64, the 5.0f and dist), 0.866f is loaded later into $f20 (early into $f24 there), and the texture
+// coordinates' sums take t7/t0 (t8/t9 there).
 void func_8004C1D0(s32 view, Vtx* vtx) {
     s32 i;
-    f32 d;
+    f32 pd; // stack pad (cam->unk9C is read through, as in func_80050B78)
     f32 e;
     f32 k;
     s32 angle;
@@ -112,8 +114,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 hix;
     f32 hiy;
     f32 hiz;
+    Vtx* vp;
     f32 padB; // stack pad
-    f32 padC; // stack pad
     camera_unk_1* cam;
     f32 x;
     f32 y;
@@ -121,7 +123,6 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     f32 upx;
     f32 upy;
     f32 upz;
-    Vtx* vp;
 
     if (view != 0) {
         cam = &gCameraPerspective[D_80223934];
@@ -129,8 +130,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         cam = &gCameraPerspective[D_80223930];
     }
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
-    d = cam->unk9C;
-    h = (d * SIN(angle)) / COS(angle);
+    h = (cam->unk9C * SIN(angle)) / COS(angle);
     w = (h * 320.0f) / 240.0f;
     if (gPlayers == TWO_PLAYERS) {
         if (D_801CE638 == 1) {
@@ -138,7 +138,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         }
     }
     x = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
-    y = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C);
+    k = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C); // FAKE: the cross product's y through k (a search)
+    y = k;
     z = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
     e = cam->unk94 + w;
     hix = e * x;
@@ -148,11 +149,11 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     lox = e * x;
     loy = e * y;
     loz = e * z;
-    upx = d * cam->unk64;
-    upy = d * cam->unk68;
-    upz = d * cam->unk6C;
+    upx = cam->unk9C * cam->unk64;
+    upy = cam->unk9C * cam->unk68;
+    upz = cam->unk9C * cam->unk6C;
     s = D_800D4740 - cam->eyeY;
-    dist = (d * D_800D4744 * 1.732f) / 320.0f;
+    dist = (cam->unk9C * D_800D4744 * 1.732f) / 320.0f;
 
     e = cam->unk98 - h;
     x = (cam->upX * e) + upx;
@@ -194,14 +195,13 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     e = D_800D4744 * D_800D4764;
 
     vtx[6].v.ob[0] = SysUtils_Round(x - D_800D4744);
-    vtx[5].v.ob[0] = vtx[1].v.ob[0] =
- SysUtils_Round(x - (D_800D4744 * 0.5f));
+    vtx[1].v.ob[0] = vtx[5].v.ob[0] = SysUtils_Round(x - (D_800D4744 * 0.5f));
     vtx[0].v.ob[0] = SysUtils_Round(x - (cam->unkF0 * e));
     vtx[2].v.ob[0] = vtx[4].v.ob[0] = SysUtils_Round((D_800D4744 * 0.5f) + x);
     vtx[3].v.ob[0] = SysUtils_Round(x + D_800D4744);
     vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
         vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
-    vtx[2].v.ob[2] = vtx[1].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
+    vtx[1].v.ob[2] = vtx[2].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
     vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * e));
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
     vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
@@ -1404,17 +1404,12 @@ void func_80050204(s32 view, Vtx* arena) {
  * (unkF0, unkF4), less 32 and plus 0.866 of the window radius, in *x and *z.
  */
 
-#ifdef NON_MATCHING
-// Score 168 of 26100: same instructions, frame (0xC0) and registers; the up vector is read from cam (not copied to
-// locals, which lets IDO sink the ray sums into the branches) and cx/cy/cz serve both rays. cam->unk98 is read once
-// into c98 inside the block (the original loads it there and spills it), and the end point goes through t rather
-// than dist. Declaration order (angle after h, s after hiz, dist before upx; found by declaration-move searches)
-// and w computed right after h (a statement-move search) moved the stack slots closer (320 to 212 to 168). Left:
-// stack slots (c98 at 0x44 and the d products at 0x74..0x6C in the original) and the operand order of the d
-// multiplies (writing cam->unk64 * d does not change it).
+// Where the camera's view meets the water plane: the four corner rays (up vector +/- h, side +/- w) that point
+// down past -5 give a distance along (unkF0, unkF4), the nearest one (from a D_801924A8-based limit) kept; the point
+// is stored to *x / *z. cam->unk9C and cam->unk98 are read through (IDO spills its copies), e serves the ray
+// offsets and each ray's distance.
 void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
-    s32 pad[2]; // stack pad: the frame is 0xC0 as in the original
-    f32 d;
+    s32 pad[3]; // stack pad
     f32 h;
     s32 angle;
     f32 e;
@@ -1433,12 +1428,9 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     f32 upx;
     f32 upy;
     f32 upz;
-    f32 t;
-    f32 c98;
 
     angle = SysUtils_Round((cam->unk88 / 720.0f) * 4096.0f);
-    d = cam->unk9C;
-    h = (d * SIN(angle)) / COS(angle);
+    h = (cam->unk9C * SIN(angle)) / COS(angle);
     w = (h * 320.0f) / 240.0f;
     cx = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
     cy = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C);
@@ -1452,55 +1444,48 @@ void func_80050B78(camera_unk_1* cam, f32* x, f32* z) {
     loy = e * cy;
     loz = e * cz;
 
-    upx = d * cam->unk64;
-    upy = d * cam->unk68;
-    upz = d * cam->unk6C;
-    do { // FAKE: a block boundary with no code; it moves the register allocation towards the original
-        s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
-        dist = (d * (f32) D_801924A8 * 1.732f) / 320.0f;
-        c98 = cam->unk98;
-    } while ((u64) 0); // FAKE (permuter): the u64 condition puts h/dist, the up vector and s in the original's
-                       // saved FP registers
+    upx = cam->unk9C * cam->unk64;
+    upy = cam->unk9C * cam->unk68;
+    upz = cam->unk9C * cam->unk6C;
+    s = (f32) (gWaterLevel + D_800D49B0) - cam->eyeY;
+    dist = (cam->unk9C * (f32) D_801924A8 * 1.732f) / 320.0f;
+    e = cam->unk98 - h;
 
-    e = c98 - h;
     cx = (cam->upX * e) + upx;
     cy = (cam->upY * e) + upy;
     cz = (cam->upZ * e) + upz;
     if ((cy + hiy) < -5.0f) {
-        t = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
-        if (t < dist) {
-            dist = t;
+        e = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
     if ((cy + loy) < -5.0f) {
-        t = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
-        if (t < dist) {
-            dist = t;
+        e = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
-    e = c98 + h;
+    e = cam->unk98 + h;
     cx = (cam->upX * e) + upx;
     cy = (cam->upY * e) + upy;
     cz = (cam->upZ * e) + upz;
     if ((cy + hiy) < -5.0f) {
-        t = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
-        if (t < dist) {
-            dist = t;
+        e = (s / (cy + hiy)) * (((cx + hix) * cam->unkF0) + ((cz + hiz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
     if ((cy + loy) < -5.0f) {
-        t = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
-        if (t < dist) {
-            dist = t;
+        e = (s / (cy + loy)) * (((cx + lox) * cam->unkF0) + ((cz + loz) * cam->unkF4));
+        if (e < dist) {
+            dist = e;
         }
     }
-    t = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
-    *x = cam->eyeX + (t * cam->unkF0);
-    *z = cam->eyeZ + (t * cam->unkF4);
+    e = (((f32) D_80192498 * 0.866f) + dist) - 32.0f;
+    *x = cam->eyeX + (e * cam->unkF0);
+    *z = cam->eyeZ + (e * cam->unkF4);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050B78.s")
-#endif
 
 void func_8004EAA4(void);
 void func_80050204(s32 view, Vtx* vtx);

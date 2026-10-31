@@ -338,6 +338,10 @@ segments:
       # code_5480's .bss, 0x80158450..0x8016042F
       - { type: .bss, start: 0xA95D0, vram: 0x80158450, name: game/code_5480 }
       - { type: bss, start: 0xA95D0, vram: 0x80160430, name: bss2 }
+      # code_C6C0's .bss from 0x80192650 to 0x8019268F (D_80192650, D_80192660, D_80192670 and D_80192680, the
+      # positions func_800665B0 passes to func_800BFB84); the rest of bss2 continues in bss2a
+      - { type: .bss, start: 0xA95D0, vram: 0x80192650, name: game/code_C6C0 }
+      - { type: bss, start: 0xA95D0, vram: 0x80192690, name: bss2a }
       # code_2FB10's .bss from 0x801C3A00 to 0x801C3A0F (D_801C3A00, D_801C3A04 and D_801C3A08, the osGetTime
       # stamp); the rest of it is still in bss2
       - { type: .bss, start: 0xA95D0, vram: 0x801C3A00, name: game/code_2FB10 }
@@ -346,6 +350,10 @@ segments:
       # bss2b and bss2c
       - { type: .bss, start: 0xA95D0, vram: 0x801C4170, name: game/code_43DA0 }
       - { type: bss, start: 0xA95D0, vram: 0x801C41A0, name: bss2c }
+      # code_4F850's .bss from 0x801CE9A0 to 0x801CE9FF (D_801CE9A0, D_801CE9B8 and the records up to D_801CE9F4);
+      # the rest of bss2c continues in bss2d
+      - { type: .bss, start: 0xA95D0, vram: 0x801CE9A0, name: game/code_4F850 }
+      - { type: bss, start: 0xA95D0, vram: 0x801CEA00, name: bss2d }
       # code_68A10's .bss, 0x801D0790..0x801D7B6F
       - { type: .bss, start: 0xA95D0, vram: 0x801D0790, name: game/code_68A10 }
       - { type: bss, start: 0xA95D0, vram: 0x801D7B70, name: bss3 }
