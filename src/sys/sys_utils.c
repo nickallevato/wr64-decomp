@@ -1057,6 +1057,9 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 // through pix (a permuter FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an
 // absolute lhu). Tried without effect: no top (col compared directly), the column loop over an index, both
 // table reads spelled as pointer sums, D_80158350 defined in the file, renaming pix/lum/v/i (web search).
+// The bottom pixel's index through pix (as in the column loop) also scores 150. The original's 0x7C(s1) looks like
+// an index folded to 62 after the base was hoisted; the bottom read through *p, prev and lum chained, or the column
+// loop over a constant count (IDO then unrolls it by 4, the remainder first) do not give it.
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
