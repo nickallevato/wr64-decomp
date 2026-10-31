@@ -6326,38 +6326,38 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1531 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
-// separate unk16D0 = 0 stores; calls and branches agree. The first player's camera is written through
-// gCameraPerspective[D_80223930] directly and the second's through cam (the permuter found the first): with cam in
-// both, IDO moves dx and dz to a1/a3 early and the registers after differ. In the C14..C34 block the old values are
-// read into z and len before each new position is computed (the original loads them early; from a search over which
-// of the six to read ahead, the permuter found the first), and the middle y goes through home, whose address use
-// keeps it in memory: the original stores it to its stack slot (sp+0x20, which also gives the 0x50 frame without a
-// pad) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E stored first.
-// The zero literals written as 0 and .0f give the original's separate zero loads in three of the compares. Left:
-// dx/dz in $f2/$f0 ($f16/$f14 there) and the float registers of the speed block after; the old C18 is loaded with the
-// others there; the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each
-// compare.
+// Score 1325 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// separate unk16D0 = 0 stores; calls and branches agree. The x offset into the course box shares x with the later
+// position deltas (the original keeps both in $f16; the permuter found the merge). The first player's camera is
+// written through gCameraPerspective[D_80223930] directly and the second's through cam (the permuter found the
+// first): with cam in both, IDO moves the offsets to a1/a3 early. In the C14..C34 block the old values are read into z
+// and len before each new position is computed (the original loads them early; from a search over which of the six to
+// read ahead), and the middle y goes through home, whose address use keeps it in memory: the original stores it to its
+// stack slot (sp+0x20) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E
+// stored first. Declaration order (a search) and one stack pad give the stack slots. The zero literals written as 0
+// and .0f give the original's separate zero loads in three of the compares. Left: dz in $f0 ($f14 there) and the float
+// registers of the C14..C34 block; the old C18 is loaded with the others there; unkB94 = unkB90 reloads unkB90 here;
+// the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each compare.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
-    camera_unk_1* cam;
-    UnkStruct_8004B0F8_1* point;
-    f32 dx;
+    s32 pad; // stack pad
     f32 dz;
     f32 x;
     f32 y;
     f32 z;
     f32 len;
+    UnkStruct_8004B0F8_1* point;
+    camera_unk_1* cam;
     f32 scale;
     s32 count;
     f32 home; // the middle y's stack home (sp+0x20)
 
     if (rider->unk44.x < D_801924B0) {
-        dx = D_801924B4;
+        x = D_801924B4;
     } else if (D_801924AC < rider->unk44.x) {
-        dx = -D_801924B4;
+        x = -D_801924B4;
     } else {
-        dx = 0.0f;
+        x = 0.0f;
     }
     if (rider->unk44.z < D_801924BC) {
         dz = D_801924C0;
@@ -6366,17 +6366,17 @@ void func_80065C18(s32 arg0) {
     } else {
         dz = 0.0f;
     }
-    rider->unkBF0 = dx;
+    rider->unkBF0 = x;
     rider->unkBF4 = dz;
     if (arg0 == gPlayer1Rider) {
-        gCameraPerspective[D_80223930].eyeX += dx;
+        gCameraPerspective[D_80223930].eyeX += x;
         gCameraPerspective[D_80223930].eyeZ += dz;
     } else if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
         cam = &gCameraPerspective[D_80223934];
-        cam->eyeX += dx;
+        cam->eyeX += x;
         cam->eyeZ += dz;
     }
-    Rider_MovePoints(rider, dx, 0.0f, dz);
+    Rider_MovePoints(rider, x, 0.0f, dz);
     if (gRiderGameModes != PAUSE_MODE) {
         x = rider->unk44.x - rider->unkBE4;
         rider->unkB84 = x - rider->unkB78;
