@@ -2821,10 +2821,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 9790 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 9285 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
-// count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the
-// declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
+// count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
+// x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
 // 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements, register or volatile they stay
 // deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
 // where / 2.0f becomes a multiply.
@@ -2906,10 +2906,10 @@ void func_801FB514(Gfx** gdlp) {
                 gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
                 break;
         }
-        gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         y = p->unk10 + p->unk18 + 116;
         x += p->unkC;
+        gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
                             1 << 10);
         n = p->unk4;
