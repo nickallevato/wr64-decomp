@@ -1214,7 +1214,7 @@ typedef struct UnkStruct_80192690 {
     /* 0x1604 */ s16 unk1604;
     /* 0x1606 */ s16 unk1606;
     /* 0x1608 */ u16 unk1608;
-    /* 0x160A */ s16 unk160A;
+    /* 0x160A */ u16 unk160A;
     /* 0x160C */ f32 unk160C;
     /* 0x1610 */ f32 unk1610;
     /* 0x1614 */ f32 unk1614;

@@ -1016,10 +1016,12 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 9636 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
-// are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. Left: the
-// original's frame is 0x70 (0x68 here), it also stores m[0] and c[0] into e[0]'s slot, and the float temps are numbered
-// differently.
+// Score 7423 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. e[2] and
+// c[0] go through len, and the later reads of d go through a pointer pd (three permuter FAKEs, marked): with them IDO
+// uses three saved float registers, as the original.
+// Left: the original's frame is 0x70 (0x68 here); it stores d once (IDO here re-stores it in each block), also stores
+// m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1028,27 +1030,31 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     f32 e[3];
     f32 len;
     f32 t;
+    f32* pd; // FAKE (permuter): the later reads of d go through pd
 
     d[1] = arg7 - arg4;
     d[2] = arg6 - arg3;
     d[0] = arg8 - arg5;
+    pd = d;
     len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
         t = (0.5 / len) * ((arg9 - arg10) + len);
         m[2] = (t * d[2]) + arg3;
         e[2] = m[2] - arg3;
+        len = e[2]; // FAKE (permuter): e[2] and c[0] through len move the float registers toward the original's
         m[1] = (t * d[1]) + arg4;
         e[1] = m[1] - arg4;
         m[0] = (t * d[0]) + arg5;
         e[0] = m[0] - arg5;
-        t = ((arg9 - SQ(e[2])) - SQ(e[1])) - SQ(e[0]);
+        t = ((arg9 - SQ(len)) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
             c[2] = (arg12 * d[0]) - (arg13 * d[1]);
-            c[1] = (arg13 * d[2]) - (arg11 * d[0]);
-            c[0] = (arg11 * d[1]) - (arg12 * d[2]);
-            arg11 = (d[1] * c[0]) - (d[0] * c[1]);
-            arg12 = (d[0] * c[2]) - (d[2] * c[0]);
-            arg13 = (d[2] * c[1]) - (d[1] * c[2]);
+            c[1] = (arg13 * d[2]) - (arg11 * pd[0]);
+            len = (arg11 * pd[1]) - (arg12 * pd[2]); // FAKE (permuter), see above
+            c[0] = len;
+            arg11 = (pd[1] * c[0]) - (pd[0] * c[1]);
+            arg12 = (pd[0] * c[2]) - (pd[2] * c[0]);
+            arg13 = (pd[2] * c[1]) - (pd[1] * c[2]);
             len = SQ(arg11) + SQ(arg12) + SQ(arg13);
             if (len != 0.0f) {
                 t = sqrtf(t / len);
@@ -1061,9 +1067,9 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     }
     arg9 = sqrtf(arg9);
     t = arg9 / (arg9 + sqrtf(arg10));
-    arg0->unk0.x = (t * d[2]) + arg3;
-    *arg1 = (t * d[1]) + arg4;
-    *arg2 = (t * d[0]) + arg5;
+    arg0->unk0.x = (t * pd[2]) + arg3;
+    *arg1 = (t * pd[1]) + arg4;
+    *arg2 = (t * pd[0]) + arg5;
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800534AC.s")
@@ -5471,15 +5477,17 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 7950 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 6575 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
-// into unk15FA, then the s16 and s8 narrowings), the twelve points are transformed by index, and the C88 entry is
-// re-read through the rider for each component, read once into x and stored from x (the original multiplies the
-// loaded value without reloading it). The sphere velocities, the parts' unk1C and unkC20-unkC34/unkC08 are cleared
-// with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two statements (the original stores zero to
-// both and reads both back for unk16F0/unk16F4). Left: constant hoisting around the clear chain (the original keeps 10, 0x800
-// and 1 in registers, this C 1, 0x800, 8 and 22), the order of the chain's stores, and float register allocation
-// in the first transform.
+// into unk15FA, then the s16 and s8 narrowings; with unk160A u16 the value is copied for the s16 stores, and with
+// unkB5F left of unkB58/unkB56 it takes the s8-narrowed value, as there); the twelve points are transformed by
+// index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
+// original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
+// unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
+// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: unk15FA's store
+// comes from the unconverted value and unk1444 from the copy here (the original copies only for unk16E2/unk1606);
+// constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in registers, this C 1, 0x800, 8
+// and 22), and float register allocation in the first transform.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5524,7 +5532,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unk90[i].unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
     }
     rider->unkB90 = rider->unkB94 = rider->unkB78 = rider->unkB7C = rider->unkB80 = rider->unkB84 = rider->unkB88 =
-        rider->unkB8C = rider->unkB5E = rider->unkB56 = rider->unkB58 = rider->unkB5F = rider->unkB50.stick_x =
+        rider->unkB8C = rider->unkB5E = rider->unkB5F = rider->unkB56 = rider->unkB58 = rider->unkB50.stick_x =
             rider->unkB50.stick_y = rider->unkB50.button = rider->unkC84 = rider->unkC86 = rider->unkB60 =
                 rider->unk16E8 = rider->unk16EC = rider->unkC58 = rider->unkC6C = rider->unk1574 = rider->unk16B4 =
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =

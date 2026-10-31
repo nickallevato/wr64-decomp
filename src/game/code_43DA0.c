@@ -1137,7 +1137,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 11124 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
+// Score 11074 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
 // (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first). The literal spellings
 // (64 as an int, 0 and 0.00f in two zero tests) came from a respelling search: IDO keeps differently spelled
 // constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
@@ -1158,7 +1158,7 @@ void func_8008E794(void) {
     f32 c;
     f32 s;
     f32 dirZ;
-    f32 scale;
+    f32 pad; // stack pad (the 2P block's scale factor is held in s)
 
     D_800D9914 = (D_800D9914 + 1) & 3;
     p = &D_801C43F8[D_8011F8E0];
@@ -1200,9 +1200,9 @@ void func_8008E794(void) {
         dirZ = cam->unk6C;
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
-        scale = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
-        dirZ *= scale;
-        dirX *= scale;
+        s = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        dirZ *= s;
+        dirX *= s;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
         vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;

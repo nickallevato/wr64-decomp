@@ -2069,10 +2069,13 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 9475 of 259500: registers and scheduling. The 11.0f compare is single precision (c.lt.s) as in the
-// original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts p before i. cam declared after five locals and sp4C/sp48 last put them at
-// 0x58/0x4C/0x48 as in the original; D_801D0774's offset is stored before it is scaled; statement order from a move
-// search. D_801B2EB4 reads are written as D_801B2F20[unk9C - 1].unk98 (same address).
+// Score 7800 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
+// the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
+// uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision
+// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts
+// p before i. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
+// D_801D0774's offset is stored before it is scaled; statement order from a move search. D_801B2EB4 reads are
+// written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
     UnkStruct_801CE780_unk4_unk4* node;
     s32 angle;
@@ -2131,7 +2134,8 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unk4C =
                 func_8009D4A8(D_801D0754 - D_801CF060[arg0].unkC, D_801D075C - D_801CF060[arg0].unk14) / 10.0f;
             if (D_801CF060[arg0].unk4C > 80.0f) {
-                D_801CF060[arg0].unk4C = 80.0f;
+                // int 80: a separate constant from the test's 80.0f, as the original's two loads show
+                D_801CF060[arg0].unk4C = 80;
             }
             D_801D0760 = Math_Normalize_Angle(
                 func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)) -
@@ -2250,8 +2254,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D076C = 1.2f;
             }
             D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
+            // 180 as an int: the original loads 180.0 twice here (two constants to IDO)
             D_801D0764 =
-                (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.0f) * D_801D0724 * D_801D076C) - D_801D0768) *
+                (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180) * D_801D0724 * D_801D076C) - D_801D0768) *
                         0.15) +
                        (f64) D_801D0768);
             if (D_801CF060[arg0].unk68 < Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
@@ -2298,14 +2303,14 @@ void func_800A68A4(s32 arg0) {
                 if (D_801B2F20[D_801CF060[arg0].unk9C - 1].unk98 == 9) {
                     D_801CF060[arg0].unk74 = 0;
                     D_801CF060[arg0].unk78 = 0;
-                    t = (s16) D_800DAA00 % 9;
-                    if ((t >= 0) && (t < 3)) {
+                    angle = (s16) D_800DAA00 % 9;
+                    if ((angle >= 0) && (angle < 3)) {
                         D_801CF060[arg0].unk50 = 0x11;
                     }
-                    if ((t >= 3) && (t < 6)) {
+                    if ((angle >= 3) && (angle < 6)) {
                         D_801CF060[arg0].unk50 = 3;
                     }
-                    if ((t >= 6) && (t < 9)) {
+                    if ((angle >= 6) && (angle < 9)) {
                         D_801CF060[arg0].unk50 = 4;
                     }
                     D_801CF060[arg0].unk54 = 0;
@@ -2341,9 +2346,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->eyeX;
-                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->eyeZ;
+                t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                D_801CF060[arg0].unkC = (COS(t) * 200.0f) + cam->eyeX;
+                D_801CF060[arg0].unk14 = (SIN(t) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;
@@ -2356,9 +2361,9 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unkA4 = 0;
             D_800E62D0 = 0;
             D_801D0764 = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
-            angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-            D_801D0754 = (COS(angle) * 600.0f) + D_801D06BC;
-            D_801D0758 = (SIN(angle) * 600.0f) + D_801D06C4;
+            t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+            D_801D0754 = (COS(t) * 600.0f) + D_801D06BC;
+            D_801D0758 = (SIN(t) * 600.0f) + D_801D06C4;
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
             D_801D0760 = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
             if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
@@ -2529,9 +2534,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                angle = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
-                D_801CF060[arg0].unkC = (COS(angle) * 200.0f) + cam->eyeX;
-                D_801CF060[arg0].unk14 = (SIN(angle) * 200.0f) + cam->eyeZ;
+                t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                D_801CF060[arg0].unkC = (COS(t) * 200.0f) + cam->eyeX;
+                D_801CF060[arg0].unk14 = (SIN(t) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk14 = D_801D0758;

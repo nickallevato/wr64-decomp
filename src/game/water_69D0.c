@@ -1264,9 +1264,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 10353 of 60500: frame, the row loops and the first skirt loop match in shape. Left: callee-saved register
-// choice (vtx, lo, sx and sz land in other s registers), and the second skirt loop ends on idx != &D_80192460[7]
-// (with < IDO unrolls it by two; the original compares with sltu and does not unroll)
+// Score 8679 of 60500: the frame, the row loops and both skirt loops match in shape; the second skirt loop compares
+// with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). In the middle row loop hB holds the
+// lower neighbour and hA the upper one (the reverse of the row loops), from a search over the loops' variable names.
+// Left: callee-saved register choice (vtx, lo, sx and sz land in other s registers).
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
     f32 dx;
@@ -1276,8 +1277,8 @@ void func_80050204(s32 view, Vtx* arena) {
     s32 sz;
     s32 sx;
     s32 hB;
-    s32 hA;
     s32 i;
+    s32 hA;
     f32 dz;
     UnkStruct_80160A98* hi;
     UnkStruct_80160A98* lo;
@@ -1334,10 +1335,10 @@ void func_80050204(s32 view, Vtx* arena) {
     e++;
     vtx++;
     for (end = e + ((gWaterWindowN * 2) - 2); end >= e;) {
-            hA = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + 1)))->unk0)->unk0 >> 7;
-            hB = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0 >> 7;
-            sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
-            sz = (hA - hB) * 55;
+            hB = WATER_CELL_AT((e + (-((gWaterWindowN * 2) + 1)))->unk0)->unk0 >> 7;
+            hA = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0 >> 7;
+            sx = (((hB + hA) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (hB - hA) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
             e++;
             vtx++;
@@ -1409,7 +1410,9 @@ void func_80050204(s32 view, Vtx* arena) {
     k = (f32) (D_800D4720 - D_80192498) * 0.866f;
     ox = SysUtils_Round(k * dx);
     oz = SysUtils_Round(k * dz);
-    for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
+    // FAKE: D_80192464 is &D_80192460[1]; through that symbol IDO does not carry the first loop's addresses into
+    // this loop in saved registers (the original rebuilds both bounds here).
+    for (idx = D_80192464; idx < &D_80192464[6]; idx++) {
         v = &arena[*idx];
         v->v.ob[0] += ox;
         v->v.ob[2] += oz;

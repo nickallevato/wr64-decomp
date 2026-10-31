@@ -917,34 +917,36 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 8295 of 31600: control flow and arithmetic follow the original, x * x is taken once before the branches.
-// Left: the register allocation: the declaration order (s, nx, a after nz) is from a declaration-move search. The original keeps x in f14 and reloads x and z from their argument slots after
-// each sqrtf, where this keeps them in saved registers (frame 0xB8 here, 0xB0 there).
+// Score 3640 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
+// rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
+// products once the divisions are done (two locals fewer give the original's frame). The declaration order is from
+// declaration-move searches; the first branch's products go through ny (unused there; from a search over the locals'
+// names in each branch). One read of x through its address (FAKE, from the permuter) keeps x out of the saved
+// registers: it then lives in f14 and is spilled to its argument slot around the sqrtf calls, as in the original.
+// A dead recomputation of qy before the last store (FAKE, permuter) moves the final stores as in the original.
+// Left: x is stored to its slot on entry here; z is kept in a saved register (the original reloads it from its slot).
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
-    f32 c;
-    f32 len;
     f32 b;
     f32 ny;
     f32 nz;
     f32 s;
-    f32 nx;
-    f32 a;
     f32 t;
+    f32 len;
+    f32 c;
+    f32 a;
+    f32 nx;
     f32 u;
-    f32 v;
-    f32 w;
     f32 px;
     f32 py;
     f32 qx;
     f32 qy;
     f32 qz;
     s32 i;
-    f32 xx;
 
-    i = (((angle * 4096.0f) / 3.141593f) * 0.5f) + 0.5f;
+    i = (((angle * 4096.0f) / 3.141593f) / 2.0f) + 0.5f;
     c = COS(i);
     s = SIN(i);
-    xx = x * x;
     if (y == 0.0f) {
         if (x == 0.0f) {
             if (z < 0.0f) {
@@ -954,25 +956,25 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
             func_800498A4(arg0, arg1, 0.0f, 0.0f, angle);
             return;
         }
-        len = sqrtf(xx + (z * z));
+        len = sqrtf((x * (&x)[0]) + (z * z)); // FAKE: x's address keeps it out of the saved registers (permuter)
         a = z / len;
-        t = s * a;
-        arg1->mf[0][1] = t;
-        arg1->mf[1][0] = -t;
+        ny = s * a;
+        arg1->mf[0][1] = ny;
+        arg1->mf[1][0] = -ny;
         arg1->mf[1][1] = c;
         b = x / len;
         nx = -b;
-        t = s * nx;
+        ny = s * nx;
         u = c * a;
-        arg1->mf[2][1] = t;
-        arg1->mf[1][2] = -t;
+        arg1->mf[2][1] = ny;
+        arg1->mf[1][2] = -ny;
         arg1->mf[0][0] = (u * a) + (b * b);
         arg1->mf[2][2] = (c * nx * nx) + (a * a);
-        t = (u * nx) + (b * a);
-        arg1->mf[2][0] = t;
-        arg1->mf[0][2] = t;
+        ny = (u * nx) + (b * a);
+        arg1->mf[2][0] = ny;
+        arg1->mf[0][2] = ny;
     } else if (z == 0.0f) {
-        len = sqrtf(xx + (y * y));
+        len = sqrtf((x * x) + (y * y));
         a = y / len;
         nx = -a;
         t = s * nx;
@@ -999,16 +1001,16 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[1][0] = t;
         u = s * b;
         arg1->mf[0][1] = -t;
-        v = c * nx;
+        len = c * nx;
         arg1->mf[2][0] = u;
         arg1->mf[0][2] = -u;
-        arg1->mf[1][1] = (v * nx) + (b * b);
+        arg1->mf[1][1] = (len * nx) + (b * b);
         arg1->mf[2][2] = (c * b * b) + (a * a);
-        t = (v * b) + (b * a);
+        t = (len * b) + (b * a);
         arg1->mf[2][1] = t;
         arg1->mf[1][2] = t;
     } else {
-        len = sqrtf(xx + (y * y) + (z * z));
+        len = sqrtf((x * x) + (y * y) + (z * z));
         ny = y / len;
         nx = x / len;
         a = -ny;
@@ -1026,14 +1028,15 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         u = ((qy * py) - (qx * px)) * s;
         arg1->mf[1][0] = t + u;
         arg1->mf[0][1] = t - u;
-        w = s * qz;
+        len = s * qz;
         t = (c * qx * qz) + (nx * nz);
-        u = w * py;
+        u = len * py;
         arg1->mf[2][0] = t + u;
         arg1->mf[0][2] = t - u;
         t = (c * qy * qz) + (ny * nz);
-        u = w * px;
+        u = len * px;
         arg1->mf[2][1] = t + u;
+        qy = -py * nz; // FAKE (permuter): a dead recomputation of qy that moves the last stores' scheduling
         arg1->mf[1][2] = t - u;
     }
     arg1->mf[2][3] = 0.0f;

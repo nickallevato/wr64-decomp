@@ -194,14 +194,12 @@ void Hud_BlendColorSets(void) {
 }
 
 // HUD_Init
-#ifdef NON_MATCHING
-// Score 6826 of 40500: the zeroing runs are chained assignments (stored last to first), which keeps the globals'
-// addresses in registers as in the original (the order of the four HUD colour globals is from a permutation search);
-// the Vtx copy pointers are set up in the order found by a move search; the D_80228B60..70 loop runs while i != 2,
-// which gives the original's bne end test.
-// Left: the original stores before incrementing in the Vtx copy loop and rebuilds the 0xB240.. offsets inside it,
-// keeps gCourseID in a3 and spills it (frame 0x40, not 0x28, here s2), and B50/B54 at the top also go through
-// registers there.
+// The zeroing runs are chained assignments (stored last to first: the first stores of a chain keep their addresses
+// in registers, the last goes through at). The Vtx copy is an index loop over D_80198368[k] (a pointer walk lets IDO
+// hoist the 0xB240.. offsets and blocks the load/store interleave). The D_80228DD8 and D_80228AE0 loops share their
+// counter, which keeps the first rolled and fully unrolls the second (one lui at per store). The D_80228B58 flag is
+// held in k. The loop counters' names decide the register choices throughout; they are from a search over each
+// loop's counter (the marker loop's inner counter n is a variable of its own).
 extern UnkStruct_801AE948 D_80198368[];
 extern Vtx D_80227788[4][4];
 extern s32 D_80227998;
@@ -236,58 +234,42 @@ void Hud_BlendColorSets(void);
 void func_801EED70(void) {
     s32 i;
     s32 j;
-    s8 flag;
-    UnkStruct_801AE948* gfxPool;
-    Vtx* d0;
-    Vtx* d1;
-    Vtx* d2;
-    Vtx* d3;
-    Vtx* s0;
-    Vtx* s1;
-    Vtx* s2;
-    Vtx* s3;
+    s32 k;
+    s32 n;
+    s32 pad[3]; // stack pad: the original's frame is 0x40
 
     if (D_80227998 != 0) {
         D_80227998 = 0;
     }
     Hud_BlendColorSets();
-    D_80228B54 = D_80228B50 = 0;
-    D_80228AA4 = 0;
-    for (i = 0; i < 2; i++) {
-        for (j = 0; j < 3; j++) {
-            gHudMarkers[i].unk0[j].unk14 = 0;
-            gHudMarkers[i].unk0[j].unk18 = 0;
-            gHudMarkers[i].unk0[j].unkC = 0.0f;
-            gHudMarkers[i].unk0[j].unk8 = 0.0f;
-            gHudMarkers[i].unk0[j].unk4 = 0.0f;
-            gHudMarkers[i].unk0[j].unk0 = 0.0f;
+    D_80228AA4 = D_80228B50 = D_80228B54 = 0;
+    for (j = 0; j < 2; j++) {
+        for (n = 0; n < 3; n++) {
+            gHudMarkers[j].unk0[n].unk14 = 0;
+            gHudMarkers[j].unk0[n].unk18 = 0;
+            gHudMarkers[j].unk0[n].unkC = 0.0f;
+            gHudMarkers[j].unk0[n].unk8 = 0.0f;
+            gHudMarkers[j].unk0[n].unk4 = 0.0f;
+            gHudMarkers[j].unk0[n].unk0 = 0.0f;
         }
     }
-    for (gfxPool = D_80198368; gfxPool < &D_80198368[2]; gfxPool++) {
-        d1 = gfxPool->unkB1C0;
-        d0 = gfxPool->unkB240;
-        s2 = D_80227788[2];
-        s3 = D_80227788[3];
-        d2 = gfxPool->unkB200;
-        d3 = gfxPool->unkB280;
-        s0 = D_80227788[0];
-        s1 = D_80227788[1];
-        do {
-            *d0++ = *s0++;
-            *d1++ = *s1++;
-            *d2++ = *s2++;
-            *d3++ = *s3++;
-        } while (s3 < D_80227788[4]);
+    for (k = 0; k < 2; k++) {
+        for (j = 0; j < 4; j++) {
+            D_80198368[k].unkB240[j] = D_80227788[0][j];
+            D_80198368[k].unkB1C0[j] = D_80227788[1][j];
+            D_80198368[k].unkB200[j] = D_80227788[2][j];
+            D_80198368[k].unkB280[j] = D_80227788[3][j];
+        }
     }
     gStartLightsState = 0;
     gStartCountdown = 60;
     if ((gCourseID == DOLPHIN_PARK) || (gGameModes == GMODE_STUNT)) {
-        flag = 1;
+        k = 1; // the flag is held in k (a separate s8 flag shifts every register after it)
     } else {
-        flag = 0;
+        k = 0;
     }
-    for (i = 0; i < gRiders; i++) {
-        D_80228B58[i] = flag;
+    for (j = 0; j < gRiders; j++) {
+        D_80228B58[j] = k;
     }
     if (gPlayers == ONE_PLAYER) {
         gStartLightsOffsetMax = 100;
@@ -301,10 +283,10 @@ void func_801EED70(void) {
     }
     gHudColorStep = gHudColorFrame = gHudMarkerColorStep = gHudMarkerColorFrame = 0;
     D_80228A98 = D_80228B78 = D_80228B7C = D_80228B80 = 0;
-    for (i = 0; i != 2; i++) {
-        D_80228B70[i] = 0;
-        D_80228B68[i] = 0;
-        D_80228B60[i] = 0;
+    for (j = 0; j != 2; j++) {
+        D_80228B70[j] = 0;
+        D_80228B68[j] = 0;
+        D_80228B60[j] = 0;
     }
     D_80228AA0 = 0;
     for (i = 0; i < gPlayers; i++) {
@@ -331,19 +313,17 @@ void func_801EED70(void) {
             gPortraitPos[i][j].y = gPortraitPos[i][j].unkC;
         }
     }
-    for (i = 0; i < 4; i++) {
-        D_80228DD8[i] = 0;
-        D_80228DC8[i] = 0;
-        D_80228DE8[i] = 1;
+    for (j = 0; j < 4; j++) {
+        D_80228DD8[j] = 0;
+        D_80228DC8[j] = 0;
+        D_80228DE8[j] = 1;
     }
-    D_80228AE0[0].unk0 = 0;
-    D_80228AE0[1].unk0 = 0;
-    D_80228AE0[2].unk0 = 0;
-    D_80228AE0[3].unk0 = 0;
-    D_80228A9C = 0;
+    for (j = 0; j < 4; j++) {
+        D_80228AE0[j].unk0 = 0;
+    }
     D_80228A94 = 0;
-    D_80228DFC = 0;
-    D_80228DF8 = 0;
+    D_80228A9C = 0;
+    D_80228DF8 = D_80228DFC = 0;
     for (i = 0; i < gPlayers; i++) {
         for (j = 0; j < gRiders; j++) {
             D_80228B88[i][j].unkC = 0;
@@ -363,9 +343,6 @@ void func_801EED70(void) {
         D_80228E00[i] = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801EED70.s")
-#endif
 
 // Set up the HUD projection matrices in the current Gfx pool.
 
@@ -380,11 +357,15 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 7828 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
-// original's operand order shows. The stunt-object search is a do-while guarded by D_801BFA40 > 0 that skips other
-// kinds with a goto to the increment (the original's skip path jumps to the loop test). Left: &D_801AEE20 is hoisted
-// into s8 here (the original rebuilds it at each use), so the saved registers shift; and IDO folds
-// `dirX * dz - dirZ * dx > 0.0f` into one compare here where the original keeps the sub.s and compares with 0.0f.
+// Score 5831 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
+// The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
+// D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
+// test). The two single-use crosses are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original
+// keeps the sub.s and compares the result with 0.0f, which only this spelling gives (odd spelling, same value).
+// Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift;
+// the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block), and 360 - unk2D4
+// is computed before the cross test (inside it there).
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -408,7 +389,7 @@ void func_801EF504(void) {
     f32 dz;
     f32 fwd;
     f32 cross;
-    s32 angle;
+    UnkStruct_801AEE20* rec;
     s32 diff;
     s32 step;
     f32 dist;
@@ -433,19 +414,21 @@ void func_801EF504(void) {
         }
         if (rider->unk2F0 != 0) {
             node = &D_801AEE20[rider->unkC];
-        } else if ((rider->unkC == rider->nearestRecord) && (rider->lapCount == rider->unk320)) {
+        } else if ((rider->unkC == rider->nearestRecord) && (rider->unk320 == rider->lapCount)) {
             node = &D_801AEE20[rider->unkC];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
+            rec = node;
             if (dx * node->unk70 + dz * node->unk74 > 0.0f) {
-                node = &D_801AEE20[node->unkA0];
+                node = &D_801AEE20[rec->unkA0];
             }
         } else {
             node = &D_801AEE20[rider->nearestRecord];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
+            rec = node;
             if (dx * node->unk70 + dz * node->unk74 > -256.0f) {
-                node = &D_801AEE20[node->unkA0];
+                node = &D_801AEE20[rec->unkA0];
             }
         }
         dx = node->unk0 - cam->eyeX;
@@ -468,11 +451,10 @@ void func_801EF504(void) {
         }
         fwd = dirX * dx + dirZ * dz;
         dot = fwd;
-        angle = func_801ED090(fwd);
-        rider->unk2D4 = angle;
-        cross = dirX * dz - dirZ * dx;
+        rider->unk2D4 = func_801ED090(fwd);
+        cross = dirX * dz + -(dirZ * dx); // odd spelling: keeps the sub.s (see the note)
         if (cross > 0.0f) {
-            rider->unk2D4 = 360 - angle;
+            rider->unk2D4 = 360 - rider->unk2D4;
         }
         diff = func_801ED388(rider->unk2D4, rider->unk2D0);
         step = diff / 8;
@@ -502,7 +484,7 @@ void func_801EF504(void) {
                     dx /= dist;
                     dz /= dist;
                 }
-                if ((cross < 0.0f) && (dirX * dz - dirZ * dx > 0.0f)) {
+                if ((cross < 0.0f) && (dirX * dz + -(dirZ * dx) > 0.0f)) {
                     dot = 1.0f;
                 } else {
                     dot = dirX * dx + dirZ * dz;
@@ -2839,10 +2821,17 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 11823 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
-// original's b-to-next). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here;
-// as dead stores, expression statements, register or volatile they stay deleted or turn into stores), so every temp
-// after the prologue is renumbered; our frame is 0xB0 against 0xB8.
+// Score 8370 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
+// count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
+// x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
+// 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements, register or volatile they stay
+// deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
+// where / 2.0f becomes a multiply.
+// The original reloads each stunt total after adding to it, reading through a register and storing through the
+// symbol; reads through a volatile pointer (FAKE, marked) give the reload.
+// Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3), and the
+// first store of each total goes through the register here.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2852,15 +2841,17 @@ extern s32 D_80228A94;
 
 // Draw the stunt-score popups (D_80228AE0) and add them to the stunt totals as they finish.
 void func_801FB514(Gfx** gdlp) {
+    s32 y;
     Gfx* gdl;
     UnkStruct_80228AE0* p;
     f32 f;
-    f32 g;
-    s32 w;
+    f32 g; // unused (its stack slot keeps the frame)
     s32 x;
-    s32 y;
-    s32 alpha;
     s32 n;
+    s32 w;
+    s32 alpha;
+    volatile s32* total; // FAKE: reads the stunt totals back after each store, as the original does
+    s32 pad; // stack pad: the original's frame is 0xB8
     s32 count;
     s32 k;
     s8* digit;
@@ -2868,7 +2859,8 @@ void func_801FB514(Gfx** gdlp) {
 
     gdl = *gdlp;
     f = (2 - D_80228D18) / (f32) 2;
-    g = 1.0f - f;
+    f = 1.0f - f;
+    if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
     D_80228D18++;
     if (D_80228D18 >= 2) {
         D_80228D14++;
@@ -2889,7 +2881,7 @@ void func_801FB514(Gfx** gdlp) {
         if (p->unk0 == 0) {
             continue;
         }
-        count = 0;
+        k = 0;
         if (p->unk8 < 4) {
             alpha = p->unk8 * 255 / 4;
         } else if (p->unk8 >= 20) {
@@ -2918,10 +2910,10 @@ void func_801FB514(Gfx** gdlp) {
                 gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
                 break;
         }
-        gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         y = p->unk10 + p->unk18 + 116;
         x += p->unkC;
+        gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
                             1 << 10);
         n = p->unk4;
@@ -2932,13 +2924,13 @@ void func_801FB514(Gfx** gdlp) {
             if (n == 0) {
                 break;
             }
-            count++;
+            k++;
             digit--;
-            if (count >= 5) {
+            if (k >= 5) {
                 break;
             }
         }
-        count++;
+        count = k + 1;
         if (count >= 6) {
             count = 5;
         }
@@ -2965,26 +2957,30 @@ void func_801FB514(Gfx** gdlp) {
         }
         p->unk8++;
         if (p->unk8 >= 23) {
-            D_801C26D0 += p->unk4;
-            if (D_801C26D0 >= 100000) {
+            total = &D_801C26D0;
+            D_801C26D0 = *total + p->unk4;
+            if (*total >= 100000) {
                 D_801C26D0 = 99999;
             }
             switch (p->unk0) {
                 case 1:
-                    D_801C26D4 += p->unk4;
-                    if (D_801C26D4 >= 100000) {
+                    total = &D_801C26D4;
+                    D_801C26D4 = *total + p->unk4;
+                    if (*total >= 100000) {
                         D_801C26D4 = 99999;
                     }
                     break;
                 case 2:
-                    D_801C26DC += p->unk4;
-                    if (D_801C26DC >= 100000) {
+                    total = &D_801C26DC;
+                    D_801C26DC = *total + p->unk4;
+                    if (*total >= 100000) {
                         D_801C26DC = 99999;
                     }
                     break;
                 case 3:
-                    D_801C26D8 += p->unk4;
-                    if (D_801C26D8 >= 100000) {
+                    total = &D_801C26D8;
+                    D_801C26D8 = *total + p->unk4;
+                    if (*total >= 100000) {
                         D_801C26D8 = 99999;
                     }
                     break;
