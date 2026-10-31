@@ -650,13 +650,15 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 7024 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
-// held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); both loops walk e by pointer; the
-// speed is read through D_80228120 each time (no local); the first height adds the wobble to the base (operand order
-// found by the permuter). Left: frame 0xB8 here vs 0xB0 (the original has two fewer locals above vec and keeps center
-// on the stack at sp+0xA8) and register allocation. The (s32) r makes the second % 10 signed (div, as in the
-// original); with both % 10 unsigned IDO treats the two 10s as one constant and no longer keeps 10U in s5 for the
-// first loop.
+// Score 6728 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); the sum adds them in the original's
+// operand order (18, unk8, 16, 17); both loops walk e by pointer; the speed is read through D_80228120 each time (no
+// local); D_802287A8 is set before runner->frame is read, so frame is loaded once; the first height adds the wobble
+// to the base (operand order found by the permuter). Left: frame 0xB8 here vs 0xB0 (the original has two fewer
+// locals above vec and keeps center on the stack at sp+0xA8, which frees fp for D_80228190 in both loops); the
+// original also keeps runner->step in v1 for step->duration (a step local gives that but costs a slot: 7019); and
+// register allocation. The (s32) r makes the second % 10 signed (div, as in the original); with both % 10 unsigned
+// IDO treats the two 10s as one constant and no longer keeps 10U in s5 for the first loop.
 // i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Payload1* center;
@@ -675,8 +677,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
     if (i != 2) {
         return;
     }
-    i = runner->frame - 30;
     D_802287A8 = 24;
+    i = runner->frame - 30;
     if (runner->frame == 1) {
         func_800AB92C();
         for (i = 0, e = D_80228190; i < 24; i++, e++) {
@@ -729,7 +731,7 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             } else {
                 r = 0;
             }
-            e->unk8 = (e->unk8 + c17 + j + (s32) r + 1) % 10; // (s32): a signed % 10, see above
+            e->unk8 = ((s32) r + e->unk8 + j + c17 + 1) % 10; // (s32): a signed % 10, see above
             if (i > 0) {
                 for (j = 0; j < 3; j++) {
                     vec[j] = D_80228190[0].unkC[j] - e->unkC[j];
