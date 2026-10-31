@@ -1264,9 +1264,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 10353 of 60500: frame, the row loops and the first skirt loop match in shape. Left: callee-saved register
-// choice (vtx, lo, sx and sz land in other s registers), and the second skirt loop ends on idx != &D_80192460[7]
-// (with < IDO unrolls it by two; the original compares with sltu and does not unroll)
+// Score 8938 of 60500: frame, the row loops, both skirt loops and the first skirt loop match in shape; the second
+// skirt loop compares with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). Left: callee-saved
+// register choice (vtx, lo, sx and sz land in other s registers).
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
     f32 dx;
@@ -1409,7 +1409,9 @@ void func_80050204(s32 view, Vtx* arena) {
     k = (f32) (D_800D4720 - D_80192498) * 0.866f;
     ox = SysUtils_Round(k * dx);
     oz = SysUtils_Round(k * dz);
-    for (idx = &D_80192460[1]; idx != &D_80192460[7]; idx++) {
+    // FAKE: D_80192464 is &D_80192460[1]; through that symbol IDO does not carry the first loop's addresses into
+    // this loop in saved registers (the original rebuilds both bounds here).
+    for (idx = D_80192464; idx < &D_80192464[6]; idx++) {
         v = &arena[*idx];
         v->v.ob[0] += ox;
         v->v.ob[2] += oz;
