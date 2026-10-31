@@ -1312,7 +1312,7 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 36337 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
+// Score 36313 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
 // dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C); table B's draw loops
 // reload D_801C0840[i] for the env alpha where the original reuses the loaded value, and constants (G_CULL_BACK, the
 // gate lists) sit in other registers. Each search sets its counter to D_801BB120 (one load, CSE'd into a0 for all
@@ -1324,12 +1324,13 @@ void func_800B4ABC(Gfx** gdl);
 // copy-propagated away; `e->unk9C == 1U` in the second test stops one hoist and is kept, marked); its first search
 // walks through cur (s0), 43620 at the time. The three SysUtils_MatrixLookAt calls pass an int 0 for the first up
 // component (a respelling search: the same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f).
-// Three pairs of statements share a line (line-join search: IDO schedules by source line, 40695 -> 40305).
+// Three pairs of statements share a line (line-join search: IDO schedules by source line, 40695 -> 40305). cam is
+// declared first (a declaration search, 36313).
 void func_8006E674(Gfx** gdl) {
+    camera_unk_1* cam;
     s32 padA[2]; // stack pad
     s32 n;
     s32 slot;
-    camera_unk_1* cam;
     UnkStruct_80192690* craft;
     UnkStruct_801AEE20* e;
     UnkStruct_801AEE20* e2;
