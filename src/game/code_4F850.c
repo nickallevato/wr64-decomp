@@ -981,18 +981,23 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 868 of 134600: the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after
-// the D_801CE73C load, with the D_800DABA0 address (lui, addu) after it and the addu in the beq delay slot; here the
-// step follows the rider store and the address is scheduled into the copy (one nop more), and the switch(arg0) temp
-// takes 0x18 (0x1C there). A real pointer (ap stepped after the copy) puts the step in the copy block and the temp at
-// 0x1C, but it is set before the loop guard (the original's after it, a derived induction variable) and the copy's
-// first load moves into a beqzl (1110). With D_801CE740 defined in the file the paired unk2 stores share one lui at;
-// cases 2 and 3 clear unk2 in do-while loops (a for loop of four is unrolled with [1] stored before [0], and the loop
-// of eight is unrolled with the first store in the delay slot). The chained D_801CE760 store shares one -1 as in the
-// original. Reading alts[i] through the pointer ap gives the display-list loop's reload after each store, and alts
-// declared after dl puts it at 0x40 as in the original. The order of each chained alts store (alts[1] = alts[2],
-// alts[3] = alts[4], alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the original's store order and
-// the registers for the 1.
+// Score 868 of 134600: the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after the
+// D_801CE73C load, with the D_800DABA0 address (lui, addu) after it and the addu in the beq delay slot; here the step
+// follows the rider store and the address is scheduled into the copy (one nop more), and the switch(arg0) temp takes
+// 0x18 (0x1C there). A real pointer (ap stepped after the copy) puts the step in the copy block and the temp at 0x1C,
+// but it is set before the loop guard (the original's after it, a derived induction variable) and the copy's first load
+// moves into a beqzl (1110). With D_801CE740 defined in the file the paired unk2 stores share one lui at; cases 2 and 3
+// clear unk2 in do-while loops (a for loop of four is unrolled with [1] stored before [0], and the loop of eight is
+// unrolled with the first store in the delay slot). The chained D_801CE760 store shares one -1 as in the original.
+// Reading alts[i] through the pointer ap gives the display-list loop's reload after each store, and alts declared after
+// dl puts it at 0x40 as in the original. The order of each chained alts store (alts[1] = alts[2], alts[3] = alts[4],
+// alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the original's store order and the registers for the
+// 1. IDO puts a derived induction variable's step right after its last use (with the rider store moved after the copy,
+// as a test, the step lands in the copy block), so the original seems to use D_801CE740[i] or its pointer in that
+// block. Tried, none lower: the store in both arms of the unk2 test, the copy written field by field, dst as an
+// explicit pointer (8898), ap set from &D_801CE740[i] each pass, empty tests at every statement, merging any two of i,
+// count, models, rider and offset, and joining any two lines. The whole loop on one source line gives 728 (IDO
+// schedules by line), which is not kept.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
