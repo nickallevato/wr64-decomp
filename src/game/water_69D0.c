@@ -772,8 +772,11 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 3295 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping
-// (hb = v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). Adding the new velocity to
+// Score 2120 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping
+// (hb = v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines).
+// The second pass's end is p + (N << 1) - i: the original computes it from N << 4 and i << 3 apart from q's index
+// (with N * 2 the two share 2N - i). An empty test after the first pair's lookups (FAKE, from a search over where an
+// empty test lowers the score) gives the original's order for them. Adding the new velocity to
 // the height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before
 // end in the second pass and end as p + 2N + i in the first follow the original's address arithmetic. The velocity
 // damping reads the velocity into hb first (v -= v >> D_800D4730 as hb = v; v = hb - (hb >> ...)) in the first
@@ -798,6 +801,7 @@ void func_8004EAA4(void) {
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
+        if (a && a && a) {} // FAKE: an empty test that splits the block (the original loads p->unk0 first)
         hb = b->unk0;
         mean = (ha + hb) >> D_800D4724;
         diff = (hb - ha) >> D_800D472C;
@@ -839,7 +843,7 @@ void func_8004EAA4(void) {
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         q = p + (((gWaterWindowN * 2) - i) + 1);
-        for (end = p + ((gWaterWindowN * 2) - i); p < end;) {
+        for (end = (p + (gWaterWindowN << 1)) - i; p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
             hb = b->unk0;
