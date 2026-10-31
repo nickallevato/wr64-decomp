@@ -2821,14 +2821,17 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 9285 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 8370 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
 // count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
 // x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
 // 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements, register or volatile they stay
 // deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
 // where / 2.0f becomes a multiply.
-// Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3).
+// The original reloads each stunt total after adding to it, reading through a register and storing through the
+// symbol; reads through a volatile pointer (FAKE, marked) give the reload.
+// Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3), and the
+// first store of each total goes through the register here.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2847,7 +2850,8 @@ void func_801FB514(Gfx** gdlp) {
     s32 n;
     s32 w;
     s32 alpha;
-    s32 pad[2]; // stack pad: the original's frame is 0xB8
+    volatile s32* total; // FAKE: reads the stunt totals back after each store, as the original does
+    s32 pad; // stack pad: the original's frame is 0xB8
     s32 count;
     s32 k;
     s8* digit;
@@ -2953,26 +2957,30 @@ void func_801FB514(Gfx** gdlp) {
         }
         p->unk8++;
         if (p->unk8 >= 23) {
-            D_801C26D0 += p->unk4;
-            if (D_801C26D0 >= 100000) {
+            total = &D_801C26D0;
+            D_801C26D0 = *total + p->unk4;
+            if (*total >= 100000) {
                 D_801C26D0 = 99999;
             }
             switch (p->unk0) {
                 case 1:
-                    D_801C26D4 += p->unk4;
-                    if (D_801C26D4 >= 100000) {
+                    total = &D_801C26D4;
+                    D_801C26D4 = *total + p->unk4;
+                    if (*total >= 100000) {
                         D_801C26D4 = 99999;
                     }
                     break;
                 case 2:
-                    D_801C26DC += p->unk4;
-                    if (D_801C26DC >= 100000) {
+                    total = &D_801C26DC;
+                    D_801C26DC = *total + p->unk4;
+                    if (*total >= 100000) {
                         D_801C26DC = 99999;
                     }
                     break;
                 case 3:
-                    D_801C26D8 += p->unk4;
-                    if (D_801C26D8 >= 100000) {
+                    total = &D_801C26D8;
+                    D_801C26D8 = *total + p->unk4;
+                    if (*total >= 100000) {
                         D_801C26D8 = 99999;
                     }
                     break;
