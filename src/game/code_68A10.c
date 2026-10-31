@@ -867,7 +867,7 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 30254 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 29254 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare); register allocation differs from the start: isHuman stays in
 // s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
 // into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
@@ -1248,7 +1248,7 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
                 D_800E6D64->unk14 =
-                    (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.5f * D_801D79E8);
+                    (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.50f * D_801D79E8); // 0.50f: its own constant (respelling search)
                 D_800E6D64->unk10 = (Math_FloatRand(0.5f) + 1.0f) * height;
                 n++;
                 if (n >= count) {
@@ -1311,7 +1311,7 @@ void func_800B08F8(s32 arg0) {
                             }
                             len = (split < (1.0f - split)) ? split : (1.0f - split);
                             len = (2.0f * (((f / 3) - 1.0f) * len)) + 1.0f;
-                            sx = (24.0f + rate) - (len * 8.0f);
+                            sx = (24.0f + rate) - (len * 8); // int 8 (respelling search)
                             a = (angle / 360.0f) * 4096.0f;
                             D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
                             D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
