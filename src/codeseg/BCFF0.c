@@ -2818,10 +2818,12 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 11823 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
-// original's b-to-next). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here;
-// as dead stores, expression statements, register or volatile they stay deleted or turn into stores), so every temp
-// after the prologue is renumbered; our frame is 0xB0 against 0xB8.
+// Score 10643 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next), frame 0xB8. The alpha is held in k, the digit loop's counter (from a search over the
+// locals' names). The original keeps the unused (2 - D_80228D18) / 2.0f and 1.0f - f (IDO deletes them here;
+// as dead stores, expression statements, register or volatile they stay deleted or turn into stores; an empty
+// `if (f != f) {}` after `f = 1.0f - f` keeps both, in f0 as there, but costs more elsewhere), so every temp after the
+// prologue is renumbered.
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2838,7 +2840,7 @@ void func_801FB514(Gfx** gdlp) {
     s32 w;
     s32 x;
     s32 y;
-    s32 alpha;
+    s32 pad[3]; // stack pad: the original's frame is 0xB8
     s32 n;
     s32 count;
     s32 k;
@@ -2870,11 +2872,11 @@ void func_801FB514(Gfx** gdlp) {
         }
         count = 0;
         if (p->unk8 < 4) {
-            alpha = p->unk8 * 255 / 4;
+            k = p->unk8 * 255 / 4; // the alpha, held in k (the digit loop's counter)
         } else if (p->unk8 >= 20) {
-            alpha = (23 - p->unk8) * 255 / 4;
+            k = (23 - p->unk8) * 255 / 4;
         } else {
-            alpha = 255;
+            k = 255;
         }
         gDPPipeSync(gdl++);
         switch (p->unk0) {
@@ -2882,19 +2884,19 @@ void func_801FB514(Gfx** gdlp) {
                 img = D_80246D0;
                 w = 32;
                 x = 144;
-                gDPSetEnvColor(gdl++, 255, 133, 255, alpha);
+                gDPSetEnvColor(gdl++, 255, 133, 255, k);
                 break;
             case 2:
                 img = D_8024858;
                 w = 40;
                 x = 140;
-                gDPSetEnvColor(gdl++, 100, 255, 100, alpha);
+                gDPSetEnvColor(gdl++, 100, 255, 100, k);
                 break;
             case 3:
                 img = D_8024A40;
                 w = 32;
                 x = 144;
-                gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
+                gDPSetEnvColor(gdl++, 255, 255, 128, k);
                 break;
         }
         gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
