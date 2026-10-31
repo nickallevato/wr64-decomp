@@ -1089,9 +1089,9 @@ void Water_FillNoise(s32 amplitude);
  */
 
 #ifdef NON_MATCHING
-// Score 480 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
+// Score 205 of 52100: the frame (0x50) and every stack slot agree with the copy pointers declared in a block of
 // their own and the ring loop's counters in the pool loop's body; the ring step reuses i (the colour loops' counter,
-// dead by then; from a search over variable merges). bot and b also hold the two wrap counts (nu, nv) and
+// dead by then; from a search over variable merges), and the copy loop sets dst before src. bot and b also hold the two wrap counts (nu, nv) and
 // set also walks the lower edge, which lowers their priority as in the original, where the wrap counts sit in
 // caller-saved registers and are spilled across sqrtf. The sqrt(3) scale is "* 2" and D_801924B8 is set before
 // D_801924B0; the ring chains are written tc[0] = tc[1] for j, b and top (from a search over each pair's order), and
@@ -1102,8 +1102,8 @@ void Water_FillNoise(s32 amplitude);
 // different symbol, so IDO builds the pool loop's base on its own, and the bytes are the same). Through D_80192464[0..5]
 // in the pool loop instead, the base is 0x80192464 (940); an index copy loop gives its pointers among the
 // gWaterWindow stores (1750).
-// Left: the waterLevel copy in a2 (a3 there) and the wrap count in a1 (a2 there); the copy loop's index shift is
-// scheduled one slot early; the ring loops' temporaries.
+// Left: the waterLevel copy in a2 (a3 there) and the wrap count in a1 (a2 there); D_801924BC's address in v0 (v1
+// there); the ring loops' temporaries.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
@@ -1136,7 +1136,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         s32* src;
         s32* dst;
 
-        for (src = &D_800D4684[set], dst = D_80192464 - 1; dst < &D_80192464[12];) {
+        for (dst = D_80192464 - 1, src = &D_800D4684[set]; dst < &D_80192464[12];) {
             *dst++ = *src++;
         }
     }
