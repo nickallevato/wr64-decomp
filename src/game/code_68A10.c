@@ -867,14 +867,15 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 27601 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 27546 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
 // spilled, and the float registers and scheduling of the spawn loops differ. The original keeps lod and count in
 // one register (s2), but writing count as lod costs 1400. Writing 1.00f in the cosA * cosA < 1 test and its sqrtf
 // argument, and the cross-product test through a local (cross = ...; if (cross >= 0.0f)), gives the original's
-// compares exactly (c. 61 = 61, the 1.0f materialised once, the sub.s kept), but scores 28830.
+// compares exactly (c. 61 = 61, the 1.0f materialised once, the sub.s kept), but scores 28830. Two independent
+// store orders (unk0 before unk8 in the record update, unk18 after unk20 in the spawn) are from a move search.
 void func_800B08F8(s32 arg0) {
     s32 twoViews;
     s32 special;
@@ -1031,8 +1032,8 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk30 = 128.0f;
             }
             D_800E6D64->unk20 += D_800E6D64->unk2C;
-            D_800E6D64->unk8 = (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
             D_800E6D64->unk0 = (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
+            D_800E6D64->unk8 = (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
             D_800E6D64->unkC = (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
             D_800E6D64->unk14 = (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.5f * D_801D79E8);
             if (D_800E6D60->unk1C54 != 0) {
@@ -1244,8 +1245,8 @@ void func_800B08F8(s32 arg0) {
                     D_800E6D64->unk34 = rate;
                     depth -= 4.0f;
                 }
-                D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk20 = depth;
+                D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk0 =
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
                 D_800E6D64->unk8 =
