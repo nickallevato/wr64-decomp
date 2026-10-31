@@ -4,8 +4,8 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1302%20%2F%201348-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-96.6%25-0b6e63?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1303%20%2F%201348-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-96.7%25-0b6e63?style=for-the-badge)
 ![bytes](https://img.shields.io/badge/code%20bytes-78.0%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
@@ -43,19 +43,19 @@ neighbour became its own symbol.
 |---|---|--:|---|
 | `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | other | handwritten assembly and loose segments | 55 / 55 | `████████████████████` 100% |
-| `src/audio` | sequence and sound playback | 227 / 228 | `███████████████████▉` 99.6% |
+| `src/audio` | sequence and sound playback | 228 / 228 | `████████████████████` 100% |
 | `src/overlays` | courses and menu screens | 148 / 151 | `███████████████████▌` 98.0% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 210 / 219 | `███████████████████▏` 95.9% |
 | `src/sys` | boot, threads, memory | 35 / 37 | `██████████████████▉░` 94.6% |
 | `src/game` | race logic, riders, camera, water | 470 / 501 | `██████████████████▊░` 93.8% |
-| **Total** | | **1302 / 1348** | **96.6%** |
+| **Total** | | **1303 / 1348** | **96.7%** |
 
 Every function, sized by its bytes and grouped by area, then by source file (the thin lines). Green is
 matched C, amber is still assembly. Drawn by `tools/fork/progress_map.py` from a full build.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/progress-map-dark.svg">
-  <img alt="Map of all 1348 functions: 1302 matched (green), 46 still assembly (amber)" src="docs/progress-map.svg" width="100%">
+  <img alt="Map of all 1348 functions: 1303 matched (green), 45 still assembly (amber)" src="docs/progress-map.svg" width="100%">
 </picture>
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
@@ -69,7 +69,7 @@ builds with those attempts, so most of the game can already be read and changed 
 - [ ] Race, riders, camera and water (`src/game`): **in progress**
 - [x] Courses and menu screens (`src/overlays`): all but three set-asides
 - [x] Loose segments and handwritten assembly: complete
-- [ ] The last set-asides in game, codeseg, sys and audio: **in progress** (milestone 5; see [FORK.md](FORK.md#milestone-5-in-progress))
+- [ ] The last set-asides in game, codeseg, sys and the overlays: **in progress** (milestone 5; see [FORK.md](FORK.md#milestone-5-in-progress))
 - [ ] Names, structs and documentation everywhere: the "readable" half of the job
 
 ## Building

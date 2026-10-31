@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
-<title>1302 of 1348 functions matched</title>
+<title>1303 of 1348 functions matched</title>
 <rect width="1000" height="620" rx="6" fill="#fbfbf9"/>
 <rect x="6.0" y="24.0" width="84.1" height="92.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="6.0" y="116.2" width="84.1" height="81.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -879,7 +879,7 @@
 <rect x="642.3" y="400.8" width="17.5" height="30.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="567.4" y="431.3" width="19.1" height="22.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="567.4" y="454.2" width="19.1" height="22.3" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="567.4" y="476.5" width="19.1" height="15.7" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="567.4" y="476.5" width="19.1" height="15.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="567.4" y="492.1" width="19.1" height="14.6" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="586.5" y="431.3" width="18.7" height="13.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="605.2" y="431.3" width="15.6" height="13.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1534,7 +1534,7 @@
 <text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 470/501</text>
 <text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 210/219</text>
 <text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 148/151</text>
-<text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 227/228</text>
+<text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 228/228</text>
 <text x="733.5" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/libultra</text>
 <text x="878.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">other 55/55</text>
 <text x="878.6" y="538.0" font-size="12" font-weight="600" fill="#1c2421">src/sys 35/37</text>
