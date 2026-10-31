@@ -694,6 +694,14 @@ void SaveLoad_UpdateMessageBox(void) {
 // for the argument, one instruction more) and one lui t0, 0x600 the original repeats before a display-list block.
 // An empty do {} while (0) at the end of the D_i13_802C8DC8 block (permuter) gives that lui, but with y's extra
 // li still there the function is then one instruction longer (225).
+// What the original does (mid3): y lives in memory, not in a register. With `volatile s32 y` and the x = 0 FAKE
+// moved before the first panel call, plus the do-while above, every register matches (1896): li t8, 186; sw t8, y;
+// ... lw a3, y, where the original's as1 forwards the stored t8 into a3 (li a3; sw a3). Without volatile IDO
+// promotes y (also as y[1], (&y)[0] or *(volatile s32*)&y = x) and gives it a3 directly, one temporary short.
+// `y = 112` before the drawRow1 test and `y += 74` at the join stops the folding (uopt then has y in a3, 3829);
+// x = 112 there and `x += 74; y = x;` gives the original's store order (sw a3, y first) with x in a3, the
+// temporaries one short (3220); with x = 112 before the first gSPMatrix instead, everything from the join on matches
+// (with the do-while), but x's dead def takes t2 there and the flags move to t3..t5/ra (715).
 Gfx* func_i13_802C711C(Gfx* gdl) {
     s32 i;
     s32 y;

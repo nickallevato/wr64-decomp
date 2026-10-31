@@ -998,6 +998,10 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 // explicit pointer (8898), ap set from &D_801CE740[i] each pass, empty tests at every statement, merging any two of i,
 // count, models, rider and offset, and joining any two lines. The whole loop on one source line gives 728 (IDO
 // schedules by line), which is not kept.
+// mid3: a read of D_801CE740[i] after the copy (rider = D_801CE740[i].rider before the D_801CE73C tests) puts the
+// step in the copy block, after the D_801CE73C load, as in the original, but keeps an lh (1283). A separate local
+// pointer for D_801CE740[i] moves the switch temp to 0x1C but grows the frame by 8 (1244); ap reused for it changes
+// nothing.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 

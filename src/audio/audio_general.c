@@ -1072,9 +1072,6 @@ void func_800C1B98(void) {
 }
 
 // https://decomp.me/scratch/io8AQ
-#ifdef NON_MATCHING
-// Score 605 of 11600: the case 0 and default branches of the switch get the call's lui a0 in their
-// delay slots (beqzl, b); the original leaves both as nops.
 void func_800C1BD8(f32 arg0, f32 arg1) {
     f32 var_f0;
     s8 var_a1;
@@ -1093,10 +1090,7 @@ void func_800C1BD8(f32 arg0, f32 arg1) {
             }
             AudioThread_QueueCmdF32(0x01000700U, var_f0);
         } else {
-            var_a1 = 0x40;
             switch (D_801D7DEC[0] + D_801D7DEC[1] * 2) {
-                case 0:
-                    break;
                 case 1:
                     var_f0 *= 0.8f;
                     var_a1 = 0x20;
@@ -1107,6 +1101,10 @@ void func_800C1BD8(f32 arg0, f32 arg1) {
                     break;
                 case 3:
                     var_f0 *= 0.3f;
+                    // fallthrough
+                case 0:
+                default:
+                    var_a1 = 0x40;
                     break;
             }
             AudioThread_QueueCmdS8(0x03000700U, var_a1);
@@ -1122,9 +1120,6 @@ void func_800C1BD8(f32 arg0, f32 arg1) {
     }
     func_800C1B98();
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_general/func_800C1BD8.s")
-#endif
 
 void func_800C1DA8(void) {
     if (D_800E7C94 == 7) {
