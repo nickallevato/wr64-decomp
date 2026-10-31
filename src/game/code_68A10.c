@@ -1550,12 +1550,13 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 14269 of 124000: same blocks, display-list commands and loops (calls and branches now agree). The stack pads give the original's frame
-// (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. gdlh is read after the first command is
-// stored through gdl (the original reloads D_801AE94C there). The first command is stored through *gdl before *gdl
-// is advanced (the original stores the advanced pointer after both words; a local copy of *gdl gives exactly that
-// but costs 1700 elsewhere). Left: register allocation and scheduling (the original keeps more command words in
-// saved registers; its first-loop counter is s4 and the D_1048468 address is set after the loop guard).
+// Score 11621 of 124000: same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
+// through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
+// command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
+// D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here). Left: register allocation and
+// scheduling (the original keeps more command words in saved registers; its first-loop counter is s4 and the
+// D_1048468 address is set after the loop guard).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1569,11 +1570,13 @@ void func_800B305C(Gfx** gdl) {
     Vtx* vtx;
     Gfx* gdlh;
     s32 pad3[1]; // stack pad
+    Gfx* gfx;
 
     D_801D7B38 = osGetTime();
     // The effects go into their own display list at D_801AE94C, called from here.
-    gSPDisplayList(*gdl, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
-    (*gdl)++;
+    gfx = *gdl;
+    gSPDisplayList(gfx++, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
+    *gdl = gfx;
     gdlh = D_801AE94C;
     gSPDisplayList(gdlh++, &D_10514D0);
     view = D_800DAB2C * 2;
@@ -1630,7 +1633,7 @@ void func_800B305C(Gfx** gdl) {
     // The unk1A00 squares, textured by their unk24.
     for (i = 0; i < D_801D0790; i++) {
         D_800E6D60 = &D_801D0798[i];
-        D_800E6D78 = D_801D0798[i].unk1A00;
+        D_800E6D78 = D_800E6D60->unk1A00;
         gDPPipeSync(gdlh++);
         if (D_800E6D60->unk1C58 != 0) {
             gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
