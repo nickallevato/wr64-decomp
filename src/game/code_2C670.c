@@ -279,12 +279,16 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 42309 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
-// default, written first, as the table's entry 0 and its block order show). Left: the original keeps a zero
-// (probably the edge index i) live in a1 from the D_801CE638 == 21 test on, and rematerialises it at every loop
-// exit, which gives each capped loop its "bnez / b exit" break shape; putting i = 0 there here did not
-// reproduce it. Registers differ throughout (src2 lives in s2, &gCourseID in ra) and the frame is 0x90, not 0xA0.
+// Score 41533 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
+// default, written first, as the table's entry 0 and its block order show). The declarations follow the original's
+// stack homes (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C,
+// things 0x48, table 0x30; the pad stands for four words above them), which gives its frame (0xA0). t is zeroed
+// right after the D_801CE638 == 21 return and the pts loop's i = 0 sits before its test, as the original sets both.
+// Left: the original also keeps a zero (the edge index i) live in a1 from that return on and rematerialises it at
+// every loop exit, which gives each capped loop its "bnez / b exit" break shape (16 missing b's); i = 0 there spills
+// i to its home here (43143). Registers differ throughout (src2 lives in s2, &gCourseID in ra).
 void func_80071E70(void) {
+    s32 pad[4]; // stack pad
     s32 kind;
     s32 angle;
     s32 difficulty;
@@ -297,14 +301,14 @@ void func_80071E70(void) {
     CourseRecordSrc* list1;
     CourseRecordSrc* list2;
     CourseRecordSrc* rec;
-    s32 type;
-    CourseBuoySrc* buoys;
     CourseObjectSrc* objects;
-    s16* edge;
-    s32 t;
     CourseRingSrc* rings;
+    CourseBuoySrc* buoys;
+    s16* edge;
     s16* pts;
     CourseThingSrc* things;
+    s32 type;
+    s32 t;
     s32 i;
     s32 n;
     CourseBuoySrc* b;
@@ -462,6 +466,7 @@ void func_80071E70(void) {
     if (D_801CE638 == 21) {
         return;
     }
+    t = 0;
     if (gGameModes == GMODE_2P_VS) {
         D_801C1F90 = *D_800D62D4[gCourseID];
         D_801C1FBC = 0.0f;
@@ -549,7 +554,7 @@ void func_80071E70(void) {
     }
 
     // Table B (and its two alternatives): the records, chained in list order.
-    for (t = 0; t < 3; t++) {
+    for (; t < 3; t++) {
         switch (t) {
             case 0:
                 table = D_801AEE20;
@@ -872,8 +877,8 @@ void func_80071E70(void) {
             i++;
         } while ((edge[i * 2] != -1) || (edge[i * 2 + 1] != -1));
     }
+    i = 0;
     if ((pts[0] != -1) || (pts[2] != -1)) {
-        i = 0;
         do {
             if (D_801BC938 >= 256) {
                 break;
