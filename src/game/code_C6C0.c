@@ -6326,16 +6326,18 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 3336 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// Score 1531 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
 // separate unk16D0 = 0 stores; calls and branches agree. The first player's camera is written through
 // gCameraPerspective[D_80223930] directly and the second's through cam (the permuter found the first): with cam in
-// both, IDO moves dx and dz to a1/a3 early and the registers after differ. The middle y of the C14..C34 block goes
-// through home, whose address use keeps it in memory: the original stores it to its stack slot (sp+0x20, which also
-// gives the 0x50 frame without a pad) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in
-// count, with unkC7E stored first. The zero literals written as 0 and .0f give the original's separate zero loads in
-// three of the compares. Left: dx/dz in $f2/$f0 ($f16/$f14 there); in the C14..C34 block the doubles in $f0/$f12
-// ($f14/$f18 there) and the old C14/C20 values loaded late; the zero of the unk16B4 test reused in the unk16D0 test,
-// where the original loads it again for each compare.
+// both, IDO moves dx and dz to a1/a3 early and the registers after differ. In the C14..C34 block the old values are
+// read into z and len before each new position is computed (the original loads them early; from a search over which
+// of the six to read ahead, the permuter found the first), and the middle y goes through home, whose address use
+// keeps it in memory: the original stores it to its stack slot (sp+0x20, which also gives the 0x50 frame without a
+// pad) and reloads it for both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E stored first.
+// The zero literals written as 0 and .0f give the original's separate zero loads in three of the compares. Left:
+// dx/dz in $f2/$f0 ($f16/$f14 there) and the float registers of the speed block after; the old C18 is loaded with the
+// others there; the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each
+// compare.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     camera_unk_1* cam;
@@ -6399,20 +6401,25 @@ void func_80065C18(s32 arg0) {
         rider->unk16B4 = 0;
     }
     if (gRiderGameModes != PAUSE_MODE) {
+        z = rider->unkC14;
+        len = rider->unkC20;
         x = rider->unk44.x + (0.1806645 * rider->unk78) + (-26.9998535 * rider->unk6C);
-        y = x - rider->unkC14;
+        y = x - z;
         rider->unkC14 = x;
-        rider->unkC2C = y - rider->unkC20;
+        rider->unkC2C = y - len;
         rider->unkC20 = y;
+        len = rider->unkC24;
         x = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
         (&home)[0] = x - rider->unkC18; // FAKE: y in memory, as the original spills it
         rider->unkC18 = x;
-        rider->unkC30 = home - rider->unkC24;
+        rider->unkC30 = home - len;
         rider->unkC24 = home;
+        z = rider->unkC1C;
+        len = rider->unkC28;
         x = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
-        y = x - rider->unkC1C;
+        y = x - z;
         rider->unkC1C = x;
-        rider->unkC34 = y - rider->unkC28;
+        rider->unkC34 = y - len;
         rider->unkC28 = y;
     }
     count = 0;
