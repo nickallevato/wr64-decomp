@@ -650,16 +650,17 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 5103 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// Score 4195 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
 // held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); the sum adds them in the original's
 // operand order (18, unk8, 16, 17); both loops walk e by pointer; the speed is read through D_80228120 each time (no
 // local); D_802287A8 is set before runner->frame is read, so frame is loaded once; step keeps runner->step (v1 in
 // the original) for step->duration; f / 24.0f is written out (no local); the first height adds the wobble to the base
-// (operand order found by the permuter). The FAKE empty test (permuter) makes IDO keep &D_80228190 in fp and leave
-// center in its stack home, as the original does (6728 without it). Left: frame 0xB8 here vs 0xB0 (center sits at
-// sp+0xA8 there, 0xB4 here: the original has fewer locals) and register allocation. The (s32) r makes the second
-// % 10 signed (div, as in the original); with both % 10 unsigned IDO treats the two 10s as one constant and no longer
-// keeps 10U in s5 for the first loop.
+// (operand order found by the permuter); center is set after step and vec[2] after vec[0] (statement-move search).
+// The FAKE empty test (permuter) makes IDO keep &D_80228190 in fp and leave center in its stack home, as the
+// original does (6728 without it). Left: frame 0xB8 here vs 0xB0 (center sits at sp+0xA8 there, 0xB4 here: the
+// original has fewer locals) and register allocation. The (s32) r makes the second % 10 signed (div, as in the
+// original); with both % 10 unsigned IDO treats the two 10s as one constant and no longer keeps 10U in s5 for the
+// first loop.
 // i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkA95D0_Payload1* center;
@@ -673,8 +674,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
     UnkStruct_801DB0E4_arg0* e;
     s32 c17;
 
-    center = &runner->obj->u.p1;
     step = runner->step;
+    center = &runner->obj->u.p1;
     i = step - D_802241E0;
     if (i != 2) {
         return;
@@ -756,8 +757,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             for (j = 0; j < 3; j++) {
                 e->unkC[j] += e->unk14[j] * ((f32*) D_80228120)[i];
             }
-            vec[2] = 0.0f;
             vec[0] = center->unk0[0] - e->unkC[0];
+            vec[2] = 0.0f;
             vec[1] = 1200.0f;
             mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
             for (j = 0; j < 3; j++) {
