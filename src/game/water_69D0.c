@@ -1113,12 +1113,12 @@ void Water_FillNoise(s32 amplitude);
 // different symbol, so IDO builds the pool loop's base on its own, and the bytes are the same). Through
 // D_80192464[0..5] in the pool loop instead, the base is 0x80192464 (940); an index copy loop gives its pointers among
 // the gWaterWindow stores (1750).
-// Two permuter FAKEs (marked) give the rings' temporaries: everything after the first colour loop goes through gp, a
-// copy of pool declared with the block's counters, and an empty do-while closes the two-player colour loop. The mode-2
-// test goes through bot (FAKE, a permuter find), which moves waterLevel's copy to a3 as in the original. Left:
-// D_801924BC's address in v0 (v1 there). Tried for it, none lower: every order of the six D_801924AC..C0 statements,
-// the BC and C0 expressions respelled, pool set before the loop at each statement, swaps of set, bot and b, and an
-// empty test or do-while at every statement.
+// Two permuter FAKEs (marked) give the rings' temporaries: the two rings go through gp, a copy of pool declared with
+// the block's counters, and an empty do-while closes the two-player colour loop. The mode-2 test goes through bot
+// (FAKE, a permuter find), which moves waterLevel's copy to a3 as in the original. Left: D_801924BC's address in v0 (v1
+// there). Tried for it, none lower: every order of the six D_801924AC..C0 statements, the BC and C0 expressions
+// respelled, pool set before the loop at each statement, swaps of set, bot and b, and an empty test or do-while at
+// every statement.
 void func_8004F9E0(s32 waterLevel, s32 amplitude) {
     s32 set;
     GfxPool* pool;
@@ -1178,7 +1178,7 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
         s32 k;
         s32 top;
         s32 d;
-        GfxPool* gp; // FAKE (permuter): a copy of pool for everything after the first colour loop
+        GfxPool* gp; // FAKE (permuter): a copy of pool for the two rings
 
         for (i = D_8019249C + 5; i >= 0; i--) {
             pool->unk13D68[i].v.cn[0] = 0xFF;
@@ -1186,16 +1186,16 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
             pool->unk13D68[i].v.cn[2] = 0xFF;
             pool->unk13D68[i].v.cn[3] = 0xB0;
         }
-        gp = pool;
         if (gPlayers == TWO_PLAYERS) {
             for (i = D_8019249C + 5; i >= 0; i--) {
-                gp->unk170D8[i].v.cn[0] = 0xFF;
-                gp->unk170D8[i].v.cn[1] = 0xFF;
-                gp->unk170D8[i].v.cn[2] = 0xFF;
-                gp->unk170D8[i].v.cn[3] = 0xB0;
+                pool->unk170D8[i].v.cn[0] = 0xFF;
+                pool->unk170D8[i].v.cn[1] = 0xFF;
+                pool->unk170D8[i].v.cn[2] = 0xFF;
+                pool->unk170D8[i].v.cn[3] = 0xB0;
             }
             do {} while (0); // FAKE (permuter)
         }
+        gp = pool;
         bot = gWaterWindowN - 1;
         top = gWaterWindowN;
         j = D_8019249C - gWaterWindowN;
@@ -1214,12 +1214,12 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
             d -= i;
             i++;
         }
-        gp->unk13D68[D_80192460[1]].v.tc[0] = gp->unk13D68[D_80192460[1]].v.tc[1] =
-            gp->unk13D68[D_80192460[2]].v.tc[0] = gp->unk13D68[D_80192460[2]].v.tc[1] =
-                gp->unk13D68[D_80192460[3]].v.tc[0] = gp->unk13D68[D_80192460[3]].v.tc[1] =
-                    gp->unk13D68[D_80192460[4]].v.tc[0] = gp->unk13D68[D_80192460[4]].v.tc[1] =
-                        gp->unk13D68[D_80192460[5]].v.tc[0] = gp->unk13D68[D_80192460[5]].v.tc[1] =
-                            gp->unk13D68[D_80192460[6]].v.tc[0] = gp->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
+        pool->unk13D68[D_80192460[1]].v.tc[0] = pool->unk13D68[D_80192460[1]].v.tc[1] =
+            pool->unk13D68[D_80192460[2]].v.tc[0] = pool->unk13D68[D_80192460[2]].v.tc[1] =
+                pool->unk13D68[D_80192460[3]].v.tc[0] = pool->unk13D68[D_80192460[3]].v.tc[1] =
+                    pool->unk13D68[D_80192460[4]].v.tc[0] = pool->unk13D68[D_80192460[4]].v.tc[1] =
+                        pool->unk13D68[D_80192460[5]].v.tc[0] = pool->unk13D68[D_80192460[5]].v.tc[1] =
+                            pool->unk13D68[D_80192460[6]].v.tc[0] = pool->unk13D68[D_80192460[6]].v.tc[1] = 0x400;
         if (gPlayers == TWO_PLAYERS) {
             top = gWaterWindowN;
             j = D_8019249C - gWaterWindowN;
@@ -1238,12 +1238,12 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
                 d -= i;
                 i++;
             }
-            gp->unk170D8[D_80192460[1]].v.tc[0] = gp->unk170D8[D_80192460[1]].v.tc[1] =
-                gp->unk170D8[D_80192460[2]].v.tc[0] = gp->unk170D8[D_80192460[2]].v.tc[1] =
-                    gp->unk170D8[D_80192460[3]].v.tc[0] = gp->unk170D8[D_80192460[3]].v.tc[1] =
-                        gp->unk170D8[D_80192460[4]].v.tc[0] = gp->unk170D8[D_80192460[4]].v.tc[1] =
-                            gp->unk170D8[D_80192460[5]].v.tc[0] = gp->unk170D8[D_80192460[5]].v.tc[1] =
-                                gp->unk170D8[D_80192460[6]].v.tc[0] = gp->unk170D8[D_80192460[6]].v.tc[1] = 0x400;
+            pool->unk170D8[D_80192460[1]].v.tc[0] = pool->unk170D8[D_80192460[1]].v.tc[1] =
+                pool->unk170D8[D_80192460[2]].v.tc[0] = pool->unk170D8[D_80192460[2]].v.tc[1] =
+                    pool->unk170D8[D_80192460[3]].v.tc[0] = pool->unk170D8[D_80192460[3]].v.tc[1] =
+                        pool->unk170D8[D_80192460[4]].v.tc[0] = pool->unk170D8[D_80192460[4]].v.tc[1] =
+                            pool->unk170D8[D_80192460[5]].v.tc[0] = pool->unk170D8[D_80192460[5]].v.tc[1] =
+                                pool->unk170D8[D_80192460[6]].v.tc[0] = pool->unk170D8[D_80192460[6]].v.tc[1] = 0x400;
         }
     }
 }
