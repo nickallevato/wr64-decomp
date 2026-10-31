@@ -1261,7 +1261,7 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
                 D_800E6D64->unk14 =
-                    (D_800E6D64->unk24 * D_801D79F4) + (0.50f * D_801D79E8 * D_800E6D64->unk2C); // 0.50f: its own constant (respelling search)
+                    (D_800E6D64->unk24 * D_801D79F4) + (0.50f * D_801D79E8 * D_800E6D64->unk2C); // 0.50f: respelled
                 D_800E6D64->unk10 = (Math_FloatRand(0.5f) + 1.0f) * height;
                 n++;
                 if (n >= count) {

@@ -736,7 +736,8 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                 if (mag < 0.1f) {
                     for (j = 0; j < 3; j++) {
                         vec[j] = D_80228190[0].unk14[j];
-                        if (!D_80228190[0].unk14) {} // FAKE (permuter): never true; keeps &D_80228190 in fp, center on the stack
+                        // FAKE (permuter): never true; keeps &D_80228190 in fp and center on the stack
+                        if (!D_80228190[0].unk14) {}
                     }
                     mag = 1.0f;
                 }

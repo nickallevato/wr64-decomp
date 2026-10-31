@@ -1312,20 +1312,19 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 36337 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
-// gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
-// table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
-// and constants (G_CULL_BACK, the gate lists) sit in other registers. Each search sets its counter to
-// D_801BB120 (one load, CSE'd into a0 for all three) and runs while (--counter > 0), the original's copy,
-// decrement and bgtz shape; the first two searches count in their own local n and the third in slot, and a pad
-// sits above near (a split search: 40305 -> 36337, from the extra stack words and the separate webs). Statement order in a few
-// straight-line runs is from a greedy statement-move search. Left: the original holds &D_801AEE20 in s8 for
-// the whole function and does not hoist the constant 1 in visibility loop 1, so its saved registers from s3
-// on are one lower than here (a tbl local is copy-propagated away; `e->unk9C == 1U` in the second test stops
-// one hoist and is kept, marked); its first search walks through cur (s0), 43620 at the time.
-// The three SysUtils_MatrixLookAt calls pass an int 0 for the first up component (a respelling search: the
-// same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f). Three pairs of statements share a line
-// (line-join search: IDO schedules by source line, 40695 -> 40305).
+// Score 36337 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
+// dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C); table B's draw loops
+// reload D_801C0840[i] for the env alpha where the original reuses the loaded value, and constants (G_CULL_BACK, the
+// gate lists) sit in other registers. Each search sets its counter to D_801BB120 (one load, CSE'd into a0 for all
+// three) and runs while (--counter > 0), the original's copy, decrement and bgtz shape; the first two searches count
+// in their own local n and the third in slot, and a pad sits above near (a split search: 40305 -> 36337, from the
+// extra stack words and the separate webs). Statement order in a few straight-line runs is from a greedy
+// statement-move search. Left: the original holds &D_801AEE20 in s8 for the whole function and does not hoist the
+// constant 1 in visibility loop 1, so its saved registers from s3 on are one lower than here (a tbl local is
+// copy-propagated away; `e->unk9C == 1U` in the second test stops one hoist and is kept, marked); its first search
+// walks through cur (s0), 43620 at the time. The three SysUtils_MatrixLookAt calls pass an int 0 for the first up
+// component (a respelling search: the same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f).
+// Three pairs of statements share a line (line-join search: IDO schedules by source line, 40695 -> 40305).
 void func_8006E674(Gfx** gdl) {
     s32 padA[2]; // stack pad
     s32 n;
