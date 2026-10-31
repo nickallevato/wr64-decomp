@@ -917,9 +917,11 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 8295 of 31600: control flow and arithmetic follow the original, x * x is taken once before the branches.
-// Left: the register allocation: the declaration order (s, nx, a after nz) is from a declaration-move search. The original keeps x in f14 and reloads x and z from their argument slots after
-// each sqrtf, where this keeps them in saved registers (frame 0xB8 here, 0xB0 there).
+// Score 7793 of 31600: control flow and arithmetic follow the original. The angle is halved with / 2.0f, which IDO
+// turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the rounding term); x * x
+// is computed in each branch. The declaration order (s, nx, a after nz) is from a declaration-move search.
+// Left: the register allocation: the original keeps x in f14 and spills it to its argument slot around each sqrtf,
+// and reloads z from its slot, where this keeps both in saved registers (frame 0xB8 here, 0xB0 there).
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 c;
     f32 len;
@@ -939,12 +941,10 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 qy;
     f32 qz;
     s32 i;
-    f32 xx;
 
-    i = (((angle * 4096.0f) / 3.141593f) * 0.5f) + 0.5f;
+    i = (((angle * 4096.0f) / 3.141593f) / 2.0f) + 0.5f;
     c = COS(i);
     s = SIN(i);
-    xx = x * x;
     if (y == 0.0f) {
         if (x == 0.0f) {
             if (z < 0.0f) {
@@ -954,7 +954,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
             func_800498A4(arg0, arg1, 0.0f, 0.0f, angle);
             return;
         }
-        len = sqrtf(xx + (z * z));
+        len = sqrtf((x * x) + (z * z));
         a = z / len;
         t = s * a;
         arg1->mf[0][1] = t;
@@ -972,7 +972,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[2][0] = t;
         arg1->mf[0][2] = t;
     } else if (z == 0.0f) {
-        len = sqrtf(xx + (y * y));
+        len = sqrtf((x * x) + (y * y));
         a = y / len;
         nx = -a;
         t = s * nx;
@@ -1008,7 +1008,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[2][1] = t;
         arg1->mf[1][2] = t;
     } else {
-        len = sqrtf(xx + (y * y) + (z * z));
+        len = sqrtf((x * x) + (y * y) + (z * z));
         ny = y / len;
         nx = x / len;
         a = -ny;
