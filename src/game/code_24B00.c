@@ -1312,7 +1312,7 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 40695 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
+// Score 40305 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
 // gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
 // table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
 // and constants (G_CULL_BACK, the gate lists) sit in other registers. One local (slot) also serves as the
@@ -1323,7 +1323,8 @@ void func_800B4ABC(Gfx** gdl);
 // on are one lower than here (a tbl local is copy-propagated away; `e->unk9C == 1U` in the second test stops
 // one hoist and is kept, marked); its first search walks through cur (s0), 43620 at the time.
 // The three SysUtils_MatrixLookAt calls pass an int 0 for the first up component (a respelling search: the
-// same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f).
+// same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f). Three pairs of statements share a line
+// (line-join search: IDO schedules by source line, 40695 -> 40305).
 void func_8006E674(Gfx** gdl) {
     s32 padA[2]; // stack pad
     s32 slot;
@@ -1466,8 +1467,7 @@ void func_8006E674(Gfx** gdl) {
         dx = b->unk0 - cam->eyeX;
         dz = b->unk8 - cam->eyeZ;
         if ((b->unk10 == 4) || (b->unk10 == 5)) {
-            D_801C08C0[i] = -1;
-            continue;
+            D_801C08C0[i] = -1; continue;
         }
         d = sqrtf((dx * dx) + (dz * dz));
         if (d < (f32) far) {
@@ -1561,14 +1561,12 @@ void func_8006E674(Gfx** gdl) {
         idx = 17;
     }
     if (idx < 10) {
-        dlA2 = D_102CD90;
-        dlB2 = D_102CC70;
+        dlA2 = D_102CD90; dlB2 = D_102CC70;
         dlA = D_102CD78;
         dlB = D_102CC58;
     } else {
         idx = 18 - idx;
-        dlA2 = D_102CE20;
-        dlB2 = D_102CD00;
+        dlA2 = D_102CE20; dlB2 = D_102CD00;
         dlA = D_102CE08;
         dlB = D_102CCE8;
     }
