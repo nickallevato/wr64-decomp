@@ -2122,11 +2122,12 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 60252 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 57322 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
-// them; sp84 and sp8C are compiler spills in the original and still variables here. Named
+// them; sp84 and sp8C are compiler spills in the original and still variables here. Three zero tests are int 0
+// (the original keeps differently spelled zeros apart; a respelling search). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry.
@@ -2167,7 +2168,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     rider = &D_80192690[arg0];
     temp_fv0 = rider->unk16B8;
     var_s3 = *D_802238DC;
-    if (temp_fv0 < 0.0f) {
+    if (temp_fv0 < 0) {
         sp360 = -temp_fv0;
         var_t0 = 3;
         if (sp360 > 0.2f) {
@@ -2704,7 +2705,7 @@ block_45: // m2c label name
     var_t0 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
     temp_fs2 = (temp_fs0 * temp_fs0) + (temp_fv0 * temp_fv0);
     temp_fv0 = (temp_fs1 * temp_fs1) + (temp_fa0 * temp_fa0);
-    if ((temp_fs2 != 0.0f) && (temp_fv0 != 0.0f)) {
+    if ((temp_fs2 != 0) && (temp_fv0 != 0)) {
         temp_fs0 = gSinTable[var_t0 & 0xFFF] / sqrtf(temp_fs2);
         temp_fa0 = gSinTable[(var_t0 + 0x400) & 0xFFF] / sqrtf(temp_fv0);
         arg1->unkFC.unkC.y = 0.0f;
@@ -2713,7 +2714,7 @@ block_45: // m2c label name
         arg1->unkFC.unk14.x = 0.0f;
         arg1->unkFC.unkC.z = (rider->unk74 * temp_fs0) + (temp_fa0 * rider->unk8C);
         arg1->unkFC.unk14.y = 1.0f;
-        arg1->unkFC.unk14.z = 0.0f;
+        arg1->unkFC.unk14.z = 0;
     }
     temp_fv0 = rider->unkB78;
     temp_fs0 = rider->unkB80;
