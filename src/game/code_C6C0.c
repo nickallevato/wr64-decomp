@@ -3920,7 +3920,7 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 62263 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 62037 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
@@ -3976,7 +3976,7 @@ void func_8005DE24(s32 arg0) {
     rider->unk1428 = rider->unk1420;
     rider->unk1420 = rider->unk1424;
     rider->unk1424 = temp_t9;
-    nx = rider->unk158C * ((rider->unk84 * rider->unkC20) + (rider->unk88 * rider->unkC24) + (rider->unk8C * rider->unkC28));
+    nx = ((rider->unk84 * rider->unkC20) + (rider->unk88 * rider->unkC24) + (rider->unk8C * rider->unkC28)) * rider->unk158C;
     rider->unk16B8 = nx;
     if (nx < -1.0f) {
         rider->unk16B8 = -1.0f;
@@ -3984,7 +3984,7 @@ void func_8005DE24(s32 arg0) {
         rider->unk16B8 = 1.0f;
     }
     nx = rider->unkC0C;
-    nz = (rider->unkC00 + (D_800D4A24 * ((rider->unk78 * rider->unkC2C) + (rider->unk7C * rider->unkC30) + (rider->unk80 * rider->unkC34)))) - nx;
+    nz = (rider->unkC00 + (((rider->unk78 * rider->unkC2C) + (rider->unk7C * rider->unkC30) + (rider->unk80 * rider->unkC34)) * D_800D4A24)) - nx;
     if (nz < 0.0f) {
         rider->unkC0C = rider->unkC0C + (nz * D_800D4A30);
     } else {
@@ -4117,7 +4117,7 @@ void func_8005DE24(s32 arg0) {
                         dz = ((nz * pt->unkC) + (rider->unk15B8 * dx) + (rider->unk15BC * dy)) * -1.0f;
                         pt->unkC = (1.5f * pt->unkC) + (nz * dz);
                         pt->unk10 = (pt->unk10 * 1.5f) + (dz * rider->unk15B8);
-                        pt->unk14 = (dy * 1.5f) + (dz * rider->unk15BC);
+                        pt->unk14 = (1.5f * dy) + (dz * rider->unk15BC);
                     }
                     rider->unk160A = 1;
                 }
@@ -4440,7 +4440,7 @@ void func_8005DE24(s32 arg0) {
             }
             len = k + (((dy * rider->unk78) + (vz * vy) + (dz * vx)) * (D_800D49F0 - 1.0f));
             RIDER_PARTS(rider)[21].unk4.x = nx + (dy + (len * ny));
-            RIDER_PARTS(rider)[21].unk4.y = nz + (vx + (len * dz));
+            RIDER_PARTS(rider)[21].unk4.y = nz + (vx + (dz * len));
             RIDER_PARTS(rider)[21].unk4.z = dx + (vz + (vy * len));
             break;
     }
@@ -4455,7 +4455,7 @@ void func_8005DE24(s32 arg0) {
         dy = P(21).y - P(20).y;
         dz = P(21).z - P(20).z;
         if (((dx * (((P(24).y - P(19).y) * nz) - ((P(24).z - P(19).z) * ny))) +
-             (dy * (((P(24).z - P(19).z) * nx) - ((P(24).x - P(19).x) * nz))) +
+             ((((P(24).z - P(19).z) * nx) - ((P(24).x - P(19).x) * nz)) * dy) +
              (dz * (((P(24).x - P(19).x) * ny) - ((P(24).y - P(19).y) * nx)))) < 0.0f) {
             vx = P(24).x - P(19).x;
             vy = P(24).y - P(19).y;
@@ -4470,7 +4470,7 @@ void func_8005DE24(s32 arg0) {
             ny *= k;
             nz *= k;
             k = nx * dx;
-            k += (nz * dz) + (dy * ny);
+            k += (nz * dz) + (ny * dy);
             dz -= k * nz;
             dy -= k * ny;
             P(21).x = P(20).x + (dx - (k * nx));
@@ -4481,7 +4481,7 @@ void func_8005DE24(s32 arg0) {
             len = 41.071f;
             vz = P(21).z - P(20).z;
         }
-        len /= sqrtf((vx * vx) + (vy * vy) + (vz * vz));
+        len /= sqrtf((vz * vz) + (vx * vx) + (vy * vy));
         P(21).x = P(20).x + (len * vx);
         P(21).y = P(20).y + (vy * len);
         P(21).z = P(20).z + (len * vz);
@@ -4509,7 +4509,7 @@ void func_8005DE24(s32 arg0) {
             nx = rider->unk7C;
             part->unk10.y = rider->unk44.y + (vx * rider->unk7C) + (dx - (dz * nx));
             nx = rider->unk80;
-            part->unk10.z = (vx * rider->unk80) + rider->unk44.z + (dy - (dz * nx));
+            part->unk10.z = rider->unk44.z + (vx * rider->unk80) + (dy - (dz * nx));
             part->unk1C.x += D_800D4940 * rider->unk78;
             part->unk1C.y += D_800D4940 * rider->unk7C;
             part->unk1C.z += D_800D4940 * rider->unk80;
