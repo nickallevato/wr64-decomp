@@ -684,7 +684,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 12877 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 12850 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
@@ -792,8 +792,8 @@ void func_8007687C(s32 arg0) {
     pz = e->unk8 - (e->unk84 * 50.0f * 0.5f);
     px = e->unk0 - (50.0f * e->unk80 * 0.5f);
     if (e->unk9C == 1) {
-        gx = e->unkC - e->unk18;
         gz = e->unk14 - e->unk20;
+        gx = e->unkC - e->unk18;
         len = sqrtf((gx * gx) + (gz * gz));
         if (len > 0.0f) {
             gx /= len;
@@ -1326,10 +1326,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // flag and the record sound value are if/else assignments (the original hoists the else value above the branch);
 // the cross product and the record score sum are computed into locals first, as the original's order shows;
 // operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, bonus: the
-// original's registers for them) come from searches; the empty arg0 test goes through passed (FAKE, permuter), which gives &gPlayer1Rider its
-// register. Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate
-// block), and the original keeps its empty arg0 == gPlayer1Rider test as a branch (`beq a0, t7` to the next
-// instruction), which this C does not.
+// original's registers for them) come from searches; the empty arg0 test goes through passed (FAKE, permuter),
+// which gives &gPlayer1Rider its register. Left: register allocation (the original also spills e->unk0 and
+// e->unk8 to 0x20/0x1C in the gate block), and the original keeps its empty arg0 == gPlayer1Rider test as a branch
+// (`beq a0, t7` to the next instruction), which this C does not.
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
