@@ -3083,7 +3083,7 @@ void func_8005A280(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 32056 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
+// Score 32006 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
 // The m2c temps are pooled into region-local variables (split where a fresh value starts, merged where live
 // ranges don't overlap, each kept only if the score fell), so names like temp_fs4_5 are just slots. The
 // shoulder/hip vector is v = a*n + b*f with a clamped to <= -0.1 and b to >= 0, as the original computes it.
@@ -3474,7 +3474,8 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     RIDER_PARTS(rider)[9].unk10.y = (RIDER_PARTS(rider)[9].unk1C.y * D_800D4A1C) + RIDER_PARTS(rider)[9].unk4.y + (0.5f * D_800D4A18);
     RIDER_PARTS(rider)[9].unk10.z = (RIDER_PARTS(rider)[9].unk1C.z * D_800D4A1C) + RIDER_PARTS(rider)[9].unk4.z;
     RIDER_PARTS(rider)[17].unk10.x = (RIDER_PARTS(rider)[17].unk1C.x * D_800D4A1C) + RIDER_PARTS(rider)[17].unk4.x;
-    RIDER_PARTS(rider)[17].unk10.y = (RIDER_PARTS(rider)[17].unk1C.y * D_800D4A1C) + RIDER_PARTS(rider)[17].unk4.y + (0.5f * D_800D4A18);
+    // 0.50f: a separate constant from 0.5f to IDO (odd literal, respelling search)
+    RIDER_PARTS(rider)[17].unk10.y = (RIDER_PARTS(rider)[17].unk1C.y * D_800D4A1C) + RIDER_PARTS(rider)[17].unk4.y + (0.50f * D_800D4A18);
     RIDER_PARTS(rider)[17].unk10.z = (RIDER_PARTS(rider)[17].unk1C.z * D_800D4A1C) + RIDER_PARTS(rider)[17].unk4.z;
     temp_fv0_3_2 = arg1->unk48.unk0.x - arg1->unkB4.unk0.x;
     spD0_2 = arg1->unk48.unk0.y - arg1->unkB4.unk0.y;
