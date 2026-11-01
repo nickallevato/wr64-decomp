@@ -1508,12 +1508,12 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 45056 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 44636 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
 // 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
-// there, but this form scores far better (the registers from there on). The 2P popup's 60000 test and the player
+// there, but this form scores far better (the registers from there on). Both popups' 60000 tests and the player
 // popup's call read rider->checkpointGap again rather than value (a read-through search). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
@@ -1666,7 +1666,7 @@ void func_801F4120(Gfx** gdlp) {
             value = rider->checkpointGap;
             if (value < 10000) {
                 j = 2;
-            } else if (value < 60000) {
+            } else if (rider->checkpointGap < 60000) {
                 j = 1;
             } else {
                 j = 0;
