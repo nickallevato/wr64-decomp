@@ -133,7 +133,7 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 1533 of 97200: same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
+// Score 1525 of 97200: same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
 // the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
@@ -145,6 +145,7 @@ void func_801EED70(void);
 // Left: registers: the first loops' row pointer and counter swap a0/a1, and the extent loops' addresses take a3, t0,
 // t3 where the original has a2, a3, t1.
 void func_80075310(void) {
+    f32 x;
     s32 i;
     s32 pad[1]; // stack pad: the original's frame is 0x80
     s32 j;
@@ -152,7 +153,6 @@ void func_80075310(void) {
     s32 depth;
     s32 n;
     s32 type;
-    f32 x;
     f32 z;
     f32 a;
     f32 b;
