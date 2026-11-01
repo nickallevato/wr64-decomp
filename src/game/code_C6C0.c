@@ -3917,11 +3917,11 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 65967 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 63548 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search, operand orders, declaration order and one literal spelling from searches.
+// search (two rounds), operand orders, declaration order and one literal spelling from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4043,8 +4043,8 @@ void func_8005DE24(s32 arg0) {
                 D_80192690[gPlayer1Rider].unk16C8 = 4;
                 D_80192690[gPlayer2Rider].unk16C8 = 1;
             } else {
-                D_80192690[gPlayer1Rider].unk16C8 = 1;
                 D_80192690[gPlayer2Rider].unk16C8 = 4;
+                D_80192690[gPlayer1Rider].unk16C8 = 1;
             }
         } else if (D_8022393C != 0) {
             rider->unk16C8 = D_800D4800[D_8022393C - 1];
@@ -4530,8 +4530,8 @@ void func_8005DE24(s32 arg0) {
                 part->unk4.z = part->unk10.z;
                 break;
             case 1:
-                nz = part->unk10.y - part->unk4.y;
                 ny = part->unk10.x - part->unk4.x;
+                nz = part->unk10.y - part->unk4.y;
                 dx = part->unk10.z - part->unk4.z;
                 dy = (ny * ny) + (nz * nz) + (dx * dx);
                 if ((D_800D4984 * D_800D4984) < dy) {
@@ -4580,10 +4580,10 @@ void func_8005DE24(s32 arg0) {
                 }
                 vy = vz + (((nx * ny) + (spC0 * vx) + (spC4 * dz)) * (D_800D49F0 - 1.0f));
                 part->unk4.x = nz + (ny + (vy * nx));
-                nz = part->unk4.x;
                 part->unk4.y = dx + (dz + (vy * spC4));
-                ny = part->unk4.y;
                 part->unk4.z = dy + (vx + (vy * spC0));
+                nz = part->unk4.x;
+                ny = part->unk4.y;
                 dx = part->unk4.z;
                 dy = ((nz - rider->unk44.x) * nx) + ((ny - rider->unk44.y) * spC4) + ((dx - rider->unk44.z) * spC0);
                 if (part->unk0 == 4) {
@@ -4636,14 +4636,14 @@ void func_8005DE24(s32 arg0) {
                         a->unk1C.z -= dz * dx;
                     } else {
                         dz = ny * dy;
-                        ny = nz * dy;
-                        nz = dx * dy;
-                        b->unk1C.x += ny;
                         b->unk1C.y += dz;
+                        ny = nz * dy;
+                        b->unk1C.x += ny;
+                        nz = dx * dy;
                         b->unk1C.z += nz;
                         a->unk1C.x -= ny;
-                        a->unk1C.z -= nz;
                         a->unk1C.y -= dz;
+                        a->unk1C.z -= nz;
                     }
                 }
             }
