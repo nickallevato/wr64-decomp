@@ -109,7 +109,8 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 3340 of 97200: same blocks, loops and calls, frame 0x80. The zeroing chains store right to left (the
+// Score 3135 of 97200: same blocks, loops and calls, frame 0x80. The stunt-record rows go through a copy k (FAKE,
+// permuter, mid4). The zeroing chains store right to left (the
 // first stores keep their addresses in registers, the leftmost goes through at), as in the original. The
 // D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
@@ -145,8 +146,9 @@ void func_80075310(void) {
             D_801C23B0[i] = D_800D81B0;
         }
         for (i = 9; i < 12; i++) {
+            k = i; // FAKE (permuter): the row through a copy, for the later registers
             for (n = 0; n < 3; n++) {
-                gStuntRecords[i][n] = D_800D81C4;
+                gStuntRecords[k][n] = D_800D81C4;
             }
         }
         for (i = 0; i < 4; i++) {

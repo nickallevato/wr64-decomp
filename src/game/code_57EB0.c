@@ -2069,11 +2069,16 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 7800 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
+// Score 5560 of 259500 (mid4): the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
+// sets the record pointer after the loop guard, a derived induction variable; the pad keeps the old pointer's stack
+// slot); unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
+// update (the original's literal pool has 0.03 before 0.2f); both sp48/sp4C call pairs on one line and the unkC
+// sum's operand order are from join and operand-order searches. Left: 360.0f loaded early into $f2 (after the 2500.0f
+// distance call) in the original; D_801D0754 stored after lead->unk14 is read in the three switch arms; registers.
+// Before: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
 // the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
 // uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision
-// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts
-// p before i. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
+// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
 // D_801D0774's offset is stored before it is scaled; statement order from a move search. D_801B2EB4 reads are
 // written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
@@ -2081,7 +2086,7 @@ void func_800A68A4(s32 arg0) {
     s32 angle;
     s32 i;
     s32 best;
-    UnkStruct_801AEE20* p;
+    s32 pad; // stack pad: the slot of a record pointer the searches no longer use
     camera_unk_1* cam;
     StructVarS0* lead;
     s32 t;
@@ -2103,9 +2108,9 @@ void func_800A68A4(s32 arg0) {
     D_801D0668.unk_0 = func_8009D4A8(D_801CF060[arg0].unk64 - D_801D06BC, D_801CF060[arg0].unk6C - D_801D06C4) / 100.0f;
     D_801D0668.unk_6 = (s32) ((func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) / 90.0f) * 120.0f);
     angle = (s32) ((D_801CF060[arg0].unk18 / 360.0f) * 4096.0f);
-    D_801CF060[arg0].unk34 = 0.0f;
     D_801CF060[arg0].unk30 = COS(angle);
     D_801CF060[arg0].unk38 = SIN(angle);
+    D_801CF060[arg0].unk34 = 0.0f;
     if ((gGameModeState == GMODE_STATE_STARTED) && (gCurrentPauseMenuOption == -1)) {
         if ((D_801CF060[arg0].unk74 == 0) &&
             (func_8009D4DC(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) > 2500.0f)) {
@@ -2167,8 +2172,9 @@ void func_800A68A4(s32 arg0) {
             }
             D_801CF060[arg0].unk1C = func_8009D564(D_801CF060[arg0].unk1C);
             D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
+            // 180 as ints here (literal spelling; the original loads 180.0f twice in this block, here it is loaded once)
             D_801D0764 =
-                (f32) (((f64) ((D_801CF060[arg0].unk4C * ((180.0f - FABS(D_801D0760)) / 180.0f)) - D_801D0768) * 0.15) +
+                (f32) (((f64) ((D_801CF060[arg0].unk4C * ((180 - FABS(D_801D0760)) / 180)) - D_801D0768) * 0.15) +
                        (f64) D_801D0768);
             angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
             D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
@@ -2240,8 +2246,8 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk1C = -45.0f;
             }
             D_801CF060[arg0].unk1C = func_8009D564(D_801CF060[arg0].unk1C);
-            D_801D076C = 0.2f;
             D_801CF060[arg0].unk10 += 0.03 * (D_801D0758 - D_801CF060[arg0].unk10);
+            D_801D076C = 0.2f;
             D_801D0770 = func_8009D4A8(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4);
             if (D_801D0770 < 1000.0f) {
                 D_801D076C =
@@ -2326,9 +2332,9 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk50 = 0;
                 best = -1;
                 D_801D0754 = 2e9f;
-                for (i = 0, p = D_801AEE20; i < D_801BB124; i++, p++) {
-                    D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
-                    if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
+                for (i = 0; i < D_801BB124; i++) {
+                    D_801D0758 = func_8009D4DC(D_801D06BC - D_801AEE20[i].unk0, D_801D06C4 - D_801AEE20[i].unk8);
+                    if ((D_801D0758 < D_801D0754) && (D_801AEE20[i].unkC0 < 2)) {
                         best = i;
                         D_801D0754 = D_801D0758;
                     }
@@ -2470,8 +2476,9 @@ void func_800A68A4(s32 arg0) {
                 D_801D076C = 1.5f;
             }
             D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
+            // 180.00f: a second spelling, so IDO keeps two 180.0 constants (respelling search)
             D_801D0764 =
-                (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.0f) * D_801D0724 * D_801D076C) - D_801D0768) *
+                (f32) (((f64) ((((180.00f - FABS(D_801D0760)) / 180.0f) * D_801D0724 * D_801D076C) - D_801D0768) *
                         0.15) +
                        (f64) D_801D0768);
             D_801D0754 = D_801CF060[arg0].unkC;
@@ -2487,13 +2494,12 @@ void func_800A68A4(s32 arg0) {
             }
             for (i = 0; i < 8; i++) {
                 D_801D076C =
-                    ((((D_801CF060[arg0].unk30 * 500.0f) + D_801CF060[arg0].unkC) - D_801D0754) * 0.125f * (f32) i) +
+                    (((D_801CF060[arg0].unkC + (D_801CF060[arg0].unk30 * 500.0f)) - D_801D0754) * 0.125f * (f32) i) +
                     D_801D0754;
                 D_801D0770 = D_801CF060[arg0].unk10 - 10.0f;
                 D_801D0774 = ((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C;
                 D_801D0774 = (D_801D0774 * 0.125f * (f32) i) + D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
+                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unk14 = D_801D075C;
                     D_801CF060[arg0].unkC = D_801D0754;
@@ -2514,9 +2520,9 @@ void func_800A68A4(s32 arg0) {
             best = -1;
             if (D_801D0754 > 3000.0f) {
                 D_801D0754 = 2e9f;
-                for (p = D_801B2F20, i = 0; i < D_801BB124; i++, p++) {
-                    D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
-                    if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
+                for (i = 0; i < D_801BB124; i++) {
+                    D_801D0758 = func_8009D4DC(D_801D06BC - D_801B2F20[i].unk0, D_801D06C4 - D_801B2F20[i].unk8);
+                    if ((D_801D0758 < D_801D0754) && (D_801B2F20[i].unkC0 < 2)) {
                         best = i;
                         D_801D0754 = D_801D0758;
                     }
@@ -2577,8 +2583,7 @@ void func_800A68A4(s32 arg0) {
             for (i = 0; i < 4; i++) {
                 D_801D0770 = D_801CF060[arg0].unk10 - 20.0f;
                 D_801D076C = ((D_801CF060[arg0].unk14 - D_801D075C) * 0.25f * (f32) i) + D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
+                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
