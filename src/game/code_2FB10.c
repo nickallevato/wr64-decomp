@@ -1313,13 +1313,14 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 10004 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The stack pads below
+// Score 9379 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The stack pads below
 // (found by a placement search) give that frame but are not the real variables. The timeLeft test has the
 // out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus flag and
 // the record sound value are if/else assignments (the original hoists the else value above the branch); the
 // cross product and the record score sum are computed into locals first, as the original's order shows; operand
 // orders, the declaration order and the counters of the race-time and unk2C loops (sfx, bonus: the original's
-// registers for them) come from searches.
+// registers for them) come from searches; the empty arg0 test goes through passed (FAKE, permuter), which gives
+// &gPlayer1Rider its register.
 // Left: register allocation, and the original keeps its empty arg0 == gPlayer1Rider test as a branch
 // (`beq a0, t7` to the next instruction), which this C does not.
 void func_800783AC(s32 arg0) {
@@ -1345,7 +1346,8 @@ void func_800783AC(s32 arg0) {
     RiderStruct* rider;
     UnkStruct_801AEE20* e;
 
-    if (arg0 != gPlayer1Rider) {} // an empty test, as in the original
+    passed = arg0 != gPlayer1Rider; // FAKE (permuter): the test through passed, for &gPlayer1Rider's register
+    if (passed) {} // an empty test, as in the original
     rider = &gRiderRaceState[arg0];
     rider->unk314 = 0;
     if ((gCourseID == RIDER_SELECTION) && (arg0 == gPlayer2Rider)) {
@@ -1390,7 +1392,7 @@ void func_800783AC(s32 arg0) {
         }
     }
     // unk138 follows power one step a frame.
-    if (rider->power != rider->unk138) {
+    if (rider->unk138 != rider->power) {
         if (rider->power - rider->unk138 == 0) {
             i = 0;
         } else if (rider->power - rider->unk138 > 0) {
