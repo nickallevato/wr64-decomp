@@ -3919,11 +3919,11 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 62528 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 62263 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search (two rounds), operand orders, declaration order, one literal spelling, eleven field reads in place of
+// search (two rounds), operand orders, declaration order, two literal spellings, eleven field reads in place of
 // copies (read-through) and one sum in two statements from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
@@ -4207,7 +4207,7 @@ void func_8005DE24(s32 arg0) {
                         rider->unkC74 = temp_a1_2;
                         if ((temp_a1_2 >= 0x64) || ((temp_a1_2 >= D_800D4990) && (rider->unkC78 >= 8) && (rider->unk7C > 0.9f) && (rider->unkB90 < 8.333334f))) {
                             for (; part >= &RIDER_PARTS(rider)[0]; part--) {
-                                part->unk1C.z = 0.0f;
+                                part->unk1C.z = 0.00f; // odd literal: a separate zero to IDO (respelling search)
                                 part->unk1C.y = 0.0f;
                                 part->unk1C.x = 0.0f;
                             }
