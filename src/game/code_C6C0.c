@@ -2122,7 +2122,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 46275 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 46260 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2319,7 +2319,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     spB0 = temp_fs2;
     temp_fs4 = (temp_fs3 * temp_fv0) - (spB0 * temp_fs0);
     temp_fs0 = (temp_fs2 * temp_fs1) - (temp_fa0 * temp_fv0);
-    temp_fv0 = 1.0f / sqrtf((var_fv0 * var_fv0) + (temp_fs0 * temp_fs0) + (temp_fs4 * temp_fs4));
+    temp_fv0 = 1 / sqrtf((var_fv0 * var_fv0) + (temp_fs0 * temp_fs0) + (temp_fs4 * temp_fs4));
     temp_fa0 = temp_fv0 * temp_fs4;
     temp_fs1 = temp_fv0 * temp_fs0;
     arg1->unk21C.unkC.x = temp_fv0 * var_fv0;
@@ -3918,11 +3918,11 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 63003 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 62943 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search (two rounds), operand orders, declaration order, one literal spelling and four field reads in place of
+// search (two rounds), operand orders, declaration order, one literal spelling and eight field reads in place of
 // copies (read-through) from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
@@ -3984,7 +3984,7 @@ void func_8005DE24(s32 arg0) {
     nx = rider->unkC0C;
     nz = (rider->unkC00 + (D_800D4A24 * ((rider->unk78 * rider->unkC2C) + (rider->unk7C * rider->unkC30) + (rider->unk80 * rider->unkC34)))) - nx;
     if (nz < 0.0f) {
-        rider->unkC0C = nx + (nz * D_800D4A30);
+        rider->unkC0C = rider->unkC0C + (nz * D_800D4A30);
     } else {
         rider->unkC0C = nx + (nz * D_800D4A34);
     }
@@ -4114,7 +4114,7 @@ void func_8005DE24(s32 arg0) {
                         dy = pt->unk14;
                         dz = ((nz * pt->unkC) + (rider->unk15B8 * dx) + (rider->unk15BC * dy)) * -1.0f;
                         pt->unkC = (1.5f * ny) + (nz * dz);
-                        pt->unk10 = (dx * 1.5f) + (dz * rider->unk15B8);
+                        pt->unk10 = (pt->unk10 * 1.5f) + (dz * rider->unk15B8);
                         pt->unk14 = (dy * 1.5f) + (dz * rider->unk15BC);
                     }
                     rider->unk160A = 1;
@@ -4502,9 +4502,9 @@ void func_8005DE24(s32 arg0) {
             dy = part->unk10.z - rider->unk44.z;
             dz = (nz * ny) + (dx * rider->unk7C) + (dy * rider->unk80);
             vx = (f32) ((((f64) dz - 0.1806645) * (f64) rider->unk15D8) + 0.1806645);
-            part->unk10.x = nx + (vx * ny) + (nz - (dz * ny));
+            part->unk10.x = rider->unk44.x + (vx * ny) + (nz - (dz * ny));
             nx = rider->unk7C;
-            part->unk10.y = rider->unk44.y + (vx * nx) + (dx - (dz * nx));
+            part->unk10.y = rider->unk44.y + (vx * rider->unk7C) + (dx - (dz * nx));
             nx = rider->unk80;
             part->unk10.z = (vx * nx) + rider->unk44.z + (dy - (dz * nx));
             part->unk1C.x += D_800D4940 * rider->unk78;
