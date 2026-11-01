@@ -1304,10 +1304,13 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 21880 of 111900: same blocks, switches and calls. The original has more locals (frame 0xB0, its homes
-// spread over 0x50..0xA4); the stack pads below (found by a placement search) give that frame and move some
-// homes to its offsets, but are not the real variables. Register allocation differs from the start, and the
-// original keeps its empty arg0 == gPlayer1Rider test as a branch, which this C does not.
+// Score 11202 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The stack pads below
+// (found by a placement search) give that frame but are not the real variables. The timeLeft test has the
+// out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus flag and
+// the record sound value are if/else assignments (the original hoists the else value above the branch); the
+// cross product and the record score sum are computed into locals first, as the original's order shows.
+// Left: register allocation, and the original keeps its empty arg0 == gPlayer1Rider test as a branch
+// (`beq a0, t7` to the next instruction), which this C does not.
 void func_800783AC(s32 arg0) {
     s32 padC[2]; // stack pad
     s32 padB[6]; // stack pad
@@ -1365,13 +1368,14 @@ void func_800783AC(s32 arg0) {
         if (rider->timeLeft <= 0) {
             rider->timeLeft = 0;
         }
-        if (rider->timeLeft > 0) {
-            rider->unk334 = 0;
-        } else {
+        if (rider->timeLeft <= 0) {
             rider->unk334++;
             if (((D_80192690[arg0].unkB90 * 1.8f) < 10.0f) || (rider->unk334 >= 201)) {
                 Rider_SetFinishState((struct_800762D0*) rider);
+                return;
             }
+        } else {
+            rider->unk334 = 0;
         }
     }
     // unk138 follows power one step a frame.
@@ -1515,10 +1519,16 @@ void func_800783AC(s32 arg0) {
                     D_801C26E4 = 0;
                     break;
             }
-        } else if ((D_801C26E0 == 1) || (D_801C26E0 == 2)) {
-            D_801C26E4 += D_800D92BC.unk10;
-        } else if (D_801C26E0 == 3) {
-            D_801C26E4 += D_800D92BC.unk14;
+        } else {
+            switch (D_801C26E0) {
+                case 1:
+                case 2:
+                    D_801C26E4 += D_800D92BC.unk10;
+                    break;
+                case 3:
+                    D_801C26E4 += D_800D92BC.unk14;
+                    break;
+            }
         }
         D_801C39C8 = trick;
     }
@@ -1539,8 +1549,9 @@ void func_800783AC(s32 arg0) {
     }
     passed = false;
     dot = (e->unk70 * dx) + (e->unk74 * dz);
+    len = (e->unk74 * dx) - (e->unk70 * dz);
     if ((rider->unk1C == -1) && (dot > 0.0f)) {
-        if (((e->unk74 * dx) - (e->unk70 * dz)) >= 0.0f) {
+        if (len >= 0.0f) {
             rider->unk1C = 1;
         } else {
             rider->unk1C = 0;
@@ -1587,7 +1598,12 @@ void func_800783AC(s32 arg0) {
             bonus = ((rider->timeLeft + (frac / 2)) / 100) * D_800D92B8;
             rider->unk334 = 0;
             if (bonus > 0) {
-                func_801FB488(1, bonus, cur == D_801BB12C);
+                if (cur == D_801BB12C) {
+                    inGate = 1;
+                } else {
+                    inGate = 0;
+                }
+                func_801FB488(1, bonus, inGate);
             }
             if (cur == D_801BB12C) {
                 D_801C39D4 = bonus;
@@ -1653,17 +1669,19 @@ void func_800783AC(s32 arg0) {
                         rider->raceTime += rider->lapTimes[i];
                     }
                     D_801C2928 = 0;
+                    bonus = D_801C26D0 + D_801C39CC + D_801C39D4;
                     if (D_801CE600 == 0) {
                         for (i = 0; i < 3; i++) {
-                            if (gStuntRecords[gCourseID][i].score < D_801C26D0 + D_801C39CC + D_801C39D4) {
+                            if (gStuntRecords[gCourseID][i].score < bonus) {
                                 D_801C2928 = i + 1;
                                 break;
                             }
                         }
                     }
-                    sfx = 1;
                     if (D_801C2928 == 1) {
                         sfx = 0;
+                    } else {
+                        sfx = 1;
                     }
                     if ((D_800DAB60 == 0) && (D_801C2930 != 0)) {
                         sfx += 0x80;
