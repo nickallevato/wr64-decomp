@@ -1593,7 +1593,11 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 1190 of 32100: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
+// Score 1150 of 32100 (mid4): the projection factor is y and the new d[0] is held in x and squared from x for the
+// second sqrtf (the original keeps it in a register; reading d[0] back reloaded it): from the projection on the
+// float registers match. Left: the factor in $f14 ($f0 in the original), the v[1] spill reload one instruction
+// early, and the float temporaries numbered differently up to there (first ease update on).
+// Earlier: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
 // registers numbered differently throughout (from the first ease update on). p and b set at the top (as in
 // func_801DF38C) put obj in s0; b declared before p and the unk24 stores through obj->base (as func_801DDEDC writes
 // them) give p's spill slot 0x28 and the original's t0/a3. Without the two FAKEs (2045) only the reloads of the spilled
@@ -1638,12 +1642,12 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     x = -2.0f * x * x * x + 3.0f * x * x;
     v[0] = p->unk24[0] * x;
     v[1] = p->unk24[1] * x;
-    x = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[0]) + SQ(d[1]));
-    y = v[0]; // FAKE: y as a temp for the new d[0]
-    y = (d[0] * x + y) * p->unk2C;
-    d[0] = y;
-    d[1] = (d[1] * x + v[1]) * p->unk2C;
-    x = sqrtf(SQ(d[1]) + SQ(d[0]));
+    y = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[0]) + SQ(d[1]));
+    x = v[0]; // FAKE: x as a temp for the new d[0]
+    x = (d[0] * y + x) * p->unk2C;
+    d[0] = x;
+    d[1] = (d[1] * y + v[1]) * p->unk2C;
+    x = sqrtf(SQ(d[1]) + SQ(x)); // the new d[0] squared from x: the original does not reload d[0]
     if (p->unk30 < x) {
         x = p->unk30 / x;
         d[0] *= x;
