@@ -684,20 +684,20 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 10281 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
-// dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
-// is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
-// boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref
-// and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a loop-counter
-// search); a stack pad where r3 and r4 were keeps the frame. The float locals follow the original's homes (px 0x70
-// down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes show; the gate dot
-// product is summed in two statements (a sum-split search), and an empty do-while before the record lookup (FAKE,
-// permuter) splits a block, and the rider's side test compares with an int 0 (permuter; a separate zero to IDO);
-// the Marine Fortress test reads e->unk98 again rather than type (permuter), one statement move and one operand
-// order come from searches. Left: register allocation (gCourseID in a2, not a3; the constant 1 in t5, not ra) and
-// scheduling; the original keeps the first empty test in the gate block (`dot >= 0`) as a branch, which no spelling
-// here keeps without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home here too, but never spilled).
-// unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
+// Score 9701 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a dead
+// if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone is
+// an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a boolean
+// assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref and time
+// (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a loop-counter search); a
+// stack pad where r3 and r4 were keeps the frame. The float locals follow the original's homes (px 0x70 down to dz
+// 0x54), with the gate block's direction in its own gx/gz as the original's homes show; the gate dot product is
+// summed in two statements (a sum-split search), and an empty do-while before the record lookup (FAKE, permuter)
+// splits a block, and the rider's side test compares with an int 0 (permuter; a separate zero to IDO); the Marine
+// Fortress test reads e->unk98 again rather than type and beyond's x term is computed first, in dPos (permuter);
+// one statement move and one operand order come from searches. Left: register allocation (gCourseID in a2, not a3;
+// the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block (`dot >=
+// 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot (0xA4; dPrev's
+// home here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
     s32 i;
     s32 time;
@@ -1110,10 +1110,11 @@ void func_8007687C(s32 arg0) {
     // Sunset Bay) moves the lap counter unk320.
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
+    dPos = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70; // the x term first (permuter; dPos is dead here)
     ref = D_801AEE20[r2].unkA0;
     time = D_801AEE20[ref].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         ((D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70)) > 0.0f;
+         dPos) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (ref == D_801BB12C) || (time == D_801BB12C);
