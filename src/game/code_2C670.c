@@ -279,7 +279,7 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 36312 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
+// Score 35819 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
 // default, written first, as the table's entry 0 and its block order show). The declarations follow the original's
 // stack homes (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C,
 // things 0x48, table 0x30; the pad stands for four words above them), which gives its frame (0xA0); table is
@@ -291,7 +291,9 @@ extern void* D_800D6C6C[];
 // counter there spills it to its home here (43143 on an older base). Registers differ throughout (src2 lives in s2,
 // &gCourseID in ra). The order of several independent stores and list assignments is from a statement-move search
 // (the largest gain: unk4C = 11 after unk50 in the things types 10..21 case, 40902 -> 36867). Six pairs of list
-// assignments share a line (a line-join search: IDO schedules by source line, 36867 -> 36657).
+// assignments share a line (a line-join search: IDO schedules by source line, 36867 -> 36657). The list choice after the
+// stunt-mode test is one line inside a do-while (0) (permuter, FAKE: 36312 -> 35819; joined without the do-while it
+// scores 36762).
 void func_80071E70(void) {
     s32 pad[4]; // stack pad
     s32 kind;
@@ -488,60 +490,8 @@ void func_80071E70(void) {
         list0 = list1 = list2 = D_800D6514[gCourseID];
         buoys = D_800D6744[gCourseID];
         objects = D_800D66A4[gCourseID];
-    } else if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) {
-        list0 = D_800D653C[gCourseID];
-        buoys = D_800D676C[gCourseID];
-        objects = D_800D66CC[gCourseID];
-        rings = D_800D6884[gCourseID];
-        list1 = NULL;
-        list2 = NULL;
-    } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) {
-        if (gPlayers == ONE_PLAYER) {
-            list1 = D_800D658C[gCourseID];
-            list2 = D_800D65B4[gCourseID]; buoys = D_800D66F4[gCourseID];
-            list0 = D_800D6564[gCourseID];
-            objects = D_800D6654[gCourseID];
-        } else {
-            objects = D_800D667C[gCourseID];
-            list1 = D_800D6604[gCourseID]; list2 = D_800D662C[gCourseID];
-            buoys = D_800D671C[gCourseID];
-            list0 = D_800D65DC[gCourseID];
-        }
-    } else if (gPlayers == TWO_PLAYERS) {
-        if (gDifficulty == DIFFICULTY_NORMAL) {
-            list0 = D_800D649C[gCourseID];
-        } else if (gDifficulty == DIFFICULTY_HARD) {
-            list0 = D_800D64C4[gCourseID];
-        } else {
-            list0 = D_800D64EC[gCourseID];
-        }
-        buoys = D_800D671C[gCourseID];
-        objects = D_800D667C[gCourseID];
-        if (gCourseID == RIDER_SELECTION) {
-            list1 = D_800D5700;
-        } else {
-            list1 = NULL;
-        }
-        list2 = NULL;
     } else {
-        if (D_800D8254 == 0) {
-            difficulty = gDifficulty;
-        } else {
-            difficulty = D_800D8258;
-        }
-        if ((difficulty == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) {
-            list0 = D_800D6334[gCourseID];
-            list1 = D_800D635C[gCourseID]; list2 = D_800D6384[gCourseID];
-        } else if (difficulty == DIFFICULTY_HARD) {
-            list0 = D_800D63AC[gCourseID];
-            list1 = D_800D63D4[gCourseID]; list2 = D_800D63FC[gCourseID];
-        } else {
-            list0 = D_800D6424[gCourseID];
-            list1 = D_800D644C[gCourseID];
-            list2 = D_800D6474[gCourseID];
-        }
-        buoys = D_800D66F4[gCourseID];
-        objects = D_800D6654[gCourseID];
+        do { if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) { list0 = D_800D653C[gCourseID]; buoys = D_800D676C[gCourseID]; objects = D_800D66CC[gCourseID]; rings = D_800D6884[gCourseID]; list1 = NULL; list2 = NULL; } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) { if (gPlayers == ONE_PLAYER) { list1 = D_800D658C[gCourseID]; list2 = D_800D65B4[gCourseID]; buoys = D_800D66F4[gCourseID]; list0 = D_800D6564[gCourseID]; objects = D_800D6654[gCourseID]; } else { objects = D_800D667C[gCourseID]; list1 = D_800D6604[gCourseID]; list2 = D_800D662C[gCourseID]; buoys = D_800D671C[gCourseID]; list0 = D_800D65DC[gCourseID]; } } else if (gPlayers == TWO_PLAYERS) { if (gDifficulty == DIFFICULTY_NORMAL) { list0 = D_800D649C[gCourseID]; } else if (gDifficulty == DIFFICULTY_HARD) { list0 = D_800D64C4[gCourseID]; } else { list0 = D_800D64EC[gCourseID]; } buoys = D_800D671C[gCourseID]; objects = D_800D667C[gCourseID]; if (gCourseID == RIDER_SELECTION) { list1 = D_800D5700; } else { list1 = NULL; } list2 = NULL; } else { if (D_800D8254 == 0) { difficulty = gDifficulty; } else { difficulty = D_800D8258; } if ((difficulty == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) { list0 = D_800D6334[gCourseID]; list1 = D_800D635C[gCourseID]; list2 = D_800D6384[gCourseID]; } else if (difficulty == DIFFICULTY_HARD) { list0 = D_800D63AC[gCourseID]; list1 = D_800D63D4[gCourseID]; list2 = D_800D63FC[gCourseID]; } else { list0 = D_800D6424[gCourseID]; list1 = D_800D644C[gCourseID]; list2 = D_800D6474[gCourseID]; } buoys = D_800D66F4[gCourseID]; objects = D_800D6654[gCourseID]; } } while (0); // FAKE (permuter): one-line block in a do-while
     }
     if (gPlayers == TWO_PLAYERS) {
         pts = D_800D680C[gCourseID]; things = D_800D685C[gCourseID];
