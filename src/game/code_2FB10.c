@@ -684,7 +684,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 13789 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 13759 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
@@ -848,7 +848,7 @@ void func_8007687C(s32 arg0) {
     rider->unk28 = 0;
     if ((rider->unk20 != 0) && (rider->unk1C >= 0)) {
         type = e->unk98;
-        if (rider->unk320 != rider->lapCount) {
+        if (rider->lapCount != rider->unk320) {
             rider->unk20 = 0;
         } else if ((e->unk9C == 1) && !inGate) {
             rider->unk20 = 0;
@@ -1084,7 +1084,7 @@ void func_8007687C(s32 arg0) {
         }
         rider->unk2C[cur] = 1;
     }
-    if (rider->power != rider->unk138) {
+    if (rider->unk138 != rider->power) {
         i = (rider->power - rider->unk138 == 0) ? 0 : ((rider->power - rider->unk138 > 0) ? 1 : -1);
         rider->unk138 += i;
     }

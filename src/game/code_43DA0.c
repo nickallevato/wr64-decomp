@@ -1137,7 +1137,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 10394 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// Score 10389 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1332,7 +1332,7 @@ void func_8008E794(void) {
                 case SOUTHERN_ISLAND:
                     angle = (e->unk10C << 12) / 360;
                     e->unkB4 = 0;
-                    e->unkFC = (COS(angle) * cam->unk64) - (SIN(angle) * cam->unk6C);
+                    e->unkFC = (cam->unk64 * COS(angle)) - (SIN(angle) * cam->unk6C);
                     e->unkAC = -64.0f;
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
