@@ -1508,10 +1508,12 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 54134 of 490800: same stack frame and the same branches (structure diff) except one: where the original
-// keeps 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks.
-// The popup color and the chevron color are if / else assignments (the original hoists the else value), and the
-// second marks loop counts in its own variable (value) from j, which gives the original's != loop test. Register
+// Score 46495 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
+// player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
+// the second marks loop counts in its own variable (value) from j, which gives the original's != loop test. The
+// 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
+// there, but this form scores far better (the registers from there on). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
 // lap-split loop, the constant 1 in the lap-split popup), so the saved and temporary registers of every display-list
@@ -1631,10 +1633,9 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0;
                 }
+                color = 2;
                 if (rider->gapRequest == 1) {
                     color = 1;
-                } else {
-                    color = 2;
                 }
                 func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, color);
             }
