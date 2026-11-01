@@ -2122,7 +2122,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 45162 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 45142 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2378,7 +2378,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unk1F8.unk0.z = temp_fa0;
     spB4f = arg1->unk1F8.unkC.x;
     var_t0 = 3;
-    temp_fs1 = (f32) ((f64) temp_fv0 + (12.546404 * (f64) spB4f));
+    temp_fs1 = (f32) ((f64) arg1->unkD8.unk0.x + (12.546404 * (f64) spB4f));
     spB0 = arg1->unk1F8.unkC.y;
     sp84 = spB0;
     temp_fv0 = arg1->unk1F8.unkC.z;
@@ -2722,7 +2722,7 @@ block_45: // m2c label name
     }
     temp_fv0 = rider->unkB78;
     temp_fs0 = rider->unkB80;
-    temp_fa0 = sqrtf((rider->unkB78 * temp_fv0) + (temp_fs0 * temp_fs0));
+    temp_fa0 = sqrtf((rider->unkB78 * temp_fv0) + (rider->unkB80 * temp_fs0));
     if (!(temp_fa0 >= 16.666668f)) {
         func_80054130(arg0, &spC4, 0, 0, 1, 1);
         func_80053A5C(arg1, temp_fa0 / 16.666668f, &spC4, arg1);
