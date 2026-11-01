@@ -2122,13 +2122,13 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 52599 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 52209 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
 // them; sp84 and sp8C are compiler spills in the original and still variables here. Three zero tests, a 1.0f
 // numerator and two constants are respelled (the original keeps differently spelled constants apart; respelling
-// searches). Named
+// searches); the unkFC direction's x is summed in two statements (a sum-split search). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry.
@@ -2712,7 +2712,8 @@ block_45: // m2c label name
         temp_fa0 = gSinTable[(var_t0 + 0x400) & 0xFFF] / sqrtf(temp_fv0);
         arg1->unkFC.unkC.y = 0.0f;
         temp_fv0 = temp_fa0 * rider->unk84;
-        arg1->unkFC.unkC.x = (rider->unk6C * temp_fs0) + temp_fv0;
+        arg1->unkFC.unkC.x = (rider->unk6C * temp_fs0);
+        arg1->unkFC.unkC.x += temp_fv0;
         arg1->unkFC.unk14.x = 0;
         arg1->unkFC.unkC.z = (rider->unk74 * temp_fs0) + (temp_fa0 * rider->unk8C);
         arg1->unkFC.unk14.y = 1.0f;
