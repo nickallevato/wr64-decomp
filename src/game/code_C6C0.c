@@ -2122,7 +2122,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 46260 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 45162 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2257,7 +2257,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs2 = arg1->unk0.unk0.x;
     temp_fs3 = arg1->unk0.unk0.z;
     // 355.769130f: a separate constant from the 355.76913f below (odd literal, respelling search)
-    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, arg1->unk0.unk0.x, arg1->unk0.unk0.y, temp_fs3, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
+    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, arg1->unk0.unk0.x, arg1->unk0.unk0.y, arg1->unk0.unk0.z, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
     func_800534AC(temp_a1, &arg1->unk90.unk0.y, &arg1->unk90.unk0.z, arg1->unkB4.unk0.x, arg1->unkB4.unk0.y, arg1->unkB4.unk0.z, arg1->unk6C.unk0.x, arg1->unk6C.unk0.y, arg1->unk6C.unk0.z, 298.01123f, 355.76913f, arg1->unk6C.unkC.x, arg1->unk6C.unkC.y, arg1->unk6C.unkC.z);
     arg1->unk48.unkC.x = arg1->unk24.unk0.x - arg1->unk48.unk0.x;
     arg1->unk48.unkC.y = arg1->unk24.unk0.y - arg1->unk48.unk0.y;
@@ -2285,7 +2285,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fv0 = arg1->unk240.unkC.x;
     temp_fs0 = arg1->unk240.unkC.y;
     temp_fa0 = arg1->unk240.unkC.z;
-    temp_fs1 = rider->unk16BC * ((temp_fv0 * arg1->unk264.unk14.x) + (temp_fs0 * arg1->unk264.unk14.y) + (arg1->unk240.unkC.z * arg1->unk264.unk14.z));
+    temp_fs1 = rider->unk16BC * ((temp_fv0 * arg1->unk264.unk14.x) + (arg1->unk240.unkC.y * arg1->unk264.unk14.y) + (arg1->unk240.unkC.z * arg1->unk264.unk14.z));
     temp_fs2 = (arg1->unk240.unkC.x * arg1->unk264.unkC.x) + (temp_fs0 * arg1->unk264.unkC.y) + (temp_fa0 * arg1->unk264.unkC.z);
     arg1->unk240.unkC.x = (rider->unk78 * temp_fs1) + (temp_fs2 * rider->unk6C);
     arg1->unk240.unkC.y = (rider->unk7C * temp_fs1) + (temp_fs2 * rider->unk70);
@@ -2707,7 +2707,7 @@ block_45: // m2c label name
     temp_fs1 = rider->unk84;
     var_t0 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
     temp_fs2 = (temp_fs0 * temp_fs0) + (temp_fv0 * temp_fv0);
-    temp_fv0 = (temp_fs1 * temp_fs1) + (rider->unk8C * temp_fa0);
+    temp_fv0 = (temp_fs1 * temp_fs1) + (rider->unk8C * rider->unk8C);
     if ((temp_fs2 != 0) && (temp_fv0 != 0)) {
         temp_fs0 = gSinTable[var_t0 & 0xFFF] / sqrtf(temp_fs2);
         temp_fa0 = gSinTable[(var_t0 + 0x400) & 0xFFF] / sqrtf(temp_fv0);
@@ -3918,12 +3918,12 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 62943 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 62558 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search (two rounds), operand orders, declaration order, one literal spelling and eight field reads in place of
-// copies (read-through) from searches.
+// search (two rounds), operand orders, declaration order, one literal spelling, eight field reads in place of
+// copies (read-through) and one sum in two statements from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4467,7 +4467,8 @@ void func_8005DE24(s32 arg0) {
             nx *= k;
             ny *= k;
             nz *= k;
-            k = (nx * dx) + (nz * dz) + (dy * ny);
+            k = nx * dx;
+            k += (nz * dz) + (dy * ny);
             dz -= k * nz;
             dy -= k * ny;
             P(21).x = P(20).x + (dx - (k * nx));
