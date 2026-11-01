@@ -690,9 +690,10 @@ void func_800C1EB8(s32);
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
 // ref and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a
 // loop-counter search); a stack pad where r3 and r4 were keeps the frame. The float locals follow the original's
-// homes (px 0x70 down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes show. Left: register allocation (gCourseID in
-// a2, not a3; the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block
-// (`dot >= 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot.
+// homes (px 0x70 down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes
+// show. Left: register allocation (gCourseID in a2, not a3; the constant 1 in t5, not ra) and scheduling; the
+// original keeps the first empty test in the gate block (`dot >= 0`) as a branch, which no spelling here keeps
+// without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home here too, but never spilled).
 // unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
     s32 i;
