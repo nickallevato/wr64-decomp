@@ -394,9 +394,10 @@ void func_80089F28(void) {
 // The direction is scaled in place after sqrtf and glare is squared four times before the branch, both as in the
 // original. The quad corners (v -/+ c, -v -/+ c) are written out at each use, as the original keeps them in
 // compiler temporaries; operand orders, line joins (the texture coordinates of several vertices on one line),
-// statement moves (two rounds), the declaration order and one 64 spelled as an int come from searches (the declaration search moved the matrices four
-// bytes off the original's 0x200/0x240, scoring better). Left: the spill slots of those temporaries (the original
-// also stores cam->upX/upY/upZ to stack temporaries and reads them back) and float registers.
+// statement moves (two rounds), the declaration order and one 64 spelled as an int come from searches (the
+// declaration search moved the matrices four bytes off the original's 0x200/0x240, scoring better). Left: the spill
+// slots of those temporaries (the original also stores cam->upX/upY/upZ to stack temporaries and reads them back)
+// and float registers.
 Gfx* func_8008A0E0(Gfx* gdl) {
     f32 cx;
     f32 cy;
