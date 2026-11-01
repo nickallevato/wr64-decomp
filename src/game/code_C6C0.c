@@ -3918,11 +3918,11 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 62558 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 62528 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search (two rounds), operand orders, declaration order, one literal spelling, eight field reads in place of
+// search (two rounds), operand orders, declaration order, one literal spelling, eleven field reads in place of
 // copies (read-through) and one sum in two statements from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
@@ -4113,7 +4113,7 @@ void func_8005DE24(s32 arg0) {
                         dx = pt->unk10;
                         dy = pt->unk14;
                         dz = ((nz * pt->unkC) + (rider->unk15B8 * dx) + (rider->unk15BC * dy)) * -1.0f;
-                        pt->unkC = (1.5f * ny) + (nz * dz);
+                        pt->unkC = (1.5f * pt->unkC) + (nz * dz);
                         pt->unk10 = (pt->unk10 * 1.5f) + (dz * rider->unk15B8);
                         pt->unk14 = (dy * 1.5f) + (dz * rider->unk15BC);
                     }
@@ -4436,7 +4436,7 @@ void func_8005DE24(s32 arg0) {
             } else {
                 k = len * D_800D49F8;
             }
-            len = k + (((dy * ny) + (vz * vy) + (dz * vx)) * (D_800D49F0 - 1.0f));
+            len = k + (((dy * rider->unk78) + (vz * vy) + (dz * vx)) * (D_800D49F0 - 1.0f));
             RIDER_PARTS(rider)[21].unk4.x = nx + (dy + (len * ny));
             RIDER_PARTS(rider)[21].unk4.y = nz + (vx + (len * dz));
             RIDER_PARTS(rider)[21].unk4.z = dx + (vz + (vy * len));
@@ -4507,7 +4507,7 @@ void func_8005DE24(s32 arg0) {
             nx = rider->unk7C;
             part->unk10.y = rider->unk44.y + (vx * rider->unk7C) + (dx - (dz * nx));
             nx = rider->unk80;
-            part->unk10.z = (vx * nx) + rider->unk44.z + (dy - (dz * nx));
+            part->unk10.z = (vx * rider->unk80) + rider->unk44.z + (dy - (dz * nx));
             part->unk1C.x += D_800D4940 * rider->unk78;
             part->unk1C.y += D_800D4940 * rider->unk7C;
             part->unk1C.z += D_800D4940 * rider->unk80;
