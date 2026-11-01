@@ -684,17 +684,17 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 12850 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 12765 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
-// boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
-// ref and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a
-// loop-counter search); a stack pad where r3 and r4 were keeps the frame. The float locals follow the original's
-// homes (px 0x70 down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes
-// show. Left: register allocation (gCourseID in a2, not a3; the constant 1 in t5, not ra) and scheduling; the
-// original keeps the first empty test in the gate block (`dot >= 0`) as a branch, which no spelling here keeps
-// without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home here too, but never spilled).
-// unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
+// boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref
+// and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a loop-counter
+// search); a stack pad where r3 and r4 were keeps the frame. The float locals follow the original's homes (px 0x70
+// down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes show; the gate dot
+// product is summed in two statements (a sum-split search). Left: register allocation (gCourseID in a2, not a3; the
+// constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block (`dot >= 0`)
+// as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home
+// here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
     s32 i;
     s32 time;
@@ -799,7 +799,8 @@ void func_8007687C(s32 arg0) {
             gx /= len;
             gz /= len;
         }
-        dot = ((D_801C3780 - e->unk18) * gx) + ((D_801C3788 - e->unk20) * gz);
+        dot = (D_801C3780 - e->unk18) * gx;
+        dot += (D_801C3788 - e->unk20) * gz;
         if (dot >= 0.0f) {} // an empty test, as in the original
         if (D_801C1F90 == 0) {
             inGate = dot <= ((e->unk8C * 2) + D_801C39C4);
@@ -1319,7 +1320,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 8730 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The declarations follow the
+// Score 8670 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
 // has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
@@ -1327,7 +1328,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // the cross product and the record score sum are computed into locals first, as the original's order shows;
 // operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps: the
 // original's registers for them) come from searches; the empty arg0 test goes through passed (FAKE, permuter),
-// which gives &gPlayer1Rider its register, and the gate dot product is summed in two statements (permuter).
+// which gives &gPlayer1Rider its register; the gate dot product is summed in two statements (permuter) and dx
+// subtracted in its own statement (a sum-split search).
 // Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate block), and
 // the original keeps its empty arg0 == gPlayer1Rider test as a branch (`beq a0, t7` to the next instruction),
 // which this C does not.
@@ -1564,7 +1566,8 @@ void func_800783AC(s32 arg0) {
         dot += (e->unk7C * (D_801C3788 - e->unk20));
         inGate = (dot >= 0.0f) && (dot <= (2.0f * e->unk8C));
     }
-    dx = D_801C3780 - e->unk0;
+    dx = D_801C3780;
+    dx -= e->unk0;
     dz = D_801C3788 - e->unk8;
     len = sqrtf((dx * dx) + (dz * dz));
     if (len > 0.0f) {
