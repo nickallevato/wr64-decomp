@@ -1319,14 +1319,14 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 9235 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The declarations follow the
+// Score 9105 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
 // has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
 // flag and the record sound value are if/else assignments (the original hoists the else value above the branch);
 // the cross product and the record score sum are computed into locals first, as the original's order shows;
-// operand orders and the counters of the race-time and unk2C loops (sfx, bonus: the original's registers for them)
-// come from searches; the empty arg0 test goes through passed (FAKE, permuter), which gives &gPlayer1Rider its
+// operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, bonus: the
+// original's registers for them) come from searches; the empty arg0 test goes through passed (FAKE, permuter), which gives &gPlayer1Rider its
 // register. Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate
 // block), and the original keeps its empty arg0 == gPlayer1Rider test as a branch (`beq a0, t7` to the next
 // instruction), which this C does not.
@@ -1616,8 +1616,8 @@ void func_800783AC(s32 arg0) {
                 dPrev = -dPrev;
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
-            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = rider->raceTime - frac;
             rider->unk334 = 0;
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = rider->raceTime - frac;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
