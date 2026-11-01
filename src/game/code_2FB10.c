@@ -684,17 +684,18 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 12765 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 11230 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref
 // and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a loop-counter
 // search); a stack pad where r3 and r4 were keeps the frame. The float locals follow the original's homes (px 0x70
 // down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes show; the gate dot
-// product is summed in two statements (a sum-split search). Left: register allocation (gCourseID in a2, not a3; the
-// constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block (`dot >= 0`)
-// as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home
-// here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
+// product is summed in two statements (a sum-split search), and an empty do-while before the record lookup (FAKE,
+// permuter) splits a block. Left: register allocation (gCourseID in a2, not a3; the constant 1 in t5, not ra) and
+// scheduling; the original keeps the first empty test in the gate block (`dot >= 0`) as a branch, which no spelling
+// here keeps without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home here too, but never spilled).
+// unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
     s32 i;
     s32 time;
@@ -963,6 +964,7 @@ void func_8007687C(s32 arg0) {
                 ((cur != D_801BB12C) || (rider->lapCount < D_801CE728[0]))) {
                 if ((gGameModes == GMODE_TIME_TRIALS) && (D_800DAB68 == 0) && (cur == D_801BB12C) &&
                     (rider->lapCount < 3)) {
+                    do {} while (0); // FAKE (permuter): a block boundary
                     ref = gBestCheckpointTimes[gCourseID][rider->lapCount - 1];
                     if (ref > 0) {
                         if (ref < time) {
