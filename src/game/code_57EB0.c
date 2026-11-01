@@ -2069,7 +2069,11 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 7800 of 259500: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
+// Score 6755 of 259500 (mid4): unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
+// update (the original's literal pool has 0.03 before 0.2f); both sp48/sp4C call pairs on one line and the unkC
+// sum's operand order are from join and operand-order searches. Left: 360.0f loaded early into $f2 (after the 2500.0f
+// distance call) in the original; D_801D0754 stored after lead->unk14 is read in the three switch arms; registers.
+// Before: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
 // the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
 // uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision
 // (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts
@@ -2103,9 +2107,9 @@ void func_800A68A4(s32 arg0) {
     D_801D0668.unk_0 = func_8009D4A8(D_801CF060[arg0].unk64 - D_801D06BC, D_801CF060[arg0].unk6C - D_801D06C4) / 100.0f;
     D_801D0668.unk_6 = (s32) ((func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) / 90.0f) * 120.0f);
     angle = (s32) ((D_801CF060[arg0].unk18 / 360.0f) * 4096.0f);
-    D_801CF060[arg0].unk34 = 0.0f;
     D_801CF060[arg0].unk30 = COS(angle);
     D_801CF060[arg0].unk38 = SIN(angle);
+    D_801CF060[arg0].unk34 = 0.0f;
     if ((gGameModeState == GMODE_STATE_STARTED) && (gCurrentPauseMenuOption == -1)) {
         if ((D_801CF060[arg0].unk74 == 0) &&
             (func_8009D4DC(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C) > 2500.0f)) {
@@ -2240,8 +2244,8 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk1C = -45.0f;
             }
             D_801CF060[arg0].unk1C = func_8009D564(D_801CF060[arg0].unk1C);
-            D_801D076C = 0.2f;
             D_801CF060[arg0].unk10 += 0.03 * (D_801D0758 - D_801CF060[arg0].unk10);
+            D_801D076C = 0.2f;
             D_801D0770 = func_8009D4A8(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4);
             if (D_801D0770 < 1000.0f) {
                 D_801D076C =
@@ -2487,13 +2491,12 @@ void func_800A68A4(s32 arg0) {
             }
             for (i = 0; i < 8; i++) {
                 D_801D076C =
-                    ((((D_801CF060[arg0].unk30 * 500.0f) + D_801CF060[arg0].unkC) - D_801D0754) * 0.125f * (f32) i) +
+                    (((D_801CF060[arg0].unkC + (D_801CF060[arg0].unk30 * 500.0f)) - D_801D0754) * 0.125f * (f32) i) +
                     D_801D0754;
                 D_801D0770 = D_801CF060[arg0].unk10 - 10.0f;
                 D_801D0774 = ((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C;
                 D_801D0774 = (D_801D0774 * 0.125f * (f32) i) + D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
+                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unk14 = D_801D075C;
                     D_801CF060[arg0].unkC = D_801D0754;
@@ -2577,8 +2580,7 @@ void func_800A68A4(s32 arg0) {
             for (i = 0; i < 4; i++) {
                 D_801D0770 = D_801CF060[arg0].unk10 - 20.0f;
                 D_801D076C = ((D_801CF060[arg0].unk14 - D_801D075C) * 0.25f * (f32) i) + D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
+                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
