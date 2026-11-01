@@ -684,12 +684,13 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 13221 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 12877 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
 // ref and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a
-// loop-counter search); a stack pad where r3 and r4 were keeps the frame. Left: register allocation (gCourseID in
+// loop-counter search); a stack pad where r3 and r4 were keeps the frame. The float locals follow the original's
+// homes (px 0x70 down to dz 0x54), with the gate block's direction in its own gx/gz as the original's homes show. Left: register allocation (gCourseID in
 // a2, not a3; the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block
 // (`dot >= 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot.
 // unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
@@ -728,13 +729,16 @@ void func_8007687C(s32 arg0) {
     s32 from;
     s32 pad1; // stack pad
     f32 progress;
-    s32 pad[12]; // stack pad
-    f32 dx;
-    f32 dirX;
-    f32 dz;
-    f32 dirZ;
+    s32 pad[7]; // stack pad
     f32 px;
     f32 pz;
+    f32 dirX;
+    f32 dirZ;
+    f32 gx;
+    f32 gz;
+    f32 dx;
+    f32 dz;
+    s32 padE[3]; // stack pad
     if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
@@ -787,14 +791,14 @@ void func_8007687C(s32 arg0) {
     pz = e->unk8 - (e->unk84 * 50.0f * 0.5f);
     px = e->unk0 - (50.0f * e->unk80 * 0.5f);
     if (e->unk9C == 1) {
-        dx = e->unkC - e->unk18;
-        dz = e->unk14 - e->unk20;
-        len = sqrtf((dx * dx) + (dz * dz));
+        gx = e->unkC - e->unk18;
+        gz = e->unk14 - e->unk20;
+        len = sqrtf((gx * gx) + (gz * gz));
         if (len > 0.0f) {
-            dx /= len;
-            dz /= len;
+            gx /= len;
+            gz /= len;
         }
-        dot = ((D_801C3780 - e->unk18) * dx) + ((D_801C3788 - e->unk20) * dz);
+        dot = ((D_801C3780 - e->unk18) * gx) + ((D_801C3788 - e->unk20) * gz);
         if (dot >= 0.0f) {} // an empty test, as in the original
         if (D_801C1F90 == 0) {
             inGate = dot <= ((e->unk8C * 2) + D_801C39C4);
