@@ -1508,9 +1508,13 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 56483 of 490800: same stack frame and nearly the same branches (structure diff): where the original
-// keeps 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks, two
-// if / else joins end in an extra branch there, and the lap-split popup reuses its gapRequest load. Register
+// Score 44636 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
+// player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
+// both marks loops count in value (the second from j, which gives the original's != loop test). The
+// 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
+// there, but this form scores far better (the registers from there on). Both popups' 60000 tests and the player
+// popup's call read rider->checkpointGap again rather than value (a read-through search). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
 // lap-split loop, the constant 1 in the lap-split popup), so the saved and temporary registers of every display-list
@@ -1519,7 +1523,6 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // marks, the boost meter, the stunt score and the best times.
 void func_801F4120(Gfx** gdlp) {
     s32 i;
-    s32 k;
     s32 j;
     s32 x;
     s32 y;
@@ -1531,6 +1534,7 @@ void func_801F4120(Gfx** gdlp) {
     UnkStruct_80228C30* boost;
     s8* digit;
     s32 x2;
+    s32 k;
     s32 y2;
     Gfx* gdl = *gdlp;
 
@@ -1625,15 +1629,14 @@ void func_801F4120(Gfx** gdlp) {
                 value = rider->checkpointGap;
                 if (value < 10000) {
                     x = -0xF;
-                } else if (value < 60000) {
+                } else if (rider->checkpointGap < 60000) {
                     x = -0xA;
                 } else {
                     x = 0;
                 }
+                color = 2;
                 if (rider->gapRequest == 1) {
                     color = 1;
-                } else {
-                    color = 2;
                 }
                 func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, color);
             }
@@ -1661,10 +1664,9 @@ void func_801F4120(Gfx** gdlp) {
         rider = &gRiderRaceState[gPlayer1Rider];
         if (rider->gapTimer != 0) {
             value = rider->checkpointGap;
-            color = 2;
             if (value < 10000) {
                 j = 2;
-            } else if (value < 60000) {
+            } else if (rider->checkpointGap < 60000) {
                 j = 1;
             } else {
                 j = 0;
@@ -1677,8 +1679,10 @@ void func_801F4120(Gfx** gdlp) {
             }
             if ((gGameModes == GMODE_TIME_TRIALS) && (rider->gapRequest == 1)) {
                 color = 1;
+            } else {
+                color = 2;
             }
-            func_801F25E0(&gdl, x, 0x7E, value, 3, rider->gapRequest, color);
+            func_801F25E0(&gdl, x, 0x7E, rider->checkpointGap, 3, rider->gapRequest, color);
             gDPPipeSync(gdl++);
             gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
             // n, y: the icon's position.
@@ -1937,7 +1941,7 @@ void func_801F4120(Gfx** gdlp) {
                     y = 0xD6;
                 }
             }
-            for (j = 0; j < k; j++) {
+            for (value = 0; value < k; value++) {
                 HUD_SCISRECT(gdl, x, y, 12, 12);
                 x += 0xE;
             }
@@ -1966,7 +1970,8 @@ void func_801F4120(Gfx** gdlp) {
             if (j < 0) {
                 j = 0;
             }
-            for (x += j * 0xE; j < k; j++) {
+            x += j * 0xE;
+            for (value = j; value < k; value++) {
                 HUD_SCISRECT(gdl, x, y, 12, 12);
                 x += 0xE;
             }
@@ -2005,11 +2010,10 @@ void func_801F4120(Gfx** gdlp) {
                     if (color >= 4) {
                         color = 6 - color;
                     }
+                } else if (j < n) {
+                    color = 3;
                 } else {
                     color = 0;
-                    if (j < n) {
-                        color = 3;
-                    }
                 }
                 HUD_LOAD32(gdl, &D_102EE70[(color + j * 4) * (20 * 8)], 20, 8);
                 HUD_SCISRECT(gdl, x, y, 20, 8);

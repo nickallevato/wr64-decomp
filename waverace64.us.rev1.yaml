@@ -342,9 +342,9 @@ segments:
       # positions func_800665B0 passes to func_800BFB84); the rest of bss2 continues in bss2a
       - { type: .bss, start: 0xA95D0, vram: 0x80192650, name: game/code_C6C0 }
       - { type: bss, start: 0xA95D0, vram: 0x80192690, name: bss2a }
-      # code_2FB10's .bss from 0x801C3A00 to 0x801C3A0F (D_801C3A00, D_801C3A04 and D_801C3A08, the osGetTime
-      # stamp); the rest of it is still in bss2
-      - { type: .bss, start: 0xA95D0, vram: 0x801C3A00, name: game/code_2FB10 }
+      # code_2FB10's .bss from 0x801C26C0 to 0x801C3A0F (D_801C26C0 up to the osGetTime stamp D_801C3A08:
+      # gStuntRecords, gRiderRaceState and the race-state words); bss2a ends at 0x801C26C0
+      - { type: .bss, start: 0xA95D0, vram: 0x801C26C0, name: game/code_2FB10 }
       - { type: bss, start: 0xA95D0, vram: 0x801C3A10, name: bss2b }
       # code_43DA0's .bss from 0x801C4170 to 0x801C419F (D_801C4170 and D_801C4188); the rest of it is still in
       # bss2b and bss2c

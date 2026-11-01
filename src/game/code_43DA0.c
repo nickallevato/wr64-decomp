@@ -390,31 +390,34 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 43578 of 181100: same calls and branches (by a structure diff) and the same frame (0x2C0) with every
-// local at the original's offset; the direction is scaled in place after sqrtf and glare is squared four times
-// before the branch, both as in the original. The quad corners (v -/+ c, -v -/+ c) are written out at each
-// use, as the original keeps them in compiler temporaries. Left: the spill slots of those temporaries (the
-// original also stores cam->upX/upY/upZ to stack temporaries and reads them back) and float registers.
+// Score 32097 of 181100: same calls and branches (by a structure diff); frame 0x2C8 here, 0x2C0 in the original.
+// The direction is scaled in place after sqrtf and glare is squared four times before the branch, both as in the
+// original. The quad corners (v -/+ c, -v -/+ c) are written out at each use, as the original keeps them in
+// compiler temporaries; operand orders, line joins (the texture coordinates of several vertices on one line),
+// statement moves (two rounds), the declaration order and one 64 spelled as an int come from searches (the
+// declaration search moved the matrices four bytes off the original's 0x200/0x240, scoring better). Left: the spill
+// slots of those temporaries (the original also stores cam->upX/upY/upZ to stack temporaries and reads them back)
+// and float registers.
 Gfx* func_8008A0E0(Gfx* gdl) {
-    UnkStruct_801C43F8* p;
     f32 cx;
-    camera_unk_1* cam;
     f32 cy;
+    UnkStruct_801C43F8* p;
+    f32 inv;
+    camera_unk_1* cam;
     f32 dx;
+    f32 dot;
     f32 dy;
     f32 dz;
-    f32 inv;
-    f32 dot;
-    f32 glare;
-    f32 rx;
-    f32 ry;
-    f32 rz;
-    f32 angle;
-    f32 alpha;
-    f32 cz;
-    MtxF sp240;
-    MtxF sp200;
     f32 vx;
+    f32 cz;
+    f32 glare;
+    f32 angle;
+    f32 ry;
+    f32 alpha;
+    MtxF sp240;
+    f32 rz;
+    f32 rx;
+    MtxF sp200;
     f32 vy;
     f32 vz;
 
@@ -459,18 +462,18 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     ry = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
     rz = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
     func_8004A3C0(&sp240, &sp200, cam->unk64, cam->unk68, cam->unk6C, angle);
-    vx = (sp200.mf[2][0] * rz) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
-    vy = (sp200.mf[2][1] * rz) + ((sp200.mf[0][1] * rx) + (sp200.mf[1][1] * ry));
-    vz = (sp200.mf[2][2] * rz) + ((sp200.mf[0][2] * rx) + (sp200.mf[1][2] * ry));
+    vy = ((ry * sp200.mf[1][1]) + (sp200.mf[0][1] * rx)) + (sp200.mf[2][1] * rz);
+    vz = (rz * sp200.mf[2][2]) + ((sp200.mf[0][2] * rx) + (sp200.mf[1][2] * ry));
     cx = (cam->unk68 * vz) - (cam->unk6C * vy);
+    vx = (rz * sp200.mf[2][0]) + ((sp200.mf[0][0] * rx) + (sp200.mf[1][0] * ry));
     cy = (cam->unk6C * vx) - (cam->unk64 * vz);
     cz = (cam->unk64 * vy) - (cam->unk68 * vx);
-    p->unk350[0][0].v.ob[0] = (s16) (s32) (32.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * ((-1.0f * vx) - cx));
+    p->unk350[0][0].v.ob[0] = (s32) (32.0f * vx) + (s16) D_800D98CC + (s16) (s32) (8.0f * ((-1.0f * vx) - cx));
     p->unk350[0][0].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * ((-1.0f * vy) - cy));
     p->unk350[0][0].v.ob[2] = (s16) (s32) (32.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * ((-1.0f * vz) - cz));
     p->unk350[0][0].v.tc[0] = 0;
     p->unk350[0][0].v.tc[1] = 0;
-    p->unk350[0][1].v.ob[0] = (s16) (s32) (32.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * (vx - cx));
+    p->unk350[0][1].v.ob[0] = (s32) (32.0f * vx) + (s16) D_800D98CC + (s16) (s32) (8.0f * (vx - cx));
     p->unk350[0][1].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * (vy - cy));
     p->unk350[0][1].v.ob[2] = (s16) (s32) (32.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * (vz - cz));
     p->unk350[0][1].v.tc[0] = 0x800;
@@ -478,11 +481,10 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[0][2].v.ob[0] = (s16) (s32) (32.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * ((-1.0f * vx) + cx));
     p->unk350[0][2].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * ((-1.0f * vy) + cy));
     p->unk350[0][2].v.ob[2] = (s16) (s32) (32.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * ((-1.0f * vz) + cz));
-    p->unk350[0][2].v.tc[0] = 0;
-    p->unk350[0][2].v.tc[1] = 0x800;
+    p->unk350[0][2].v.tc[0] = 0; p->unk350[0][2].v.tc[1] = 0x800;
     p->unk350[0][3].v.ob[0] = (s16) (s32) (32.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * (vx + cx));
-    p->unk350[0][3].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * (vy + cy));
     p->unk350[0][3].v.ob[2] = (s16) (s32) (32.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * (vz + cz));
+    p->unk350[0][3].v.ob[1] = (s16) (s32) (32.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * (vy + cy));
     p->unk350[0][3].v.tc[0] = 0x800;
     p->unk350[0][3].v.tc[1] = 0x800;
     p->unk350[1][0].v.ob[0] = (s16) (s32) (48.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * ((-1.0f * vx) - cx));
@@ -491,18 +493,16 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[1][0].v.tc[0] = 0;
     p->unk350[1][0].v.tc[1] = 0;
     p->unk350[1][1].v.ob[0] = (s16) (s32) (48.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * (vx - cx));
-    p->unk350[1][1].v.ob[1] = (s16) (s32) (48.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * (vy - cy));
+    p->unk350[1][1].v.ob[1] = (s32) (48.0f * vy) + (s16) D_800D98D0 + (s16) (s32) (16.0f * (vy - cy));
     p->unk350[1][1].v.ob[2] = (s16) (s32) (48.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * (vz - cz));
-    p->unk350[1][1].v.tc[0] = 0x800;
-    p->unk350[1][1].v.tc[1] = 0;
+    p->unk350[1][1].v.tc[0] = 0x800; p->unk350[1][1].v.tc[1] = 0;
     p->unk350[1][2].v.ob[0] = (s16) (s32) (48.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * ((-1.0f * vx) + cx));
-    p->unk350[1][2].v.ob[1] = (s16) (s32) (48.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * ((-1.0f * vy) + cy));
+    p->unk350[1][2].v.ob[1] = (s16) D_800D98D0 + (s32) (48.0f * vy) + (s16) (s32) (16.0f * ((-1.0f * vy) + cy));
     p->unk350[1][2].v.ob[2] = (s16) (s32) (48.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * ((-1.0f * vz) + cz));
-    p->unk350[1][2].v.tc[0] = 0;
-    p->unk350[1][2].v.tc[1] = 0x800;
-    p->unk350[1][3].v.ob[0] = (s16) (s32) (48.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * (vx + cx));
+    p->unk350[1][2].v.tc[0] = 0; p->unk350[1][2].v.tc[1] = 0x800;
     p->unk350[1][3].v.ob[1] = (s16) (s32) (48.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * (vy + cy));
     p->unk350[1][3].v.ob[2] = (s16) (s32) (48.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * (vz + cz));
+    p->unk350[1][3].v.ob[0] = (s16) (s32) (48.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * (vx + cx));
     p->unk350[1][3].v.tc[0] = 0x800;
     p->unk350[1][3].v.tc[1] = 0x800;
     p->unk350[2][0].v.ob[0] = (s16) (s32) (64.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * ((-1.0f * vx) - cx));
@@ -510,59 +510,58 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[2][0].v.ob[2] = (s16) (s32) (64.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * ((-1.0f * vz) - cz));
     p->unk350[2][0].v.tc[0] = 0;
     p->unk350[2][0].v.tc[1] = 0;
-    p->unk350[2][1].v.ob[0] = (s16) (s32) (64.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * (vx - cx));
-    p->unk350[2][1].v.ob[1] = (s16) (s32) (64.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * (vy - cy));
     p->unk350[2][1].v.ob[2] = (s16) (s32) (64.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * (vz - cz));
+    p->unk350[2][1].v.ob[1] = (s16) (s32) (64.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * (vy - cy));
+    p->unk350[2][1].v.ob[0] = (s16) D_800D98CC + (s32) (64.0f * vx) + (s16) (s32) (32.0f * (vx - cx));
     p->unk350[2][1].v.tc[0] = 0x800;
     p->unk350[2][1].v.tc[1] = 0;
-    p->unk350[2][2].v.ob[0] = (s16) (s32) (64.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * ((-1.0f * vx) + cx));
+    p->unk350[2][2].v.ob[0] = (s16) D_800D98CC + (s32) (64.0f * vx) + (s16) (s32) (32.0f * ((-1.0f * vx) + cx));
     p->unk350[2][2].v.ob[1] = (s16) (s32) (64.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * ((-1.0f * vy) + cy));
     p->unk350[2][2].v.ob[2] = (s16) (s32) (64.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * ((-1.0f * vz) + cz));
     p->unk350[2][2].v.tc[0] = 0;
     p->unk350[2][2].v.tc[1] = 0x800;
     p->unk350[2][3].v.ob[0] = (s16) (s32) (64.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * (vx + cx));
-    p->unk350[2][3].v.ob[1] = (s16) (s32) (64.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * (vy + cy));
     p->unk350[2][3].v.ob[2] = (s16) (s32) (64.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * (vz + cz));
+    p->unk350[2][3].v.ob[1] = (s16) (s32) (64.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * (vy + cy));
     p->unk350[2][3].v.tc[0] = 0x800;
     p->unk350[2][3].v.tc[1] = 0x800;
-    p->unk350[3][0].v.ob[0] = (s16) (s32) (96.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * ((-1.0f * vx) - cx));
+    p->unk350[3][0].v.ob[0] = (s16) D_800D98CC + (s32) (96.0f * vx) + (s16) (s32) (16.0f * ((-1.0f * vx) - cx));
     p->unk350[3][0].v.ob[1] = (s16) (s32) (96.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * ((-1.0f * vy) - cy));
     p->unk350[3][0].v.ob[2] = (s16) (s32) (96.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * ((-1.0f * vz) - cz));
     p->unk350[3][0].v.tc[0] = 0;
     p->unk350[3][0].v.tc[1] = 0;
-    p->unk350[3][1].v.ob[0] = (s16) (s32) (96.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * (vx - cx));
+    p->unk350[3][1].v.ob[0] = (s16) D_800D98CC + (s32) (96.0f * vx) + (s16) (s32) (16.0f * (vx - cx));
     p->unk350[3][1].v.ob[1] = (s16) (s32) (96.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * (vy - cy));
     p->unk350[3][1].v.ob[2] = (s16) (s32) (96.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * (vz - cz));
     p->unk350[3][1].v.tc[0] = 0x800;
     p->unk350[3][1].v.tc[1] = 0;
-    p->unk350[3][2].v.ob[0] = (s16) (s32) (96.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * ((-1.0f * vx) + cx));
     p->unk350[3][2].v.ob[1] = (s16) (s32) (96.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * ((-1.0f * vy) + cy));
+    p->unk350[3][2].v.ob[0] = (s16) (s32) (96.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * ((-1.0f * vx) + cx));
     p->unk350[3][2].v.ob[2] = (s16) (s32) (96.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * ((-1.0f * vz) + cz));
     p->unk350[3][2].v.tc[0] = 0;
     p->unk350[3][2].v.tc[1] = 0x800;
-    p->unk350[3][3].v.ob[0] = (s16) (s32) (96.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * (vx + cx));
     p->unk350[3][3].v.ob[1] = (s16) (s32) (96.0f * vy) + D_800D98D0 + (s16) (s32) (16.0f * (vy + cy));
+    p->unk350[3][3].v.ob[0] = (s16) (s32) (96.0f * vx) + D_800D98CC + (s16) (s32) (16.0f * (vx + cx));
     p->unk350[3][3].v.ob[2] = (s16) (s32) (96.0f * vz) + D_800D98D4 + (s16) (s32) (16.0f * (vz + cz));
     p->unk350[3][3].v.tc[0] = 0x800;
     p->unk350[3][3].v.tc[1] = 0x800;
     p->unk350[4][0].v.ob[0] = (s16) (s32) (128.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * ((-1.0f * vx) - cx));
     p->unk350[4][0].v.ob[1] = (s16) (s32) (128.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * ((-1.0f * vy) - cy));
     p->unk350[4][0].v.ob[2] = (s16) (s32) (128.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * ((-1.0f * vz) - cz));
-    p->unk350[4][0].v.tc[0] = 0;
-    p->unk350[4][0].v.tc[1] = 0;
+    p->unk350[4][0].v.tc[0] = 0; p->unk350[4][0].v.tc[1] = 0;
     p->unk350[4][1].v.ob[0] = (s16) (s32) (128.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * (vx - cx));
-    p->unk350[4][1].v.ob[1] = (s16) (s32) (128.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * (vy - cy));
+    p->unk350[4][1].v.ob[1] = (s32) (128.0f * vy) + (s16) D_800D98D0 + (s16) (s32) (32.0f * (vy - cy));
     p->unk350[4][1].v.ob[2] = (s16) (s32) (128.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * (vz - cz));
     p->unk350[4][1].v.tc[0] = 0x800;
     p->unk350[4][1].v.tc[1] = 0;
+    p->unk350[4][2].v.ob[2] = (s16) (s32) (128.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * ((-1.0f * vz) + cz));
     p->unk350[4][2].v.ob[0] = (s16) (s32) (128.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * ((-1.0f * vx) + cx));
     p->unk350[4][2].v.ob[1] = (s16) (s32) (128.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * ((-1.0f * vy) + cy));
-    p->unk350[4][2].v.ob[2] = (s16) (s32) (128.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * ((-1.0f * vz) + cz));
     p->unk350[4][2].v.tc[0] = 0;
     p->unk350[4][2].v.tc[1] = 0x800;
-    p->unk350[4][3].v.ob[0] = (s16) (s32) (128.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * (vx + cx));
     p->unk350[4][3].v.ob[1] = (s16) (s32) (128.0f * vy) + D_800D98D0 + (s16) (s32) (32.0f * (vy + cy));
     p->unk350[4][3].v.ob[2] = (s16) (s32) (128.0f * vz) + D_800D98D4 + (s16) (s32) (32.0f * (vz + cz));
+    p->unk350[4][3].v.ob[0] = (s16) (s32) (128.0f * vx) + D_800D98CC + (s16) (s32) (32.0f * (vx + cx));
     p->unk350[4][3].v.tc[0] = 0x800;
     p->unk350[4][3].v.tc[1] = 0x800;
     p->unk350[5][0].v.ob[0] = (s16) (s32) (160.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * ((-1.0f * vx) - cx));
@@ -573,26 +572,25 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[5][1].v.ob[0] = (s16) (s32) (160.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * (vx - cx));
     p->unk350[5][1].v.ob[1] = (s16) (s32) (160.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * (vy - cy));
     p->unk350[5][1].v.ob[2] = (s16) (s32) (160.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * (vz - cz));
-    p->unk350[5][1].v.tc[0] = 0x800;
-    p->unk350[5][1].v.tc[1] = 0;
+    p->unk350[5][1].v.tc[0] = 0x800; p->unk350[5][1].v.tc[1] = 0;
     p->unk350[5][2].v.ob[0] = (s16) (s32) (160.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * ((-1.0f * vx) + cx));
     p->unk350[5][2].v.ob[1] = (s16) (s32) (160.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * ((-1.0f * vy) + cy));
     p->unk350[5][2].v.ob[2] = (s16) (s32) (160.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * ((-1.0f * vz) + cz));
     p->unk350[5][2].v.tc[0] = 0;
     p->unk350[5][2].v.tc[1] = 0x800;
     p->unk350[5][3].v.ob[0] = (s16) (s32) (160.0f * vx) + D_800D98CC + (s16) (s32) (8.0f * (vx + cx));
-    p->unk350[5][3].v.ob[1] = (s16) (s32) (160.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * (vy + cy));
     p->unk350[5][3].v.ob[2] = (s16) (s32) (160.0f * vz) + D_800D98D4 + (s16) (s32) (8.0f * (vz + cz));
+    p->unk350[5][3].v.ob[1] = (s16) (s32) (160.0f * vy) + D_800D98D0 + (s16) (s32) (8.0f * (vy + cy));
     p->unk350[5][3].v.tc[0] = 0x800;
     p->unk350[5][3].v.tc[1] = 0x800;
-    p->unk350[6][0].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * ((-1.0f * vx) - cx));
     p->unk350[6][0].v.ob[1] = (s16) (s32) (232.0f * vy) + D_800D98D0 + (s16) (s32) (64.0f * ((-1.0f * vy) - cy));
+    p->unk350[6][0].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * ((-1.0f * vx) - cx));
     p->unk350[6][0].v.ob[2] = (s16) (s32) (232.0f * vz) + D_800D98D4 + (s16) (s32) (64.0f * ((-1.0f * vz) - cz));
     p->unk350[6][0].v.tc[0] = 0;
     p->unk350[6][0].v.tc[1] = 0;
     p->unk350[6][1].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * (vx - cx));
     p->unk350[6][1].v.ob[1] = (s16) (s32) (232.0f * vy) + D_800D98D0 + (s16) (s32) (64.0f * (vy - cy));
-    p->unk350[6][1].v.ob[2] = (s16) (s32) (232.0f * vz) + D_800D98D4 + (s16) (s32) (64.0f * (vz - cz));
+    p->unk350[6][1].v.ob[2] = (s16) D_800D98D4 + (s32) (232.0f * vz) + (s16) (s32) (64 * (vz - cz));
     p->unk350[6][1].v.tc[0] = 0x800;
     p->unk350[6][1].v.tc[1] = 0;
     p->unk350[6][2].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * ((-1.0f * vx) + cx));
@@ -601,14 +599,14 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[6][2].v.tc[0] = 0;
     p->unk350[6][2].v.tc[1] = 0x800;
     p->unk350[6][3].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * (vx + cx));
-    p->unk350[6][3].v.ob[1] = (s16) (s32) (232.0f * vy) + D_800D98D0 + (s16) (s32) (64.0f * (vy + cy));
     p->unk350[6][3].v.ob[2] = (s16) (s32) (232.0f * vz) + D_800D98D4 + (s16) (s32) (64.0f * (vz + cz));
+    p->unk350[6][3].v.ob[1] = (s16) (s32) (232.0f * vy) + D_800D98D0 + (s16) (s32) (64.0f * (vy + cy));
     p->unk350[6][3].v.tc[0] = 0x800;
     p->unk350[6][3].v.tc[1] = 0x800;
+    p->unk350[7][0].v.tc[0] = 0;
     p->unk350[7][0].v.ob[0] = (D_800D98CC - (s16) (s32) (72.0f * vx)) - (s16) (s32) (8.0f * ((-1.0f * vx) - cx));
     p->unk350[7][0].v.ob[1] = (D_800D98D0 - (s16) (s32) (72.0f * vy)) - (s16) (s32) (8.0f * ((-1.0f * vy) - cy));
     p->unk350[7][0].v.ob[2] = (D_800D98D4 - (s16) (s32) (72.0f * vz)) - (s16) (s32) (8.0f * ((-1.0f * vz) - cz));
-    p->unk350[7][0].v.tc[0] = 0;
     p->unk350[7][0].v.tc[1] = 0;
     p->unk350[7][1].v.ob[0] = (D_800D98CC - (s16) (s32) (72.0f * vx)) - (s16) (s32) (8.0f * (vx - cx));
     p->unk350[7][1].v.ob[1] = (D_800D98D0 - (s16) (s32) (72.0f * vy)) - (s16) (s32) (8.0f * (vy - cy));
@@ -620,10 +618,10 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[7][2].v.ob[2] = (D_800D98D4 - (s16) (s32) (72.0f * vz)) - (s16) (s32) (8.0f * ((-1.0f * vz) + cz));
     p->unk350[7][2].v.tc[0] = 0;
     p->unk350[7][2].v.tc[1] = 0x800;
-    p->unk350[7][3].v.ob[0] = (D_800D98CC - (s16) (s32) (72.0f * vx)) - (s16) (s32) (8.0f * (vx + cx));
-    p->unk350[7][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (72.0f * vy)) - (s16) (s32) (8.0f * (vy + cy));
     p->unk350[7][3].v.ob[2] = (D_800D98D4 - (s16) (s32) (72.0f * vz)) - (s16) (s32) (8.0f * (vz + cz));
+    p->unk350[7][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (72.0f * vy)) - (s16) (s32) (8.0f * (vy + cy));
     p->unk350[7][3].v.tc[0] = 0x800;
+    p->unk350[7][3].v.ob[0] = (D_800D98CC - (s16) (s32) (72.0f * vx)) - (s16) (s32) (8.0f * (vx + cx));
     p->unk350[7][3].v.tc[1] = 0x800;
     p->unk350[8][0].v.ob[0] = (D_800D98CC - (s16) (s32) (128.0f * vx)) - (s16) (s32) (48.0f * ((-1.0f * vx) - cx));
     p->unk350[8][0].v.ob[1] = (D_800D98D0 - (s16) (s32) (128.0f * vy)) - (s16) (s32) (48.0f * ((-1.0f * vy) - cy));
@@ -640,29 +638,29 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[8][2].v.ob[2] = (D_800D98D4 - (s16) (s32) (128.0f * vz)) - (s16) (s32) (48.0f * ((-1.0f * vz) + cz));
     p->unk350[8][2].v.tc[0] = 0;
     p->unk350[8][2].v.tc[1] = 0x800;
-    p->unk350[8][3].v.ob[0] = (D_800D98CC - (s16) (s32) (128.0f * vx)) - (s16) (s32) (48.0f * (vx + cx));
     p->unk350[8][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (128.0f * vy)) - (s16) (s32) (48.0f * (vy + cy));
     p->unk350[8][3].v.ob[2] = (D_800D98D4 - (s16) (s32) (128.0f * vz)) - (s16) (s32) (48.0f * (vz + cz));
+    p->unk350[8][3].v.ob[0] = (D_800D98CC - (s16) (s32) (128.0f * vx)) - (s16) (s32) (48.0f * (vx + cx));
     p->unk350[8][3].v.tc[0] = 0x800;
     p->unk350[8][3].v.tc[1] = 0x800;
-    p->unk350[9][0].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * ((-1.0f * vx) - cx));
     p->unk350[9][0].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * ((-1.0f * vy) - cy));
     p->unk350[9][0].v.ob[2] = (D_800D98D4 - (s16) (s32) (232.0f * vz)) - (s16) (s32) (64.0f * ((-1.0f * vz) - cz));
+    p->unk350[9][0].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * ((-1.0f * vx) - cx));
     p->unk350[9][0].v.tc[0] = 0;
     p->unk350[9][0].v.tc[1] = 0;
-    p->unk350[9][1].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * (vx - cx));
     p->unk350[9][1].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * (vy - cy));
     p->unk350[9][1].v.ob[2] = (D_800D98D4 - (s16) (s32) (232.0f * vz)) - (s16) (s32) (64.0f * (vz - cz));
+    p->unk350[9][1].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * (vx - cx));
     p->unk350[9][1].v.tc[0] = 0x800;
     p->unk350[9][1].v.tc[1] = 0;
-    p->unk350[9][2].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * ((-1.0f * vx) + cx));
     p->unk350[9][2].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * ((-1.0f * vy) + cy));
+    p->unk350[9][2].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * ((-1.0f * vx) + cx));
     p->unk350[9][2].v.ob[2] = (D_800D98D4 - (s16) (s32) (232.0f * vz)) - (s16) (s32) (64.0f * ((-1.0f * vz) + cz));
     p->unk350[9][2].v.tc[0] = 0;
     p->unk350[9][2].v.tc[1] = 0x800;
     p->unk350[9][3].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * (vx + cx));
-    p->unk350[9][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * (vy + cy));
     p->unk350[9][3].v.ob[2] = (D_800D98D4 - (s16) (s32) (232.0f * vz)) - (s16) (s32) (64.0f * (vz + cz));
+    p->unk350[9][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * (vy + cy));
     p->unk350[9][3].v.tc[0] = 0x800;
     p->unk350[9][3].v.tc[1] = 0x800;
     gDPLoadTextureBlock(gdl++, D_100FAB0, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
@@ -1137,13 +1135,15 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 11074 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
-// (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first). The literal spellings
-// (64 as an int, 0 and 0.00f in two zero tests) came from a respelling search: IDO keeps differently spelled
+// Score 10389 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
+// first). The literal spellings
+// (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
 // constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
 // caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
 // the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
+    s32 padS0[2]; // stack pad
     f32 dirX;
     camera_unk_1* cam;
     UnkStruct_801C43F8* p;
@@ -1166,8 +1166,8 @@ void func_8008E794(void) {
     dirX = cam->unk64;
     dirZ = cam->unk6C;
     arena = gGfxPool->unk13D68;
-    len = sqrtf((dirX * dirX) + (dirZ * dirZ));
-    if (len != 0.0f) {
+    len = sqrtf((dirZ * dirZ) + (dirX * dirX));
+    if (len != 0) {
         len = 4000.0f / len;
         dirZ *= len;
         dirX *= len;
@@ -1200,7 +1200,7 @@ void func_8008E794(void) {
         dirZ = cam->unk6C;
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
-        s = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        s = 4000.0f / sqrtf((dirZ * dirZ) + (dirX * dirX));
         dirZ *= s;
         dirX *= s;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
@@ -1330,7 +1330,7 @@ void func_8008E794(void) {
                 case SOUTHERN_ISLAND:
                     angle = (e->unk10C << 12) / 360;
                     e->unkB4 = 0;
-                    e->unkFC = (COS(angle) * cam->unk64) - (SIN(angle) * cam->unk6C);
+                    e->unkFC = (cam->unk64 * COS(angle)) - (SIN(angle) * cam->unk6C);
                     e->unkAC = -64.0f;
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
