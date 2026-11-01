@@ -2122,12 +2122,13 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 57322 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 52599 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
-// them; sp84 and sp8C are compiler spills in the original and still variables here. Three zero tests are int 0
-// (the original keeps differently spelled zeros apart; a respelling search). Named
+// them; sp84 and sp8C are compiler spills in the original and still variables here. Three zero tests, a 1.0f
+// numerator and two constants are respelled (the original keeps differently spelled constants apart; respelling
+// searches). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry.
@@ -2254,7 +2255,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs1 = arg1->unk0.unk0.y;
     temp_fs2 = arg1->unk0.unk0.x;
     temp_fs3 = arg1->unk0.unk0.z;
-    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, temp_fs2, temp_fs1, temp_fs3, 298.01123f, 355.76913f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
+    // 355.769130f: a separate constant from the 355.76913f below (odd literal, respelling search)
+    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, temp_fs2, temp_fs1, temp_fs3, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
     func_800534AC(temp_a1, &arg1->unk90.unk0.y, &arg1->unk90.unk0.z, arg1->unkB4.unk0.x, arg1->unkB4.unk0.y, arg1->unkB4.unk0.z, arg1->unk6C.unk0.x, arg1->unk6C.unk0.y, arg1->unk6C.unk0.z, 298.01123f, 355.76913f, arg1->unk6C.unkC.x, arg1->unk6C.unkC.y, arg1->unk6C.unkC.z);
     arg1->unk48.unkC.x = arg1->unk24.unk0.x - arg1->unk48.unk0.x;
     arg1->unk48.unkC.y = arg1->unk24.unk0.y - arg1->unk48.unk0.y;
@@ -2457,7 +2459,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fa0 = (f32) (((f64) (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5) - (f64) arg1->unk1F8.unk0.z);
     temp_fs1 = arg1->unk1F8.unk0.y;
     temp_fs2 = arg1->unk1F8.unk0.z;
-    temp_fs3 = 1.0f / sqrtf((temp_fv0 * temp_fv0) + (temp_fs0 * temp_fs0) + (temp_fa0 * temp_fa0));
+    temp_fs3 = 1 / sqrtf((temp_fv0 * temp_fv0) + (temp_fs0 * temp_fs0) + (temp_fa0 * temp_fa0));
     var_fv0 = arg1->unk1D4.unk0.z - temp_fs2;
     arg1->unk1F8.unkC.x = temp_fs3 * temp_fv0;
     arg1->unk1F8.unkC.y = temp_fs3 * temp_fs0;
@@ -2711,7 +2713,7 @@ block_45: // m2c label name
         arg1->unkFC.unkC.y = 0.0f;
         temp_fv0 = temp_fa0 * rider->unk84;
         arg1->unkFC.unkC.x = (rider->unk6C * temp_fs0) + temp_fv0;
-        arg1->unkFC.unk14.x = 0.0f;
+        arg1->unkFC.unk14.x = 0;
         arg1->unkFC.unkC.z = (rider->unk74 * temp_fs0) + (temp_fa0 * rider->unk8C);
         arg1->unkFC.unk14.y = 1.0f;
         arg1->unkFC.unk14.z = 0;
@@ -3913,11 +3915,11 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 66095 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 65967 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search, operand orders from an operand-swap search and one literal spelling from a respelling search.
+// search, operand orders, declaration order and one literal spelling from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -3925,7 +3927,9 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 // frame step and blend, then the per-entry update by state word, the link passes (D_800D4A08/D_800D4A0C
 // times) and the copy of the entries into the pose.
 void func_8005DE24(s32 arg0) {
-    UnkStruct_80192690* rider;
+    f32 k;
+    f32 len;
+    f32 dx;
     RiderPart* part;
     RiderPart* first;
     RiderPart* last;
@@ -3940,24 +3944,22 @@ void func_8005DE24(s32 arg0) {
     s32 frame;
     f32 spC0;
     f32 spC4;
-    s32 spEC;
     f32 nx;
     f32 ny;
     f32 nz;
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 vx;
-    f32 vy;
-    f32 vz;
-    f32 len;
-    f32 k;
+    UnkStruct_80192690* rider;
     s32 temp_a1_2;
+    s32 spEC;
+    f32 vx;
+    f32 var_ft5;
+    struct UnkStruct_801C2938* temp_v1;
     s32 temp_t9;
     s32 temp_v0_3;
     s8 temp_v0_7;
-    struct UnkStruct_801C2938* temp_v1;
-    f32 var_ft5;
+    f32 dy;
+    f32 dz;
+    f32 vy;
+    f32 vz;
 
     rider = &D_80192690[arg0];
     if (gRiderGameModes == PAUSE_MODE) {
