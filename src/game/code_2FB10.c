@@ -684,11 +684,12 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 14259 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 13789 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
-// ref and time (dead there), the original's registers for them. Left: register allocation (gCourseID in
+// ref and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a
+// loop-counter search). Left: register allocation (gCourseID in
 // a2, not a3; the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block
 // (`dot >= 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot.
 // unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
@@ -982,9 +983,9 @@ void func_8007687C(s32 arg0) {
                         rider->lapTimes[rider->lapCount - 1] = rider->lapTime;
                         rider->lapBuoyMisses[rider->lapCount - 1] = rider->unk130;
                     } else {
-                        for (i = 0; i < 8; i++) {
-                            rider->lapTimes[i] = rider->lapTimes[i + 1];
-                            rider->lapBuoyMisses[i] = rider->lapBuoyMisses[i + 1];
+                        for (sameZone = 0; sameZone < 8; sameZone++) {
+                            rider->lapTimes[sameZone] = rider->lapTimes[sameZone + 1];
+                            rider->lapBuoyMisses[sameZone] = rider->lapBuoyMisses[sameZone + 1];
                         }
                         rider->lapTimes[8] = rider->lapTime;
                         rider->lapBuoyMisses[8] = rider->unk130;
@@ -1312,12 +1313,13 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 10589 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The stack pads below
+// Score 10004 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The stack pads below
 // (found by a placement search) give that frame but are not the real variables. The timeLeft test has the
 // out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus flag and
 // the record sound value are if/else assignments (the original hoists the else value above the branch); the
 // cross product and the record score sum are computed into locals first, as the original's order shows; operand
-// orders and the declaration order come from searches.
+// orders, the declaration order and the counters of the race-time and unk2C loops (sfx, bonus: the original's
+// registers for them) come from searches.
 // Left: register allocation, and the original keeps its empty arg0 == gPlayer1Rider test as a branch
 // (`beq a0, t7` to the next instruction), which this C does not.
 void func_800783AC(s32 arg0) {
@@ -1674,8 +1676,8 @@ void func_800783AC(s32 arg0) {
                         laps = 9;
                     }
                     rider->raceTime = 0;
-                    for (i = 0; i < laps; i++) {
-                        rider->raceTime += rider->lapTimes[i];
+                    for (sfx = 0; sfx < laps; sfx++) {
+                        rider->raceTime += rider->lapTimes[sfx];
                     }
                     D_801C2928 = 0;
                     bonus = D_801C26D0 + D_801C39CC + D_801C39D4;
@@ -1705,8 +1707,8 @@ void func_800783AC(s32 arg0) {
                 }
             }
             rider->unk320 = rider->lapCount;
-            for (i = 1; i < D_801BB120; i++) {
-                rider->unk2C[i] = 0;
+            for (bonus = 1; bonus < D_801BB120; bonus++) {
+                rider->unk2C[bonus] = 0;
             }
         }
         rider->unk2C[cur] = 1;
