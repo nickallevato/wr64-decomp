@@ -3918,11 +3918,12 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 63548 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 63003 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
-// search (two rounds), operand orders, declaration order and one literal spelling from searches.
+// search (two rounds), operand orders, declaration order, one literal spelling and four field reads in place of
+// copies (read-through) from searches.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4111,7 +4112,7 @@ void func_8005DE24(s32 arg0) {
                         ny = pt->unkC;
                         dx = pt->unk10;
                         dy = pt->unk14;
-                        dz = ((nz * ny) + (rider->unk15B8 * dx) + (rider->unk15BC * dy)) * -1.0f;
+                        dz = ((nz * pt->unkC) + (rider->unk15B8 * dx) + (rider->unk15BC * dy)) * -1.0f;
                         pt->unkC = (1.5f * ny) + (nz * dz);
                         pt->unk10 = (dx * 1.5f) + (dz * rider->unk15B8);
                         pt->unk14 = (dy * 1.5f) + (dz * rider->unk15BC);
@@ -4163,7 +4164,7 @@ void func_8005DE24(s32 arg0) {
                         if ((rider->unk16CC == 0) && (gGameModeState == GMODE_STATE_STARTED)) {
                             func_80053EAC(arg0, 0x11, 1, 0.15f, 1U);
                         }
-                    } else if ((temp_v0_3 == 0x16) && (rider->unk16CC == 0) && (nx < 2.777778f) && ((f64) rider->unk7C > 0.95)) {
+                    } else if ((rider->unkC54 == 0x16) && (rider->unk16CC == 0) && (nx < 2.777778f) && ((f64) rider->unk7C > 0.95)) {
                         temp_v0_7 = rider->unkB5E;
                         if ((temp_v0_7 < 0xC) && (temp_v0_7 >= -0xB)) {
                             temp_v0_7 = rider->unkB5F;
@@ -4550,7 +4551,7 @@ void func_8005DE24(s32 arg0) {
                 } else {
                     dz = dy * D_800D49F8;
                 }
-                dy = dz + (((nx * ny) + (spC4 * nz) + (spC0 * dx)) * (D_800D49F0 - 1.0f));
+                dy = dz + (((rider->unk78 * ny) + (spC4 * nz) + (spC0 * dx)) * (D_800D49F0 - 1.0f));
                 part->unk4.x += ny + (dy * nx);
                 part->unk4.y += nz + (dy * spC4);
                 part->unk4.z += dx + (dy * spC0);
@@ -4579,7 +4580,7 @@ void func_8005DE24(s32 arg0) {
                 } else {
                     vz = vy * D_800D49F8;
                 }
-                vy = vz + (((nx * ny) + (spC0 * vx) + (spC4 * dz)) * (D_800D49F0 - 1.0f));
+                vy = vz + (((rider->unk78 * ny) + (spC0 * vx) + (spC4 * dz)) * (D_800D49F0 - 1.0f));
                 part->unk4.x = nz + (ny + (vy * nx));
                 part->unk4.y = dx + (dz + (vy * spC4));
                 part->unk4.z = dy + (vx + (vy * spC0));
