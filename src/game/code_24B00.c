@@ -1312,16 +1312,25 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 44672 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place
-// gdlh, dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C);
-// table B's draw loops reload D_801C0840[i] for the env alpha where the original reuses the loaded value,
-// and constants (G_CULL_BACK, the gate lists) sit in other registers. One local (slot) also serves as the
-// search counter, as in the original. Statement order in a few straight-line runs is from a greedy
-// statement-move search.
+// Score 36313 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
+// dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C); table B's draw loops
+// reload D_801C0840[i] for the env alpha where the original reuses the loaded value, and constants (G_CULL_BACK, the
+// gate lists) sit in other registers. Each search sets its counter to D_801BB120 (one load, CSE'd into a0 for all
+// three) and runs while (--counter > 0), the original's copy, decrement and bgtz shape; the first two searches count
+// in their own local n and the third in slot, and a pad sits above near (a split search: 40305 -> 36337, from the
+// extra stack words and the separate webs). Statement order in a few straight-line runs is from a greedy
+// statement-move search. Left: the original holds &D_801AEE20 in s8 for the whole function and does not hoist the
+// constant 1 in visibility loop 1, so its saved registers from s3 on are one lower than here (a tbl local is
+// copy-propagated away; `e->unk9C == 1U` in the second test stops one hoist and is kept, marked); its first search
+// walks through cur (s0), 43620 at the time. The three SysUtils_MatrixLookAt calls pass an int 0 for the first up
+// component (a respelling search: the same value, but IDO handles the int constant apart from 0.0f; 43515 with 0.0f).
+// Three pairs of statements share a line (line-join search: IDO schedules by source line, 40695 -> 40305). cam is
+// declared first (a declaration search, 36313).
 void func_8006E674(Gfx** gdl) {
-    s32 padA[2]; // stack pad
-    s32 slot;
     camera_unk_1* cam;
+    s32 padA[2]; // stack pad
+    s32 n;
+    s32 slot;
     UnkStruct_80192690* craft;
     UnkStruct_801AEE20* e;
     UnkStruct_801AEE20* e2;
@@ -1330,6 +1339,7 @@ void func_8006E674(Gfx** gdl) {
     UnkStruct_801BC940* o;
     s32 cur;
     s32 i;
+    s32 padN; // stack pad
     s32 near;
     s32 far;
     s32 idx;
@@ -1380,8 +1390,9 @@ void func_8006E674(Gfx** gdl) {
     // The next buoy (not a gate, unkC8 set) from the human's next record, the one after it,
     // and the one before it; the results are not used.
     e = &D_801AEE20[cur];
+    n = D_801BB120;
     if ((e->unk9C != 0) || (e->unkC8 == 0)) {
-        for (slot = D_801BB120 - 1; slot > 0; slot--) {
+        while (--n > 0) {
             e = &D_801AEE20[e->unkA0];
             if ((e->unk9C == 0) && (e->unkC8 != 0)) {
                 break;
@@ -1389,8 +1400,9 @@ void func_8006E674(Gfx** gdl) {
         }
     }
     e2 = &D_801AEE20[e->unkA0];
+    n = D_801BB120;
     if ((e2->unk9C != 0) || (e2->unkC8 == 0)) {
-        for (slot = D_801BB120 - 1; slot > 0; slot--) {
+        while (--n > 0) {
             e2 = &D_801AEE20[e2->unkA0];
             if ((e2->unk9C == 0) && (e2->unkC8 != 0)) {
                 break;
@@ -1398,8 +1410,9 @@ void func_8006E674(Gfx** gdl) {
         }
     }
     e3 = &D_801AEE20[e->unkA8];
+    slot = D_801BB120;
     if ((e3->unk9C != 0) || (e3->unkC8 == 0)) {
-        for (slot = D_801BB120 - 1; slot > 0; slot--) {
+        while (--slot > 0) {
             e3 = &D_801AEE20[e3->unkA8];
             if ((e3->unk9C == 0) && (e3->unkC8 != 0)) {
                 break;
@@ -1434,7 +1447,8 @@ void func_8006E674(Gfx** gdl) {
                 dx /= d;
                 dz /= d;
             }
-            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (e->unk9C == 1) || (e->unk98 == 8) || (e->unk98 == 9)) {
+            // 1U: odd literal; IDO then keeps only one of the two 1s in a register in this loop
+            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (e->unk9C == 1U) || (e->unk98 == 8) || (e->unk98 == 9)) {
                 if (d <= (f32) near) {
                     D_801C0840[i] = 0;
                 } else {
@@ -1456,8 +1470,7 @@ void func_8006E674(Gfx** gdl) {
         dx = b->unk0 - cam->eyeX;
         dz = b->unk8 - cam->eyeZ;
         if ((b->unk10 == 4) || (b->unk10 == 5)) {
-            D_801C08C0[i] = -1;
-            continue;
+            D_801C08C0[i] = -1; continue;
         }
         d = sqrtf((dx * dx) + (dz * dz));
         if (d < (f32) far) {
@@ -1523,7 +1536,7 @@ void func_8006E674(Gfx** gdl) {
             upY = 0.0f;
             upZ = 1.0f;
         }
-        SysUtils_MatrixLookAt(&D_801AE948->unkA1C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, b->unk0,
+        SysUtils_MatrixLookAt(&D_801AE948->unkA1C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0, upY, upZ, b->unk0,
                               b->unk4, b->unk8);
         D_801C0B80[i] = slot;
         if (++slot >= 32) {
@@ -1551,14 +1564,12 @@ void func_8006E674(Gfx** gdl) {
         idx = 17;
     }
     if (idx < 10) {
-        dlA2 = D_102CD90;
-        dlB2 = D_102CC70;
+        dlA2 = D_102CD90; dlB2 = D_102CC70;
         dlA = D_102CD78;
         dlB = D_102CC58;
     } else {
         idx = 18 - idx;
-        dlA2 = D_102CE20;
-        dlB2 = D_102CD00;
+        dlA2 = D_102CE20; dlB2 = D_102CD00;
         dlA = D_102CE08;
         dlB = D_102CCE8;
     }
@@ -1648,8 +1659,8 @@ void func_8006E674(Gfx** gdl) {
             continue;
         }
         if (D_801AEE20[i].unk9C == 0) {
-            dy = cam->eyeY - rec->unk4;
             dx = cam->eyeX - rec->unk0;
+            dy = cam->eyeY - rec->unk4;
             dz = cam->eyeZ - rec->unk8;
             if ((dx != 0.0f) || (dz != 0.0f)) {
                 upY = 1.0f;
@@ -1658,7 +1669,7 @@ void func_8006E674(Gfx** gdl) {
                 upY = 0.0f;
                 upZ = 1.0f;
             }
-            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, rec->unk0,
+            SysUtils_MatrixLookAt(&D_801AE948->unk95C0[D_800DAB2C][slot], &mf, dx, dy, dz, 0, upY, upZ, rec->unk0,
                                   rec->unk4, rec->unk8);
             dx = rec->unk60 - rec->unk0;
             dy = (rec->unk64 + gWaterLevel) - rec->unk4;
@@ -1670,7 +1681,7 @@ void func_8006E674(Gfx** gdl) {
                 upY = 0.0f;
                 upZ = 1.0f;
             }
-            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0.0f, upY, upZ, rec->unk0,
+            SysUtils_MatrixLookAt(&D_801AE948->unk9BC0[D_800DAB2C][slot], &mf, dx, dy, dz, 0, upY, upZ, rec->unk0,
                                   rec->unk4, rec->unk8);
         } else {
             rec->unk0 = (rec->unkC + rec->unk18) * 0.5f;

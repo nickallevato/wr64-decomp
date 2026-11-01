@@ -279,12 +279,23 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 42309 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the
-// default, written first, as the table's entry 0 and its block order show). Left: the original keeps a zero
-// (probably the edge index i) live in a1 from the D_801CE638 == 21 test on, and rematerialises it at every loop
-// exit, which gives each capped loop its "bnez / b exit" break shape; putting i = 0 there here did not
-// reproduce it. Registers differ throughout (src2 lives in s2, &gCourseID in ra) and the frame is 0x90, not 0xA0.
+// Score 35174 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the default,
+// written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
+// (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C, things 0x48, table
+// 0x30; the pad stands for four words above them), which gives its frame (0xA0); table is declared after e (a
+// declaration search, 36312). t is zeroed right after the D_801CE638 == 21 return and the pts loop's counter is zeroed
+// before its test, as the original sets both. The edge and pts loops count with n (dead after table B; a merge search,
+// 36657 -> 36328). Left: the original also keeps a zero (the edge-loop counter) live in a1 from that return on and
+// rematerialises it at every loop exit, which gives each capped loop its "bnez / b exit" break shape (16 missing b's);
+// zeroing the counter there spills it to its home here (43143 on an older base). Registers differ throughout (src2
+// lives in s2, &gCourseID in ra). The order of several independent stores and list assignments is from a
+// statement-move search (the largest gain: unk4C = 11 after unk50 in the things types 10..21 case, 40902 -> 36867).
+// Six pairs of list assignments share a line (a line-join search: IDO schedules by source line, 36867 -> 36657). The
+// list choice after the stunt-mode test is one line inside a do-while (0) (permuter, FAKE: 36312 -> 35819; joined
+// without the do-while it scores 36762). An empty test of gCourseID at the top of the things loop (permuter, FAKE)
+// gives 35174.
 void func_80071E70(void) {
+    s32 pad[4]; // stack pad
     s32 kind;
     s32 angle;
     s32 difficulty;
@@ -297,19 +308,18 @@ void func_80071E70(void) {
     CourseRecordSrc* list1;
     CourseRecordSrc* list2;
     CourseRecordSrc* rec;
-    s32 type;
-    CourseBuoySrc* buoys;
     CourseObjectSrc* objects;
-    s16* edge;
-    s32 t;
     CourseRingSrc* rings;
+    CourseBuoySrc* buoys;
+    s16* edge;
     s16* pts;
     CourseThingSrc* things;
-    s32 i;
+    s32 type;
+    s32 t;
     s32 n;
     CourseBuoySrc* b;
-    UnkStruct_801AEE20* table;
     UnkStruct_801AEE20* e;
+    UnkStruct_801AEE20* table;
     UnkStruct_801BC940* o;
     UnkStruct_801BB138* a;
 
@@ -434,11 +444,11 @@ void func_80071E70(void) {
         D_801BFB70[D_801BFD70].unk1C = src2->unkA;
         D_801BFB70[D_801BFD70].unk20 = src2->unkC;
         D_801BFB70[D_801BFD70].unk24 = src2->unkE;
-        D_801BFB70[D_801BFD70].unk2C = src2->unk10;
-        D_801BFB70[D_801BFD70].unk30 = src2->unk12;
         D_801BFB70[D_801BFD70].unk34 = src2->unk14;
-        D_801BFB70[D_801BFD70].unk28 = 0;
+        D_801BFB70[D_801BFD70].unk30 = src2->unk12;
+        D_801BFB70[D_801BFD70].unk2C = src2->unk10;
         D_801BFB70[D_801BFD70].unk38 = src2->unk16;
+        D_801BFB70[D_801BFD70].unk28 = 0;
         D_801BFB70[D_801BFD70].unk3C = src2->unk18;
         if (++D_801BFD70 >= 8) {
             break;
@@ -462,6 +472,7 @@ void func_80071E70(void) {
     if (D_801CE638 == 21) {
         return;
     }
+    t = 0;
     if (gGameModes == GMODE_2P_VS) {
         D_801C1F90 = *D_800D62D4[gCourseID];
         D_801C1FBC = 0.0f;
@@ -479,77 +490,19 @@ void func_80071E70(void) {
         list0 = list1 = list2 = D_800D6514[gCourseID];
         buoys = D_800D6744[gCourseID];
         objects = D_800D66A4[gCourseID];
-    } else if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) {
-        list0 = D_800D653C[gCourseID];
-        buoys = D_800D676C[gCourseID];
-        objects = D_800D66CC[gCourseID];
-        rings = D_800D6884[gCourseID];
-        list2 = NULL;
-        list1 = NULL;
-    } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) {
-        if (gPlayers == ONE_PLAYER) {
-            list0 = D_800D6564[gCourseID];
-            list1 = D_800D658C[gCourseID];
-            list2 = D_800D65B4[gCourseID];
-            buoys = D_800D66F4[gCourseID];
-            objects = D_800D6654[gCourseID];
-        } else {
-            objects = D_800D667C[gCourseID];
-            list1 = D_800D6604[gCourseID];
-            list2 = D_800D662C[gCourseID];
-            buoys = D_800D671C[gCourseID];
-            list0 = D_800D65DC[gCourseID];
-        }
-    } else if (gPlayers == TWO_PLAYERS) {
-        if (gDifficulty == DIFFICULTY_NORMAL) {
-            list0 = D_800D649C[gCourseID];
-        } else if (gDifficulty == DIFFICULTY_HARD) {
-            list0 = D_800D64C4[gCourseID];
-        } else {
-            list0 = D_800D64EC[gCourseID];
-        }
-        buoys = D_800D671C[gCourseID];
-        objects = D_800D667C[gCourseID];
-        if (gCourseID == RIDER_SELECTION) {
-            list1 = D_800D5700;
-        } else {
-            list1 = NULL;
-        }
-        list2 = NULL;
     } else {
-        if (D_800D8254 == 0) {
-            difficulty = gDifficulty;
-        } else {
-            difficulty = D_800D8258;
-        }
-        if ((difficulty == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) {
-            list0 = D_800D6334[gCourseID];
-            list1 = D_800D635C[gCourseID];
-            list2 = D_800D6384[gCourseID];
-        } else if (difficulty == DIFFICULTY_HARD) {
-            list0 = D_800D63AC[gCourseID];
-            list1 = D_800D63D4[gCourseID];
-            list2 = D_800D63FC[gCourseID];
-        } else {
-            list0 = D_800D6424[gCourseID];
-            list1 = D_800D644C[gCourseID];
-            list2 = D_800D6474[gCourseID];
-        }
-        buoys = D_800D66F4[gCourseID];
-        objects = D_800D6654[gCourseID];
+        do { if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) { list0 = D_800D653C[gCourseID]; buoys = D_800D676C[gCourseID]; objects = D_800D66CC[gCourseID]; rings = D_800D6884[gCourseID]; list1 = NULL; list2 = NULL; } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) { if (gPlayers == ONE_PLAYER) { list1 = D_800D658C[gCourseID]; list2 = D_800D65B4[gCourseID]; buoys = D_800D66F4[gCourseID]; list0 = D_800D6564[gCourseID]; objects = D_800D6654[gCourseID]; } else { objects = D_800D667C[gCourseID]; list1 = D_800D6604[gCourseID]; list2 = D_800D662C[gCourseID]; buoys = D_800D671C[gCourseID]; list0 = D_800D65DC[gCourseID]; } } else if (gPlayers == TWO_PLAYERS) { if (gDifficulty == DIFFICULTY_NORMAL) { list0 = D_800D649C[gCourseID]; } else if (gDifficulty == DIFFICULTY_HARD) { list0 = D_800D64C4[gCourseID]; } else { list0 = D_800D64EC[gCourseID]; } buoys = D_800D671C[gCourseID]; objects = D_800D667C[gCourseID]; if (gCourseID == RIDER_SELECTION) { list1 = D_800D5700; } else { list1 = NULL; } list2 = NULL; } else { if (D_800D8254 == 0) { difficulty = gDifficulty; } else { difficulty = D_800D8258; } if ((difficulty == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) { list0 = D_800D6334[gCourseID]; list1 = D_800D635C[gCourseID]; list2 = D_800D6384[gCourseID]; } else if (difficulty == DIFFICULTY_HARD) { list0 = D_800D63AC[gCourseID]; list1 = D_800D63D4[gCourseID]; list2 = D_800D63FC[gCourseID]; } else { list0 = D_800D6424[gCourseID]; list1 = D_800D644C[gCourseID]; list2 = D_800D6474[gCourseID]; } buoys = D_800D66F4[gCourseID]; objects = D_800D6654[gCourseID]; } } while (0); // FAKE (permuter): one-line block in a do-while
     }
     if (gPlayers == TWO_PLAYERS) {
+        pts = D_800D680C[gCourseID]; things = D_800D685C[gCourseID];
         edge = D_800D67BC[gCourseID];
-        things = D_800D685C[gCourseID];
-        pts = D_800D680C[gCourseID];
     } else {
-        edge = D_800D6794[gCourseID];
-        things = D_800D6834[gCourseID];
+        edge = D_800D6794[gCourseID]; things = D_800D6834[gCourseID];
         pts = D_800D67E4[gCourseID];
     }
 
     // Table B (and its two alternatives): the records, chained in list order.
-    for (t = 0; t < 3; t++) {
+    for (; t < 3; t++) {
         switch (t) {
             case 0:
                 table = D_801AEE20;
@@ -722,8 +675,8 @@ void func_80071E70(void) {
     for (; objects->heading != -1; objects++) {
         o = &D_801BC940[D_801BFA40];
         o->unk4C = 1;
-        o->unk28 = 0.0f;
         o->unk24 = objects->x;
+        o->unk28 = 0.0f;
         o->unk2C = objects->z;
         o->unk50 = objects->unk4;
         o->unk58 = objects->unk6;
@@ -754,6 +707,8 @@ void func_80071E70(void) {
     }
     for (; things->heading != -1; things++) {
         o = &D_801BC940[D_801BFA40];
+        // FAKE (permuter): an empty test of gCourseID (one more use of its address)
+        if (gCourseID) {}
         switch (things->type) {
             case 1:
                 o->unk4C = 2;
@@ -806,8 +761,8 @@ void func_80071E70(void) {
                 if (gPlayers == TWO_PLAYERS) {
                     continue;
                 }
-                o->unk4C = 11;
                 o->unk50 = things->type - 10;
+                o->unk4C = 11;
                 break;
             default:
                 continue;
@@ -823,7 +778,7 @@ void func_80071E70(void) {
 
     // Table A (gCoursePoints, at most 256): the small buoys by type and difficulty, the course-edge
     // points (type 1), and the points with a height (type 5).
-    i = 0;
+    n = 0;
     for (b = buoys; b->type != -1; b++) {
         switch (b->type) {
             case 0:
@@ -864,16 +819,16 @@ void func_80071E70(void) {
         do {
             a = &gCoursePoints[D_801BC938];
             a->unk10 = 1;
-            a->unk0 = edge[i * 2];
-            a->unk8 = edge[i * 2 + 1];
+            a->unk0 = edge[n * 2];
+            a->unk8 = edge[n * 2 + 1];
             if (++D_801BC938 >= 256) {
                 break;
             }
-            i++;
-        } while ((edge[i * 2] != -1) || (edge[i * 2 + 1] != -1));
+            n++;
+        } while ((edge[n * 2] != -1) || (edge[n * 2 + 1] != -1));
     }
+    n = 0;
     if ((pts[0] != -1) || (pts[2] != -1)) {
-        i = 0;
         do {
             if (D_801BC938 >= 256) {
                 break;
@@ -881,11 +836,11 @@ void func_80071E70(void) {
             a = &gCoursePoints[D_801BC938];
             D_801BC938++;
             a->unk10 = 5;
-            a->unk0 = pts[i * 3];
-            a->unk4 = pts[i * 3 + 1];
-            a->unk8 = pts[i * 3 + 2];
-            i++;
-        } while ((pts[i * 3] != -1) || (pts[i * 3 + 2] != -1));
+            a->unk0 = pts[n * 3];
+            a->unk4 = pts[n * 3 + 1];
+            a->unk8 = pts[n * 3 + 2];
+            n++;
+        } while ((pts[n * 3] != -1) || (pts[n * 3 + 2] != -1));
     }
     if (D_801CE638 == 21) {
         D_801BC938 = 0;

@@ -650,33 +650,45 @@ void func_801DC5A8(UnkA95D0_Runner* runner) {
 }
 
 #ifdef NON_MATCHING
-// Score 7024 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
-// held in c17, j and r (j and r double as the flags, as the original's s3/s0 do); both loops walk e by pointer; the
-// speed is read through D_80228120 each time (no local); the first height adds the wobble to the base (operand order
-// found by the permuter). Left: frame 0xB8 here vs 0xB0 (the original has two fewer locals above vec and keeps center
-// on the stack at sp+0xA8) and register allocation. The (s32) r makes the second % 10 signed (div, as in the
-// original); with both % 10 unsigned IDO treats the two 10s as one constant and no longer keeps 10U in s5 for the
-// first loop.
+// Score 50 of 45800: calls agree. The three speed flags are if/else assignments (the original's b-to-next shape),
+// held in c17, j and r; the sum adds them in the original's operand order (18, unk8, 16, 17); both loops walk e by
+// pointer; the speed is read through D_80228120 each time (no local); D_802287A8 is set before runner->frame is read,
+// so frame is loaded once; step keeps runner->step (v1 in the original) for step->duration, and i is computed from
+// runner->step itself (IDO reuses the load; through step, i's first web leaves s4); the duration (less 30) is read
+// into j before vec[0] is stored, as the original reads it first (a1, j's register); f / 24.0f is written out (no
+// local). The two random sine terms are written rand * SIN(...): IDO swaps the operands, so this gives the
+// original's SIN-first mul.s (the first height adds the wobble to the base, an operand order found by the permuter);
+// the three vec blends are written base * k + vec / mag for the same reason (operand-swap search, permuter).
+// center is declared after mag, which puts its stack home at the original's sp+0xA8 (declaration search); unk30 is
+// stored after unk24, center is set after step and vec[2] after vec[0] (statement-move search). The two FAKE empty
+// tests (permuter) make IDO keep &D_80228190 in fp and leave center in its stack home, as the original does (6687
+// without either, 455 with the first only; replacing e-> by D_80228190[i] at any one site does not do it).
+// Left: frame 0xB8 here vs 0xB0 (the original has two fewer locals; f as an expression and step reused as the 17
+// flag give the frame, but cost 25 at 695); the original keeps the third Rand in s3 and the sine address in s0
+// (swapped here), the 16 flag in s3 (a1 here) and the % 10 constant loaded before the first flag test. The (s32) r
+// makes the second % 10 signed (div, as in the original); with both % 10 unsigned IDO treats the two 10s as one
+// constant and no longer keeps 10U in s5 for the first loop.
 // i holds the step index, frame - 30 and the loop counter, as the original's s4 does.
 void func_801DC60C(UnkA95D0_Runner* runner) {
-    UnkA95D0_Payload1* center;
+    UnkA95D0_Step* step;
     s32 i;
     f32 mag;
+    UnkA95D0_Payload1* center;
     f32 f;
-    f32 g;
     f32 vec[3];
     s32 j;
     u32 r;
     UnkStruct_801DB0E4_arg0* e;
     s32 c17;
 
+    step = runner->step;
     center = &runner->obj->u.p1;
     i = runner->step - D_802241E0;
     if (i != 2) {
         return;
     }
-    i = runner->frame - 30;
     D_802287A8 = 24;
+    i = runner->frame - 30;
     if (runner->frame == 1) {
         func_800AB92C();
         for (i = 0, e = D_80228190; i < 24; i++, e++) {
@@ -686,50 +698,36 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
             f = i;
             e->unkC[0] = center->unk0[0] - f * 30.0f - (f32) (SysUtils_Rand() % 7U) - 300.0f;
             r = SysUtils_Rand();
-            g = f / 24.0f;
             e->unkC[1] = (center->unk0[1] - (f32) (i * (r & 0x1F))) +
-                         SIN(DEG_TO_BINANG(g * 180.0f)) * ((f32) (SysUtils_Rand() & 0x3F) * 1.2f);
-            e->unkC[2] = center->unk0[2] - SIN(DEG_TO_BINANG(g * 180.0f)) * (f32) (SysUtils_Rand() & 0x7F);
+                         ((f32) (SysUtils_Rand() & 0x3F) * 1.2f) * SIN(DEG_TO_BINANG((f / 24.0f) * 180.0f));
+            e->unkC[2] = center->unk0[2] - (f32) (SysUtils_Rand() & 0x7F) * SIN(DEG_TO_BINANG((f / 24.0f) * 180.0f));
             e->unk14[0] = 0.0f;
             e->unk14[1] = 0.0f;
             e->unk14[2] = 1.0f;
             e->unk24[0] = 0.0f;
-            e->unk30 = 0.1f;
             e->unk24[1] = 1.0f;
             e->unk24[2] = 0.0f;
+            e->unk30 = 0.1f;
             if (i == 0) {
                 ((f32*) D_80228120)[i] = 17.0f;
             } else {
                 ((f32*) D_80228120)[i] =
-                    15.0f + (f32) (SysUtils_Rand() & 3) + (f32) ((SysUtils_Rand() & 3) + 1) * sqrtf(g);
+                    15.0f + (f32) (SysUtils_Rand() & 3) + (f32) ((SysUtils_Rand() & 3) + 1) * sqrtf(f / 24.0f);
             }
         }
     } else if (i >= 0) {
         f = i;
+        j = step->duration - 30;
         vec[0] = 4.0f - f * 0.04f;
-        vec[1] = SIN(DEG_TO_BINANG(f / (runner->step->duration - 30) * 180.0f));
+        vec[1] = SIN(DEG_TO_BINANG(f / j * 180.0f));
         vec[2] = 1.0f;
         mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
         for (j = 0; j < 3; j++) {
             D_80228190[0].unk14[j] = vec[j] / mag;
         }
         for (i = 0, e = D_80228190; i < 24; i++, e++) {
-            if (((f32*) D_80228120)[i] > 17.0f) {
-                c17 = 1;
-            } else {
-                c17 = 0;
-            }
-            if (((f32*) D_80228120)[i] > 16.0f) {
-                j = 1;
-            } else {
-                j = 0;
-            }
-            if (((f32*) D_80228120)[i] > 18.0f) {
-                r = 1;
-            } else {
-                r = 0;
-            }
-            e->unk8 = (e->unk8 + c17 + j + (s32) r + 1) % 10; // (s32): a signed % 10, see above
+            // The flags and the sum on one line (permuter): IDO schedules by source line. (s32) r: see above.
+            if (((f32*) D_80228120)[i] > 17.0f) { c17 = 1; } else { c17 = 0; } if (((f32*) D_80228120)[i] > 16.0f) { j = 1; } else { j = 0; } if (((f32*) D_80228120)[i] > 18.0f) { r = 1; } else { r = 0; } e->unk8 = ((s32) r + e->unk8 + j + c17 + 1) % 10;
             if (i > 0) {
                 for (j = 0; j < 3; j++) {
                     vec[j] = D_80228190[0].unkC[j] - e->unkC[j];
@@ -738,22 +736,26 @@ void func_801DC60C(UnkA95D0_Runner* runner) {
                 if (mag < 0.1f) {
                     for (j = 0; j < 3; j++) {
                         vec[j] = D_80228190[0].unk14[j];
+                        // FAKE (permuter): never true; keeps &D_80228190 in fp and center on the stack
+                        if (!D_80228190[0].unk14) {}
                     }
                     mag = 1.0f;
                 }
-                vec[0] = (vec[0] / mag + D_80228190[0].unk14[0] * 7.0f) * 0.125f;
-                vec[1] = (vec[1] / mag + D_80228190[0].unk14[1] * 5.0f) / 6.0f;
-                vec[2] = (vec[2] / mag + D_80228190[0].unk14[2] * 7.0f) * 0.125f;
+                vec[0] = (D_80228190[0].unk14[0] * 7.0f + vec[0] / mag) * 0.125f;
+                vec[1] = (D_80228190[0].unk14[1] * 5.0f + vec[1] / mag) / 6.0f;
+                vec[2] = (D_80228190[0].unk14[2] * 7.0f + vec[2] / mag) * 0.125f;
                 mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
                 for (j = 0; j < 3; j++) {
                     e->unk14[j] = vec[j] / mag;
                 }
+                // FAKE (permuter): never true; a second reference of the same kind (see the first)
+                if (!D_80228190[0].unk14) {}
             }
             for (j = 0; j < 3; j++) {
                 e->unkC[j] += e->unk14[j] * ((f32*) D_80228120)[i];
             }
-            vec[2] = 0.0f;
             vec[0] = center->unk0[0] - e->unkC[0];
+            vec[2] = 0.0f;
             vec[1] = 1200.0f;
             mag = sqrtf(SQ(vec[0]) + SQ(vec[1]) + SQ(vec[2]));
             for (j = 0; j < 3; j++) {

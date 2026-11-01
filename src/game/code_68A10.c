@@ -867,13 +867,22 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 30254 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
-// compare); register allocation differs from the start: isHuman stays in
-// s7 where the original keeps it in its stack slot (forcing that hoists the constant 4 shared by special and unk1C44
-// into s7 instead), special and count are spilled, and the float registers and scheduling of the spawn loops differ.
+// Score 25822 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
+// Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
+// (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
+// spilled, and the float registers and scheduling of the spawn loops differ. The original keeps lod and count in
+// one register (s2), but writing count as lod costs 1400. Writing 1.00f in the cosA * cosA < 1 test and its sqrtf
+// argument, and the cross-product test through a local (cross = ...; if (cross >= 0.0f)), gives the original's
+// compares exactly (c. 61 = 61, the 1.0f materialised once, the sub.s kept), but scores 28830. Two independent
+// store orders (unk0 before unk8 in the record update, unk18 after unk20 in the spawn) are from a move search.
+// The operand orders of the view dot product and three spawn expressions are from an operand-swap search (IDO
+// orders commutative operands itself, so the written order can flip the emitted one). The velocity length reuses sideY,
+// dead after func_801EDAE0 (a merge search: 27176 -> 26654). special, g and sideX are declared where a declaration
+// search put them (26530); one more stack pad word sits among the locals (pad search, 26047); vy * 1.20f is its own
+// constant (respelling search, 25822).
 void func_800B08F8(s32 arg0) {
     s32 twoViews;
-    s32 special;
     s32 lod;
     s32 i;
     s32 n;
@@ -885,9 +894,10 @@ void func_800B08F8(s32 arg0) {
     f32 dx;
     f32 dy;
     s32 isHuman;
+    s32 special;
+    s32 padS0; // stack pad
     f32 dz;
     f32 dist;
-    f32 velLen;
     f32 fwdLen[1]; // FAKE: keeps fwdLen in its stack slot across sqrtf, as the original does
     f32 base;
     f32 tilt;
@@ -912,7 +922,6 @@ void func_800B08F8(s32 arg0) {
     f32 heading;
     f32 angle;
     f32 step;
-    f32 g;
     s32 a;
     s32 pad1[3]; // stack pad
     f32 h;
@@ -920,9 +929,11 @@ void func_800B08F8(s32 arg0) {
     f32 fwdX;
     f32 fwdZ;
     s32 pad3[2]; // stack pad
+    f32 g;
     f32 sideX;
     f32 sideY;
     f32 sideZ;
+
     isHuman = (arg0 == gPlayer1Rider) || ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider));
     twoViews = (gPlayers == TWO_PLAYERS) && (D_801CE638 == 1);
     special = (D_801CE638 == 4) || (D_801CE638 == 10);
@@ -941,7 +952,7 @@ void func_800B08F8(s32 arg0) {
         dz /= dist;
         dx /= dist;
         if ((gPlayers == TWO_PLAYERS) ||
-            (((dx * D_801D7974) + (dy * D_801D7978) + (dz * D_801D797C)) > 0.707107f)) {
+            (((dy * D_801D7978) + (dz * D_801D797C) + (dx * D_801D7974)) > 0.707107f)) {
             D_800E6D60->unk1C4C = 1;
             if (special || ((gPlayers == ONE_PLAYER) && (arg0 == gPlayer1Rider) && (gRiderRaceState[arg0].unk2F4 != 0))) {
                 if (dist < 200.0f) {
@@ -981,9 +992,9 @@ void func_800B08F8(s32 arg0) {
         fwdZ = 0.0f;
         fwdX = 0.0f;
     }
-    velLen = sqrtf((D_801D79C8 * D_801D79C8) + (D_801D79D0 * D_801D79D0));
-    if ((fwdLen[0] > 0.0f) && (velLen > 0.0f)) {
-        cosA = (((D_801D79E0 * D_801D79C8) + (D_801D79E8 * D_801D79D0)) / fwdLen[0]) / velLen;
+    sideY = sqrtf((D_801D79C8 * D_801D79C8) + (D_801D79D0 * D_801D79D0));
+    if ((fwdLen[0] > 0.0f) && (sideY > 0.0f)) {
+        cosA = (((D_801D79E0 * D_801D79C8) + (D_801D79E8 * D_801D79D0)) / fwdLen[0]) / sideY;
     } else {
         cosA = 1.0f;
     }
@@ -1027,8 +1038,8 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk30 = 128.0f;
             }
             D_800E6D64->unk20 += D_800E6D64->unk2C;
-            D_800E6D64->unk8 = (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
             D_800E6D64->unk0 = (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
+            D_800E6D64->unk8 = (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
             D_800E6D64->unkC = (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
             D_800E6D64->unk14 = (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.5f * D_801D79E8);
             if (D_800E6D60->unk1C54 != 0) {
@@ -1159,8 +1170,12 @@ void func_800B08F8(s32 arg0) {
     left = 2.0f * (rate * split);
     right = 2.0f * (rate * (1.0f - split));
     if ((rate > 0.1f) && spawn && (lod != 0)) {
-        if (!twoViews && (lod == 3)) {
-            count = 6;
+        if (!twoViews) {
+            if (lod == 3U) { // 3U: not shared with the 3 in "3 - n" below (the original rematerialises both)
+                count = 6;
+            } else {
+                count = 4;
+            }
         } else {
             count = 4;
         }
@@ -1216,7 +1231,7 @@ void func_800B08F8(s32 arg0) {
                 len = (2.0f * ((((f32) a / (half - 1)) - 1.0f) * len)) + 1.0f;
                 D_800E6D64->unk30 = ((len + 0.5f) * rate) + 2.0f;
                 D_800E6D64->unk34 = rate * 1.2f;
-                depth = (32.0f - (len * 16.0f)) - (f * 16.0f * 0.5f);
+                depth = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
                 if (n < half) {
                     side = -1;
                 } else {
@@ -1236,19 +1251,19 @@ void func_800B08F8(s32 arg0) {
                     D_800E6D64->unk34 = rate;
                     depth -= 4.0f;
                 }
-                D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk20 = depth;
+                D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk0 =
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
                 D_800E6D64->unk8 =
                     (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
-                D_800E6D64->unk4 = (D_801D79C0 + 4.0f) - rate;
+                D_800E6D64->unk4 = (4.0f + D_801D79C0) - rate;
                 D_800E6D64->unk24 = h * side;
-                D_800E6D64->unk2C = vy * 1.2f;
+                D_800E6D64->unk2C = vy * 1.20f; // 1.20f: respelled
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
                 D_800E6D64->unk14 =
-                    (D_800E6D64->unk24 * D_801D79F4) + (D_800E6D64->unk2C * 0.5f * D_801D79E8);
+                    (D_800E6D64->unk24 * D_801D79F4) + (0.50f * D_801D79E8 * D_800E6D64->unk2C); // 0.50f: respelled
                 D_800E6D64->unk10 = (Math_FloatRand(0.5f) + 1.0f) * height;
                 n++;
                 if (n >= count) {
@@ -1311,7 +1326,7 @@ void func_800B08F8(s32 arg0) {
                             }
                             len = (split < (1.0f - split)) ? split : (1.0f - split);
                             len = (2.0f * (((f / 3) - 1.0f) * len)) + 1.0f;
-                            sx = (24.0f + rate) - (len * 8.0f);
+                            sx = (24.0f + rate) - (len * 8); // int 8 (respelling search)
                             a = (angle / 360.0f) * 4096.0f;
                             D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
                             D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
@@ -1542,10 +1557,14 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 16909 of 124000: same blocks, display-list commands and loops (calls and branches now agree). The stack pads give the original's frame
-// (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. gdlh is read after the first command is
-// stored through gdl (the original reloads D_801AE94C there). Left: register allocation and scheduling (the
-// original keeps more command words in saved registers).
+// Score 11611 of 124000: same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
+// through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
+// command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
+// D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
+// with the default (the original's table has 7 entries). Left: register allocation and
+// scheduling (the original keeps more command words in saved registers; its first-loop counter is s4 and the
+// D_1048468 address is set after the loop guard).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1559,10 +1578,13 @@ void func_800B305C(Gfx** gdl) {
     Vtx* vtx;
     Gfx* gdlh;
     s32 pad3[1]; // stack pad
+    Gfx* gfx;
 
     D_801D7B38 = osGetTime();
     // The effects go into their own display list at D_801AE94C, called from here.
-    gSPDisplayList((*gdl)++, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
+    gfx = *gdl;
+    gSPDisplayList(gfx++, (Gfx*) D_5000000 + (((u32) D_801AE94C - (u32) D_801AE948) / sizeof(Gfx)));
+    *gdl = gfx;
     gdlh = D_801AE94C;
     gSPDisplayList(gdlh++, &D_10514D0);
     view = D_800DAB2C * 2;
@@ -1619,7 +1641,7 @@ void func_800B305C(Gfx** gdl) {
     // The unk1A00 squares, textured by their unk24.
     for (i = 0; i < D_801D0790; i++) {
         D_800E6D60 = &D_801D0798[i];
-        D_800E6D78 = D_801D0798[i].unk1A00;
+        D_800E6D78 = D_800E6D60->unk1A00;
         gDPPipeSync(gdlh++);
         if (D_800E6D60->unk1C58 != 0) {
             gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
@@ -1648,6 +1670,7 @@ void func_800B305C(Gfx** gdl) {
                     case 6:
                         tex = (u8*) &D_104C4A8;
                         break;
+                    case 7:
                     default:
                         tex = (u8*) &D_104CCB0;
                         break;
