@@ -2122,7 +2122,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 35491 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 35036 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2320,7 +2320,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     spB0 = temp_fs2;
     temp_fs4 = (temp_fs3 * temp_fv0) - (spB0 * temp_fs0);
     temp_fs0 = (temp_fs2 * temp_fs1) - (temp_fa0 * temp_fv0);
-    temp_fv0 = 1.0f / sqrtf((var_fv0 * var_fv0) + (temp_fs0 * temp_fs0) + (temp_fs4 * temp_fs4));
+    temp_fv0 = 1 / sqrtf((var_fv0 * var_fv0) + (temp_fs0 * temp_fs0) + (temp_fs4 * temp_fs4));
     temp_fa0 = temp_fv0 * temp_fs4;
     arg1->unk21C.unkC.x = temp_fv0 * var_fv0;
     temp_fs1 = temp_fv0 * temp_fs0;
@@ -2380,12 +2380,12 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     spB0 = arg1->unk1F8.unkC.y;
     spB4f = arg1->unk1F8.unkC.x;
     var_t0 = 3;
-    temp_fs1 = (f32) ((f64) temp_fv0 + (12.546404 * (f64) spB4f));
+    temp_fs1 = (f32) ((f64) temp_fv0 + (12.546404 * (f64) arg1->unk1F8.unkC.x));
     sp84 = spB0;
     spAC = arg1->unk1F8.unk14.y;
     temp_fv0 = arg1->unk1F8.unkC.z;
     temp_fs2 = (f32) ((f64) temp_fs0 + (12.546404 * (f64) arg1->unk1F8.unkC.y));
-    temp_fs0 = (f32) ((f64) temp_fa0 + (12.546404 * (f64) temp_fv0));
+    temp_fs0 = (f32) ((f64) arg1->unkD8.unk0.z + (12.546404 * (f64) temp_fv0));
     temp_fa0 = arg1->unk1F8.unk14.z;
     spA8 = arg1->unk1F8.unk14.x;
     temp_fs3 = (f32) ((f64) ((temp_fa0 * spB4f) - (spA8 * temp_fv0)) * 7.0);
@@ -2707,7 +2707,7 @@ block_45: // m2c label name
     arg1->unkFC.unk0.z = (f32) ((f64) arg1->unk1F8.unk0.z + (14.483002 * (f64) arg1->unk1F8.unkC.z));
     temp_fs1 = rider->unk84;
     var_t0 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
-    temp_fs2 = (temp_fs0 * temp_fs0) + (temp_fv0 * temp_fv0);
+    temp_fs2 = (rider->unk6C * temp_fs0) + (temp_fv0 * temp_fv0);
     temp_fv0 = (temp_fs1 * temp_fs1) + (rider->unk8C * temp_fa0);
     if ((temp_fs2 != 0) && (temp_fv0 != 0)) {
         temp_fs0 = gSinTable[var_t0 & 0xFFF] / sqrtf(temp_fs2);
