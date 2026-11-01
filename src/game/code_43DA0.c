@@ -1137,8 +1137,8 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 11074 of 127200: calls, branches and the frame (0xC8) agree. The unk98 test is a switch with case 1 first
-// (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first). The literal spellings
+// Score 11064 of 127200: calls and branches agree (frame 0xC0 here, 0xC8 there). The unk98 test is a switch with
+// case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first). The literal spellings
 // (64 as an int, 0 and 0.00f in two zero tests) came from a respelling search: IDO keeps differently spelled
 // constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
 // caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
@@ -1166,7 +1166,7 @@ void func_8008E794(void) {
     dirX = cam->unk64;
     dirZ = cam->unk6C;
     arena = gGfxPool->unk13D68;
-    len = sqrtf((dirX * dirX) + (dirZ * dirZ));
+    len = sqrtf((dirZ * dirZ) + (dirX * dirX));
     if (len != 0.0f) {
         len = 4000.0f / len;
         dirZ *= len;
@@ -1200,7 +1200,7 @@ void func_8008E794(void) {
         dirZ = cam->unk6C;
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
-        s = 4000.0f / sqrtf((dirX * dirX) + (dirZ * dirZ));
+        s = 4000.0f / sqrtf((dirZ * dirZ) + (dirX * dirX));
         dirZ *= s;
         dirX *= s;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
