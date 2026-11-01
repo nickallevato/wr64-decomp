@@ -18,6 +18,13 @@ typedef struct UnkStruct_801C26E8 {
     /* 0x0C */ s8 name[4];
 } UnkStruct_801C26E8; /* size = 0x10 */
 
+typedef struct UnkStruct_801C3720 {
+    /* 0x00 */ f32 unk0;
+    /* 0x04 */ f32 unk4;
+    /* 0x08 */ f32 unk8;
+    /* 0x0C */ char padC[0xC];
+} UnkStruct_801C3720; /* size = 0x18 */
+
 extern s32 gPlayer2Rider;
 extern UnkStruct_801C1FF0 gBestTimes[][3];
 extern UnkStruct_801C1FF0 gBestLaps[];
@@ -70,38 +77,55 @@ extern s32 D_801C1FE8;
 extern s32 D_801C2650;
 extern s32 D_801C2654;
 extern s32 D_801C2658;
-extern s32 D_801C26C0[];
 extern s32 D_801C2660[];
 extern s32 D_801C2690[];
-extern s32 D_801C26E0;
-extern s32 D_801C26E4;
-extern s32 D_801C292C;
-extern s32 D_801C2930;
-extern s32 D_801C3718;
-extern s32 D_801C378C;
-extern s32 D_801C3790[];
-extern s32 D_801C3890[];
-extern f32 D_801C39B0;
-extern s32 D_801C39B8;
-extern s32 D_801C39C0;
-extern f32 D_801C39C4;
-extern s32 D_801C39C8;
-extern s32 D_801C39CC;
-extern s32 D_801C39D0;
-extern s32 D_801C39D4;
-extern s32 D_801C39D8;
-extern s32 D_801C39DC;
-extern s32 D_801C39E0;
-extern s32 D_801C39E4;
-extern s32 D_801C39E8;
-extern s32 D_801C39EC;
-extern s32 D_801C39F0;
-extern s32 D_801C39F4;
-extern s32 D_801C39F8;
-extern s32 D_801C39FC;
 
-// The end of code_2FB10's .bss, defined here (the yaml splits it from bss2 at 0x801C3A00; the section is
-// 16-aligned). Defined, not extern, the two halves of a D_801C3A08 store share one lui, as in the original.
+// code_2FB10's .bss, defined here (the yaml splits it from bss2a at 0x801C26C0; the section is 16-aligned).
+// gStuntRecords rows 9 to 11 (D_801C2898) and fields of gRiderRaceState (D_801C293C..D_801C2C70) that other code
+// names by address are in linker_scripts/us/rev1/resolve.txt.
+s32 D_801C26C0[4];
+s32 D_801C26D0;
+s32 D_801C26D4;
+s32 D_801C26D8;
+s32 D_801C26DC;
+s32 D_801C26E0;
+s32 D_801C26E4;
+UnkStruct_801C26E8 gStuntRecords[12][3];
+s32 D_801C2928;
+s32 D_801C292C;
+s32 D_801C2930;
+RiderStruct gRiderRaceState[4];
+s32 D_801C3718;
+UnkStruct_801C3720 D_801C3720[4];
+f32 D_801C3780;
+f32 D_801C3784;
+f32 D_801C3788;
+s32 D_801C378C;
+s32 D_801C3790[64];
+s32 D_801C3890[64];
+s32 D_801C3990[4];
+f32 D_801C39A0[4];
+f32 D_801C39B0;
+f32 D_801C39B4;
+s32 D_801C39B8;
+s32 D_801C39BC; // not referenced
+s32 D_801C39C0;
+f32 D_801C39C4;
+s32 D_801C39C8;
+s32 D_801C39CC;
+s32 D_801C39D0;
+s32 D_801C39D4;
+s32 D_801C39D8;
+s32 D_801C39DC;
+s32 D_801C39E0;
+s32 D_801C39E4;
+s32 D_801C39E8;
+s32 D_801C39EC;
+s32 D_801C39F0;
+s32 D_801C39F4;
+s32 D_801C39F8;
+s32 D_801C39FC;
+// Defined, not extern, the two halves of a D_801C3A08 store share one lui, as in the original.
 s32 D_801C3A00;
 s32 D_801C3A04;
 u64 D_801C3A08;
@@ -504,13 +528,6 @@ void Rider_SetFinishState(struct_800762D0* arg0) {
         }
     }
 }
-
-typedef struct UnkStruct_801C3720 {
-    /* 0x00 */ f32 unk0;
-    /* 0x04 */ f32 unk4;
-    /* 0x08 */ f32 unk8;
-    /* 0x0C */ char padC[0xC];
-} UnkStruct_801C3720; /* size = 0x18 */
 
 typedef struct UnkStruct_800D81D4 {
     /* 0x00 */ f32 x;
