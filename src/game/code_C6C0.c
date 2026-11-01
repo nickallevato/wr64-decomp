@@ -2122,7 +2122,8 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 60452 of 246800: same calls and branches as the original (by a structure diff); registers differ and
+// Score 60252 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
 // them; sp84 and sp8C are compiler spills in the original and still variables here. Named
@@ -2483,9 +2484,10 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         } else {
             var_s3 = D_8022391C;
             temp_t9 = var_t0 + 1;
-            rider->unk15B0 = temp_t9;
             if (temp_t9 >= var_s3->unk0) {
                 rider->unk15B0 = -1;
+            } else {
+                rider->unk15B0 = temp_t9;
             }
         }
     }
@@ -3910,8 +3912,9 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 68647 of 280200: same calls and branches as the original (by a structure diff), registers and
-// scheduling differ and the frame is 0x148 here, 0x100 in the original (the original has about 26 locals; this
+// Score 66665 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
+// registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26 locals; this
 // C still has more). Statement order in a few straight-line runs is from a greedy statement-move search.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
@@ -4447,10 +4450,9 @@ void func_8005DE24(s32 arg0) {
             vx = P(24).x - P(19).x;
             vy = P(24).y - P(19).y;
             vz = P(24).z - P(19).z;
+            len = 41.071f;
             if (((dx * vx) + (dy * vy) + (dz * vz)) < 0.0f) {
                 len = -41.071f;
-            } else {
-                len = 41.071f;
             }
         } else {
             k = 1.0f / sqrtf((nx * nx) + (ny * ny) + (nz * nz));
