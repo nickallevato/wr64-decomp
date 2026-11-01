@@ -2122,14 +2122,14 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 47352 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 46275 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
 // them; sp84 and sp8C are compiler spills in the original and still variables here. Three zero tests, a 1.0f
 // numerator and two constants are respelled (the original keeps differently spelled constants apart; respelling
-// searches); the unkFC direction's x is summed in two statements (a sum-split search), and three products read
-// their fields again in place of the copies (a read-through search). Named
+// searches); the unkFC direction's x is summed in two statements (a sum-split search), and about ten products
+// read their fields again in place of the copies (read-through searches). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry.
@@ -2257,7 +2257,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs2 = arg1->unk0.unk0.x;
     temp_fs3 = arg1->unk0.unk0.z;
     // 355.769130f: a separate constant from the 355.76913f below (odd literal, respelling search)
-    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, arg1->unk0.unk0.x, temp_fs1, temp_fs3, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
+    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, arg1->unk0.unk0.x, arg1->unk0.unk0.y, temp_fs3, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
     func_800534AC(temp_a1, &arg1->unk90.unk0.y, &arg1->unk90.unk0.z, arg1->unkB4.unk0.x, arg1->unkB4.unk0.y, arg1->unkB4.unk0.z, arg1->unk6C.unk0.x, arg1->unk6C.unk0.y, arg1->unk6C.unk0.z, 298.01123f, 355.76913f, arg1->unk6C.unkC.x, arg1->unk6C.unkC.y, arg1->unk6C.unkC.z);
     arg1->unk48.unkC.x = arg1->unk24.unk0.x - arg1->unk48.unk0.x;
     arg1->unk48.unkC.y = arg1->unk24.unk0.y - arg1->unk48.unk0.y;
@@ -2285,8 +2285,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fv0 = arg1->unk240.unkC.x;
     temp_fs0 = arg1->unk240.unkC.y;
     temp_fa0 = arg1->unk240.unkC.z;
-    temp_fs1 = rider->unk16BC * ((temp_fv0 * arg1->unk264.unk14.x) + (temp_fs0 * arg1->unk264.unk14.y) + (temp_fa0 * arg1->unk264.unk14.z));
-    temp_fs2 = (temp_fv0 * arg1->unk264.unkC.x) + (temp_fs0 * arg1->unk264.unkC.y) + (temp_fa0 * arg1->unk264.unkC.z);
+    temp_fs1 = rider->unk16BC * ((temp_fv0 * arg1->unk264.unk14.x) + (temp_fs0 * arg1->unk264.unk14.y) + (arg1->unk240.unkC.z * arg1->unk264.unk14.z));
+    temp_fs2 = (arg1->unk240.unkC.x * arg1->unk264.unkC.x) + (temp_fs0 * arg1->unk264.unkC.y) + (temp_fa0 * arg1->unk264.unkC.z);
     arg1->unk240.unkC.x = (rider->unk78 * temp_fs1) + (temp_fs2 * rider->unk6C);
     arg1->unk240.unkC.y = (rider->unk7C * temp_fs1) + (temp_fs2 * rider->unk70);
     arg1->unk240.unkC.z = (rider->unk80 * temp_fs1) + (temp_fs2 * rider->unk74);
@@ -2315,7 +2315,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs1 = (rider->unkBB4 * D_800D49E4) - rider->unkBA8;
     temp_fs2 = rider->unk78;
     temp_fs3 = rider->unk7C;
-    var_fv0 = (temp_fa0 * temp_fs0) - (temp_fs3 * temp_fs1);
+    var_fv0 = (rider->unk80 * temp_fs0) - (temp_fs3 * temp_fs1);
     spB0 = temp_fs2;
     temp_fs4 = (temp_fs3 * temp_fv0) - (spB0 * temp_fs0);
     temp_fs0 = (temp_fs2 * temp_fs1) - (temp_fa0 * temp_fv0);
@@ -2469,7 +2469,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs0 = arg1->unk168.unk0.z - temp_fs2;
     temp_fa0 = arg1->unk1F8.unk0.x;
     temp_fs2 = arg1->unk168.unk0.x - temp_fa0;
-    spAC = arg1->unk1D4.unk0.x - temp_fa0;
+    spAC = arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x;
     spA8 = arg1->unk1D4.unk0.y - temp_fs1;
     temp_fa0 = (spAC * temp_fs0) - (var_fv0 * temp_fs2);
     temp_fs1 = (var_fv0 * temp_fv0) - (spA8 * temp_fs0);
@@ -2707,7 +2707,7 @@ block_45: // m2c label name
     temp_fs1 = rider->unk84;
     var_t0 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
     temp_fs2 = (temp_fs0 * temp_fs0) + (temp_fv0 * temp_fv0);
-    temp_fv0 = (temp_fs1 * temp_fs1) + (temp_fa0 * temp_fa0);
+    temp_fv0 = (temp_fs1 * temp_fs1) + (rider->unk8C * temp_fa0);
     if ((temp_fs2 != 0) && (temp_fv0 != 0)) {
         temp_fs0 = gSinTable[var_t0 & 0xFFF] / sqrtf(temp_fs2);
         temp_fa0 = gSinTable[(var_t0 + 0x400) & 0xFFF] / sqrtf(temp_fv0);
@@ -2722,7 +2722,7 @@ block_45: // m2c label name
     }
     temp_fv0 = rider->unkB78;
     temp_fs0 = rider->unkB80;
-    temp_fa0 = sqrtf((temp_fv0 * temp_fv0) + (temp_fs0 * temp_fs0));
+    temp_fa0 = sqrtf((rider->unkB78 * temp_fv0) + (temp_fs0 * temp_fs0));
     if (!(temp_fa0 >= 16.666668f)) {
         func_80054130(arg0, &spC4, 0, 0, 1, 1);
         func_80053A5C(arg1, temp_fa0 / 16.666668f, &spC4, arg1);
@@ -3083,11 +3083,11 @@ void func_8005A280(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 32111 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
+// Score 32106 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
 // The m2c temps are pooled into region-local variables (split where a fresh value starts, merged where live
 // ranges don't overlap, each kept only if the score fell), so names like temp_fs4_5 are just slots. The
 // shoulder/hip vector is v = a*n + b*f with a clamped to <= -0.1 and b to >= 0, as the original computes it.
-// Operand orders, statement moves and two field reads in place of copies (read-through) are from searches. Left:
+// Operand orders, statement moves and three field reads in place of copies (read-through) are from searches. Left:
 // registers and scheduling throughout, about six locals too many.
 void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fs4;
@@ -3557,7 +3557,7 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unkB4.unkC.y = var_fv0_2;
     arg1->unk6C.unkC.y = var_fv0_2;
     var_fv0_2 = temp_ft5_4 - arg1->unkB4.unk0.z;
-    arg1->unk24.unkC.y = (f32) (arg1->unk0.unk0.y - spD0_2);
+    arg1->unk24.unkC.y = (f32) (arg1->unk0.unk0.y - arg1->unk24.unk0.y);
     arg1->unk24.unkC.x = (f32) (temp_fs0 - temp_fv0_5);
     arg1->unkB4.unkC.z = var_fv0_2;
     arg1->unk6C.unkC.z = var_fv0_2;
