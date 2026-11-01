@@ -2122,13 +2122,14 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 52209 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 47352 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
 // them; sp84 and sp8C are compiler spills in the original and still variables here. Three zero tests, a 1.0f
 // numerator and two constants are respelled (the original keeps differently spelled constants apart; respelling
-// searches); the unkFC direction's x is summed in two statements (a sum-split search). Named
+// searches); the unkFC direction's x is summed in two statements (a sum-split search), and three products read
+// their fields again in place of the copies (a read-through search). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry.
@@ -2256,7 +2257,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fs2 = arg1->unk0.unk0.x;
     temp_fs3 = arg1->unk0.unk0.z;
     // 355.769130f: a separate constant from the 355.76913f below (odd literal, respelling search)
-    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, temp_fs2, temp_fs1, temp_fs3, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
+    func_800534AC(limb24, &arg1->unk24.unk0.y, &arg1->unk24.unk0.z, temp_fv0, temp_fs0, temp_fa0, arg1->unk0.unk0.x, temp_fs1, temp_fs3, 298.01123f, 355.769130f, (f32) ((f64) arg1->unk24.unk0.x - (0.5 * (f64) (temp_fv0 + temp_fs2))), (f32) ((f64) arg1->unk24.unk0.y - (0.5 * (f64) (temp_fs0 + temp_fs1))), (f32) ((f64) arg1->unk24.unk0.z - (0.5 * (f64) (temp_fa0 + temp_fs3))));
     func_800534AC(temp_a1, &arg1->unk90.unk0.y, &arg1->unk90.unk0.z, arg1->unkB4.unk0.x, arg1->unkB4.unk0.y, arg1->unkB4.unk0.z, arg1->unk6C.unk0.x, arg1->unk6C.unk0.y, arg1->unk6C.unk0.z, 298.01123f, 355.76913f, arg1->unk6C.unkC.x, arg1->unk6C.unkC.y, arg1->unk6C.unkC.z);
     arg1->unk48.unkC.x = arg1->unk24.unk0.x - arg1->unk48.unk0.x;
     arg1->unk48.unkC.y = arg1->unk24.unk0.y - arg1->unk48.unk0.y;
@@ -2381,7 +2382,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     spB0 = arg1->unk1F8.unkC.y;
     sp84 = spB0;
     temp_fv0 = arg1->unk1F8.unkC.z;
-    temp_fs2 = (f32) ((f64) temp_fs0 + (12.546404 * (f64) spB0));
+    temp_fs2 = (f32) ((f64) temp_fs0 + (12.546404 * (f64) arg1->unk1F8.unkC.y));
     temp_fs0 = (f32) ((f64) temp_fa0 + (12.546404 * (f64) temp_fv0));
     spAC = arg1->unk1F8.unk14.y;
     temp_fa0 = arg1->unk1F8.unk14.z;
@@ -2390,7 +2391,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     var_fv0 = (f32) ((f64) ((spAC * temp_fv0) - (temp_fa0 * spB0)) * 7.0);
     arg1->unk168.unk0.x = temp_fs1 - var_fv0;
     arg1->unk168.unk0.y = temp_fs2 - temp_fs3;
-    temp_fv0 = (f32) ((f64) ((spA8 * sp84) - (spAC * spB4f)) * 7.0);
+    temp_fv0 = (f32) ((f64) ((spA8 * sp84) - (arg1->unk1F8.unk14.y * spB4f)) * 7.0);
     arg1->unk1D4.unk0.y = temp_fs2 + temp_fs3;
     arg1->unk1D4.unk0.x = temp_fs1 + var_fv0;
     arg1->unk168.unk0.z = temp_fs0 - temp_fv0;
@@ -3082,12 +3083,12 @@ void func_8005A280(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 32266 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
+// Score 32111 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
 // The m2c temps are pooled into region-local variables (split where a fresh value starts, merged where live
 // ranges don't overlap, each kept only if the score fell), so names like temp_fs4_5 are just slots. The
 // shoulder/hip vector is v = a*n + b*f with a clamped to <= -0.1 and b to >= 0, as the original computes it.
-// Operand orders and statement moves are from searches. Left: registers and scheduling throughout, about six
-// locals too many.
+// Operand orders, statement moves and two field reads in place of copies (read-through) are from searches. Left:
+// registers and scheduling throughout, about six locals too many.
 void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fs4;
     f32 temp_fs0;
@@ -3384,7 +3385,7 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     spDC_2 = arg1->unk144.unk0.y;
     arg1->unk168.unkC.y = (f32) (spDC_2 - arg1->unk168.unk0.y);
     temp_fs0 = arg1->unk144.unk0.x;
-    arg1->unk168.unkC.x = (f32) (temp_fs0 - arg1->unk168.unk0.x);
+    arg1->unk168.unkC.x = (f32) (arg1->unk144.unk0.x - arg1->unk168.unk0.x);
     arg1->unk144.unkC.x = (f32) (arg1->unk120.unk0.x - temp_fs0);
     temp_fs0 = arg1->unk120.unk14.x;
     arg1->unk144.unk14.x = temp_fs0;
@@ -3562,7 +3563,7 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     arg1->unk6C.unkC.z = var_fv0_2;
     spD0_2 = arg1->unk0.unk0.z;
     arg1->unk90.unkC.x = (f32) (spDC_3_2 - temp_fa1);
-    arg1->unk24.unkC.z = (f32) (spD0_2 - temp_fs5);
+    arg1->unk24.unkC.z = (f32) (arg1->unk0.unk0.z - temp_fs5);
     arg1->unk90.unkC.y = (f32) (arg1->unk6C.unk0.y - temp_ft4_3);
     arg1->unk90.unkC.z = (f32) (arg1->unk6C.unk0.z - temp_ft5_4);
     temp_ft4_3 = (f32) ((f64) temp_fv0_5 - (0.5 * (f64) (arg1->unk48.unk0.x + temp_fs0)));
