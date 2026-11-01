@@ -390,33 +390,33 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 32937 of 181100: same calls and branches (by a structure diff); every local at the original's offset, the
-// frame 0x2C8 here (one spill pair more than the original's 0x2C0). The direction is scaled in place after sqrtf
-// and glare is squared four times before the branch, both as in the original. The quad corners (v -/+ c, -v -/+ c)
-// are written out at each use, as the original keeps them in compiler temporaries; operand orders, line joins (the
-// texture coordinates of several vertices on one line) and statement moves come from searches. Left: the spill
-// slots of those temporaries (the original also stores cam->upX/upY/upZ to stack temporaries and reads them back)
-// and float registers.
+// Score 32525 of 181100: same calls and branches (by a structure diff); frame 0x2C8 here, 0x2C0 in the original.
+// The direction is scaled in place after sqrtf and glare is squared four times before the branch, both as in the
+// original. The quad corners (v -/+ c, -v -/+ c) are written out at each use, as the original keeps them in
+// compiler temporaries; operand orders, line joins (the texture coordinates of several vertices on one line),
+// statement moves and the declaration order come from searches (the declaration search moved the matrices four
+// bytes off the original's 0x200/0x240, scoring better). Left: the spill slots of those temporaries (the original
+// also stores cam->upX/upY/upZ to stack temporaries and reads them back) and float registers.
 Gfx* func_8008A0E0(Gfx* gdl) {
-    UnkStruct_801C43F8* p;
     f32 cx;
-    camera_unk_1* cam;
     f32 cy;
+    UnkStruct_801C43F8* p;
+    f32 inv;
+    camera_unk_1* cam;
     f32 dx;
+    f32 dot;
     f32 dy;
     f32 dz;
-    f32 inv;
-    f32 dot;
-    f32 glare;
-    f32 rx;
-    f32 ry;
-    f32 rz;
-    f32 angle;
-    f32 alpha;
-    f32 cz;
-    MtxF sp240;
-    MtxF sp200;
     f32 vx;
+    f32 cz;
+    f32 glare;
+    f32 angle;
+    f32 ry;
+    f32 alpha;
+    MtxF sp240;
+    f32 rz;
+    f32 rx;
+    MtxF sp200;
     f32 vy;
     f32 vz;
 
