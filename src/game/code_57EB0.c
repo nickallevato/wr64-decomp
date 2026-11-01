@@ -2069,15 +2069,16 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 6755 of 259500 (mid4): unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
+// Score 5950 of 259500 (mid4): the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
+// sets the record pointer after the loop guard, a derived induction variable; the pad keeps the old pointer's stack
+// slot); unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
 // update (the original's literal pool has 0.03 before 0.2f); both sp48/sp4C call pairs on one line and the unkC
 // sum's operand order are from join and operand-order searches. Left: 360.0f loaded early into $f2 (after the 2500.0f
 // distance call) in the original; D_801D0754 stored after lead->unk14 is read in the three switch arms; registers.
 // Before: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
 // the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
 // uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision
-// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test and the checkpoint search loop starts
-// p before i. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
+// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
 // D_801D0774's offset is stored before it is scaled; statement order from a move search. D_801B2EB4 reads are
 // written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
@@ -2085,7 +2086,7 @@ void func_800A68A4(s32 arg0) {
     s32 angle;
     s32 i;
     s32 best;
-    UnkStruct_801AEE20* p;
+    s32 pad; // stack pad: the slot of a record pointer the searches no longer use
     camera_unk_1* cam;
     StructVarS0* lead;
     s32 t;
@@ -2330,9 +2331,9 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk50 = 0;
                 best = -1;
                 D_801D0754 = 2e9f;
-                for (i = 0, p = D_801AEE20; i < D_801BB124; i++, p++) {
-                    D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
-                    if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
+                for (i = 0; i < D_801BB124; i++) {
+                    D_801D0758 = func_8009D4DC(D_801D06BC - D_801AEE20[i].unk0, D_801D06C4 - D_801AEE20[i].unk8);
+                    if ((D_801D0758 < D_801D0754) && (D_801AEE20[i].unkC0 < 2)) {
                         best = i;
                         D_801D0754 = D_801D0758;
                     }
@@ -2517,9 +2518,9 @@ void func_800A68A4(s32 arg0) {
             best = -1;
             if (D_801D0754 > 3000.0f) {
                 D_801D0754 = 2e9f;
-                for (p = D_801B2F20, i = 0; i < D_801BB124; i++, p++) {
-                    D_801D0758 = func_8009D4DC(D_801D06BC - p->unk0, D_801D06C4 - p->unk8);
-                    if ((D_801D0758 < D_801D0754) && (p->unkC0 < 2)) {
+                for (i = 0; i < D_801BB124; i++) {
+                    D_801D0758 = func_8009D4DC(D_801D06BC - D_801B2F20[i].unk0, D_801D06C4 - D_801B2F20[i].unk8);
+                    if ((D_801D0758 < D_801D0754) && (D_801B2F20[i].unkC0 < 2)) {
                         best = i;
                         D_801D0754 = D_801D0758;
                     }
