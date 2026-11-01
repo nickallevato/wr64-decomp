@@ -1137,13 +1137,15 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 11064 of 127200: calls and branches agree (frame 0xC0 here, 0xC8 there). The unk98 test is a switch with
-// case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body first). The literal spellings
-// (64 as an int, 0 and 0.00f in two zero tests) came from a respelling search: IDO keeps differently spelled
+// Score 10394 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
+// first). The literal spellings
+// (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
 // constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
 // caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
 // the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 void func_8008E794(void) {
+    s32 padS0[2]; // stack pad
     f32 dirX;
     camera_unk_1* cam;
     UnkStruct_801C43F8* p;
@@ -1167,7 +1169,7 @@ void func_8008E794(void) {
     dirZ = cam->unk6C;
     arena = gGfxPool->unk13D68;
     len = sqrtf((dirZ * dirZ) + (dirX * dirX));
-    if (len != 0.0f) {
+    if (len != 0) {
         len = 4000.0f / len;
         dirZ *= len;
         dirX *= len;
