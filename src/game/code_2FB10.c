@@ -684,7 +684,7 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 9701 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a dead
+// Score 9321 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a dead
 // if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone is
 // an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a boolean
 // assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref and time
@@ -693,11 +693,12 @@ void func_800C1EB8(s32);
 // 0x54), with the gate block's direction in its own gx/gz as the original's homes show; the gate dot product is
 // summed in two statements (a sum-split search), and an empty do-while before the record lookup (FAKE, permuter)
 // splits a block, and the rider's side test compares with an int 0 (permuter; a separate zero to IDO); the Marine
-// Fortress test reads e->unk98 again rather than type and beyond's x term is computed first, in dPos (permuter);
-// one statement move and one operand order come from searches. Left: register allocation (gCourseID in a2, not a3;
-// the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block (`dot >=
-// 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot (0xA4; dPrev's
-// home here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
+// Fortress test reads e->unk98 again rather than type and beyond's x term is computed first, in dPos, and the power
+// step's sign test reads the difference from r (permuter); one statement move and one operand order come from
+// searches. Left: register allocation (gCourseID in a2, not a3; the constant 1 in t5, not ra) and scheduling; the
+// original keeps the first empty test in the gate block (`dot >= 0`) as a branch, which no spelling here keeps
+// without a store; it keeps dPrev in its stack slot (0xA4; dPrev's home here too, but never spilled). unk8C * 2 (an
+// int) keeps the original's mul.s, where * 2.0f becomes an add.
 void func_8007687C(s32 arg0) {
     s32 i;
     s32 time;
@@ -1096,7 +1097,8 @@ void func_8007687C(s32 arg0) {
         rider->unk2C[cur] = 1;
     }
     if (rider->unk138 != rider->power) {
-        i = (rider->power - rider->unk138 == 0) ? 0 : ((rider->power - rider->unk138 > 0) ? 1 : -1);
+        r = rider->power - rider->unk138; // (permuter: the difference in r, dead here)
+        i = (rider->power - rider->unk138 == 0) ? 0 : ((r > 0) ? 1 : -1);
         rider->unk138 += i;
     }
     if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
