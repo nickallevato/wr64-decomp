@@ -133,19 +133,20 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 3135 of 97200: same blocks, loops and calls, frame 0x80. The stunt-record rows go through a copy k (FAKE,
-// permuter, mid4). The zeroing chains store right to left (the
-// first stores keep their addresses in registers, the leftmost goes through at), as in the original. The
-// D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
+// Score 1533 of 97200: same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
+// unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
+// a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
+// the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
+// to left (the first stores keep their addresses in registers, the leftmost goes through at), as in the original.
+// The D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
 // as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
 // first branch delay slot). The other loop counters' names are from a search over each loop's counter.
-// Left: the original stores gMapHalfSize with lui at in the extent loops (loads through a register), shares one lui
-// at between pairs of the unrolled D_801C26C0 stores (as if D_801C26C0 were defined in the file), and register
-// choices from the extent loops on.
+// Left: registers: the first loops' row pointer and counter swap a0/a1, and the extent loops' addresses take a3, t0,
+// t3 where the original has a2, a3, t1.
 void func_80075310(void) {
     s32 i;
-    s32 pad[2]; // stack pad: the original's frame is 0x80
+    s32 pad[1]; // stack pad: the original's frame is 0x80
     s32 j;
     s32 k;
     s32 depth;
@@ -154,6 +155,7 @@ void func_80075310(void) {
     f32 x;
     f32 z;
     f32 a;
+    f32 b;
     RiderStruct* rider;
 
     // First call: the default records of slots 9 to 11.
@@ -201,11 +203,13 @@ void func_80075310(void) {
         if (D_801C1FA8 < z) {
             D_801C1FA8 = z;
         }
-        a = (x >= 0.0f) ? x : -x;
+        b = (x >= 0.0f) ? x : -x;
+        a = b; // FAKE: through b, for the original's registers
         if (gMapHalfSize < a) {
             gMapHalfSize = a;
         }
-        a = (z >= 0.0f) ? z : -z;
+        b = (z >= 0.0f) ? z : -z;
+        a = b; // FAKE: through b, for the original's registers
         if (gMapHalfSize < a) {
             gMapHalfSize = a;
         }
@@ -225,11 +229,13 @@ void func_80075310(void) {
         if (D_801C1FA8 < z) {
             D_801C1FA8 = z;
         }
-        a = (x >= 0.0f) ? x : -x;
+        b = (x >= 0.0f) ? x : -x;
+        a = b; // FAKE: through b, for the original's registers
         if (gMapHalfSize < a) {
             gMapHalfSize = a;
         }
-        a = (z >= 0.0f) ? z : -z;
+        b = (z >= 0.0f) ? z : -z;
+        a = b; // FAKE: through b, for the original's registers
         if (gMapHalfSize < a) {
             gMapHalfSize = a;
         }
