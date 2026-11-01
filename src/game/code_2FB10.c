@@ -684,12 +684,12 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 13759 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
+// Score 13221 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a
 // dead if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone
 // is an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a
 // boolean assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in
 // ref and time (dead there), the original's registers for them; the lap-shift loop counts in sameZone (a
-// loop-counter search). Left: register allocation (gCourseID in
+// loop-counter search); a stack pad where r3 and r4 were keeps the frame. Left: register allocation (gCourseID in
 // a2, not a3; the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate block
 // (`dot >= 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot.
 // unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f becomes an add.
@@ -711,6 +711,7 @@ void func_8007687C(s32 arg0) {
     s32 zoneC;
     s32 zoneD;
     s32 sameZone;
+    s32 pad2[2]; // stack pad
     s32 nearLine;
     s32 pad0[2]; // stack pad
     s32 beyond;
