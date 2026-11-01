@@ -1508,10 +1508,10 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 46495 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 46075 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
-// the second marks loop counts in its own variable (value) from j, which gives the original's != loop test. The
+// both marks loops count in value (the second from j, which gives the original's != loop test). The
 // 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
 // there, but this form scores far better (the registers from there on). Register
 // allocation and scheduling differ throughout:
@@ -1940,7 +1940,7 @@ void func_801F4120(Gfx** gdlp) {
                     y = 0xD6;
                 }
             }
-            for (j = 0; j < k; j++) {
+            for (value = 0; value < k; value++) {
                 HUD_SCISRECT(gdl, x, y, 12, 12);
                 x += 0xE;
             }
