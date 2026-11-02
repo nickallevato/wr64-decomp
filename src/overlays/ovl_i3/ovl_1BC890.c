@@ -201,12 +201,13 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 320 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
+// Score 290 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
 // search: the 255 value (D_i3_802C6F6C/78) is set before the 170 value (D_i3_802C6F70/7C) everywhere. Case 0
 // clears the four values in separate statements, in the original's store order (no chain order gives it). A search
 // over a local n (the incremented counter in each case, n for each product) gives 320 with case 0's counter in n,
 // case 1's two scaled values through n (FAKE, marked) and case 3's counter and state cleared in one chain (the
-// counter in n in cases 0 and 2 alone: 455). Left: the global registers: &D_i3_802C6F64, &D_i3_802C6F74, 255 and
+// counter in n in cases 0 and 2 alone: 455). mid5 (permuter): case 2 clears D_i3_802C6F74 and the counter in one chain
+// and case 3's chain goes through n (FAKE): 290. Left: the global registers: &D_i3_802C6F64, &D_i3_802C6F74, 255 and
 // 170 take t1, t2, a2, a3 here and t2, a2, a3, t1 in the original (-S: the original colours 170 first), and the
 // temporaries after.
 Gfx* func_i3_802C5D54(Gfx* gdl) {
@@ -259,8 +260,7 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
         case 2:
             if (++D_i3_802C6F68 >= 25) {
                 D_i3_802C6F64 = 3;
-                D_i3_802C6F74 = 0;
-                D_i3_802C6F68 = 0;
+                D_i3_802C6F74 = D_i3_802C6F68 = 0;
             }
             D_i3_802C6F6C = D_i3_802C6F78 = 255;
             D_i3_802C6F70 = D_i3_802C6F7C = 170;
@@ -268,7 +268,8 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
 
         case 3:
             if (++D_i3_802C6F68 >= 10) {
-                D_i3_802C6F68 = D_i3_802C6F64 = 0;
+                n = D_i3_802C6F64 = 0; // FAKE (permuter)
+                D_i3_802C6F68 = n;
                 D_i3_802C6F6C = 0;
                 D_i3_802C6F70 = 0;
                 D_i3_802C7028 = 1;
