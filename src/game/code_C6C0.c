@@ -6361,7 +6361,7 @@ void func_80064C0C(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1160 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
+// Score 560 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
 // separate unk16D0 = 0 stores; calls and branches agree. The function reuses its float locals as the original's
 // registers show (from searches over merges and roles; the permuter found the first): the x offset into the course
 // box shares x with the later position deltas ($f16 for both there), and in the C14..C34 block the old positions go
@@ -6372,8 +6372,11 @@ void func_80064C0C(s32 arg0) {
 // home, whose address use keeps it in memory: the original stores it to its stack slot (sp+0x20) and reloads it for
 // both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E stored first. Declaration order (a
 // search) and one stack pad give the stack slots. The zero literals written as 0 and .0f give the original's separate
-// zero loads in three of the compares. Left: dz in $f0 ($f14 there) at the top; unkB94 = unkB90 reloads unkB90 here;
-// the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each compare.
+// zero loads in three of the compares. The speed (sqrtf) is held in x for the unkB90/unkB94 stores (the original
+// stores its register to unkB94; a reload there spends a float temporary) and the middle position's old value is read
+// into dz like the other two. Left: dz in $f12 at the top ($f14 there) and the C14 block's old positions, new deltas
+// and double constant in $f12/$f14/$f16 ($f16/$f12/$f14 there); the middle block's spill reloads and stores in another
+// order.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     s32 pad; // stack pad
@@ -6423,9 +6426,10 @@ void func_80065C18(s32 arg0) {
         z = rider->unk44.z - rider->unkBEC;
         rider->unkB8C = z - rider->unkB80;
         rider->unkB80 = z;
-        rider->unkB90 = sqrtf(SQ(x) + SQ(y) + SQ(z));
-        if (rider->unkB94 < rider->unkB90) {
-            rider->unkB94 = rider->unkB90;
+        x = sqrtf(SQ(x) + SQ(y) + SQ(z));
+        rider->unkB90 = x;
+        if (rider->unkB94 < x) {
+            rider->unkB94 = x;
         }
     }
     // FAKE: .0f, not 0.0f: IDO keeps the two zero constants apart (FORK.md m5)
@@ -6444,9 +6448,10 @@ void func_80065C18(s32 arg0) {
         rider->unkC14 = scale;
         rider->unkC2C = len - y;
         rider->unkC20 = len;
+        dz = rider->unkC18;
         y = rider->unkC24;
         scale = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
-        (&home)[0] = scale - rider->unkC18; // FAKE: the middle delta in memory, as the original spills it
+        (&home)[0] = scale - dz; // FAKE: the middle delta in memory, as the original spills it
         rider->unkC18 = scale;
         rider->unkC30 = home - y;
         rider->unkC24 = home;
