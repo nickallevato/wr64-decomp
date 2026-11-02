@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1304%20%2F%201348-0b6e63?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1305%20%2F%201348-0b6e63?style=for-the-badge)
 ![percent](https://img.shields.io/badge/matched-96.7%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-78.2%25-4fc9b8?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-78.5%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -47,15 +47,15 @@ neighbour became its own symbol.
 | `src/overlays` | courses and menu screens | 148 / 151 | `███████████████████▌` 98.0% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 211 / 219 | `███████████████████▎` 96.3% |
 | `src/sys` | boot, threads, memory | 35 / 37 | `██████████████████▉░` 94.6% |
-| `src/game` | race logic, riders, camera, water | 470 / 501 | `██████████████████▊░` 93.8% |
-| **Total** | | **1304 / 1348** | **96.7%** |
+| `src/game` | race logic, riders, camera, water | 471 / 501 | `██████████████████▊░` 94.0% |
+| **Total** | | **1305 / 1348** | **96.8%** |
 
 Every function, sized by its bytes and grouped by area, then by source file (the thin lines). Green is
 matched C, amber is still assembly. Drawn by `tools/fork/progress_map.py` from a full build.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/progress-map-dark.svg">
-  <img alt="Map of all 1348 functions: 1304 matched (green), 44 still assembly (amber)" src="docs/progress-map.svg" width="100%">
+  <img alt="Map of all 1348 functions: 1305 matched (green), 43 still assembly (amber)" src="docs/progress-map.svg" width="100%">
 </picture>
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
