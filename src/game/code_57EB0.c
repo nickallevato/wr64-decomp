@@ -2069,8 +2069,8 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 5125 of 259500 (mid6: the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
-// original; 5560 before). mid4: the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
+// Score 4890 of 259500 (mid6: the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
+// original; one D_801D0754 += written out as D_801D0754 = D_801D0754 + (a syntax search); 5560 before). mid4: the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
 // sets the record pointer after the loop guard, a derived induction variable; the pad keeps the old pointer's stack
 // slot); unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
 // update (the original's literal pool has 0.03 before 0.2f); both sp48/sp4C call pairs on one line and the unkC
@@ -2409,7 +2409,7 @@ void func_800A68A4(s32 arg0) {
                 D_801D0760 = func_8009D564(D_801D0764 - 90.0f);
             }
             angle = (s32) ((D_801D0760 / 360.0f) * 4096.0f);
-            D_801D0754 += COS(angle) * D_801D0768;
+            D_801D0754 = D_801D0754 + COS(angle) * D_801D0768;
             D_801D075C = (SIN(angle) * D_801D0768) + D_801D0758;
             D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             D_801D0760 = Math_Normalize_Angle(
