@@ -684,8 +684,10 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 7066 of 146400: same blocks and calls, frame 0x120. mid6: the type 8/9 test reads e->unk98 into laps (dead
-// there; a name search), and dPrev's z term reads e->unk74 rather than dirZ (a read-through search). The type 8/9 test keeps its two branches through a dead
+// Score 6906 of 146400: same blocks and calls, frame 0x120. mid6 (searches): the type 8/9 test reads e->unk98 into
+// laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference is held in nearLine,
+// beyond's x term goes through dPrev; dPrev's z term reads e->unk74 rather than dirZ; one += written out, and the
+// side test compares with an int 0. The type 8/9 test keeps its two branches through a dead
 // if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone is
 // an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a boolean
 // assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref and time
@@ -824,7 +826,7 @@ void func_8007687C(s32 arg0) {
                 dot = -dot;
             }
             if (dot <= e->unk8C) {
-                sfx = true; // FAKE: dead, keeps the original's branches
+                ref = true; // FAKE: dead, keeps the original's branches
             } else {
                 sfx = false;
             }
@@ -839,7 +841,7 @@ void func_8007687C(s32 arg0) {
         dx /= len;
         dz /= len;
     }
-    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0.0f)) {
+    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0)) {
         if (((dirZ * dx) - (dirX * dz)) >= 0.0f) {
             rider->unk1C = 1;
         } else {
@@ -955,7 +957,7 @@ void func_8007687C(s32 arg0) {
         // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
             dPos = (D_801C3780 - e->unk0) * dirX;
-            dPos += (D_801C3788 - e->unk8) * dirZ;
+            dPos = dPos + (D_801C3788 - e->unk8) * dirZ;
             if (!(dPos >= 0.0f)) {
                 dPos = -dPos;
             }
@@ -974,14 +976,14 @@ void func_8007687C(s32 arg0) {
                 if ((gGameModes == GMODE_TIME_TRIALS) && (D_800DAB68 == 0) && (cur == D_801BB12C) &&
                     (rider->lapCount < 3)) {
                     do {} while (0); // FAKE (permuter): a block boundary
-                    ref = gBestCheckpointTimes[gCourseID][rider->lapCount - 1];
-                    if (ref > 0) {
-                        if (ref < time) {
+                    nearLine = gBestCheckpointTimes[gCourseID][rider->lapCount - 1]; // the reference time (variable reuse)
+                    if (nearLine > 0) {
+                        if (nearLine < time) {
                             rider->gapRequest = 1;
-                            rider->checkpointGap = time - ref;
+                            rider->checkpointGap = time - nearLine;
                         } else {
                             rider->gapRequest = 2;
-                            rider->checkpointGap = ref - time;
+                            rider->checkpointGap = nearLine - time;
                         }
                         rider->gapTimer = 40;
                     }
@@ -1118,12 +1120,12 @@ void func_8007687C(s32 arg0) {
     // Sunset Bay) moves the lap counter unk320.
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
-    // beyond's x term first (permuter; dPos is dead here)
-    dPos = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
+    // beyond's x term first (permuter), in dPrev (dead here; a name search)
+    dPrev = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
     ref = D_801AEE20[r2].unkA0;
     time = D_801AEE20[ref].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         dPos) > 0.0f;
+         dPrev) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (ref == D_801BB12C) || (time == D_801BB12C);
