@@ -4915,14 +4915,10 @@ void func_800609EC(s32 arg0) {
                   rider->unk1448[5].unk0.y, rider->unk1448[5].unk0.z, 0.1f);
 }
 
-#ifdef NON_MATCHING
-// Score 65 of 30400: same instructions; only the first block's registers differ: the original has unkB50.button in
-// a1 (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), stick_y in t5 and the two
-// masked values in t4/t9 (as if two temporaries were spent before the xor). The constant 1 of the UNACTIVE_MODE test is
-// shared with the unk15DC store (a2) but not with the unk1444 and unk1600 stores: those fields are u16, so their 1 is a
-// different constant to IDO. The no-op stick_y mask (permuter) fixes the t-register rotation after the first block.
-// btn and pad set at the top (not before first use) stop IDO folding their first access into arg0; d holding the
-// button is a reuse that put unkB56 in v1.
+// The button update follows SysUtils_UpdateControllers (sys_utils.c): the previous held mask is saved, the new
+// one stored, and pressed / released are the xor with the new and the old mask. The constant 1 of the UNACTIVE_MODE
+// test is shared with the unk15DC store but not with the unk1444 and unk1600 stores: those fields are u16, so their
+// 1 is a different constant to IDO.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
@@ -4931,18 +4927,18 @@ void func_80061184(UnkStruct_80192690* arg0) {
 
     pad = &arg0->unkB50;
     btn = (RiderButtons*) (pad + 1);
-    d = arg0->unkB50.button;
-    arg0->unkB58 = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB50.button;
-    arg0->unkB5A = (arg0->unkB56 ^ arg0->unkB50.button) & arg0->unkB56;
-    arg0->unkB5C = arg0->unkB56;
-    arg0->unkB56 = d;
-    arg0->unkB5E = arg0->unkB50.stick_x;
-    arg0->unkB5F = arg0->unkB50.stick_y & 0xFFFFu; // FAKE (permuter): a no-op mask that changes the top temporaries
-    d = arg0->unkB50.stick_x - arg0->unkB60;
+    btn->prevHeld = btn->held;
+    btn->held = pad->button;
+    dirs = btn->prevHeld ^ btn->held;
+    btn->pressed = dirs & btn->held;
+    btn->released = dirs & btn->prevHeld;
+    btn->stickX = pad->stick_x;
+    btn->stickY = pad->stick_y;
+    d = pad->stick_x - arg0->unkB60;
     if (d < -D_800D49DC) {
         d = -D_800D49DC;
     } else if (D_800D49DC < d) {
-        d = D_800D49DC & 0xFFFFFFFFFFFFFFFFu; // FAKE (permuter): a no-op 64-bit mask that takes one more t-register
+        d = D_800D49DC;
     }
     arg0->unkB60 += d;
     arg0->unkC66 = btn->held & 0xA000;
@@ -5002,12 +4998,13 @@ void func_80061184(UnkStruct_80192690* arg0) {
     arg0->unk15F6 = dirs;
     if ((arg0->unkC54 == 22) || (arg0->unkC54 == 15)) {
         if ((arg0->unkC66 == 0) && (arg0->unk15F4 != 0)) {
+            dirs = 0x200; // FAKE (permuter): the 0x200 of two tests held in dirs (dead by then)
             if (arg0->unk15F8 == 0) {
                 arg0->unk15F8++;
             } else {
                 switch (arg0->unk15FC) {
                     case 0x800:
-                        if (arg0->unk15F4 & 0x200) {
+                        if (arg0->unk15F4 & dirs) {
                             arg0->unk15F8++;
                         } else {
                             arg0->unk15F8 = 0;
@@ -5024,7 +5021,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
                         if (arg0->unk15F4 & 0x100) {
                             arg0->unk15F8++;
                         } else {
-                            arg0->unk15F8 = dirs * 0; // FAKE: 0 written as dirs * 0
+                            arg0->unk15F8 = 0;
                         }
                         break;
                     case 0x200:
@@ -5055,7 +5052,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
                         }
                         break;
                     case 0x400:
-                        if (arg0->unk15F4 & 0x200) {
+                        if (arg0->unk15F4 & dirs) {
                             arg0->unk15FA++;
                         } else {
                             arg0->unk15FA = 0;
@@ -5084,9 +5081,6 @@ void func_80061184(UnkStruct_80192690* arg0) {
         arg0->unk15F8 = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80061184.s")
-#endif
 
 s32 func_80061644(f32 arg0) {
     s32 var_v1;
