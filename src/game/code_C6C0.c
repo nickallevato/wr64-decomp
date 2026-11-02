@@ -5492,14 +5492,15 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 5175 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 4970 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
 // copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
 // stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
 // swap search kept (the gFrameCounter chain earlier, unkC54 = 22 after func_800624CC, which does not read it):
-// 7965 -> 5230; a statement-move search moved two more: 5175. The twelve points are transformed by
+// 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. The twelve
+// points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
 // original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
 // unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
@@ -5638,9 +5639,12 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC24 = 0;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
-    rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
+    // FAKE: unkC1C and unkC0C through the free z and x (a search over routing stores through locals)
+    z = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
+    rider->unkC1C = z;
+    x = rider->unkC04 = 34.11f;
     rider->unkC10 = -27.300001f;
-    rider->unkC0C = rider->unkC04 = 34.11f;
+    rider->unkC0C = x;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
