@@ -2069,8 +2069,9 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 4890 of 259500 (mid6: the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
-// original; one D_801D0754 += written out as D_801D0754 = D_801D0754 + (a syntax search); 5560 before). mid4: the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
+// Score 4870 of 259500 (mid6: the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
+// original; one D_801D0754 += written out as D_801D0754 = D_801D0754 + and the unk28/unk2C zeroes chained (syntax
+// searches); 5560 before). mid4: the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
 // sets the record pointer after the loop guard, a derived induction variable; the pad keeps the old pointer's stack
 // slot); unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
 // update (the original's literal pool has 0.03 before 0.2f); both sp48/sp4C call pairs on one line and the unkC
@@ -2507,8 +2508,7 @@ void func_800A68A4(s32 arg0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk24 = 0.0f;
                     D_801CF060[arg0].unk10 = D_801D0758;
-                    D_801CF060[arg0].unk28 = 0.0f;
-                    D_801CF060[arg0].unk2C = 0.0f;
+                    D_801CF060[arg0].unk28 = D_801CF060[arg0].unk2C = 0.0f;
                 }
             }
             func_800A2B24(arg0);
