@@ -1593,8 +1593,8 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 975 of 32100 (mid5; 985 mid4): the projection factor is y and the new d[0] is held in x and squared from x for the
-// second sqrtf (the original keeps it in a register; reading d[0] back reloaded it): from the projection on the
+// Score 975 of 32100 (mid5; 985 mid4): the projection factor is y and the new d[0] is held in x and squared from x for
+// the second sqrtf (the original keeps it in a register; reading d[0] back reloaded it): from the projection on the
 // float registers match. Left: the factor in $f14 ($f0 in the original), the v[1] spill reload one instruction
 // early, and the float temporaries numbered differently up to there (first ease update on).
 // The rate first in the unk48[0] ease is from an operand-order search; the last blend is (unk44 - unk40) * (x * x)
