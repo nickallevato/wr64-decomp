@@ -283,10 +283,12 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 1020 of 30700: register allocation only. The original computes the B test in t5 and
-// D_i0_802C6BCC * 4 once for both history stores; this C gets the B test in t9, recomputes the
-// index, and its temporaries are numbered one off from the switch on. The new menu index goes through j (FAKE,
-// from a search that routes each assignment through a free local): 1035 -> 1020.
+// Score 445 of 30700: register allocation only. The B test is computed into next before the A branch (the original has
+// it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
+// Three FAKEs from the permuter (powerMisses through i, the menu's unk10 through j, an empty test of D_i0_802C6BCC
+// holding an empty if (1) in case 4) and the idle counter's if/else on one line move the temporaries towards the
+// original's. Left: the B test in a3 (t5 there), D_i0_802C6BCC's value and index swap v0/a2, and the A branch's
+// temporaries one register on.
 void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
@@ -296,9 +298,9 @@ void func_i0_802C63AC(void) {
     s32 i;
     s32 j;
 
+    next = D_801CE65A[0].unk0 & B_BUTTON;
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
-        next = D_i0_802C6BCC; // FAKE: next as a temp moves the D_i0_802C6BCC load first
-        D_i0_802C6EE8[next] = D_i0_802C6EE4;
+        D_i0_802C6EE8[D_i0_802C6BCC] = D_i0_802C6EE4;
         D_i0_802C6EF8[D_i0_802C6BCC] = D_i0_802C6EE0;
         idle = 0;
         if (D_i0_802C6BCC < 2) {
@@ -328,7 +330,8 @@ void func_i0_802C63AC(void) {
                         D_801CE608.powerMisses = D_801CB308[1][1];
                         D_801CE608.lapCount = D_801CB308[1][2];
                     } else {
-                        D_801CE608.powerMisses = D_801CB308[2][1];
+                        i = D_801CB308[2][1]; // FAKE (permuter)
+                        D_801CE608.powerMisses = i;
                         D_801CE608.lapCount = D_801CB308[2][2];
                     }
                     next = 10;
@@ -336,6 +339,7 @@ void func_i0_802C63AC(void) {
                     for (i = 0; i < 4; i++) {
                         D_801CB340[i] = 0;
                     }
+                    if (!D_i0_802C6BCC) { if (1) {} } // FAKE (permuter)
                     D_801CB334 = 0;
                     if (item->unk16 == 2) {
                         D_801CB334 = 1;
@@ -397,9 +401,6 @@ void func_i0_802C63AC(void) {
             AudioGeneral_PlaySound(0x11, 0);
         }
     } else {
-        // FAKE: the B test through next computes it before the A branch, as the original does
-        next = D_801CE65A[0].unk0;
-        next &= B_BUTTON;
         if (next) {
             idle = 0;
             if (D_i0_802C6EE0 != 0) {
@@ -408,7 +409,7 @@ void func_i0_802C63AC(void) {
                 }
                 D_i0_802C6EE0 = D_i0_802C6EF8[D_i0_802C6BCC];
                 D_i0_802C6EE4 = D_i0_802C6EE8[D_i0_802C6BCC];
-                D_i0_802C6BD0 = D_i0_802C6E08[D_i0_802C6EE0].unk10;
+                D_i0_802C6BD0 = (j = D_i0_802C6E08[D_i0_802C6EE0].unk10); // FAKE (permuter)
                 AudioGeneral_PlaySound(0x16, 0);
             }
         } else if (D_801CE65A[0].unk0 & U_JPAD) {
@@ -428,11 +429,8 @@ void func_i0_802C63AC(void) {
         }
     }
     if (idle) {
-        if ((D_801CE65A[0].unk0 == 0) && (D_801CE658[0].unk_00.unk_0 == 0)) {
-            D_i0_802C6F14++;
-        } else {
-            D_i0_802C6F14 = 0;
-        }
+        // On one line: IDO schedules by source line (a permuter find; 620 when split)
+        if ((D_801CE65A[0].unk0 == 0) && (D_801CE658[0].unk_00.unk_0 == 0)) { D_i0_802C6F14++; } else { D_i0_802C6F14 = 0; }
         if (D_i0_802C6F14 >= 600) {
             MainMenu_Leave(7);
         }

@@ -4916,11 +4916,13 @@ void func_800609EC(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 560 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
-// (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), which shifts the t-register
-// rotation for the rest of the function; and it keeps the constant 1 of the UNACTIVE_MODE test in a2 for the
-// unk15DC store. btn and pad set at the top (not before first use) stop IDO folding their first access into arg0;
-// d holding the button is a reuse that put unkB56 in v1.
+// Score 65 of 30400: same instructions; only the first block's registers differ: the original has unkB50.button in
+// a1 (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), stick_y in t5 and the two
+// masked values in t4/t9 (as if two temporaries were spent before the xor). The constant 1 of the UNACTIVE_MODE test is
+// shared with the unk15DC store (a2) but not with the unk1444 and unk1600 stores: those fields are u16, so their 1 is a
+// different constant to IDO. The no-op stick_y mask (permuter) fixes the t-register rotation after the first block.
+// btn and pad set at the top (not before first use) stop IDO folding their first access into arg0; d holding the
+// button is a reuse that put unkB56 in v1.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
@@ -4935,7 +4937,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     arg0->unkB5C = arg0->unkB56;
     arg0->unkB56 = d;
     arg0->unkB5E = arg0->unkB50.stick_x;
-    arg0->unkB5F = arg0->unkB50.stick_y;
+    arg0->unkB5F = arg0->unkB50.stick_y & 0xFFFFu; // FAKE (permuter): a no-op mask that changes the top temporaries
     d = arg0->unkB50.stick_x - arg0->unkB60;
     if (d < -D_800D49DC) {
         d = -D_800D49DC;
@@ -4946,7 +4948,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     arg0->unkC66 = btn->held & 0xA000;
     if ((arg0->unkC54 == 23) || (arg0->unk1608 != 0) || ((arg0->unkC54 == 7) && (arg0->unkC58 < 56)) ||
         ((arg0->unkC54 > 0) && (arg0->unkC54 < 7)) || (gRiderGameModes == PAUSE_MODE) ||
-        (gRiderGameModes == (u32) UNACTIVE_MODE)) { // FAKE: (u32) keeps this 1 out of the 1 stored below
+        (gRiderGameModes == UNACTIVE_MODE)) {
         btn->stickX = btn->stickY = 0;
         arg0->unkC66 = 0;
         arg0->unk15DC = 0;
@@ -5490,17 +5492,22 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 6575 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 4970 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
-// into unk15FA, then the s16 and s8 narrowings; with unk160A u16 the value is copied for the s16 stores, and with
-// unkB5F left of unkB58/unkB56 it takes the s8-narrowed value, as there); the twelve points are transformed by
+// into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
+// of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
+// copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
+// stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
+// swap search kept (the gFrameCounter chain earlier, unkC54 = 22 after func_800624CC, which does not read it):
+// 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. The twelve
+// points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
 // original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
 // unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
-// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: unk15FA's store
-// comes from the unconverted value and unk1444 from the copy here (the original copies only for unk16E2/unk1606);
-// constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in registers, this C 1, 0x800, 8
-// and 22), and float register allocation in the first transform.
+// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: the original
+// stores unk16F2/unk1604 and reads them back right after the chain's conversions, before the B58/B56, B5F/B5E and
+// float stores (here after them); constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in
+// registers, this C 0x800, 10 and 22), and float register allocation in the first transform.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5549,28 +5556,28 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
             rider->unkB50.stick_y = rider->unkB50.button = rider->unkC84 = rider->unkC86 = rider->unkB60 =
                 rider->unk16E8 = rider->unk16EC = rider->unkC58 = rider->unkC6C = rider->unk1574 = rider->unk16B4 =
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
-                        rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
-                            rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
+                        rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk15FA =
+                            rider->unk1444 = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
     rider->unk1604 = 0;
     rider->unk16F2 = 0;
-    rider->unk16C8 = -1;
+    rider->unk16F0 = rider->unk16F2;
     rider->unk15FC = 0x800;
+    rider->unk16C8 = -1;
     rider->unk1446 = 10;
     rider->unk1598 = 0;
-    rider->unk16F0 = rider->unk16F2;
     rider->unk16F4 = rider->unk1604;
     rider->unk15D8 = 1.0f;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
     rider->unkC7C = 1;
     rider->unkC82 = 1;
     rider->unkC78 = 8;
-    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unk1578 = 1;
     rider->unkC00 = 34.11f;
-    rider->unkC54 = 22;
     func_800624CC(rider);
+    rider->unkC54 = 22;
     rider->unkBA0 = rider->unk6C;
     rider->unkBA4 = rider->unk70;
     rider->unkBA8 = rider->unk74;
@@ -5578,8 +5585,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkBB0 = 0.0f;
     rider->unkBB4 = 0.0f;
     x = rider->unk44.x + (2.0f * rider->unk78);
-    y = rider->unk44.y + (2.0f * rider->unk7C);
     rider->unkC68 = 1;
+    y = rider->unk44.y + (2.0f * rider->unk7C);
     z = rider->unk44.z + (2.0f * rider->unk80);
     RIDER_SPHERES(rider)[0].pos.x = (rider->unk6C * 27.0f) + x;
     RIDER_SPHERES(rider)[0].pos.y = (rider->unk70 * 27.0f) + y;
@@ -5623,18 +5630,21 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC58 = func_8005CD24(arg0, (UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], rider->unkC54,
                                   rider->unkC58) - 1;
     func_8005D390((UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], (UnkStruct_8005CEF8*) rider->unk660);
-    rider->unkC20 = 0;
-    rider->unkC24 = 0;
     rider->unkC28 = 0;
     rider->unkC2C = 0;
     rider->unkC30 = 0;
     rider->unkC34 = 0;
     rider->unkC08 = 0;
+    rider->unkC20 = 0;
+    rider->unkC24 = 0;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
-    rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
+    // FAKE: unkC1C and unkC0C through the free z and x (a search over routing stores through locals)
+    z = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
+    rider->unkC1C = z;
+    x = rider->unkC04 = 34.11f;
     rider->unkC10 = -27.300001f;
-    rider->unkC0C = rider->unkC04 = 34.11f;
+    rider->unkC0C = x;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
@@ -6356,24 +6366,14 @@ void func_80064C0C(s32 arg0) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 1160 of 61400: the unk16D0 update is an if (unkC7C == 0) with its own else, which gives the original's two
-// separate unk16D0 = 0 stores; calls and branches agree. The function reuses its float locals as the original's
-// registers show (from searches over merges and roles; the permuter found the first): the x offset into the course
-// box shares x with the later position deltas ($f16 for both there), and in the C14..C34 block the old positions go
-// through dz, the old deltas through y, the new positions through scale and the new deltas through len. The first
-// player's camera is written through gCameraPerspective[D_80223930] directly and the second's through cam (the
-// permuter found the first): with cam in both, IDO moves the offsets to a1/a3 early. The C14..C34 block reads the
-// old values before each new position is computed (the original loads them early), and the middle delta goes through
-// home, whose address use keeps it in memory: the original stores it to its stack slot (sp+0x20) and reloads it for
-// both uses. The unkC80/unkC7E masks share one xor held in count, with unkC7E stored first. Declaration order (a
-// search) and one stack pad give the stack slots. The zero literals written as 0 and .0f give the original's separate
-// zero loads in three of the compares. Left: dz in $f0 ($f14 there) at the top; unkB94 = unkB90 reloads unkB90 here;
-// the zero of the unk16B4 test reused in the unk16D0 test, where the original loads it again for each compare.
+// Rider per-frame update (course-edge wrap, speed, point flags, state codes). The float locals are reused as the
+// original's registers show: the course-box offsets go through x and z, the speed (sqrtf) through x, and in the
+// C14..C34 block the old positions through x, the old deltas through y, the new positions through scale and the new
+// deltas through len. The middle delta lives in memory (home, address used), as the original spills it.
 void func_80065C18(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     s32 pad; // stack pad
-    f32 dz;
+    f32 pad2; // stack pad
     f32 x;
     f32 y;
     f32 z;
@@ -6392,23 +6392,23 @@ void func_80065C18(s32 arg0) {
         x = 0.0f;
     }
     if (rider->unk44.z < D_801924BC) {
-        dz = D_801924C0;
+        z = D_801924C0;
     } else if (D_801924B8 < rider->unk44.z) {
-        dz = -D_801924C0;
+        z = -D_801924C0;
     } else {
-        dz = 0.0f;
+        z = 0.0f;
     }
     rider->unkBF0 = x;
-    rider->unkBF4 = dz;
+    rider->unkBF4 = z;
     if (arg0 == gPlayer1Rider) {
         gCameraPerspective[D_80223930].eyeX += x;
-        gCameraPerspective[D_80223930].eyeZ += dz;
+        gCameraPerspective[D_80223930].eyeZ += z;
     } else if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
         cam = &gCameraPerspective[D_80223934];
         cam->eyeX += x;
-        cam->eyeZ += dz;
+        cam->eyeZ += z;
     }
-    Rider_MovePoints(rider, x, 0.0f, dz);
+    Rider_MovePoints(rider, x, 0.0f, z);
     if (gRiderGameModes != PAUSE_MODE) {
         x = rider->unk44.x - rider->unkBE4;
         rider->unkB84 = x - rider->unkB78;
@@ -6419,9 +6419,10 @@ void func_80065C18(s32 arg0) {
         z = rider->unk44.z - rider->unkBEC;
         rider->unkB8C = z - rider->unkB80;
         rider->unkB80 = z;
-        rider->unkB90 = sqrtf(SQ(x) + SQ(y) + SQ(z));
-        if (rider->unkB94 < rider->unkB90) {
-            rider->unkB94 = rider->unkB90;
+        x = sqrtf(SQ(x) + SQ(y) + SQ(z));
+        rider->unkB90 = x;
+        if (rider->unkB94 < x) {
+            rider->unkB94 = x;
         }
     }
     // FAKE: .0f, not 0.0f: IDO keeps the two zero constants apart (FORK.md m5)
@@ -6433,23 +6434,24 @@ void func_80065C18(s32 arg0) {
         rider->unk16B4 = 0;
     }
     if (gRiderGameModes != PAUSE_MODE) {
-        dz = rider->unkC14;
+        x = rider->unkC14;
         y = rider->unkC20;
         scale = rider->unk44.x + (0.1806645 * rider->unk78) + (-26.9998535 * rider->unk6C);
-        len = scale - dz;
+        len = scale - x;
         rider->unkC14 = scale;
         rider->unkC2C = len - y;
         rider->unkC20 = len;
+        x = rider->unkC18;
         y = rider->unkC24;
         scale = rider->unk44.y + (0.1806645 * rider->unk7C) + (-26.9998535 * rider->unk70);
-        (&home)[0] = scale - rider->unkC18; // FAKE: the middle delta in memory, as the original spills it
+        (&home)[0] = scale - x; // FAKE: the middle delta in memory, as the original spills it
         rider->unkC18 = scale;
-        rider->unkC30 = home - y;
         rider->unkC24 = home;
-        dz = rider->unkC1C;
+        rider->unkC30 = home - y;
+        x = rider->unkC1C;
         y = rider->unkC28;
         scale = rider->unk44.z + (0.1806645 * rider->unk80) + (-26.9998535 * rider->unk74);
-        len = scale - dz;
+        len = scale - x;
         rider->unkC1C = scale;
         rider->unkC34 = len - y;
         rider->unkC28 = len;
@@ -6586,9 +6588,6 @@ void func_80065C18(s32 arg0) {
         rider->unk15C0 = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80065C18.s")
-#endif
 
 // Each rider's input (Rider_ReadController for the players, func_800616B0 otherwise) and update passes, the pan
 // between player 1 and the nearest rider for func_800BFB84 in one-player races, the water stamps D_80192498 along
