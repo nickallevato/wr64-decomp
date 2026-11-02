@@ -1352,19 +1352,11 @@ void func_80053FBC(UnkStruct_80192690* arg0, UnkStruct_80052C6C_1* arg1, UnkStru
     arg2->unk14.z = (arg0->unk1440 * temp_f0) + (arg0->unk1438 * temp_f12);
 }
 
-#ifdef NON_MATCHING
-// Score 15 of 82500: same instructions, frame and stack slots. The cross product written out in full (no locals for
-// the two edge vectors) gives the original's evaluation order and spills (5359 to 698); the midpoint block stores
-// unk168 then unk1D4. A permuter FAKE (three empty ifs after dx *= s) gives mx, s and mz the original's $f14, $f12,
-// $f2 (65 to 15). Left: my takes $f0 where the original has $f16. Also tried: renaming s per block (using mz for the
-// first squared distance gives 50 without the FAKE, 30 with it), declaration order, line joins in the midpoint block.
-// In the original each midpoint value sits in the register of a value from the clamp blocks: 7/sqrt in $f12 (the
-// sqrtf argument), mx in $f14 and my in $f16 (the reloaded unk168 x/y), mz in $f2 (the clamp scale s). Without the
-// FAKE, holding mz in s (the 7/sqrt value in mz) gives 50 and puts my in $f16; one empty if after the 7/sqrt line
-// then gives 35 (mx and my right; only 7/sqrt and mz swap $f12/$f2). Not lower: other names for 7/sqrt (a new local
-// adds a stack slot), the squared lengths in their own variable, every order of the seven float declarations, the
-// midpoint statements moved (107 orders of my/mz, FAKE-free base), loop forms (do-while, while, counter outside), empty ifs at
-// every line on both bases, the permuter on the 35 base.
+// The scale variable mz holds every clamp scale (19.000002 / sqrt, 14.367054 / sqrt) and then the midpoint's z, as
+// the original's $f2 does; the squared length and 7 / sqrt are in s ($f12). The cross product is written out in full
+// (no locals for the two edge vectors), which gives the original's evaluation order and spills.
+// 19.000002000000002 and 361.00007600000407 are spelled out to the last digit: the shorter 19.000002 is one ulp off as
+// a double (as in func_80056670).
 s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     UnkStruct_80192690* rider;
     s32 pad[1]; // stack pad: the original's spill slots
@@ -1412,38 +1404,38 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
             dy = arg1->unk168.unk0.y - arg1->unk120.unk0.y;
             dz = arg1->unk168.unk0.z - arg1->unk120.unk0.z;
             s = SQ(dx) + SQ(dy) + SQ(dz);
-            if (s > (19.000002 * 19.000002)) {
-                s = 19.000002 / sqrtf(s);
-                arg1->unk168.unk0.x = arg1->unk120.unk0.x + (s * dx);
-                arg1->unk168.unk0.y = arg1->unk120.unk0.y + (s * dy);
-                arg1->unk168.unk0.z = arg1->unk120.unk0.z + (s * dz);
+            if (s > 361.00007600000407) {
+                mz = 19.000002000000002 / sqrtf(s);
+                arg1->unk168.unk0.x = arg1->unk120.unk0.x + (mz * dx);
+                arg1->unk168.unk0.y = arg1->unk120.unk0.y + (mz * dy);
+                arg1->unk168.unk0.z = arg1->unk120.unk0.z + (mz * dz);
             }
             dx = arg1->unk168.unk0.x - arg1->unk1F8.unk0.x;
             dy = arg1->unk168.unk0.y - arg1->unk1F8.unk0.y;
             dz = arg1->unk168.unk0.z - arg1->unk1F8.unk0.z;
-            s = 14.367054f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
-            arg1->unk168.unk0.x = arg1->unk1F8.unk0.x + (s * dx);
-            arg1->unk168.unk0.y = arg1->unk1F8.unk0.y + (s * dy);
-            arg1->unk168.unk0.z = arg1->unk1F8.unk0.z + (s * dz);
+            mz = 14.367054f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+            arg1->unk168.unk0.x = arg1->unk1F8.unk0.x + (mz * dx);
+            arg1->unk168.unk0.y = arg1->unk1F8.unk0.y + (mz * dy);
+            arg1->unk168.unk0.z = arg1->unk1F8.unk0.z + (mz * dz);
         }
         if (arg5 != 0) {
             dx = arg1->unk1D4.unk0.x - arg1->unk18C.unk0.x;
             dy = arg1->unk1D4.unk0.y - arg1->unk18C.unk0.y;
             dz = arg1->unk1D4.unk0.z - arg1->unk18C.unk0.z;
             s = SQ(dx) + SQ(dy) + SQ(dz);
-            if (s > (19.000002 * 19.000002)) {
-                s = 19.000002 / sqrtf(s);
-                arg1->unk1D4.unk0.x = arg1->unk18C.unk0.x + (s * dx);
-                arg1->unk1D4.unk0.y = arg1->unk18C.unk0.y + (s * dy);
-                arg1->unk1D4.unk0.z = arg1->unk18C.unk0.z + (s * dz);
+            if (s > 361.00007600000407) {
+                mz = 19.000002000000002 / sqrtf(s);
+                arg1->unk1D4.unk0.x = arg1->unk18C.unk0.x + (mz * dx);
+                arg1->unk1D4.unk0.y = arg1->unk18C.unk0.y + (mz * dy);
+                arg1->unk1D4.unk0.z = arg1->unk18C.unk0.z + (mz * dz);
             }
             dx = arg1->unk1D4.unk0.x - arg1->unk1F8.unk0.x;
             dy = arg1->unk1D4.unk0.y - arg1->unk1F8.unk0.y;
             dz = arg1->unk1D4.unk0.z - arg1->unk1F8.unk0.z;
-            s = 14.367054f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
-            arg1->unk1D4.unk0.x = arg1->unk1F8.unk0.x + (s * dx);
-            arg1->unk1D4.unk0.y = arg1->unk1F8.unk0.y + (s * dy);
-            arg1->unk1D4.unk0.z = arg1->unk1F8.unk0.z + (s * dz);
+            mz = 14.367054f / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+            arg1->unk1D4.unk0.x = arg1->unk1F8.unk0.x + (mz * dx);
+            arg1->unk1D4.unk0.y = arg1->unk1F8.unk0.y + (mz * dy);
+            arg1->unk1D4.unk0.z = arg1->unk1F8.unk0.z + (mz * dz);
         }
         dx = arg1->unk168.unk0.x - arg1->unk1D4.unk0.x;
         dy = arg1->unk168.unk0.y - arg1->unk1D4.unk0.y;
@@ -1451,12 +1443,12 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
         s = 7.0 / sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
         mx = (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5;
         dx *= s;
-        if (1) {} if (1) {} if (1) {} // FAKE (permuter): midpoint registers
         arg1->unk168.unk0.x = dx + mx;
         my = (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5;
         dy *= s;
         arg1->unk168.unk0.y = dy + my;
         mz = (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5;
+        if (mz) {} // FAKE (search): an empty test of mz gives the midpoint values the original's registers
         dz *= s;
         arg1->unk168.unk0.z = dz + mz;
         arg1->unk1D4.unk0.x = mx - dx;
@@ -1538,9 +1530,6 @@ s32 func_80054130(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3,
     }
     return arg3;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80054130.s")
-#endif
 
 s32 func_80054E14(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3) {
     UnkStruct_80192690* temp_s1;
