@@ -286,8 +286,8 @@ extern s32 D_i0_802C6EF8[];
 // Score 500 of 30700: register allocation only. The B test is computed into next before the A branch (the original
 // has it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
 // Three FAKEs from the permuter (powerMisses through i, the menu's unk10 through j, an empty test of D_i0_802C6BCC in
-// case 4) move the temporaries towards the original's. Left: the menu index, &D_i0_802C6BCC, &D_i0_802C6EE4 and the B test take a1, a3, a2, a2 here (a0, a1,
-// a3, t5 there), and the temporaries after them.
+// case 4) and the idle counter's if/else on one line move the temporaries towards the original's. Left: the B test in
+// a3 (t5 there), D_i0_802C6BCC's value and index swap v0/a2, and the A branch's temporaries one register on.
 void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
