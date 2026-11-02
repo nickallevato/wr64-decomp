@@ -85,7 +85,7 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 485 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
+// Score 475 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
 // cam->unk9C is read through (no d local; pd keeps its stack word), which gives the d multiplies the original's
 // operand order. The alpha is a signed conversion ((s32) (e + 0.5f)). One f32 (e) serves the corner-ray temps,
 // the alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4). vp declared after
@@ -94,7 +94,8 @@ extern s32 D_80223934;
 // ob[2] chains store vtx[1] first. The (s16) on the second texture coordinate's SysUtils_Round takes an extra
 // integer temporary (hack). The do {} while (0) in the first corner ray and the empty test of cam->unkF4 after
 // the last one are FAKEs (marked; without them the float temporaries rotate from the first instruction on, 4800).
-// The cross product's y through k (FAKE, from a search that routes each assignment through a free local): 485.
+// The cross product's y through k (FAKE, from a search that routes each assignment through a free local): 485;
+// vtx[0]'s z through x (permuter): 475.
 // Left: the cam->upY CSE takes $f14 (the original's $f24) and the float registers after it rotate (unk6C, unk68,
 // unk64, the 5.0f and dist), 0.866f is loaded later into $f20 (early into $f24 there), and the texture
 // coordinates' sums take t7/t0 (t8/t9 there).
@@ -202,7 +203,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     vtx[6].v.ob[1] = vtx[5].v.ob[1] = vtx[4].v.ob[1] = vtx[3].v.ob[1] = vtx[2].v.ob[1] = vtx[1].v.ob[1] =
         vtx[0].v.ob[1] = SysUtils_Round(D_800D4740);
     vtx[1].v.ob[2] = vtx[2].v.ob[2] = SysUtils_Round(z - (D_800D4744 * 0.866f));
-    vtx[0].v.ob[2] = SysUtils_Round(z - (cam->unkF4 * e));
+    x = z - (cam->unkF4 * e);
+    vtx[0].v.ob[2] = SysUtils_Round(x);
     vtx[3].v.ob[2] = vtx[6].v.ob[2] = SysUtils_Round(z);
     vtx[4].v.ob[2] = vtx[5].v.ob[2] = SysUtils_Round((D_800D4744 * 0.866f) + z);
 
