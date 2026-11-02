@@ -5490,17 +5490,19 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 6575 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 7965 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
-// into unk15FA, then the s16 and s8 narrowings; with unk160A u16 the value is copied for the s16 stores, and with
-// unkB5F left of unkB58/unkB56 it takes the s8-narrowed value, as there); the twelve points are transformed by
+// into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
+// of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
+// copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
+// stores; the right types make the chain exact but move the scheduling after it). The twelve points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
 // original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
 // unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
-// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: unk15FA's store
-// comes from the unconverted value and unk1444 from the copy here (the original copies only for unk16E2/unk1606);
-// constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in registers, this C 1, 0x800, 8
-// and 22), and float register allocation in the first transform.
+// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: the original
+// stores unk16F2/unk1604 and reads them back right after the chain's conversions, before the B58/B56, B5F/B5E and
+// float stores (here after them); constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in
+// registers, this C 0x800, 10 and 22), and float register allocation in the first transform.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5549,8 +5551,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
             rider->unkB50.stick_y = rider->unkB50.button = rider->unkC84 = rider->unkC86 = rider->unkB60 =
                 rider->unk16E8 = rider->unk16EC = rider->unkC58 = rider->unkC6C = rider->unk1574 = rider->unk16B4 =
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
-                        rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk1444 =
-                            rider->unk15FA = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
+                        rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk15FA =
+                            rider->unk1444 = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
     rider->unk1604 = 0;
     rider->unk16F2 = 0;
     rider->unk16C8 = -1;
