@@ -684,7 +684,8 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 7121 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a dead
+// Score 7066 of 146400: same blocks and calls, frame 0x120. mid6: the type 8/9 test reads e->unk98 into laps (dead
+// there; a name search), and dPrev's z term reads e->unk74 rather than dirZ (a read-through search). The type 8/9 test keeps its two branches through a dead
 // if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone is
 // an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a boolean
 // assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref and time
@@ -816,8 +817,8 @@ void func_8007687C(s32 arg0) {
             inGate = -D_801C39C4 <= dot;
         }
     } else {
-        type = e->unk98;
-        if ((type == 8) || (type == 9)) {
+        laps = e->unk98;
+        if ((laps == 8) || (laps == 9)) {
             dot = (e->unk78 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk7C);
             if (!(dot >= 0.0f)) {
                 dot = -dot;
@@ -958,7 +959,7 @@ void func_8007687C(s32 arg0) {
             if (!(dPos >= 0.0f)) {
                 dPos = -dPos;
             }
-            dPrev = ((D_80192690[arg0].unkBEC - e->unk8) * dirZ) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
+            dPrev = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
             if (!(dPrev >= 0.0f)) {
                 dPrev = -dPrev;
             }
