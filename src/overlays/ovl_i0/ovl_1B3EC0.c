@@ -283,7 +283,7 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 620 of 30700: register allocation only. The B test is computed into next before the A branch (the original
+// Score 500 of 30700: register allocation only. The B test is computed into next before the A branch (the original
 // has it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
 // Three FAKEs from the permuter (powerMisses through i, the menu's unk10 through j, an empty test of D_i0_802C6BCC in
 // case 4) move the temporaries towards the original's. Left: the menu index, &D_i0_802C6BCC, &D_i0_802C6EE4 and the B test take a1, a3, a2, a2 here (a0, a1,
@@ -428,11 +428,8 @@ void func_i0_802C63AC(void) {
         }
     }
     if (idle) {
-        if ((D_801CE65A[0].unk0 == 0) && (D_801CE658[0].unk_00.unk_0 == 0)) {
-            D_i0_802C6F14++;
-        } else {
-            D_i0_802C6F14 = 0;
-        }
+        // On one line: IDO schedules by source line (a permuter find; 620 when split)
+        if ((D_801CE65A[0].unk0 == 0) && (D_801CE658[0].unk_00.unk_0 == 0)) { D_i0_802C6F14++; } else { D_i0_802C6F14 = 0; }
         if (D_i0_802C6F14 >= 600) {
             MainMenu_Leave(7);
         }
