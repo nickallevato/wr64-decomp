@@ -5492,12 +5492,13 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 7965 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 6020 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
 // copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
-// stores; the right types make the chain exact but move the scheduling after it). The twelve points are transformed by
+// stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
+// swap search kept (unkC54 = 22 after func_800624CC, which does not read it): 7965 -> 6020. The twelve points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
 // original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
 // unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
@@ -5557,8 +5558,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
                             rider->unk1444 = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
     rider->unk1604 = 0;
     rider->unk16F2 = 0;
-    rider->unk16C8 = -1;
     rider->unk15FC = 0x800;
+    rider->unk16C8 = -1;
     rider->unk1446 = 10;
     rider->unk1598 = 0;
     rider->unk16F0 = rider->unk16F2;
@@ -5567,14 +5568,14 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unkC7C = 1;
     rider->unkC82 = 1;
     rider->unkC78 = 8;
-    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unk1578 = 1;
     rider->unkC00 = 34.11f;
-    rider->unkC54 = 22;
     func_800624CC(rider);
+    rider->unkC54 = 22;
     rider->unkBA0 = rider->unk6C;
     rider->unkBA4 = rider->unk70;
     rider->unkBA8 = rider->unk74;
@@ -5582,8 +5583,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkBB0 = 0.0f;
     rider->unkBB4 = 0.0f;
     x = rider->unk44.x + (2.0f * rider->unk78);
-    y = rider->unk44.y + (2.0f * rider->unk7C);
     rider->unkC68 = 1;
+    y = rider->unk44.y + (2.0f * rider->unk7C);
     z = rider->unk44.z + (2.0f * rider->unk80);
     RIDER_SPHERES(rider)[0].pos.x = (rider->unk6C * 27.0f) + x;
     RIDER_SPHERES(rider)[0].pos.y = (rider->unk70 * 27.0f) + y;
