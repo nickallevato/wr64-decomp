@@ -4916,11 +4916,12 @@ void func_800609EC(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 560 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
+// Score 375 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
 // (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), which shifts the t-register
-// rotation for the rest of the function; and it keeps the constant 1 of the UNACTIVE_MODE test in a2 for the
-// unk15DC store. btn and pad set at the top (not before first use) stop IDO folding their first access into arg0;
-// d holding the button is a reuse that put unkB56 in v1.
+// rotation for the rest of the function. The constant 1 of the UNACTIVE_MODE test is shared with the unk15DC store
+// (a2) but not with the unk1444 and unk1600 stores: those fields are u16, so their 1 is a different constant to IDO
+// (the old (u32) FAKE on the test is gone). btn and pad set at the top (not before first use) stop IDO folding their
+// first access into arg0; d holding the button is a reuse that put unkB56 in v1.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
@@ -4946,7 +4947,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     arg0->unkC66 = btn->held & 0xA000;
     if ((arg0->unkC54 == 23) || (arg0->unk1608 != 0) || ((arg0->unkC54 == 7) && (arg0->unkC58 < 56)) ||
         ((arg0->unkC54 > 0) && (arg0->unkC54 < 7)) || (gRiderGameModes == PAUSE_MODE) ||
-        (gRiderGameModes == (u32) UNACTIVE_MODE)) { // FAKE: (u32) keeps this 1 out of the 1 stored below
+        (gRiderGameModes == UNACTIVE_MODE)) {
         btn->stickX = btn->stickY = 0;
         arg0->unkC66 = 0;
         arg0->unk15DC = 0;
