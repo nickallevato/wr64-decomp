@@ -283,10 +283,10 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 825 of 30700: register allocation only. The B test is computed into next before the A branch (the original
+// Score 620 of 30700: register allocation only. The B test is computed into next before the A branch (the original
 // has it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
-// Two FAKEs from the permuter (powerMisses through i, the menu's unk10 through j) move the temporaries towards the
-// original's. Left: the menu index, &D_i0_802C6BCC, &D_i0_802C6EE4 and the B test take a1, a3, a2, a2 here (a0, a1,
+// Three FAKEs from the permuter (powerMisses through i, the menu's unk10 through j, an empty test of D_i0_802C6BCC in
+// case 4) move the temporaries towards the original's. Left: the menu index, &D_i0_802C6BCC, &D_i0_802C6EE4 and the B test take a1, a3, a2, a2 here (a0, a1,
 // a3, t5 there), and the temporaries after them.
 void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
@@ -338,6 +338,7 @@ void func_i0_802C63AC(void) {
                     for (i = 0; i < 4; i++) {
                         D_801CB340[i] = 0;
                     }
+                    if (!D_i0_802C6BCC) {} // FAKE (permuter)
                     D_801CB334 = 0;
                     if (item->unk16 == 2) {
                         D_801CB334 = 1;
