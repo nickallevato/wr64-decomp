@@ -5492,13 +5492,14 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 6020 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 5230 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
 // copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
 // stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
-// swap search kept (unkC54 = 22 after func_800624CC, which does not read it): 7965 -> 6020. The twelve points are transformed by
+// swap search kept (the gFrameCounter chain earlier, unkC54 = 22 after func_800624CC, which does not read it):
+// 7965 -> 5230. The twelve points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
 // original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
 // unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
@@ -5565,10 +5566,10 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk16F0 = rider->unk16F2;
     rider->unk16F4 = rider->unk1604;
     rider->unk15D8 = 1.0f;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
-    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
     rider->unkC7C = 1;
     rider->unkC82 = 1;
     rider->unkC78 = 8;
