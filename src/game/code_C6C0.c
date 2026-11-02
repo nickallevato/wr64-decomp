@@ -4916,12 +4916,13 @@ void func_800609EC(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 375 of 30400: same instructions; register choice differs at the top: the original has unkB50.button in a1
-// (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), which shifts the t-register
-// rotation for the rest of the function. The constant 1 of the UNACTIVE_MODE test is shared with the unk15DC store
-// (a2) but not with the unk1444 and unk1600 stores: those fields are u16, so their 1 is a different constant to IDO
-// (the old (u32) FAKE on the test is gone). btn and pad set at the top (not before first use) stop IDO folding their
-// first access into arg0; d holding the button is a reuse that put unkB56 in v1.
+// Score 65 of 30400: same instructions; only the first block's registers differ: the original has unkB50.button in
+// a1 (here v0) and the unkB56 ^ button temp in t8 (here a2, a register-allocated CSE), stick_y in t5 and the two
+// masked values in t4/t9 (as if two temporaries were spent before the xor). The constant 1 of the UNACTIVE_MODE test is
+// shared with the unk15DC store (a2) but not with the unk1444 and unk1600 stores: those fields are u16, so their 1 is a
+// different constant to IDO. The no-op stick_y mask (permuter) fixes the t-register rotation after the first block.
+// btn and pad set at the top (not before first use) stop IDO folding their first access into arg0; d holding the
+// button is a reuse that put unkB56 in v1.
 void func_80061184(UnkStruct_80192690* arg0) {
     RiderButtons* btn;
     OSContPad* pad;
@@ -4936,7 +4937,7 @@ void func_80061184(UnkStruct_80192690* arg0) {
     arg0->unkB5C = arg0->unkB56;
     arg0->unkB56 = d;
     arg0->unkB5E = arg0->unkB50.stick_x;
-    arg0->unkB5F = arg0->unkB50.stick_y;
+    arg0->unkB5F = arg0->unkB50.stick_y & 0xFFFFu; // FAKE (permuter): a no-op mask that changes the top temporaries
     d = arg0->unkB50.stick_x - arg0->unkB60;
     if (d < -D_800D49DC) {
         d = -D_800D49DC;
