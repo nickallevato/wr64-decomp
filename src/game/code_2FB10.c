@@ -1335,7 +1335,8 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 6630 of 111900: same blocks, switches and calls, frame 0xB0. The declarations follow the
+// Score 6200 of 111900: same blocks, switches and calls, frame 0xB0. mid6: the trick-10 flags as one chain
+// (D_801C39F4 = D_801C39F0 = 1, a syntax search). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
 // has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
@@ -1681,8 +1682,7 @@ void func_800783AC(s32 arg0) {
                                 D_801C39F0 = 1;
                                 break;
                             case 10:
-                                D_801C39F0 = 1;
-                                D_801C39F4 = 1;
+                                D_801C39F4 = D_801C39F0 = 1;
                                 break;
                             case 11:
                                 D_801C39F8 = 1;
