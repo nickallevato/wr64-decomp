@@ -684,14 +684,15 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 5401 of 146400: same blocks and calls, frame 0x120. mix2: the checkpoint-gap reference time (gapRef) and
+// Score 5391 of 146400: same blocks and calls, frame 0x120. mix2: the checkpoint-gap reference time (gapRef) and
 // r3/r4 are their own variables, in stack-pad words, not reused ones, and the lap-shift loop counts in laps (dead
-// there): 5581 -> 5401. mix1: the gate's two distances are computed in segLen
+// there): 5581 -> 5401; the type 8/9 test reads e->unk98 directly (same score) and the Marine Fortress cue's
+// second distance takes dz first (a swap search): 5391. mix1: the gate's two distances are computed in segLen
 // (dead there) and copied to dPos and dPrev, then negated below zero (the original's mov.s / neg.s from one
 // register; 6906 -> 6711); beyond's x term in gz, not dPrev (6691; dPrev is still register-allocated where the
 // original keeps it in its home); the line record's x read into lineX before r1/r2 and used for beyond and
 // func_80076240 (a permuter find; padE grows by the word pad0 gives up, which keeps the homes): 5581.
-// mid6 (searches): the type 8/9 test reads e->unk98 into
+// mid6 (searches): the type 8/9 test read e->unk98 into
 // laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference was held in nearLine,
 // beyond's x term goes through dPrev; dPrev's z term reads e->unk74 rather than dirZ; one += written out, and the
 // side test compares with an int 0. The type 8/9 test keeps its two branches through a dead
@@ -828,8 +829,7 @@ void func_8007687C(s32 arg0) {
             inGate = -D_801C39C4 <= dot;
         }
     } else {
-        laps = e->unk98;
-        if ((laps == 8) || (laps == 9)) {
+        if ((e->unk98 == 8) || (e->unk98 == 9)) {
             dot = (e->unk78 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk7C);
             if (!(dot >= 0.0f)) {
                 dot = -dot;
@@ -952,8 +952,8 @@ void func_8007687C(s32 arg0) {
                 if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                     func_800C1B30();
                 } else if (gPlayers == TWO_PLAYERS) {
-                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
                     dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+                    dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
                     if (((dx * dx) + (dz * dz)) < 1.6e7f) {
                         func_800C1B30();
                     }
