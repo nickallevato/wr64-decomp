@@ -1343,7 +1343,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 4047 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 3489 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1351,7 +1351,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // padV gone, keep the frame); the trick-10 flags are two stores (the chain reloads D_801C39F0); unk334 is
 // cleared after the bonus, the time table is indexed gCourseID * 4 first, and D_80228A94 is set before
 // timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move:
-// 4377); the gate dot product takes its terms in dx and dz too (4047).
+// 4377); the gate dot product takes its terms in dx and dz too (4047); permuter finds: passed held in i (dead
+// there; a pad keeps its home: 4002) and a dead copy of rider in the time table read (FAKE: 3489).
 // mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1371,8 +1372,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
+    RiderStruct* rider2; // FAKE (permuter): a dead copy of rider, see the time table read
     s32 sfx;
-    s32 passed;
+    s32 padP; // stack pad (FAKE, permuter: the passed flag is held in i, dead there)
     s32 points;
     s32 frac;
     s32 padX; // stack pad
@@ -1601,7 +1603,7 @@ void func_800783AC(s32 arg0) {
         dx /= len;
         dz /= len;
     }
-    passed = false;
+    i = false;
     dot = (e->unk70 * dx) + (e->unk74 * dz);
     len = (e->unk74 * dx) - (e->unk70 * dz);
     if ((rider->unk1C == -1) && (dot > 0.0f)) {
@@ -1622,16 +1624,16 @@ void func_800783AC(s32 arg0) {
             rider->unk20 = 0;
             rider->unk2F0 = 1;
         } else {
-            passed = true;
+            i = true;
             rider->unk2F0 = 0;
         }
     }
-    if (passed) {
+    if (i) {
         rider->unkC = e->unkA0;
         rider->unk1C = -1;
         rider->unk20 = 1;
     }
-    if (passed && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
+    if (i && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
         // A checkpoint gate: its time (interpolated between this frame and the last), and the
         // time left as bonus points.
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
@@ -1668,7 +1670,7 @@ void func_800783AC(s32 arg0) {
             }
             if (cur != D_801BB12C) {
                 D_80228A94 = 20;
-                rider->timeLeft = D_800D9280[(gCourseID * 4) + rider->unk164] * 1000;
+                rider->timeLeft = D_800D9280[(gCourseID * 4) + (rider2 = rider)->unk164] * 1000; // FAKE (permuter)
                 AudioGeneral_PlaySound(0x33, 0);
             }
             rider->unk164++;
