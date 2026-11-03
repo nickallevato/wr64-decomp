@@ -5478,7 +5478,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 500 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 475 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5486,14 +5486,15 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 // stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
 // swap search kept (the gFrameCounter chain earlier):
 // 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. unkC7C and
-// unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475;
+// unkC82 are set by one chain, unk15D8 = 1 is spelled as an int (searches; a 34.110f spelling then): 3475;
 // unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
 // unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
 // unkC04 and the first part's y and z sums with the doubled term first (operand-order searches): 2930. point is set before
 // the template loop and the chain loop reads lengths[i] for i = 1..5 (the original loads 0(v1) from lengths + 4 on):
 // 2625. unkC20..unkC08 are cleared with 0.0f in field order (the original stores the top's 0.0f, $f20, there) and
 // the unk1520 loop with an int 0 (a separate zero, $f14, in the original): 1855. The six transforms add the
-// translation last ((...) + mf.mf[3][k], an operand-order search; the original's add.s operands): 500.
+// translation last ((...) + mf.mf[3][k], an operand-order search; the original's add.s operands): 500; both 34.11f
+// literals spelled alike again: 475.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
@@ -5568,7 +5569,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC7C = rider->unkC82 = 1;
     rider->unkC78 = 8;
     rider->unk1578 = 1;
-    rider->unkC00 = 34.110f; // odd spelling of 34.11f: a separate constant to IDO (a respelling search)
+    rider->unkC00 = 34.11f;
     rider->unkC54 = 22;
     func_800624CC(rider);
     rider->unkBA0 = rider->unk6C;
