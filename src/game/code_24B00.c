@@ -1313,7 +1313,9 @@ void func_800B4ABC(Gfx** gdl);
 
 #ifdef NON_MATCHING
 // Score 32597 of 358000 (mix2: the draw loops' alpha is its own variable, not cur, and the zeroing of cur before
-// the course-point loop is gone: 33052 -> 32597. big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode
+// the course-point loop is gone: 33052 -> 32597; seven empty do-whiles (FAKE, a greedy insert search; one before
+// dirZ and one after D_801C0C80 together move the whole function's register choices): 30187.
+// big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode
 // and the last second layer's display list; the visibility loop
 // reads D_801AEE20[i] directly (no e); the stack pad padA was
 // spurious (frame 0x5F0 without it, the other homes unchanged);
@@ -1388,8 +1390,10 @@ void func_8006E674(Gfx** gdl) {
         cur = gRiderRaceState[gPlayer2Rider].unkC;
     }
     D_801C0C80 = &D_801CB058[D_800DAB2C];
+    do {} while (0); // FAKE (insert search)
     sqrtf((craft->unk6C * craft->unk6C) + (craft->unk74 * craft->unk74));
     dirZ = cam->unk6C;
+    do {} while (0); // FAKE (insert search)
     dirX = cam->unk64;
     d = sqrtf((dirX * dirX) + (dirZ * dirZ));
     if (d > 0.0f) {
@@ -1582,6 +1586,7 @@ void func_8006E674(Gfx** gdl) {
         dlB = D_102CCE8;
     }
     tex = D_101F978 + (idx << 12);
+    do {} while (0); // FAKE (insert search)
     tex2 = tex + 0x800;
 
     // Table A, type 0 (palette D_D4F18) and type 1 (D_D5118): two layers each; then types 2
@@ -1596,6 +1601,7 @@ void func_8006E674(Gfx** gdl) {
             D_801C0640[slot] = alpha;
             gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
+            do {} while (0); // FAKE (insert search)
             gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, alpha);
             gSPDisplayList(gdlh++, dlA);
         }
@@ -1879,6 +1885,7 @@ void func_8006E674(Gfx** gdl) {
             _MtxF_to_Mtx(&o->unk74, &D_801AE948->unk4140[D_801AE950]);
             gSPMatrix(gdlh++, &D_5000000->unk4140[D_801AE950++], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         } else {
+            do {} while (0); // FAKE (insert search)
             gSPMatrix(gdlh++, &D_801C0CD0[i], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         }
         gSPSetGeometryMode(gdlh++, G_CULL_BACK);
@@ -1915,6 +1922,7 @@ void func_8006E674(Gfx** gdl) {
         if (D_801CE638 == 21) {
             gDPSetRenderMode(gdlh++, G_RM_PASS, G_RM_AA_ZB_OPA_SURF2);
             gSPDisplayList(gdlh++, D_801C1CD0);
+            do {} while (0); // FAKE (insert search)
             gSPClearGeometryMode(gdlh++, G_CULL_BACK);
             gDPPipeSync(gdlh++);
             gDPSetRenderMode(gdlh++, G_RM_PASS, G_RM_AA_ZB_TEX_EDGE2);
@@ -1942,6 +1950,7 @@ void func_8006E674(Gfx** gdl) {
         }
         gSPClearGeometryMode(gdlh++, G_LIGHTING);
         if (D_801C1CD8 != NULL) {
+            do {} while (0); // FAKE (insert search)
             gDPPipeSync(gdlh++);
             gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
             gSPDisplayList(gdlh++, D_801C1CD8);
