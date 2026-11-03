@@ -1016,12 +1016,15 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 7423 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// Score 6418 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
 // are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. e[2] and
 // c[0] go through len, and the later reads of d go through a pointer pd (three permuter FAKEs, marked): with them IDO
 // uses three saved float registers, as the original.
 // Left: the original's frame is 0x70 (0x68 here); it stores d once (IDO here re-stores it in each block), also stores
 // m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
+// Reading arg3..arg5 through their addresses in m[2], m[1] and the fallback's stores (FAKE, marked) gives the original's
+// reloads of the stacked parameters in place of one load kept in a spilled temporary (7423 -> 6655); the c[0] product
+// (into len) before c[1] (an adjacent-swap search): 6418.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1039,18 +1042,18 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
         t = (0.5 / len) * ((arg9 - arg10) + len);
-        m[2] = (t * d[2]) + arg3;
+        m[2] = (t * d[2]) + (&arg3)[0]; // FAKE: arg3..arg5 read through their addresses (see the note)
         e[2] = m[2] - arg3;
         len = e[2]; // FAKE (permuter): e[2] and c[0] through len move the float registers toward the original's
-        m[1] = (t * d[1]) + arg4;
+        m[1] = (t * d[1]) + (&arg4)[0];
         e[1] = m[1] - arg4;
         m[0] = (t * d[0]) + arg5;
         e[0] = m[0] - arg5;
         t = ((arg9 - SQ(len)) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
             c[2] = (arg12 * d[0]) - (arg13 * d[1]);
-            c[1] = (arg13 * d[2]) - (arg11 * pd[0]);
             len = (arg11 * pd[1]) - (arg12 * pd[2]); // FAKE (permuter), see above
+            c[1] = (arg13 * d[2]) - (arg11 * pd[0]);
             c[0] = len;
             arg11 = (pd[1] * c[0]) - (pd[0] * c[1]);
             arg12 = (pd[0] * c[2]) - (pd[2] * c[0]);
@@ -1067,9 +1070,9 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     }
     arg9 = sqrtf(arg9);
     t = arg9 / (arg9 + sqrtf(arg10));
-    arg0->unk0.x = (t * pd[2]) + arg3;
-    *arg1 = (t * pd[1]) + arg4;
-    *arg2 = (t * pd[0]) + arg5;
+    arg0->unk0.x = (t * pd[2]) + (&arg3)[0]; // FAKE: through the addresses, as above
+    *arg1 = (t * pd[1]) + (&arg4)[0];
+    *arg2 = (t * pd[0]) + (&arg5)[0];
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800534AC.s")
