@@ -1347,7 +1347,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3297 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 3150 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1358,6 +1358,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // 4377); the gate dot product takes its terms in dx and dz too (4047); permuter finds: passed held in i (dead
 // there; a pad keeps its home: 4002) and a dead copy of rider in the time table read (FAKE: 3489). mix2: that
 // copy goes through sfx (dead there) instead of a new pointer local, so every stack home is the original's again (3297).
+// The bonus flag for func_801FB488 is its own variable (flag, in padX's slot), not inGate: inGate then stays in its
+// home and is loaded where it is tested, and the gate time takes a0, as in the original (an empty do-while in the
+// trick switch's case 3, FAKE from an insert search, then gives 3150).
 // mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1381,7 +1384,7 @@ void func_800783AC(s32 arg0) {
     s32 padP; // stack pad (FAKE, permuter: the passed flag is held in i, dead there)
     s32 points;
     s32 frac;
-    s32 padX; // stack pad
+    s32 flag;
     s32 bonus;
     s32 trick;
     s32 padY[2]; // stack pad
@@ -1583,6 +1586,7 @@ void func_800783AC(s32 arg0) {
                     D_801C26E4 += D_800D92BC.unk10;
                     break;
                 case 3:
+                    do {} while (0); // FAKE (insert search): an empty block that moves later register choices
                     D_801C26E4 += D_800D92BC.unk14;
                     break;
             }
@@ -1663,11 +1667,11 @@ void func_800783AC(s32 arg0) {
             rider->unk334 = 0;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
-                    inGate = 1;
+                    flag = 1;
                 } else {
-                    inGate = 0;
+                    flag = 0;
                 }
-                func_801FB488(1, bonus, inGate);
+                func_801FB488(1, bonus, flag);
             }
             if (cur == D_801BB12C) {
                 D_801C39D4 = bonus;
