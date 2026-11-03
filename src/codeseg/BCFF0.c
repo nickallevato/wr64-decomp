@@ -1521,16 +1521,18 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 44636 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 43527 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
 // 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
 // there, but this form scores far better (the registers from there on). Both popups' 60000 tests and the player
-// popup's call read rider->checkpointGap again rather than value (a read-through search). Register
+// popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
+// in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
+// D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). Register
 // allocation and scheduling differ throughout:
-// IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
-// lap-split loop, the constant 1 in the lap-split popup), so the saved and temporary registers of every display-list
+// IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
+// the lap-split popup), so the saved and temporary registers of every display-list
 // block differ. The 1.8f below is D_80227A4C in the original.
 // Draw the race HUD: lap splits and total time, the TIME, LAP, RANK and SPEED readouts, the missed-buoy
 // marks, the boost meter, the stunt score and the best times.
@@ -1568,8 +1570,9 @@ void func_801F4120(Gfx** gdlp) {
             if ((rider->unk2F4 != 0) || (D_800D8178 != 0)) {
                 n++;
             }
-            for (j = 0; j < n; j++) {
-                func_801F25E0(&gdl, D_80228B54 + 0x18, y, rider->lapTimes[j], 0, (k + j + 1) % 10, 0);
+            // FAKE: D_80228B54 read as (&D_80228B50)[1] (the original reloads its address in the loop)
+            for (j = 0, i = k + 1; j < n; j++, i++) {
+                func_801F25E0(&gdl, (&D_80228B50)[1] + 0x18, y, rider->lapTimes[j], 0, i % 10, 0);
                 y += 10;
             }
         }
