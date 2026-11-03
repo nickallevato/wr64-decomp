@@ -1350,7 +1350,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3150 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 3105 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1363,8 +1363,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // copy goes through sfx (dead there) instead of a new pointer local, so every stack home is the original's again (3297).
 // The bonus flag for func_801FB488 is its own variable (flag, in padX's slot), not inGate: inGate then stays in its
 // home and is loaded where it is tested, and the gate time takes a0, as in the original (an empty do-while in the
-// trick switch's case 3, FAKE from an insert search, then gives 3150).
-// mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
+// trick switch's case 3, FAKE from an insert search, then gives 3150). The gate time has its own variable (time,
+// in a padY word; same score), and a permuter find holds the unk1C == -1 test in it first (FAKE): 3105.
+// mid6 (its trick-10 chain is split again above): the gate time went through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
@@ -1390,7 +1391,8 @@ void func_800783AC(s32 arg0) {
     s32 flag;
     s32 bonus;
     s32 trick;
-    s32 padY[2]; // stack pad
+    s32 time;
+    s32 padY[1]; // stack pad
     s32 cur;
     s32 padZ[3]; // stack pad
     s32 inGate;
@@ -1617,7 +1619,8 @@ void func_800783AC(s32 arg0) {
     i = false;
     dot = (e->unk70 * dx) + (e->unk74 * dz);
     len = (e->unk74 * dx) - (e->unk70 * dz);
-    if ((rider->unk1C == -1) && (dot > 0.0f)) {
+    time = rider->unk1C == -1; // FAKE (permuter): the test held in time (dead here)
+    if (time && (dot > 0.0f)) {
         if (len >= 0.0f) {
             rider->unk1C = 1;
         } else {
@@ -1664,8 +1667,8 @@ void func_800783AC(s32 arg0) {
                 len = -len;
             }
             frac = (dot / (dot + len)) * 50.0f;
-            laps = rider->raceTime - frac; // the gate's time, held in laps (variable reuse; 8007687C uses time)
-            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = laps;
+            time = rider->raceTime - frac;
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = time;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
             rider->unk334 = 0;
             if (bonus > 0) {
