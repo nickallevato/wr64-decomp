@@ -1005,14 +1005,15 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 1595 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display lists);
+// Score 1540 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display lists);
 // gDPSetRenderMode and gDPSetCombineLERP share a line (a search over joined lines). Empty tests after gDPLoadSync
 // (FAKE, from the permuter) and after gDPLoadBlock (FAKE, from a search over positions for a second one) split the
 // block: after it the original's gdl pointers alternate registers (addiu a2,a0,8; addiu a0,a2,8; ...), as they do here
 // only with the split. Left: the original computes the first two texture-load commands' pointers (two gdl increments)
 // and their constant words (t4, t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are
 // computed at the commands and the vertex temps rotate through t4-t9. Writing the texture commands before the vertices
-// is far worse (the stores move too). Frame and spill slots match.
+// is far worse (the stores move too). Frame and spill slots match. A third empty test after gDPSetPrimColor (FAKE,
+// from an empty-test search) gives 1540.
 Gfx* func_8008DFD0(Gfx* gdl) {
     camera_unk_1* cam;
     Vtx* vtx;
@@ -1071,6 +1072,7 @@ Gfx* func_8008DFD0(Gfx* gdl) {
                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
     gDPSetTileSize(gdl++, G_TX_RENDERTILE, 0, 0, ((32) - 1) << G_TEXTURE_IMAGE_FRAC, ((32) - 1) << G_TEXTURE_IMAGE_FRAC);
     gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0x00);
+    if (1) {} // FAKE: a third block split (a search over empty tests)
     gSPVertex(gdl++, D_6000310, 4, 0);
     gSP1Triangle(gdl++, 0, 1, 2, 0);
     gSP1Triangle(gdl++, 1, 2, 3, 0);
