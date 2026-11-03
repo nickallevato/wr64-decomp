@@ -1557,8 +1557,9 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 9216 of 124000 (big7: the human's remainder triangles set n = 0 just before their loop, which gives the
-// original's strength-reduction start from $zero and its first-loop counter s4; 11611 before): same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// Score 8026 of 124000 (big7: the human's remainder triangles set n = 0 just before their loop, which gives the
+// original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
+// (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks, display-list commands and loops (calls and branches agree). The stack pads give
 // the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
 // through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
@@ -1566,7 +1567,8 @@ extern Vtx D_50081C0[];
 // with the default (the original's table has 7 entries). Left: register allocation and
 // scheduling (the original keeps more command words in saved registers; it does not fold the trail quads' k * 2 * 5
 // into k * 10, it hoists case 6's texture address in the unk1A00 loop and adds 0x8DC0 last there, and computes
-// i + view before the age test in the first loop instead of distributing it).
+// i + view before the age test in the first loop instead of distributing it; the remainder's vertex word adds
+// (n << 9) and n * 16 where gSPVertex ORs them: an additive gDma1p gives those instructions but scores 8651).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1608,9 +1610,10 @@ void func_800B305C(Gfx** gdl) {
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        for (k = 1; k != 5; k++) {
-            n = 0;
-            switch (k) {
+        // n picks the texture and k counts the vertices here: the variables the original reuses (a name search)
+        for (n = 1; n != 5; n++) {
+            k = 0;
+            switch (n) {
                 case 1:
                     tex = D_1047C60;
                     break;
@@ -1629,12 +1632,12 @@ void func_800B305C(Gfx** gdl) {
             for (j = 63; j >= 0; j--) {
                 if (D_800E6D68[j].unk38 != 0) {
                     D_800E6D64 = &D_800E6D68[j];
-                    if ((((D_800E6D64->unk3C + j) & 3) + 1) != k) {
-                        n += 3;
+                    if ((((D_800E6D64->unk3C + j) & 3) + 1) != n) {
+                        k += 3;
                     } else {
-                        gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][n], 3, 0);
+                        gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][k], 3, 0);
                         gSP1Triangle(gdlh++, 0, 1, 2, 0);
-                        n += 3;
+                        k += 3;
                     }
                 }
             }
@@ -1650,9 +1653,9 @@ void func_800B305C(Gfx** gdl) {
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        for (j = 0, n = 0; j < 4; j++) {
+        for (j = 0, k = 0; j < 4; j++) {
             if (D_800E6D78[j].unk20 != 0) {
-                vtx = &D_5000000->unk8DC0[i + view][n];
+                vtx = &D_5000000->unk8DC0[i + view][k];
                 switch (D_800E6D78[j].unk24) {
                     case 1:
                         tex = (u8*) &D_1049C80;
@@ -1677,7 +1680,7 @@ void func_800B305C(Gfx** gdl) {
                         tex = (u8*) &D_104CCB0;
                         break;
                 }
-                n += 4;
+                k += 4;
                 gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
                 gSPVertex(gdlh++, vtx, 4, 0);
@@ -1709,8 +1712,8 @@ void func_800B305C(Gfx** gdl) {
             continue;
         }
         gSPVertex(gdlh++, D_5000000->unk91C0[i], 16, 0);
-        for (k = 0; k < 7; k++) {
-            gSP1QuadrangleLP(gdlh++, k * 2, k * 2 + 2, k * 2 + 3, k * 2 + 1);
+        for (j = 0; j < 7; j++) {
+            gSP1QuadrangleLP(gdlh++, j * 2, j * 2 + 2, j * 2 + 3, j * 2 + 1);
         }
     }
     // The unk1000 triangles of the human's entry, 5 to a vertex load.
@@ -1723,12 +1726,12 @@ void func_800B305C(Gfx** gdl) {
             continue;
         }
         D_800E6D60 = &D_801D0798[i];
-        vtx = D_50081C0;
         if (D_800E6D60->unk1C58 != 0) {
             gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
+        vtx = D_50081C0;
         k = D_800E6D60->unk1C24 / 5;
         if (k != 0) {
             for (j = 0; j < k; j++) {
