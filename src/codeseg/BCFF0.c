@@ -2851,7 +2851,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 4275 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 3055 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
 // digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
 // D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
@@ -2869,10 +2869,12 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 // total's symbol (&D_801C26D4 - 1 for D_801C26D0, FAKE): through the same symbol IDO also stores through the register.
 // An empty test of count in the second total's case (FAKE, from an empty-test search) still helps (5110 without it);
 // the earlier empty test of y now costs (removed).
-// Left: the original builds D_80228D14/18's addresses in a2/a3 and loads D_80228D14 before the D_80228D18 test; it
-// sets up the loop's constant registers (0xE600.., 0xF570.., 0xFD70.., 0xF300..) after the display-list header,
-// where IDO here hoists them above the D_80228D18 test; temps renumbered from there; the totals' address register
-// holds the neighbour's address here (lw -4(v0) for the original's lw 0(v0)).
+// The original loads D_80228D14 before the D_80228D18 test: read into count there (a dead local at that point), it
+// also moves the loop's constant registers (0xE600.., 0xF570.., 0xFD70.., 0xF300..) below the display-list header,
+// where the original sets them up: 4275 -> 3055.
+// Left: the original builds D_80228D14/18's addresses in a2/a3 (v1/a0 here) and steps gdl for the first two commands
+// above the D_80228D18 test; temps renumbered; the totals' address register holds the neighbour's address here
+// (lw -4(v0) for the original's lw 0(v0)).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2902,9 +2904,10 @@ void func_801FB514(Gfx** gdlp) {
     f = (2 - D_80228D18) / (f32) 2;
     f = 1.0f - f;
     if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
+    count = D_80228D14; // read before the test, as the original does
     D_80228D18++;
     if (D_80228D18 >= 2) {
-        D_80228D14++;
+        D_80228D14 = count + 1;
         D_80228D18 = 0;
         D_80228D14 &= 3;
     }
