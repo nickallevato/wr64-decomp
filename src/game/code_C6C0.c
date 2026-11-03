@@ -622,6 +622,7 @@ void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
 void func_800AF40C(f32, f32, f32);
+void func_800C1EB8(s32);
 void func_800C3548(void);
 
 #ifdef NON_MATCHING
@@ -2116,7 +2117,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 33923 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 33549 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2127,7 +2128,8 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 // searches (two rounds). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
-// counters and the water-level checks that pick the D_802238DC entry.
+// counters and the water-level checks that pick the D_802238DC entry. func_800C1EB8 (audio) takes one s32: the
+// original passes 0 (m2c's call passed a float and 0 with no prototype).
 void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     UnkStruct_80192690* rider;
     UnkStruct_80052C6C_2* limb48;
@@ -2496,7 +2498,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
             rider->unkC70 = 0;
             var_s3 = D_802238DC[D_800D4820[rider->unkB68]];
             if (arg0 == gPlayer1Rider) {
-                func_800C1EB8(temp_fv0, 0);
+                func_800C1EB8(0);
             }
         }
         var_t0 = rider->unkC70;
