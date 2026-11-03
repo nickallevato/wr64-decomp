@@ -279,8 +279,9 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 34859 of 150300 (big7: the first loop keeps its angle in kind and the list choice its difficulty in angle,
-// a per-loop name search; 35174 before): same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the default,
+// Score 33294 of 150300 (big7: the first loop keeps its angle in kind and the list choice its difficulty in angle,
+// a per-loop name search; table B's heading and the edge points' z pass through angle and t (a hold search);
+// 35174 before): same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the default,
 // written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
 // (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C, things 0x48, table
 // 0x30; the pad stands for four words above them), which gives its frame (0xA0); table is declared after e (a
@@ -638,7 +639,8 @@ void func_80071E70(void) {
             if ((gCourseID != DOLPHIN_PARK) && ((type == 26) || (type == 27))) {
                 e->unkC0 = 2;
             }
-            e->unk6C = rec->angle;
+            angle = rec->angle; // the heading passes through angle (hold search)
+            e->unk6C = angle;
             angle = (e->unk6C / 360.0f) * 4096.0f;
             e->unk70 = gSinTable[angle & 0xFFF];
             e->unk74 = gSinTable[(angle + 0x400) & 0xFFF];
@@ -822,7 +824,8 @@ void func_80071E70(void) {
             a = &gCoursePoints[D_801BC938];
             a->unk10 = 1;
             a->unk0 = edge[n * 2];
-            a->unk8 = edge[n * 2 + 1];
+            t = edge[n * 2 + 1]; // t (dead by now) holds z (hold search)
+            a->unk8 = t;
             if (++D_801BC938 >= 256) {
                 break;
             }
