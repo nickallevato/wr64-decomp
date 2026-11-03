@@ -1268,10 +1268,11 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 8634 of 60500: the frame, the row loops and both skirt loops match in shape; the second skirt loop compares
+// Score 8614 of 60500: the frame, the row loops and both skirt loops match in shape; the second skirt loop compares
 // with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). In the middle row loop hB holds the
 // lower neighbour and hA the upper one (the reverse of the row loops), from a search over the loops' variable names.
-// vtx is stepped before e after the first and last edge cells of two row loops (a statement-move search).
+// vtx is stepped before e after the first and last edge cells of two row loops, and the skirt loop takes v before c
+// (statement-move searches).
 // Left: callee-saved register choice (vtx, lo, sx and sz land in other s registers).
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
@@ -1396,8 +1397,8 @@ void func_80050204(s32 view, Vtx* arena) {
     }
     k = (f32) D_800D4720 / (f32) D_80192498;
     for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
-        c = &arena[D_80192460[0]];
         v = &arena[idx[6]];
+        c = &arena[D_80192460[0]];
         ox = v->v.ob[0] - c->v.ob[0];
         oz = v->v.ob[2] - c->v.ob[2];
         v = &arena[*idx];
