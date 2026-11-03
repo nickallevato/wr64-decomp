@@ -1561,9 +1561,10 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 4441 of 124000 (mix1: the trail quads take k = j * 2 (the original multiplies the doubled index by 5
+// Score 4425 of 124000 (mix1: the trail quads take k = j * 2 (the original multiplies the doubled index by 5
 // with shifts, not j by 10: 7616 -> 5791); the remainder's vertex word adds its two fields, as the original
-// does (-> 4441). Before, big7: an empty do-while (FAKE) ahead of the unk1A00 squares' vtx; the human's remainder
+// does (-> 4441); D_801D7B48's sum written out (a syntax search: 4425). Before, big7: an empty do-while (FAKE)
+// ahead of the unk1A00 squares' vtx; the human's remainder
 // triangles set n = 0 just before their loop, which gives the
 // original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
 // (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks,
@@ -1771,7 +1772,7 @@ void func_800B305C(Gfx** gdl) {
     // The time of this and of func_800B2ABC, and the peaks of the human's live record count and
     // of the display list's size.
     D_801D7B38 = osGetTime() - D_801D7B38;
-    D_801D7B48 += D_801D7B38;
+    D_801D7B48 = D_801D7B48 + D_801D7B38;
     D_801D7B50++;
     if (D_801D7B38 > D_801D7B40) {
         D_801D7B40 = D_801D7B38;
