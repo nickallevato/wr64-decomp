@@ -684,10 +684,12 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 6691 of 146400: same blocks and calls, frame 0x120. mix1: the gate's two distances are computed in segLen
+// Score 5581 of 146400: same blocks and calls, frame 0x120. mix1: the gate's two distances are computed in segLen
 // (dead there) and copied to dPos and dPrev, then negated below zero (the original's mov.s / neg.s from one
 // register; 6906 -> 6711); beyond's x term in gz, not dPrev (6691; dPrev is still register-allocated where the
-// original keeps it in its home). mid6 (searches): the type 8/9 test reads e->unk98 into
+// original keeps it in its home); the line record's x read into lineX before r1/r2 and used for beyond and
+// func_80076240 (a permuter find; padE grows by the word pad0 gives up, which keeps the homes): 5581.
+// mid6 (searches): the type 8/9 test reads e->unk98 into
 // laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference is held in nearLine,
 // beyond's x term goes through dPrev; dPrev's z term reads e->unk74 rather than dirZ; one += written out, and the
 // side test compares with an int 0. The type 8/9 test keeps its two branches through a dead
@@ -727,7 +729,8 @@ void func_8007687C(s32 arg0) {
     s32 sameZone;
     s32 pad2[2]; // stack pad
     s32 nearLine;
-    s32 pad0[2]; // stack pad
+    f32 lineX; // the line record's x, read ahead (permuter)
+    s32 pad0[1]; // stack pad
     s32 beyond;
     s32 r;
     f32 len;
@@ -751,7 +754,7 @@ void func_8007687C(s32 arg0) {
     f32 gz;
     f32 dx;
     f32 dz;
-    s32 padE[3]; // stack pad
+    s32 padE[4]; // stack pad
     if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
@@ -1124,10 +1127,11 @@ void func_8007687C(s32 arg0) {
 
     // Crossing the line backwards or forwards near it (within one record of it, four on
     // Sunset Bay) moves the lap counter unk320.
+    lineX = D_801AEE20[D_801BB12C].unk0;
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
     // beyond's x term first (permuter), in gz (dead here; a name search)
-    gz = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
+    gz = (D_801C3780 - lineX) * D_801AEE20[D_801BB12C].unk70;
     ref = D_801AEE20[r2].unkA0;
     time = D_801AEE20[ref].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
@@ -1136,7 +1140,7 @@ void func_8007687C(s32 arg0) {
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (ref == D_801BB12C) || (time == D_801BB12C);
     }
-    if (func_80076240(D_801C3780, D_801C3788, D_801AEE20[D_801BB12C].unk0, D_801AEE20[D_801BB12C].unk8) &&
+    if (func_80076240(D_801C3780, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
         if (beyond && (rider->unk324 == 0) && (rider->unk320 < rider->lapCount)) {
             rider->unk320++;
