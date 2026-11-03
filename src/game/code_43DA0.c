@@ -1137,7 +1137,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 8809 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// Score 7924 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1145,7 +1145,8 @@ void func_8008E4B0(void) {
 // caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
 // the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 // D_801C4168 is accessed through a cast pointer (FAKE, from a search over access types): 10389 -> 10064.
-// The SOUTHERN_ISLAND case sets unkAC first, as the other cases do (a statement-move search): 8809.
+// The SOUTHERN_ISLAND case sets unkAC first, as the other cases do (a statement-move search): 8809; SUNSET_BAY
+// and the TWILIGHT_CITY fallback set unk104 right after unkFC: 7924.
 void func_8008E794(void) {
     s32 padS0[2]; // stack pad
     f32 dirX;
@@ -1274,13 +1275,13 @@ void func_8008E794(void) {
                     e->unkAC = SIN(0x200) * 64.0f;
                     e->unkB4 = SIN(0xE00) * 64.0f;
                     e->unkFC = SIN(0x200) * 64.0f;
+                    e->unk104 = SIN(0xE00) * 64;
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
                     e->unkD4 = e->unkEC;
                     e->unkD8 = e->unkF0;
                     e->unkDC = e->unkF4;
                     e->unkE0 = e->unkF8;
-                    e->unk104 = SIN(0xE00) * 64;
                     break;
                 case TWILIGHT_CITY:
                     e->unkAC = cam->unk64 * -1.0f;
@@ -1323,13 +1324,13 @@ void func_8008E794(void) {
                     } else {
                         D_801C3C58->unk78 = 0;
                         e->unkFC = cam->unk64 * -1.0f;
+                        e->unk104 = cam->unk6C * -1.0f;
                         e->unkCC = e->unkE4;
                         e->unkD0 = e->unkE8;
                         e->unkD4 = e->unkEC;
                         e->unkD8 = e->unkF0;
                         e->unkDC = e->unkF4;
                         e->unkE0 = e->unkF8;
-                        e->unk104 = cam->unk6C * -1.0f;
                     }
                     break;
                 case SOUTHERN_ISLAND:
