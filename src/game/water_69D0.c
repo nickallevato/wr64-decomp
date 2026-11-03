@@ -1268,9 +1268,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 8679 of 60500: the frame, the row loops and both skirt loops match in shape; the second skirt loop compares
+// Score 8634 of 60500: the frame, the row loops and both skirt loops match in shape; the second skirt loop compares
 // with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). In the middle row loop hB holds the
 // lower neighbour and hA the upper one (the reverse of the row loops), from a search over the loops' variable names.
+// vtx is stepped before e after the first and last edge cells of two row loops (a statement-move search).
 // Left: callee-saved register choice (vtx, lo, sx and sz land in other s registers).
 void func_80050204(s32 view, Vtx* arena) {
     UnkStruct_80160A98* last;
@@ -1330,8 +1331,8 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
-        e++;
         vtx++;
+        e++;
     }
     vtx->v.ob[0] = w->unk0 + e->unk4;
     vtx->v.ob[1] = gWaterLevel;
@@ -1383,8 +1384,8 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = gWaterLevel;
         vtx->v.ob[2] = e->unk6 + w->unk4;
-        e++;
         vtx++;
+        e++;
     }
     for (end = &gWaterCellOffsets[D_8019249C - 1]; end >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
