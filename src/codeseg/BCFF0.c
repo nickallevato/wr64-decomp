@@ -2869,7 +2869,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1685 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 1670 of 68000 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
+// original's div.s into $f0 shows, with 1.0f in $f10 as there (the second f is in $f2, $f0 in the original): 1670.)
+// Before, 1685: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
 // digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
 // D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
@@ -2927,8 +2929,9 @@ void func_801FB514(Gfx** gdlp) {
     count = D_80228D14; // read before the test, as the original does
     n = D_80228D18; // read once for the f computations and the increment, as the original does
     f = (2 - n) / (f32) 2;
+    if (f != f) {} // FAKE: the empty self-compares keep the dead f computations, as the original has them
     f = 1.0f - f;
-    if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
+    if (f != f) {} // FAKE: as above
     D_80228D18++;
     if (D_80228D18 >= 2) {
         D_80228D14 = count + 1;
