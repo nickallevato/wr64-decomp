@@ -279,10 +279,11 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 31794 of 150300 (big7: the first two loops keep their angles in kind and type and the list choice its
+// Score 30571 of 150300 (big7: the first two loops keep their angles in kind and type and the list choice its
 // difficulty in angle (per-loop name searches); table B's heading, the rings' 8 and unk6 and the edge points' z
 // pass through angle, n, kind and t (hold searches); D_801BB134 is cleared before D_801BFA40 (a swap search);
-// the first loop's cosine is scaled by an int 64 (respelling); 35174 before): same lists and stores, and the
+// the first loop's cosine is scaled by an int 64 (respelling); two pairs of zero stores are chained (syntax
+// search); 35174 before): same lists and stores, and the
 // buoy switch is a jump
 // table from 0 (case 0 with the default,
 // written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
@@ -406,8 +407,7 @@ void func_80071E70(void) {
     D_801C3B40 = params2->unk38;
 
     // D_801BFA48 and D_801BFB70, at most 8 each.
-    D_801BFB68 = 0;
-    D_801BFD70 = 0;
+    D_801BFB68 = D_801BFD70 = 0;
     if (D_801CE638 == 8) {
         src1 = D_800D68FC[gCourseID];
         src2 = D_800D6924[gCourseID];
@@ -469,8 +469,7 @@ void func_80071E70(void) {
         return;
     }
     D_801BC938 = 0;
-    D_801BB128 = 0;
-    D_801BB12C = 0;
+    D_801BB12C = D_801BB128 = 0;
     D_801BB124 = 0;
     D_801BB120 = 0;
     D_801BB130 = 0;
