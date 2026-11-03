@@ -2986,7 +2986,7 @@ void func_801FB514(Gfx** gdlp) {
             }
             switch (p->unk0) {
                 case 1:
-                    total = &D_801C26D0 + 1;
+                    total = &D_801C26D0 + 1; // FAKE, as above
                     if (count) {} // FAKE: an empty test of count (a search over empty tests), for the registers
                     D_801C26D4 = *total + p->unk4;
                     if (*total >= 100000) {
@@ -2994,7 +2994,7 @@ void func_801FB514(Gfx** gdlp) {
                     }
                     break;
                 case 2:
-                    total = &D_801C26D8 + 1;
+                    total = &D_801C26D8 + 1; // FAKE, as above
                     if (y) {} // FAKE: an empty test of y (a search over empty tests), for the registers
                     D_801C26DC = *total + p->unk4;
                     if (*total >= 100000) {
@@ -3002,7 +3002,7 @@ void func_801FB514(Gfx** gdlp) {
                     }
                     break;
                 case 3:
-                    total = &D_801C26DC - 1;
+                    total = &D_801C26DC - 1; // FAKE, as above
                     D_801C26D8 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D8 = 99999;
