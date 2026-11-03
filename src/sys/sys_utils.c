@@ -917,7 +917,7 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 3640 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// Score 3466 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
 // / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
 // rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
 // products once the divisions are done (two locals fewer give the original's frame). The declaration order is from
@@ -925,6 +925,7 @@ UNUSED void SysUtils_ReadContData(void) {
 // names in each branch). One read of x through its address (FAKE, from the permuter) keeps x out of the saved
 // registers: it then lives in f14 and is spilled to its argument slot around the sqrtf calls, as in the original.
 // A dead recomputation of qy before the last store (FAKE, permuter) moves the final stores as in the original.
+// An empty test of nx after the general branch's first t (FAKE, from an empty-test search) gives 3466.
 // Left: x is stored to its slot on entry here; z is kept in a saved register (the original reloads it from its slot).
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 b;
@@ -1025,6 +1026,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[1][1] = (((qy * qy) + (px * px)) * c) + (ny * ny);
         arg1->mf[2][2] = (c * qz * qz) + (nz * nz);
         t = (((qx * qy) + (py * px)) * c) + (nx * ny);
+        if (nx) {} // FAKE: an empty test of nx (a search over empty tests), for the float registers
         u = ((qy * py) - (qx * px)) * s;
         arg1->mf[1][0] = t + u;
         arg1->mf[0][1] = t - u;
