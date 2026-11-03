@@ -2117,7 +2117,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 33359 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 33089 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2125,7 +2125,8 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 // numerator and two constants are respelled (the original keeps differently spelled constants apart; respelling
 // searches); the unkFC direction's x is summed in two statements (a sum-split search), and about ten products
 // read their fields again in place of the copies (read-through searches); statement order is from statement-move
-// searches (three rounds) and one block keeps its z factor in sp84 (a name search). Named
+// searches (four rounds), two more read-throughs, an int 1, and two blocks keep values in sp84 / temp_fs2 (name
+// searches). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry. func_800C1EB8 (audio) takes one s32: the
@@ -2282,7 +2283,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fv0 = arg1->unk240.unkC.x;
     temp_fs0 = arg1->unk240.unkC.y;
     temp_fa0 = arg1->unk240.unkC.z;
-    temp_fs1 = rider->unk16BC * ((temp_fv0 * arg1->unk264.unk14.x) + (arg1->unk240.unkC.y * arg1->unk264.unk14.y) + (arg1->unk240.unkC.z * arg1->unk264.unk14.z));
+    temp_fs1 = rider->unk16BC * ((arg1->unk240.unkC.x * arg1->unk264.unk14.x) + (arg1->unk240.unkC.y * arg1->unk264.unk14.y) + (arg1->unk240.unkC.z * arg1->unk264.unk14.z));
     temp_fs2 = (arg1->unk240.unkC.x * arg1->unk264.unkC.x) + (temp_fs0 * arg1->unk264.unkC.y) + (temp_fa0 * arg1->unk264.unkC.z);
     arg1->unk240.unkC.x = (rider->unk78 * temp_fs1) + (temp_fs2 * rider->unk6C);
     arg1->unk240.unkC.y = (rider->unk7C * temp_fs1) + (temp_fs2 * rider->unk70);
@@ -2453,8 +2454,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         arg1->unk1D4.unk0.x = temp_fa0 - temp_fs1;
     } while (var_t0 != 0);
     temp_fv0 = (f32) (((f64) (arg1->unk168.unk0.x + arg1->unk1D4.unk0.x) * 0.5) - (f64) arg1->unk1F8.unk0.x);
-    temp_fs0 = (f32) (((f64) (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5) - (f64) arg1->unk1F8.unk0.y);
     temp_fa0 = (f32) (((f64) (arg1->unk168.unk0.z + arg1->unk1D4.unk0.z) * 0.5) - (f64) arg1->unk1F8.unk0.z);
+    temp_fs0 = (f32) (((f64) (arg1->unk168.unk0.y + arg1->unk1D4.unk0.y) * 0.5) - (f64) arg1->unk1F8.unk0.y);
     temp_fs1 = arg1->unk1F8.unk0.y;
     temp_fs2 = arg1->unk1F8.unk0.z;
     temp_fs3 = 1 / sqrtf((temp_fv0 * temp_fv0) + (temp_fs0 * temp_fs0) + (temp_fa0 * temp_fa0));
@@ -2471,7 +2472,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fa0 = (spAC * temp_fs0) - (var_fv0 * temp_fs2);
     temp_fs1 = (var_fv0 * temp_fv0) - (spA8 * temp_fs0);
     temp_fs0 = (spA8 * temp_fs2) - (spAC * temp_fv0);
-    temp_fv0 = 1.0f / sqrtf((temp_fs1 * temp_fs1) + (temp_fa0 * temp_fa0) + (temp_fs0 * temp_fs0));
+    temp_fv0 = 1 / sqrtf((temp_fs1 * temp_fs1) + (temp_fa0 * temp_fa0) + (temp_fs0 * temp_fs0)); // int 1 (respelling search)
     arg1->unk1F8.unk14.x = temp_fv0 * temp_fs1;
     arg1->unk1F8.unk14.y = temp_fv0 * temp_fa0;
     arg1->unk1F8.unk14.z = temp_fv0 * temp_fs0;
@@ -2537,7 +2538,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         temp_fs1 = (f32) temp_v0->unk0 * 0.1f;
         sp84 = (f32) temp_v0->unk2 * 0.1f;
         temp_fs3 = (f32) temp_v0->unk4 * 0.1f;
-        var_fv0 = arg1->unk168.unk0.x - ((temp_fv0 * temp_fs1) + (temp_fs0 * sp84) + (temp_fa0 * temp_fs3));
+        temp_fs2 = arg1->unk168.unk0.x - ((temp_fv0 * temp_fs1) + (temp_fs0 * sp84) + (temp_fa0 * temp_fs3));
         spB0 = temp_fs0;
         temp_fs0 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs1) + (rider->unk7C * sp84) + (rider->unk70 * temp_fs3));
         sp364 = arg1->unk168.unk0.z - ((rider->unk8C * temp_fs1) + (rider->unk80 * sp84) + (rider->unk74 * temp_fs3));
@@ -2557,7 +2558,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         temp_fa0 = (f32) temp_v0->unk0 * 0.1f;
         temp_fv0 = (f32) temp_v0->unk2 * 0.1f;
         temp_fs1 = (f32) temp_v0->unk4 * 0.1f;
-        arg1->unk144.unk0.x = (rider->unk84 * temp_fa0) + var_fv0 + (rider->unk78 * temp_fv0) + (rider->unk6C * temp_fs1);
+        arg1->unk144.unk0.x = (rider->unk84 * temp_fa0) + temp_fs2 + (rider->unk78 * temp_fv0) + (rider->unk6C * temp_fs1);
         arg1->unk144.unk0.y = (rider->unk88 * temp_fa0) + temp_fs0 + (rider->unk7C * temp_fv0) + (rider->unk70 * temp_fs1);
         arg1->unk144.unk0.z = (rider->unk8C * temp_fa0) + sp364 + (rider->unk80 * temp_fv0) + (rider->unk74 * temp_fs1);
         temp_fv0 = (f32) temp_v0->unk6 * 0.00787402f;
@@ -2577,7 +2578,7 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         var_t0 = 1;
         temp_fa0 = (f32) temp_v0->unk2 * 0.1f;
         temp_fs1 = (f32) temp_v0->unk4 * 0.1f;
-        arg1->unk120.unk0.x = (rider->unk84 * temp_fv0) + var_fv0 + (rider->unk78 * temp_fa0) + (rider->unk6C * temp_fs1);
+        arg1->unk120.unk0.x = (rider->unk84 * temp_fv0) + temp_fs2 + (rider->unk78 * temp_fa0) + (rider->unk6C * temp_fs1);
         arg1->unk120.unk0.y = (rider->unk88 * temp_fv0) + temp_fs0 + (rider->unk7C * temp_fa0) + (rider->unk70 * temp_fs1);
         arg1->unk120.unk0.z = (rider->unk8C * temp_fv0) + sp364 + (rider->unk80 * temp_fa0) + (rider->unk74 * temp_fs1);
         temp_fv0 = (f32) temp_v0->unk6 * 0.00787402f;
@@ -2703,7 +2704,7 @@ block_45: // m2c label name
     arg1->unkFC.unk0.z = (f32) ((f64) arg1->unk1F8.unk0.z + (14.483002 * (f64) arg1->unk1F8.unkC.z));
     temp_fs1 = rider->unk84;
     var_t0 = SysUtils_Round((f32) rider->unkB60 * D_800D49E8) + 0x400;
-    temp_fs2 = (temp_fs0 * temp_fs0) + (temp_fv0 * temp_fv0);
+    temp_fs2 = (rider->unk6C * temp_fs0) + (temp_fv0 * temp_fv0);
     temp_fv0 = (temp_fs1 * temp_fs1) + (rider->unk8C * temp_fa0);
     if ((temp_fs2 != 0) && (temp_fv0 != 0)) {
         temp_fs0 = gSinTable[var_t0 & 0xFFF] / sqrtf(temp_fs2);
