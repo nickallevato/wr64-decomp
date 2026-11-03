@@ -1521,7 +1521,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 39779 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 38659 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1530,8 +1530,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
-// index in the championship gaps is kept in y2 (a variable-name search; the original keeps it in a saved register).
-// The marks test is spelled n - 1 == j (IDO then tests j + 1 against n and steps j from it, as the original does). Register
+// index in the championship gaps is kept in y2 and the stunt time left in i (variable-name searches; the original
+// keeps the leader in a saved register). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
 // the lap-split popup), so the saved and temporary registers of every display-list
@@ -2024,7 +2024,7 @@ void func_801F4120(Gfx** gdlp) {
                 }
             }
             for (j = 0; j < 5; j++) {
-                if (n - 1 == j) {
+                if (j + 1 == n) {
                     color = D_800D4B00 % 6;
                     if (color >= 4) {
                         color = 6 - color;
@@ -2060,14 +2060,14 @@ void func_801F4120(Gfx** gdlp) {
         }
     }
 
-    // Stunt mode: the time left (value): n seconds and k thousandths; under six seconds the seconds
+    // Stunt mode: the time left (i): n seconds and k thousandths; under six seconds the seconds
     // digit zooms out over each second (color: the shrink, x/y: the drawn size).
     if (gGameModes == GMODE_STUNT) {
         HUD_LOAD32(gdl, D_1032500, 32, 12);
         HUD_RECT(gdl, 0x8D, 0x16, 32, 12);
-        value = gRiderRaceState[gPlayer1Rider].timeLeft;
-        k = value % 1000;
-        n = value / 1000;
+        i = gRiderRaceState[gPlayer1Rider].timeLeft;
+        k = i % 1000;
+        n = i / 1000;
         HUD_DIGIT(gdl, &D_103B4D0[(k / 100) * 0x300], 12, 16, 0xAA, 0x26);
         HUD_DIGIT(gdl, D_103D5D0, 12, 16, 0xA2, 0x23);
         if ((n >= 6) || (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
