@@ -1312,7 +1312,10 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 36313 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
+// Score 34912 of 358000 (big7: the stack pad padA was spurious (frame 0x5F0 without it, the other homes unchanged);
+// table B's draw loops read D_801C0840[i] into cur (dead by then; variable reuse) for the test, the D_801C05C0[i]
+// copy and the env alpha: IDO still reloads it for the alpha, but the loops' registers come closer; the table-A loops count in idx and slot (a per-loop name search);
+// 36313 before): same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
 // dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C); table B's draw loops
 // reload D_801C0840[i] for the env alpha where the original reuses the loaded value, and constants (G_CULL_BACK, the
 // gate lists) sit in other registers. Each search sets its counter to D_801BB120 (one load, CSE'd into a0 for all
@@ -1464,12 +1467,12 @@ void func_8006E674(Gfx** gdl) {
         }
     }
     // slot = 0 here and in the next loop: the original zeroes the register then, unused until table A.
-    for (i = 0, slot = 0; i < D_801BC938; i++) {
-        b = &gCoursePoints[i];
+    for (idx = 0, cur = 0; idx < D_801BC938; idx++) {
+        b = &gCoursePoints[idx];
         dx = b->unk0 - cam->eyeX;
         dz = b->unk8 - cam->eyeZ;
         if ((b->unk10 == 4) || (b->unk10 == 5)) {
-            D_801C08C0[i] = -1; continue;
+            D_801C08C0[idx] = -1; continue;
         }
         d = sqrtf((dx * dx) + (dz * dz));
         if (d < (f32) far) {
@@ -1479,16 +1482,16 @@ void func_8006E674(Gfx** gdl) {
             }
             if (((dx * dirX) + (dz * dirZ)) > 0.5f) {
                 if (d <= (f32) near) {
-                    D_801C08C0[i] = 0;
+                    D_801C08C0[idx] = 0;
                 } else {
-                    D_801C08C0[i] = BUOY_FADE(d, near, far);
+                    D_801C08C0[idx] = BUOY_FADE(d, near, far);
                 }
             } else {
-                D_801C08C0[i] = -1;
+                D_801C08C0[idx] = -1;
             }
             continue; // FAKE: redundant; gives the original a second loop-bound reload
         } else {
-            D_801C08C0[i] = -1;
+            D_801C08C0[idx] = -1;
         }
     }
     for (i = 0, slot = 0; i < D_801BFA40; i++) {
@@ -1581,23 +1584,23 @@ void func_8006E674(Gfx** gdl) {
     gDPLoadTLUT_pal256(gdlh++, D_D4F18);
     gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    for (i = 0; i < D_801BC938; i++) {
-        D_801C0640[i] = -1;
-        if ((gCoursePoints[i].unk10 == 0) && (D_801C08C0[i] >= 0)) {
-            D_801C0640[i] = D_801C08C0[i];
-            gSPMatrix(gdlh++, &mtx[D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    for (slot = 0; slot < D_801BC938; slot++) {
+        D_801C0640[slot] = -1;
+        if ((gCoursePoints[slot].unk10 == 0) && (D_801C08C0[slot] >= 0)) {
+            D_801C0640[slot] = D_801C08C0[slot];
+            gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C08C0[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C08C0[slot]);
             gSPDisplayList(gdlh++, dlA);
         }
     }
     gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    for (i = 0; i < D_801BC938; i++) {
-        if (D_801C0640[i] >= 0) {
-            gSPMatrix(gdlh++, &mtx[D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    for (slot = 0; slot < D_801BC938; slot++) {
+        if (D_801C0640[slot] >= 0) {
+            gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[slot]);
             gSPDisplayList(gdlh++, dlA2);
         }
     }
@@ -1706,11 +1709,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BB120; i++) {
         D_801C05C0[i] = -1;
-        if ((D_801C0840[i] >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
-            D_801C05C0[i] = D_801C0840[i];
+        if (((cur = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = cur;
             gSPMatrix(gdlh++, &mtx[D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
             gSPDisplayList(gdlh++, dlB);
         }
     }
@@ -1729,11 +1732,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BB120; i++) {
         D_801C05C0[i] = -1;
-        if ((D_801C0840[i] >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
-            D_801C05C0[i] = D_801C0840[i];
+        if (((cur = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = cur;
             gSPMatrix(gdlh++, &mtx[D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
             gSPDisplayList(gdlh++, dlB);
         }
     }
@@ -1753,13 +1756,13 @@ void func_8006E674(Gfx** gdl) {
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         for (i = 0; i < D_801BB120; i++) {
             D_801C05C0[i] = -1;
-            if ((D_801C0840[i] >= 0) &&
+            if (((cur = D_801C0840[i]) >= 0) &&
                 ((D_801AEE20[i].unk98 == 4) || (D_801AEE20[i].unk98 == 6) || (D_801AEE20[i].unk98 == 10))) {
-                D_801C05C0[i] = D_801C0840[i];
+                D_801C05C0[i] = cur;
                 gSPMatrix(gdlh++, &mtx[D_801C0B40[i]],
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPPipeSync(gdlh++);
-                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
                 gSPDisplayList(gdlh++, dlB);
             }
         }
