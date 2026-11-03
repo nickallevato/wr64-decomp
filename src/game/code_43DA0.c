@@ -390,11 +390,11 @@ void func_80089F28(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 32097 of 181100: same calls and branches (by a structure diff); frame 0x2C8 here, 0x2C0 in the original.
+// Score 31801 of 181100: same calls and branches (by a structure diff); frame 0x2C8 here, 0x2C0 in the original.
 // The direction is scaled in place after sqrtf and glare is squared four times before the branch, both as in the
 // original. The quad corners (v -/+ c, -v -/+ c) are written out at each use, as the original keeps them in
 // compiler temporaries; operand orders, line joins (the texture coordinates of several vertices on one line),
-// statement moves (two rounds), the declaration order and one 64 spelled as an int come from searches (the
+// statement moves (four rounds), the declaration order and one 64 spelled as an int come from searches (the
 // declaration search moved the matrices four bytes off the original's 0x200/0x240, scoring better). Left: the spill
 // slots of those temporaries (the original also stores cam->upX/upY/upZ to stack temporaries and reads them back)
 // and float registers.
@@ -593,8 +593,8 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[6][1].v.ob[2] = (s16) D_800D98D4 + (s32) (232.0f * vz) + (s16) (s32) (64 * (vz - cz));
     p->unk350[6][1].v.tc[0] = 0x800;
     p->unk350[6][1].v.tc[1] = 0;
-    p->unk350[6][2].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * ((-1.0f * vx) + cx));
     p->unk350[6][2].v.ob[1] = (s16) (s32) (232.0f * vy) + D_800D98D0 + (s16) (s32) (64.0f * ((-1.0f * vy) + cy));
+    p->unk350[6][2].v.ob[0] = (s16) (s32) (232.0f * vx) + D_800D98CC + (s16) (s32) (64.0f * ((-1.0f * vx) + cx));
     p->unk350[6][2].v.ob[2] = (s16) (s32) (232.0f * vz) + D_800D98D4 + (s16) (s32) (64.0f * ((-1.0f * vz) + cz));
     p->unk350[6][2].v.tc[0] = 0;
     p->unk350[6][2].v.tc[1] = 0x800;
@@ -619,9 +619,9 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[7][2].v.tc[0] = 0;
     p->unk350[7][2].v.tc[1] = 0x800;
     p->unk350[7][3].v.ob[2] = (D_800D98D4 - (s16) (s32) (72.0f * vz)) - (s16) (s32) (8.0f * (vz + cz));
-    p->unk350[7][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (72.0f * vy)) - (s16) (s32) (8.0f * (vy + cy));
     p->unk350[7][3].v.tc[0] = 0x800;
     p->unk350[7][3].v.ob[0] = (D_800D98CC - (s16) (s32) (72.0f * vx)) - (s16) (s32) (8.0f * (vx + cx));
+    p->unk350[7][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (72.0f * vy)) - (s16) (s32) (8.0f * (vy + cy));
     p->unk350[7][3].v.tc[1] = 0x800;
     p->unk350[8][0].v.ob[0] = (D_800D98CC - (s16) (s32) (128.0f * vx)) - (s16) (s32) (48.0f * ((-1.0f * vx) - cx));
     p->unk350[8][0].v.ob[1] = (D_800D98D0 - (s16) (s32) (128.0f * vy)) - (s16) (s32) (48.0f * ((-1.0f * vy) - cy));
@@ -658,10 +658,10 @@ Gfx* func_8008A0E0(Gfx* gdl) {
     p->unk350[9][2].v.ob[2] = (D_800D98D4 - (s16) (s32) (232.0f * vz)) - (s16) (s32) (64.0f * ((-1.0f * vz) + cz));
     p->unk350[9][2].v.tc[0] = 0;
     p->unk350[9][2].v.tc[1] = 0x800;
-    p->unk350[9][3].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * (vx + cx));
     p->unk350[9][3].v.ob[2] = (D_800D98D4 - (s16) (s32) (232.0f * vz)) - (s16) (s32) (64.0f * (vz + cz));
-    p->unk350[9][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * (vy + cy));
+    p->unk350[9][3].v.ob[0] = (D_800D98CC - (s16) (s32) (232.0f * vx)) - (s16) (s32) (64.0f * (vx + cx));
     p->unk350[9][3].v.tc[0] = 0x800;
+    p->unk350[9][3].v.ob[1] = (D_800D98D0 - (s16) (s32) (232.0f * vy)) - (s16) (s32) (64.0f * (vy + cy));
     p->unk350[9][3].v.tc[1] = 0x800;
     gDPLoadTextureBlock(gdl++, D_100FAB0, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);

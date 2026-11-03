@@ -1521,23 +1521,32 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 44636 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 30074 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
 // 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
 // there, but this form scores far better (the registers from there on). Both popups' 60000 tests and the player
-// popup's call read rider->checkpointGap again rather than value (a read-through search). Register
+// popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
+// in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
+// D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
+// index in the championship gaps is kept in y2 and their color in k, the 2P gap color in y2, the RANK zoom in j and
+// the rider count digit in color, the SPEED and km/h label x in color,
+// the buoy-miss count in color and the rider's in k, the stunt time left in x2 and its thousandths in y2
+// gGameModes is read as u32 throughout (HUD_GMODES, FAKE) and D_80228DF8 once (FAKE): type searches, 33419 -> 30074.
+// (variable-name searches over each block; the original keeps the leader in a saved register). Register
 // allocation and scheduling differ throughout:
-// IDO hoists constants and global addresses into saved registers here that the original reloads (&D_80228B54 in the
-// lap-split loop, the constant 1 in the lap-split popup), so the saved and temporary registers of every display-list
+// IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
+// the lap-split popup), so the saved and temporary registers of every display-list
 // block differ. The 1.8f below is D_80227A4C in the original.
 // Draw the race HUD: lap splits and total time, the TIME, LAP, RANK and SPEED readouts, the missed-buoy
 // marks, the boost meter, the stunt score and the best times.
+// FAKE: gGameModes read as u32 in this function (a type search; it changes IDO's constant sharing)
+#define HUD_GMODES (*(u32*) &gGameModes)
 void func_801F4120(Gfx** gdlp) {
     s32 i;
-    s32 j;
     s32 x;
+    s32 j;
     s32 y;
     s32 n;
     PortraitPos* pos;
@@ -1554,7 +1563,7 @@ void func_801F4120(Gfx** gdlp) {
     gSPDisplayList(gdl++, D_1014708);
 
     // Lap splits and the total race time.
-    if (((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_TIME_TRIALS)) && (gCourseID != DOLPHIN_PARK)) {
+    if (((HUD_GMODES == GMODE_CHAMPIONSHIP) || (HUD_GMODES == GMODE_TIME_TRIALS)) && (gCourseID != DOLPHIN_PARK)) {
         rider = &gRiderRaceState[gPlayer1Rider];
         if ((rider->lapCount >= 2) || (D_800D8178 != 0)) {
             n = rider->lapCount - 1;
@@ -1568,8 +1577,9 @@ void func_801F4120(Gfx** gdlp) {
             if ((rider->unk2F4 != 0) || (D_800D8178 != 0)) {
                 n++;
             }
-            for (j = 0; j < n; j++) {
-                func_801F25E0(&gdl, D_80228B54 + 0x18, y, rider->lapTimes[j], 0, (k + j + 1) % 10, 0);
+            // FAKE: D_80228B54 read as (&D_80228B50)[1] (the original reloads its address in the loop)
+            for (j = 0, i = k + 1; j < n; j++, i++) {
+                func_801F25E0(&gdl, (&D_80228B50)[1] + 0x18, y, rider->lapTimes[j], 0, i % 10, 0);
                 y += 10;
             }
         }
@@ -1579,7 +1589,7 @@ void func_801F4120(Gfx** gdlp) {
             i = 1;
         }
         func_801F25E0(&gdl, D_80228B50 + 0x18, 0x22, rider->raceTime, 1, i, rider->unk16C);
-    } else if (gGameModes == GMODE_2P_VS) {
+    } else if (HUD_GMODES == GMODE_2P_VS) {
         rider = &gRiderRaceState[gPlayer1Rider];
         if (rider->unk2F4 != 0) {
             i = 0;
@@ -1597,17 +1607,18 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // Championship: the leader's time and the others' gaps to it, beside the portrait column.
-    // k: the leader, value: the leader's time.
-    if ((gGameModes == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK) && (D_801C1FDC >= 0x28)) {
-        for (k = 0; k < gRiders; k++) {
-            if ((gRiderRaceState[k].unk2F4 != 0) && (gRiderRaceState[k].racePosition == 0)) {
+    // y2: the leader, value: the leader's time.
+    if ((HUD_GMODES == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK) && (D_801C1FDC >= 0x28)) {
+        // (variable reuse: k gives other registers)
+        for (y2 = 0; y2 < gRiders; y2++) {
+            if ((gRiderRaceState[y2].unk2F4 != 0) && (gRiderRaceState[y2].racePosition == 0)) {
                 break;
             }
         }
-        if (k >= gRiders) {
-            k = 0;
+        if (y2 >= gRiders) {
+            y2 = 0;
         }
-        value = gRiderRaceState[k].raceTime;
+        value = gRiderRaceState[y2].raceTime;
         for (i = 0; i < gRiders; i++) {
             rider = &gRiderRaceState[i];
             if (D_801C1FDC >= (rider->racePosition * 10) + 0x28) {
@@ -1615,21 +1626,21 @@ void func_801F4120(Gfx** gdlp) {
                 x = pos->x + 0xB0;
                 y = pos->y + 0x3F;
                 if (i == gPlayer1Rider) {
-                    color = 2;
+                    k = 2;
                 } else {
-                    color = 1;
+                    k = 1;
                 }
-                if (i == k) {
-                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, color);
+                if (i == y2) {
+                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, k);
                 } else if (rider->unk2F4 != 0) {
-                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime - value, 3, 1, color);
+                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime - value, 3, 1, k);
                 }
             }
         }
     }
 
     // 2P VS: the lap split popups.
-    if (gGameModes == GMODE_2P_VS) {
+    if (HUD_GMODES == GMODE_2P_VS) {
         for (i = 0; i < gPlayers; i++) {
             y = 0xB2;
             if (i == 0) {
@@ -1647,17 +1658,17 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0;
                 }
-                color = 2;
+                y2 = 2;
                 if (rider->gapRequest == 1) {
-                    color = 1;
+                    y2 = 1;
                 }
-                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, color);
+                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, y2);
             }
         }
     }
 
     // Championship: the other riders' lap split popups.
-    if ((gGameModes == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK)) {
+    if ((HUD_GMODES == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK)) {
         for (i = 0; i < gRiders; i++) {
             if (i != gPlayer1Rider) {
                 rider = &gRiderRaceState[i];
@@ -1673,7 +1684,7 @@ void func_801F4120(Gfx** gdlp) {
 
     // Championship and time trials: the player's lap split popup, with a portrait (or a record icon).
     // j: how many leading digits the time drops (2 under 10 s, 1 under 60 s).
-    if ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_TIME_TRIALS)) {
+    if ((HUD_GMODES == GMODE_CHAMPIONSHIP) || (HUD_GMODES == GMODE_TIME_TRIALS)) {
         rider = &gRiderRaceState[gPlayer1Rider];
         if (rider->gapTimer != 0) {
             value = rider->checkpointGap;
@@ -1690,7 +1701,7 @@ void func_801F4120(Gfx** gdlp) {
             } else if (j == 2) {
                 x = 0x7F;
             }
-            if ((gGameModes == GMODE_TIME_TRIALS) && (rider->gapRequest == 1)) {
+            if ((HUD_GMODES == GMODE_TIME_TRIALS) && (rider->gapRequest == 1)) {
                 color = 1;
             } else {
                 color = 2;
@@ -1706,7 +1717,7 @@ void func_801F4120(Gfx** gdlp) {
             } else if (j == 2) {
                 n += 0x1A;
             }
-            if (gGameModes == GMODE_CHAMPIONSHIP) {
+            if (HUD_GMODES == GMODE_CHAMPIONSHIP) {
                 gDPLoadTextureBlock(gdl++, D_10416A8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 20, 0,
                                     G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                     G_TX_NOLOD, G_TX_NOLOD);
@@ -1734,7 +1745,7 @@ void func_801F4120(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_DECALRGBA, G_CC_DECALRGBA);
 
     // TIME label.
-    if ((gGameModes == GMODE_CHAMPIONSHIP) || (gGameModes == GMODE_TIME_TRIALS)) {
+    if ((HUD_GMODES == GMODE_CHAMPIONSHIP) || (HUD_GMODES == GMODE_TIME_TRIALS)) {
         if (gCourseID != DOLPHIN_PARK) {
             HUD_LOAD32(gdl, D_1032500, 32, 12);
             HUD_RECT(gdl, D_80228B50 + 0x38, 0x15, 32, 12);
@@ -1742,10 +1753,10 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // LAP label and the lap number (n).
-    if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
+    if ((HUD_GMODES != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
         if (gPlayers == ONE_PLAYER) {
             y = 0x15;
-            if (gGameModes == GMODE_CHAMPIONSHIP) {
+            if (HUD_GMODES == GMODE_CHAMPIONSHIP) {
                 x = D_80228B50 + 0xBC;
             } else {
                 x = 0x84;
@@ -1764,7 +1775,7 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
                 y = 0x22;
-                if (gGameModes == GMODE_CHAMPIONSHIP) {
+                if (HUD_GMODES == GMODE_CHAMPIONSHIP) {
                     x = D_80228B50 + 0xC0;
                 } else {
                     x = 0x88;
@@ -1792,7 +1803,7 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // RANK: label, position digit (zooming when it changes), "/" and the number of riders.
-    if (gGameModes == GMODE_CHAMPIONSHIP) {
+    if (HUD_GMODES == GMODE_CHAMPIONSHIP) {
         if (gCourseID != DOLPHIN_PARK) {
             HUD_LOAD32(gdl, D_1032B08, 36, 12);
             HUD_RECT(gdl, D_80228B50 + 0x84, 0x15, 36, 12);
@@ -1801,11 +1812,11 @@ void func_801F4120(Gfx** gdlp) {
             if (D_80228A9C == 0) {
                 HUD_RECT(gdl, x, 0x22, 16, 20);
             } else {
-                color = D_80228DF8 * 6;
+                j = (*(u32*) &D_80228DF8) * 6; // FAKE: D_80228DF8 read as u32 (a type search)
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
-                gSPTextureRectangle(gdl++, (x - color) << 2, 0x22 << 2, (x + 0x10) << 2, (color + 0x36) << 2,
-                                    G_TX_RENDERTILE, 0, 0, 0x4000 / (color + 0x10), 0x5000 / (color + 0x14));
+                gSPTextureRectangle(gdl++, (x - j) << 2, 0x22 << 2, (x + 0x10) << 2, (j + 0x36) << 2,
+                                    G_TX_RENDERTILE, 0, 0, 0x4000 / (j + 0x10), 0x5000 / (j + 0x14));
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_POINT);
             }
@@ -1821,11 +1832,11 @@ void func_801F4120(Gfx** gdlp) {
                                 G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             HUD_RECT(gdl, D_80228B50 + 0x9B, 0x20, 8, 10);
             if (D_801CE704 < 4) {
-                n = D_801CE704 + 1;
+                color = D_801CE704 + 1;
             } else {
-                n = 0x25;
+                color = 0x25;
             }
-            gDPLoadTextureBlock(gdl++, &D_1039248[n * 0xC0], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0,
+            gDPLoadTextureBlock(gdl++, &D_1039248[color * 0xC0], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0,
                                 G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
             HUD_RECT(gdl, D_80228B50 + 0x9A, 0x2A, 16, 12);
@@ -1834,19 +1845,19 @@ void func_801F4120(Gfx** gdlp) {
         }
     }
 
-    // SPEED label.
+    // SPEED label (color holds its x here, and in the km/h label: variable reuse from a name search).
     HUD_LOAD32(gdl, D_10331D0, 32, 12);
-    if (gGameModes == GMODE_STUNT) {
+    if (HUD_GMODES == GMODE_STUNT) {
         HUD_RECT(gdl, 0xEC, 0x16, 32, 12);
     } else if (gPlayers == ONE_PLAYER) {
         if (gCourseID == DOLPHIN_PARK) {
-            x = 0xD9;
-        } else if (gGameModes == GMODE_TIME_TRIALS) {
-            x = 0x97;
+            color = 0xD9;
+        } else if (HUD_GMODES == GMODE_TIME_TRIALS) {
+            color = 0x97;
         } else {
-            x = 0xD9;
+            color = 0xD9;
         }
-        HUD_RECT(gdl, x + D_80228B50 + 0x18, 0x15, 32, 12);
+        HUD_RECT(gdl, color + D_80228B50 + 0x18, 0x15, 32, 12);
     } else {
         HUD_RECT(gdl, 0xF2, 0xD, 32, 12);
         HUD_RECT(gdl, 0xF2, 0x7B, 32, 12);
@@ -1869,14 +1880,14 @@ void func_801F4120(Gfx** gdlp) {
         }
         if (gCourseID == DOLPHIN_PARK) {
             x = 0xE1;
-        } else if (gGameModes == GMODE_TIME_TRIALS) {
+        } else if (HUD_GMODES == GMODE_TIME_TRIALS) {
             x = 0x9F;
         }
         value = value * 1.8f;
         if (value >= 1000) {
             value = 999;
         }
-        if (gGameModes == GMODE_STUNT) {
+        if (HUD_GMODES == GMODE_STUNT) {
             x = 0xE4;
             if (value >= 100) {
                 HUD_DIGIT(gdl, &D_802C3E8[(value / 100) * 0x300], 12, 16, x, 0x26);
@@ -1912,25 +1923,25 @@ void func_801F4120(Gfx** gdlp) {
 
     // km/h label.
     HUD_LOAD32(gdl, D_10337D8, 24, 12);
-    if (gGameModes == GMODE_STUNT) {
+    if (HUD_GMODES == GMODE_STUNT) {
         HUD_RECT(gdl, 0x10E, 0x2B, 24, 12);
     } else if (gPlayers == ONE_PLAYER) {
         if (gCourseID == DOLPHIN_PARK) {
-            x = 0xD9;
-        } else if (gGameModes == GMODE_TIME_TRIALS) {
-            x = 0x97;
+            color = 0xD9;
+        } else if (HUD_GMODES == GMODE_TIME_TRIALS) {
+            color = 0x97;
         } else {
-            x = 0xD9;
+            color = 0xD9;
         }
-        HUD_RECT(gdl, x + D_80228B50 + 0x39, 0x2A, 24, 12);
+        HUD_RECT(gdl, color + D_80228B50 + 0x39, 0x2A, 24, 12);
     } else {
         HUD_RECT(gdl, 0x114, 0x1E, 24, 12);
         HUD_RECT(gdl, 0x114, 0x8C, 24, 12);
     }
 
-    // Buoy marks: the label, k = gBuoyMisses (at most 28) marks D_102E3D8, then the rider's unk134 (n)
+    // Buoy marks: the label, color = gBuoyMisses (at most 28) marks D_102E3D8, then the rider's unk134 (k)
     // marks D_102E620 over the right end of the row (one fewer while gHudMarkers[player].unk0[0].unk18 == 1).
-    if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
+    if ((HUD_GMODES != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
         if (gPlayers == ONE_PLAYER) {
             x = D_80228B54 + 0x18;
             HUD_LOAD32(gdl, D_102DF50, 24, 12);
@@ -1938,9 +1949,9 @@ void func_801F4120(Gfx** gdlp) {
             HUD_SCISRECT(gdl, x, y, 24, 12);
         }
         HUD_LOAD32(gdl, D_102E3D8, 12, 12);
-        k = gBuoyMisses;
-        if (k > 28) {
-            k = 28;
+        color = gBuoyMisses;
+        if (color > 28) {
+            color = 28;
         }
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
@@ -1954,7 +1965,7 @@ void func_801F4120(Gfx** gdlp) {
                     y = 0xD6;
                 }
             }
-            for (value = 0; value < k; value++) {
+            for (value = 0; value < color; value++) {
                 HUD_SCISRECT(gdl, x, y, 12, 12);
                 x += 0xE;
             }
@@ -1964,27 +1975,27 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
                 y = 0xCD;
-                n = gRiderRaceState[gPlayer1Rider].unk134;
+                k = gRiderRaceState[gPlayer1Rider].unk134;
                 x = D_80228B54 + 0x38;
             } else {
                 x = 0x18;
                 if (i == 0) {
                     y = 0x68;
-                    n = gRiderRaceState[gPlayer1Rider].unk134;
+                    k = gRiderRaceState[gPlayer1Rider].unk134;
                 } else {
                     y = 0xD6;
-                    n = gRiderRaceState[gPlayer2Rider].unk134;
+                    k = gRiderRaceState[gPlayer2Rider].unk134;
                 }
             }
             if (boost->unk0[0].unk18 == 1) {
-                n--;
+                k--;
             }
-            j = k - n;
+            j = color - k;
             if (j < 0) {
                 j = 0;
             }
             x += j * 0xE;
-            for (value = j; value < k; value++) {
+            for (value = j; value < color; value++) {
                 HUD_SCISRECT(gdl, x, y, 12, 12);
                 x += 0xE;
             }
@@ -1994,7 +2005,7 @@ void func_801F4120(Gfx** gdlp) {
 
     // Power meter: the label and five chevrons, n = the rider's unk138 of them lit, the n-th one
     // animating (color: the chevron's image, 0-3).
-    if ((gCourseID != DOLPHIN_PARK) && (gGameModes != GMODE_STUNT)) {
+    if ((gCourseID != DOLPHIN_PARK) && (HUD_GMODES != GMODE_STUNT)) {
         if (gPlayers == ONE_PLAYER) {
             x = D_80228B54 + 0x94;
             HUD_LOAD32(gdl, D_102E868, 32, 12);
@@ -2036,7 +2047,7 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // Stunt mode: the score (value), five digits.
-    if (gGameModes == GMODE_STUNT) {
+    if (HUD_GMODES == GMODE_STUNT) {
         HUD_LOAD32(gdl, D_8024008, 36, 12);
         HUD_RECT(gdl, 0x2D, 0x16, 36, 12);
         value = D_801C26D0;
@@ -2054,15 +2065,15 @@ void func_801F4120(Gfx** gdlp) {
         }
     }
 
-    // Stunt mode: the time left (value): n seconds and k thousandths; under six seconds the seconds
+    // Stunt mode: the time left (x2): n seconds and y2 thousandths; under six seconds the seconds
     // digit zooms out over each second (color: the shrink, x/y: the drawn size).
-    if (gGameModes == GMODE_STUNT) {
+    if (HUD_GMODES == GMODE_STUNT) {
         HUD_LOAD32(gdl, D_1032500, 32, 12);
         HUD_RECT(gdl, 0x8D, 0x16, 32, 12);
-        value = gRiderRaceState[gPlayer1Rider].timeLeft;
-        k = value % 1000;
-        n = value / 1000;
-        HUD_DIGIT(gdl, &D_103B4D0[(k / 100) * 0x300], 12, 16, 0xAA, 0x26);
+        x2 = gRiderRaceState[gPlayer1Rider].timeLeft;
+        y2 = x2 % 1000;
+        n = x2 / 1000;
+        HUD_DIGIT(gdl, &D_103B4D0[(y2 / 100) * 0x300], 12, 16, 0xAA, 0x26);
         HUD_DIGIT(gdl, D_103D5D0, 12, 16, 0xA2, 0x23);
         if ((n >= 6) || (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
             x = 0x84;
@@ -2072,11 +2083,11 @@ void func_801F4120(Gfx** gdlp) {
             x += 0x10;
             HUD_DIGIT(gdl, &D_80273D8[(n % 10) * 0x500], 16, 20, x, 0x26);
         } else {
-            k -= 700;
-            if (k < 0) {
-                k = 0;
+            y2 -= 700;
+            if (y2 < 0) {
+                y2 = 0;
             }
-            color = (k * 16) / 300;
+            color = (y2 * 16) / 300;
             x = 0x20 - color * 2;
             y = 0x28 - color * 2;
             if ((x > 0) && (y > 0)) {
@@ -2095,7 +2106,7 @@ void func_801F4120(Gfx** gdlp) {
     }
 
     // Time trials: the best times.
-    if ((gGameModes == GMODE_TIME_TRIALS) && (gCourseID != DOLPHIN_PARK)) {
+    if ((HUD_GMODES == GMODE_TIME_TRIALS) && (gCourseID != DOLPHIN_PARK)) {
         y = 0x16;
         gdl = Printer_Print(gdl, 1, "BEST TIME", 0xEE, y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         y += 9;
@@ -2109,6 +2120,8 @@ void func_801F4120(Gfx** gdlp) {
     }
     *gdlp = gdl;
 }
+#undef HUD_GMODES
+
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F4120.s")
 #endif
