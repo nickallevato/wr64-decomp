@@ -1137,7 +1137,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6473 of 127200: calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
+// Score 6338 of 127200: calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1146,7 +1146,8 @@ void func_8008E4B0(void) {
 // own variables IDO keeps the x component in a saved register; their homes at 0x88/0x84 come from a declaration
 // search), x before z in the squares and the scaling, and vtx is set right after arena (the original builds it in
 // v1 there): 7904 -> 6789. SOUTHERN_ISLAND's unkE0 copy after its unk104 (an adjacent-swap search) and the
-// default case's first sine held in dz, dead there (a per-web rename search): 6473. Left: the original hoists 360.0f and 4096.0f in the D_800D988C == 1 loop, and there
+// default case's first sine held in dz, dead there (a per-web rename search): 6473; an empty test of cam at the
+// end (FAKE, a search over empty tests; cam stays live to the end): 6338. Left: the original hoists 360.0f and 4096.0f in the D_800D988C == 1 loop, and there
 // reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 // D_801C4168 is accessed through a cast pointer (FAKE, from a search over access types): 10389 -> 10064.
 // The SOUTHERN_ISLAND case sets unkAC first, as the other cases do (a statement-move search): 8809; SUNSET_BAY
@@ -1388,6 +1389,7 @@ void func_8008E794(void) {
             D_801C4160 = e->unkAC;
         }
     }
+    if (cam) {} // FAKE: an empty test of cam at the end (a search over empty tests), for the registers
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008E794.s")
