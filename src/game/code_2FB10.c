@@ -684,7 +684,12 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 6906 of 146400: same blocks and calls, frame 0x120. mid6 (searches): the type 8/9 test reads e->unk98 into
+// Score 5581 of 146400: same blocks and calls, frame 0x120. mix1: the gate's two distances are computed in segLen
+// (dead there) and copied to dPos and dPrev, then negated below zero (the original's mov.s / neg.s from one
+// register; 6906 -> 6711); beyond's x term in gz, not dPrev (6691; dPrev is still register-allocated where the
+// original keeps it in its home); the line record's x read into lineX before r1/r2 and used for beyond and
+// func_80076240 (a permuter find; padE grows by the word pad0 gives up, which keeps the homes): 5581.
+// mid6 (searches): the type 8/9 test reads e->unk98 into
 // laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference is held in nearLine,
 // beyond's x term goes through dPrev; dPrev's z term reads e->unk74 rather than dirZ; one += written out, and the
 // side test compares with an int 0. The type 8/9 test keeps its two branches through a dead
@@ -724,7 +729,8 @@ void func_8007687C(s32 arg0) {
     s32 sameZone;
     s32 pad2[2]; // stack pad
     s32 nearLine;
-    s32 pad0[2]; // stack pad
+    f32 lineX; // the line record's x, read ahead (permuter)
+    s32 pad0[1]; // stack pad
     s32 beyond;
     s32 r;
     f32 len;
@@ -748,7 +754,7 @@ void func_8007687C(s32 arg0) {
     f32 gz;
     f32 dx;
     f32 dz;
-    s32 padE[3]; // stack pad
+    s32 padE[4]; // stack pad
     if (arg0 == gPlayer1Rider) {
         D_801C2658 = 0;
     }
@@ -956,14 +962,17 @@ void func_8007687C(s32 arg0) {
         // A checkpoint gate: its time, and the gap shown against the time trial record
         // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
-            dPos = (D_801C3780 - e->unk0) * dirX;
-            dPos = dPos + (D_801C3788 - e->unk8) * dirZ;
-            if (!(dPos >= 0.0f)) {
-                dPos = -dPos;
+            // the two distances go through segLen (dead here) and are copied, then negated when below zero
+            segLen = (D_801C3780 - e->unk0) * dirX;
+            segLen = segLen + (D_801C3788 - e->unk8) * dirZ;
+            dPos = segLen;
+            if (!(segLen >= 0.0f)) {
+                dPos = -segLen;
             }
-            dPrev = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
-            if (!(dPrev >= 0.0f)) {
-                dPrev = -dPrev;
+            segLen = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
+            dPrev = segLen;
+            if (!(segLen >= 0.0f)) {
+                dPrev = -segLen;
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
             if (e->unk98 == 3) {
@@ -1118,19 +1127,20 @@ void func_8007687C(s32 arg0) {
 
     // Crossing the line backwards or forwards near it (within one record of it, four on
     // Sunset Bay) moves the lap counter unk320.
+    lineX = D_801AEE20[D_801BB12C].unk0;
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
-    // beyond's x term first (permuter), in dPrev (dead here; a name search)
-    dPrev = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
+    // beyond's x term first (permuter), in gz (dead here; a name search)
+    gz = (D_801C3780 - lineX) * D_801AEE20[D_801BB12C].unk70;
     ref = D_801AEE20[r2].unkA0;
     time = D_801AEE20[ref].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         dPrev) > 0.0f;
+         gz) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (ref == D_801BB12C) || (time == D_801BB12C);
     }
-    if (func_80076240(D_801C3780, D_801C3788, D_801AEE20[D_801BB12C].unk0, D_801AEE20[D_801BB12C].unk8) &&
+    if (func_80076240(D_801C3780, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
         if (beyond && (rider->unk324 == 0) && (rider->unk320 < rider->lapCount)) {
             rider->unk320++;
@@ -1337,8 +1347,17 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 5790 of 111900: same blocks, switches and calls, frame 0xB0. mid6: the trick-10 flags as one chain
-// (D_801C39F4 = D_801C39F0 = 1, a syntax search); the gate time goes through laps before its checkpointTimes store
+// Score 3489 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
+// adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
+// the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
+// e->unk0/e->unk8 spills at 0x20/0x1C, and land in dot and len (no dPos/dPrev locals: two words fewer, with
+// padV gone, keep the frame); the trick-10 flags are two stores (the chain reloads D_801C39F0); unk334 is
+// cleared after the bonus, the time table is indexed gCourseID * 4 first, and D_80228A94 is set before
+// timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move:
+// 4377); the gate dot product takes its terms in dx and dz too (4047); permuter finds: passed held in i (dead
+// there; a pad keeps its home: 4002) and a dead copy of rider in the time table read (FAKE: 3489).
+// mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
@@ -1357,8 +1376,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
+    RiderStruct* rider2; // FAKE (permuter): a dead copy of rider, see the time table read
     s32 sfx;
-    s32 passed;
+    s32 padP; // stack pad (FAKE, permuter: the passed flag is held in i, dead there)
     s32 points;
     s32 frac;
     s32 padX; // stack pad
@@ -1373,11 +1393,8 @@ void func_800783AC(s32 arg0) {
     f32 dz;
     f32 len;
     f32 dot;
-    f32 dPos;
-    f32 dPrev;
     RiderStruct* rider;
     UnkStruct_801AEE20* e;
-    s32 padV[2]; // stack pad
 
     if (arg0 != gPlayer1Rider) {
         padZ[0] = 0; // FAKE: a store to a stack pad keeps the original's empty test as a branch
@@ -1427,14 +1444,7 @@ void func_800783AC(s32 arg0) {
     }
     // unk138 follows power one step a frame.
     if (rider->unk138 != rider->power) {
-        if (rider->power - rider->unk138 == 0) {
-            i = 0;
-        } else if (rider->power - rider->unk138 > 0) {
-            i = 1;
-        } else {
-            i = -1;
-        }
-        rider->unk138 += i;
+        rider->unk138 += (rider->power - rider->unk138 == 0) ? 0 : ((rider->power - rider->unk138 > 0) ? 1 : -1);
     }
     // Trick points (D_801C26E4) from the craft's trick state unk1604.
     if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
@@ -1584,8 +1594,9 @@ void func_800783AC(s32 arg0) {
     cur = rider->unkC;
     e = &D_801AEE20[cur];
     if (e->unk9C == 1) {
-        dot = e->unk78 * (D_801C3780 - e->unk18);
-        dot += (e->unk7C * (D_801C3788 - e->unk20));
+        dx = D_801C3780 - e->unk18;
+        dz = D_801C3788 - e->unk20;
+        dot = (e->unk78 * dx) + (dz * e->unk7C);
         inGate = (dot >= 0.0f) && (dot <= (2.0f * e->unk8C));
     }
     dx = D_801C3780;
@@ -1596,7 +1607,7 @@ void func_800783AC(s32 arg0) {
         dx /= len;
         dz /= len;
     }
-    passed = false;
+    i = false;
     dot = (e->unk70 * dx) + (e->unk74 * dz);
     len = (e->unk74 * dx) - (e->unk70 * dz);
     if ((rider->unk1C == -1) && (dot > 0.0f)) {
@@ -1617,36 +1628,39 @@ void func_800783AC(s32 arg0) {
             rider->unk20 = 0;
             rider->unk2F0 = 1;
         } else {
-            passed = true;
+            i = true;
             rider->unk2F0 = 0;
         }
     }
-    if (passed) {
+    if (i) {
         rider->unkC = e->unkA0;
         rider->unk1C = -1;
         rider->unk20 = 1;
     }
-    if (passed && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
+    if (i && (rider->unk2F4 == 0) && (rider->finishState == 0)) {
         // A checkpoint gate: its time (interpolated between this frame and the last), and the
         // time left as bonus points.
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
             if (cur != D_801BB12C) {
-                D_801C39E4 = D_801C39E0 = D_801C39DC = D_801C39D8 = 0;
+                D_801C39D8 = D_801C39DC = D_801C39E0 = D_801C39E4 = 0;
             }
-            dPos = (e->unk70 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk74);
-            if (!(dPos >= 0.0f)) {
-                dPos = -dPos;
+            dx = D_801C3780 - e->unk0;
+            dz = D_801C3788 - e->unk8;
+            dot = (e->unk70 * dx) + (dz * e->unk74);
+            if (!(dot >= 0.0f)) {
+                dot = -dot;
             }
-            dPrev = ((D_80192690[arg0].unkBE4 - e->unk0) * e->unk70) +
-                    ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74);
-            if (!(dPrev >= 0.0f)) {
-                dPrev = -dPrev;
+            dx = D_80192690[arg0].unkBE4 - e->unk0;
+            dz = D_80192690[arg0].unkBEC - e->unk8;
+            len = (dx * e->unk70) + (dz * e->unk74);
+            if (!(len >= 0.0f)) {
+                len = -len;
             }
-            frac = (dPos / (dPos + dPrev)) * 50.0f;
-            rider->unk334 = 0;
+            frac = (dot / (dot + len)) * 50.0f;
             laps = rider->raceTime - frac; // the gate's time, held in laps (variable reuse; 8007687C uses time)
             rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = laps;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
+            rider->unk334 = 0;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
                     inGate = 1;
@@ -1659,8 +1673,8 @@ void func_800783AC(s32 arg0) {
                 D_801C39D4 = bonus;
             }
             if (cur != D_801BB12C) {
-                rider->timeLeft = D_800D9280[rider->unk164 + (gCourseID * 4)] * 1000;
                 D_80228A94 = 20;
+                rider->timeLeft = D_800D9280[(gCourseID * 4) + (rider2 = rider)->unk164] * 1000; // FAKE (permuter)
                 AudioGeneral_PlaySound(0x33, 0);
             }
             rider->unk164++;
@@ -1686,7 +1700,8 @@ void func_800783AC(s32 arg0) {
                                 D_801C39F0 = 1;
                                 break;
                             case 10:
-                                D_801C39F4 = D_801C39F0 = 1;
+                                D_801C39F0 = 1;
+                                D_801C39F4 = 1;
                                 break;
                             case 11:
                                 D_801C39F8 = 1;
