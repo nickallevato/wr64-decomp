@@ -1521,7 +1521,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 33689 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 33419 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1530,7 +1530,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
-// index in the championship gaps is kept in y2 and their color in k, the 2P gap color in y2, the RANK zoom in j,
+// index in the championship gaps is kept in y2 and their color in k, the 2P gap color in y2, the RANK zoom in j and
+// the rider count digit in color, the SPEED and km/h label x in color,
 // the buoy-miss count in color and the rider's in k, the stunt time left in x2 and its thousandths in y2
 // (variable-name searches over each block; the original keeps the leader in a saved register). Register
 // allocation and scheduling differ throughout:
@@ -1828,11 +1829,11 @@ void func_801F4120(Gfx** gdlp) {
                                 G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             HUD_RECT(gdl, D_80228B50 + 0x9B, 0x20, 8, 10);
             if (D_801CE704 < 4) {
-                n = D_801CE704 + 1;
+                color = D_801CE704 + 1;
             } else {
-                n = 0x25;
+                color = 0x25;
             }
-            gDPLoadTextureBlock(gdl++, &D_1039248[n * 0xC0], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0,
+            gDPLoadTextureBlock(gdl++, &D_1039248[color * 0xC0], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0,
                                 G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
             HUD_RECT(gdl, D_80228B50 + 0x9A, 0x2A, 16, 12);
@@ -1841,19 +1842,19 @@ void func_801F4120(Gfx** gdlp) {
         }
     }
 
-    // SPEED label.
+    // SPEED label (color holds its x here, and in the km/h label: variable reuse from a name search).
     HUD_LOAD32(gdl, D_10331D0, 32, 12);
     if (gGameModes == GMODE_STUNT) {
         HUD_RECT(gdl, 0xEC, 0x16, 32, 12);
     } else if (gPlayers == ONE_PLAYER) {
         if (gCourseID == DOLPHIN_PARK) {
-            x = 0xD9;
+            color = 0xD9;
         } else if (gGameModes == GMODE_TIME_TRIALS) {
-            x = 0x97;
+            color = 0x97;
         } else {
-            x = 0xD9;
+            color = 0xD9;
         }
-        HUD_RECT(gdl, x + D_80228B50 + 0x18, 0x15, 32, 12);
+        HUD_RECT(gdl, color + D_80228B50 + 0x18, 0x15, 32, 12);
     } else {
         HUD_RECT(gdl, 0xF2, 0xD, 32, 12);
         HUD_RECT(gdl, 0xF2, 0x7B, 32, 12);
@@ -1923,13 +1924,13 @@ void func_801F4120(Gfx** gdlp) {
         HUD_RECT(gdl, 0x10E, 0x2B, 24, 12);
     } else if (gPlayers == ONE_PLAYER) {
         if (gCourseID == DOLPHIN_PARK) {
-            x = 0xD9;
+            color = 0xD9;
         } else if (gGameModes == GMODE_TIME_TRIALS) {
-            x = 0x97;
+            color = 0x97;
         } else {
-            x = 0xD9;
+            color = 0xD9;
         }
-        HUD_RECT(gdl, x + D_80228B50 + 0x39, 0x2A, 24, 12);
+        HUD_RECT(gdl, color + D_80228B50 + 0x39, 0x2A, 24, 12);
     } else {
         HUD_RECT(gdl, 0x114, 0x1E, 24, 12);
         HUD_RECT(gdl, 0x114, 0x8C, 24, 12);
