@@ -1561,7 +1561,9 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 7616 of 124000 (big7: an empty do-while (FAKE) ahead of the unk1A00 squares' vtx; the human's remainder
+// Score 4441 of 124000 (mix1: the trail quads take k = j * 2 (the original multiplies the doubled index by 5
+// with shifts, not j by 10: 7616 -> 5791); the remainder's vertex word adds its two fields, as the original
+// does (-> 4441). Before, big7: an empty do-while (FAKE) ahead of the unk1A00 squares' vtx; the human's remainder
 // triangles set n = 0 just before their loop, which gives the
 // original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
 // (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks,
@@ -1571,10 +1573,9 @@ extern Vtx D_50081C0[];
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
 // D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
 // with the default (the original's table has 7 entries). Left: register allocation and
-// scheduling (the original keeps more command words in saved registers; it does not fold the trail quads' k * 2 * 5
-// into k * 10, it hoists case 6's texture address in the unk1A00 loop and adds 0x8DC0 last there, and computes
-// i + view before the age test in the first loop instead of distributing it; the remainder's vertex word adds
-// (n << 9) and n * 16 where gSPVertex ORs them: an additive gDma1p gives those instructions but scores 8651).
+// scheduling (the original keeps more command words in saved registers; it hoists case 6's texture address in
+// the unk1A00 loop and adds 0x8DC0 last there, and computes i + view before the age test in the first loop
+// instead of distributing it).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1720,7 +1721,8 @@ void func_800B305C(Gfx** gdl) {
         }
         gSPVertex(gdlh++, D_5000000->unk91C0[i], 16, 0);
         for (j = 0; j < 7; j++) {
-            gSP1QuadrangleLP(gdlh++, j * 2, j * 2 + 2, j * 2 + 3, j * 2 + 1);
+            k = j * 2;
+            gSP1QuadrangleLP(gdlh++, k, k + 2, k + 3, k + 1);
         }
     }
     // The unk1000 triangles of the human's entry, 5 to a vertex load.
@@ -1753,7 +1755,9 @@ void func_800B305C(Gfx** gdl) {
         }
         k = D_800E6D60->unk1C24 % 5;
         if (k != 0) {
-            gSPVertex(gdlh++, vtx, k * 3, 0);
+            // The original adds the vertex count's two fields where gSPVertex ORs them (the same word
+            // for k * 3 < 32).
+            gDma1p(gdlh++, G_VTX, vtx, ((k * 3) << 9) + ((k * 3) * sizeof(Vtx) - 1), 0);
             n = 0;
             for (j = 0; j < k; j++) {
                 gSP1Triangle(gdlh++, n, n + 1, n + 2, 0);
