@@ -684,7 +684,10 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 9126 of 146400: same blocks and calls, frame 0x120. The type 8/9 test keeps its two branches through a dead
+// Score 6906 of 146400: same blocks and calls, frame 0x120. mid6 (searches): the type 8/9 test reads e->unk98 into
+// laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference is held in nearLine,
+// beyond's x term goes through dPrev; dPrev's z term reads e->unk74 rather than dirZ; one += written out, and the
+// side test compares with an int 0. The type 8/9 test keeps its two branches through a dead
 // if/else on sfx (FAKE: IDO removes the stores but keeps the branches, as the original's code shows); sameZone is
 // an if / else-if / else (the original hoists the false value); r1..r4 are read before beyond, which is a boolean
 // assignment; operand orders and one line join come from searches, and a merge search put r3 and r4 in ref and time
@@ -697,7 +700,8 @@ void func_800C1EB8(s32);
 // and the power step's sign test reads the difference from r and the progress segment reads from.x into dirX first
 // (permuter); one statement move and one operand order come from searches. Left: register allocation (gCourseID in
 // a2, not a3; the constant 1 in t5, not ra) and scheduling; the original keeps the first empty test in the gate
-// block (`dot >= 0`) as a branch, which no spelling here keeps without a store; it keeps dPrev in its stack slot
+// block (`dot >= 0`) as a branch with an empty body: IDO drops an empty `if`, and the no-op `dot = -(-dot)` body
+// (FAKE, mid6) keeps the branch with two neg.s (9126 -> 7121); a store to frac there keeps it too (7368). It keeps dPrev in its stack slot
 // (0xA4; dPrev's home here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f
 // becomes an add.
 void func_8007687C(s32 arg0) {
@@ -806,21 +810,23 @@ void func_8007687C(s32 arg0) {
         }
         dot = (D_801C3780 - e->unk18) * gx;
         dot += (D_801C3788 - e->unk20) * gz;
-        if (dot >= 0.0f) {} // an empty test, as in the original
+        if (dot >= 0.0f) {
+            dot = -(-dot); // FAKE: a no-op body keeps the original's empty test as a branch (IDO drops an empty one)
+        }
         if (D_801C1F90 == 0) {
             inGate = dot <= ((e->unk8C * 2) + D_801C39C4);
         } else {
             inGate = -D_801C39C4 <= dot;
         }
     } else {
-        type = e->unk98;
-        if ((type == 8) || (type == 9)) {
+        laps = e->unk98;
+        if ((laps == 8) || (laps == 9)) {
             dot = (e->unk78 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk7C);
             if (!(dot >= 0.0f)) {
                 dot = -dot;
             }
             if (dot <= e->unk8C) {
-                sfx = true; // FAKE: dead, keeps the original's branches
+                ref = true; // FAKE: dead, keeps the original's branches
             } else {
                 sfx = false;
             }
@@ -835,7 +841,7 @@ void func_8007687C(s32 arg0) {
         dx /= len;
         dz /= len;
     }
-    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0.0f)) {
+    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0)) {
         if (((dirZ * dx) - (dirX * dz)) >= 0.0f) {
             rider->unk1C = 1;
         } else {
@@ -951,11 +957,11 @@ void func_8007687C(s32 arg0) {
         // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
             dPos = (D_801C3780 - e->unk0) * dirX;
-            dPos += (D_801C3788 - e->unk8) * dirZ;
+            dPos = dPos + (D_801C3788 - e->unk8) * dirZ;
             if (!(dPos >= 0.0f)) {
                 dPos = -dPos;
             }
-            dPrev = ((D_80192690[arg0].unkBEC - e->unk8) * dirZ) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
+            dPrev = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
             if (!(dPrev >= 0.0f)) {
                 dPrev = -dPrev;
             }
@@ -970,14 +976,14 @@ void func_8007687C(s32 arg0) {
                 if ((gGameModes == GMODE_TIME_TRIALS) && (D_800DAB68 == 0) && (cur == D_801BB12C) &&
                     (rider->lapCount < 3)) {
                     do {} while (0); // FAKE (permuter): a block boundary
-                    ref = gBestCheckpointTimes[gCourseID][rider->lapCount - 1];
-                    if (ref > 0) {
-                        if (ref < time) {
+                    nearLine = gBestCheckpointTimes[gCourseID][rider->lapCount - 1]; // the reference time (variable reuse)
+                    if (nearLine > 0) {
+                        if (nearLine < time) {
                             rider->gapRequest = 1;
-                            rider->checkpointGap = time - ref;
+                            rider->checkpointGap = time - nearLine;
                         } else {
                             rider->gapRequest = 2;
-                            rider->checkpointGap = ref - time;
+                            rider->checkpointGap = nearLine - time;
                         }
                         rider->gapTimer = 40;
                     }
@@ -1114,12 +1120,12 @@ void func_8007687C(s32 arg0) {
     // Sunset Bay) moves the lap counter unk320.
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
-    // beyond's x term first (permuter; dPos is dead here)
-    dPos = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
+    // beyond's x term first (permuter), in dPrev (dead here; a name search)
+    dPrev = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
     ref = D_801AEE20[r2].unkA0;
     time = D_801AEE20[ref].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         dPos) > 0.0f;
+         dPrev) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (ref == D_801BB12C) || (time == D_801BB12C);
@@ -1331,19 +1337,23 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 8670 of 111900: same blocks, switches and calls (one branch short), frame 0xB0. The declarations follow the
+// Score 5790 of 111900: same blocks, switches and calls, frame 0xB0. mid6: the trick-10 flags as one chain
+// (D_801C39F4 = D_801C39F0 = 1, a syntax search); the gate time goes through laps before its checkpointTimes store
+// (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
 // has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
 // flag and the record sound value are if/else assignments (the original hoists the else value above the branch);
 // the cross product and the record score sum are computed into locals first, as the original's order shows;
 // operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps: the
-// original's registers for them) come from searches; the empty arg0 test goes through passed (FAKE, permuter),
-// which gives &gPlayer1Rider its register; the gate dot product is summed in two statements (permuter) and dx
-// subtracted in its own statement (a sum-split search).
-// Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate block), and
-// the original keeps its empty arg0 == gPlayer1Rider test as a branch (`beq a0, t7` to the next instruction),
-// which this C does not.
+// original's registers for them) come from searches; the gate dot product is summed in two statements (permuter)
+// and dx subtracted in its own statement (a sum-split search).
+// The original keeps an empty arg0 != gPlayer1Rider test as a branch (`beq a0, t7` to the next instruction, arg0's
+// spill in the delay slot). IDO drops an empty `if` and an `if` whose body is a dead store; a store to a stack pad
+// (FAKE, mid6) keeps the branch with that one store as its body (8670 -> 6630; an if/else of pad stores 6485, a
+// store to frac or trick, read uninitialised later, about the same).
+// Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate block) and the
+// pad store in the empty test's body.
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
@@ -1369,8 +1379,9 @@ void func_800783AC(s32 arg0) {
     UnkStruct_801AEE20* e;
     s32 padV[2]; // stack pad
 
-    passed = arg0 != gPlayer1Rider; // FAKE (permuter): the test through passed, for &gPlayer1Rider's register
-    if (passed) {} // an empty test, as in the original
+    if (arg0 != gPlayer1Rider) {
+        padZ[0] = 0; // FAKE: a store to a stack pad keeps the original's empty test as a branch
+    }
     rider = &gRiderRaceState[arg0];
     rider->unk314 = 0;
     if ((gCourseID == RIDER_SELECTION) && (arg0 == gPlayer2Rider)) {
@@ -1633,7 +1644,8 @@ void func_800783AC(s32 arg0) {
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
             rider->unk334 = 0;
-            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = rider->raceTime - frac;
+            laps = rider->raceTime - frac; // the gate's time, held in laps (variable reuse; 8007687C uses time)
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = laps;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
@@ -1674,8 +1686,7 @@ void func_800783AC(s32 arg0) {
                                 D_801C39F0 = 1;
                                 break;
                             case 10:
-                                D_801C39F0 = 1;
-                                D_801C39F4 = 1;
+                                D_801C39F4 = D_801C39F0 = 1;
                                 break;
                             case 11:
                                 D_801C39F8 = 1;

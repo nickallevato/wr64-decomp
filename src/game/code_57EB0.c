@@ -2069,7 +2069,9 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 5560 of 259500 (mid4): the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
+// Score 4870 of 259500 (mid6: the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
+// original; one D_801D0754 += written out as D_801D0754 = D_801D0754 + and the unk28/unk2C zeroes chained (syntax
+// searches); 5560 before). mid4: the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
 // sets the record pointer after the loop guard, a derived induction variable; the pad keeps the old pointer's stack
 // slot); unk34's zero is stored after unk30/unk38, and the 0.2f store follows the unk10
 // update (the original's literal pool has 0.03 before 0.2f); both sp48/sp4C call pairs on one line and the unkC
@@ -2408,7 +2410,7 @@ void func_800A68A4(s32 arg0) {
                 D_801D0760 = func_8009D564(D_801D0764 - 90.0f);
             }
             angle = (s32) ((D_801D0760 / 360.0f) * 4096.0f);
-            D_801D0754 += COS(angle) * D_801D0768;
+            D_801D0754 = D_801D0754 + COS(angle) * D_801D0768;
             D_801D075C = (SIN(angle) * D_801D0768) + D_801D0758;
             D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
             D_801D0760 = Math_Normalize_Angle(
@@ -2497,16 +2499,16 @@ void func_800A68A4(s32 arg0) {
                     (((D_801CF060[arg0].unkC + (D_801CF060[arg0].unk30 * 500.0f)) - D_801D0754) * 0.125f * (f32) i) +
                     D_801D0754;
                 D_801D0770 = D_801CF060[arg0].unk10 - 10.0f;
-                D_801D0774 = ((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C;
-                D_801D0774 = (D_801D0774 * 0.125f * (f32) i) + D_801D075C;
+                D_801D0774 =
+                    ((((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C) * 0.125f * (f32) i) +
+                    D_801D075C;
                 sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
                 if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
                     D_801CF060[arg0].unk14 = D_801D075C;
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk24 = 0.0f;
                     D_801CF060[arg0].unk10 = D_801D0758;
-                    D_801CF060[arg0].unk28 = 0.0f;
-                    D_801CF060[arg0].unk2C = 0.0f;
+                    D_801CF060[arg0].unk28 = D_801CF060[arg0].unk2C = 0.0f;
                 }
             }
             func_800A2B24(arg0);
