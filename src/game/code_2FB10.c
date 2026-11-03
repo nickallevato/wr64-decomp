@@ -1337,7 +1337,8 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 5790 of 111900: same blocks, switches and calls, frame 0xB0. mid6: the trick-10 flags as one chain
+// Score 5770 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// other way round (IDO stores the rightmost first; the original stores D_801C39E4 first). mid6: the trick-10 flags as one chain
 // (D_801C39F4 = D_801C39F0 = 1, a syntax search); the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1631,7 +1632,7 @@ void func_800783AC(s32 arg0) {
         // time left as bonus points.
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
             if (cur != D_801BB12C) {
-                D_801C39E4 = D_801C39E0 = D_801C39DC = D_801C39D8 = 0;
+                D_801C39D8 = D_801C39DC = D_801C39E0 = D_801C39E4 = 0;
             }
             dPos = (e->unk70 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk74);
             if (!(dPos >= 0.0f)) {
