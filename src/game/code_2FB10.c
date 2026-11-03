@@ -1350,7 +1350,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3095 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 3030 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1365,7 +1365,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // home and is loaded where it is tested, and the gate time takes a0, as in the original (an empty do-while in the
 // trick switch's case 3, FAKE from an insert search, then gives 3150). The gate time has its own variable (time,
 // in a padY word; same score), and a permuter find holds the unk1C == -1 test in it first (FAKE): 3105;
-// unk334 is cleared before the bonus again (a swap search): 3095.
+// unk334 is cleared before the bonus again (a swap search): 3095; an empty do-while before the unk2C loop (FAKE,
+// insert search): 3030.
 // mid6 (its trick-10 chain is split again above): the gate time went through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1772,6 +1773,7 @@ void func_800783AC(s32 arg0) {
                 }
             }
             rider->unk320 = rider->lapCount;
+            do {} while (0); // FAKE (insert search): an empty block before the unk2C loop
             for (laps = 1; laps < D_801BB120; laps++) {
                 rider->unk2C[laps] = 0;
             }
