@@ -1137,13 +1137,14 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 10389 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// Score 10064 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
 // constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
 // caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
 // the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
+// D_801C4168 is accessed through a cast pointer (FAKE, from a search over access types): 10389 -> 10064.
 void func_8008E794(void) {
     s32 padS0[2]; // stack pad
     f32 dirX;
@@ -1249,15 +1250,16 @@ void func_8008E794(void) {
             e->unkB0 = SIN(angle) * 64;
             e->unkB4 = COS(angle) * 64.0f;
             D_801C4160 = e->unkAC;
-            D_801C4168 = e->unkB4;
+            (*(s32*) &D_801C4168) = e->unkB4; // FAKE: D_801C4168 through a cast pointer here and below (see the note)
             D_801C4164 = e->unkB0;
-            len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
+            len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) +
+                        ((*(s32*) &D_801C4168) * (*(s32*) &D_801C4168)));
             if (len == 0) {
-                D_801C4168 = 120;
+                (*(s32*) &D_801C4168) = 120;
             }
             e->unkAC = (D_801C4160 / len) * 120.0f;
             e->unkB0 = (D_801C4164 / len) * 120.0f;
-            e->unkB4 = (D_801C4168 / len) * 120;
+            e->unkB4 = ((*(s32*) &D_801C4168) / len) * 120;
         }
     } else if (D_800D988C == 2) {
         for (i = 0, e = D_801CB058; i < gPlayers; i++, e++) {
@@ -1376,7 +1378,7 @@ void func_8008E794(void) {
             e->unk100 = 64.0f;
             e->unkFC *= 64;
             e->unk104 *= 64;
-            D_801C4168 = e->unkB4;
+            (*(s32*) &D_801C4168) = e->unkB4;
             D_801C4164 = e->unkB0;
             D_801C4160 = e->unkAC;
         }
