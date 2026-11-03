@@ -867,7 +867,8 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 25822 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 24847 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
@@ -1171,7 +1172,7 @@ void func_800B08F8(s32 arg0) {
     right = 2.0f * (rate * (1.0f - split));
     if ((rate > 0.1f) && spawn && (lod != 0)) {
         if (!twoViews) {
-            if (lod == 3U) { // 3U: not shared with the 3 in "3 - n" below (the original rematerialises both)
+            if (lod == 3U) { // 3U: not shared with the 3 in "3 - count" below (the original rematerialises both)
                 count = 6;
             } else {
                 count = 4;
@@ -1309,7 +1310,8 @@ void func_800B08F8(s32 arg0) {
                         D_800E6D60->unk1C50 = 24;
                     }
                 } else {
-                    n = 0;
+                    // count (dead here) counts the drops and n holds the angle: the original reuses them (name search)
+                    count = 0;
                     for (i = 63, D_800E6D6C = &D_800E6D70[63]; i >= 0; i--, D_800E6D6C--) {
                         if (D_800E6D6C->unk20 == 0) {
                             D_800E6D6C->unk20 = 1;
@@ -1319,26 +1321,26 @@ void func_800B08F8(s32 arg0) {
                             D_800E6D6C->unk18 = Math_FloatRand(rate / 3.0f) + 1.0f;
                             sz = fwdZ * width;
                             D_800E6D6C->unk1C = 0.0f;
-                            if (n < 4) {
-                                f = 3 - n;
+                            if (count < 4) {
+                                f = 3 - count;
                             } else {
-                                f = n - 4;
+                                f = count - 4;
                             }
                             len = (split < (1.0f - split)) ? split : (1.0f - split);
                             len = (2.0f * (((f / 3) - 1.0f) * len)) + 1.0f;
                             sx = (24.0f + rate) - (len * 8); // int 8 (respelling search)
-                            a = (angle / 360.0f) * 4096.0f;
-                            D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
+                            n = (angle / 360.0f) * 4096.0f;
+                            D_800E6D6C->unk0 = (gSinTable[(n + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
                             D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
-                            D_800E6D6C->unk8 = (gSinTable[a & 0xFFF] * sx) + (D_801D79C4 - sz);
+                            D_800E6D6C->unk8 = (gSinTable[n & 0xFFF] * sx) + (D_801D79C4 - sz);
                             f = Math_FloatRand(r);
-                            n++;
+                            count++;
                             vy = Math_FloatRand(r) + (rate / 1.2);
-                            D_800E6D6C->unkC = (gSinTable[(a + 0x400) & 0xFFF] * f) + (D_801D79C8 * 0.8);
+                            D_800E6D6C->unkC = (gSinTable[(n + 0x400) & 0xFFF] * f) + (D_801D79C8 * 0.8);
                             D_800E6D6C->unk10 = vy;
-                            D_800E6D6C->unk14 = (gSinTable[a & 0xFFF] * f) + (D_801D79D0 * 0.8);
+                            D_800E6D6C->unk14 = (gSinTable[n & 0xFFF] * f) + (D_801D79D0 * 0.8);
                             angle += step;
-                            if (n >= 8) {
+                            if (count >= 8) {
                                 break;
                             }
                         }
