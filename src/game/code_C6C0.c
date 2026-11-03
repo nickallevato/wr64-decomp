@@ -2117,7 +2117,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 33549 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
+// Score 33359 of 246800: same calls and nearly the same branches as the original (by a structure diff; the
 // unk15B0 clamp as an if / else, from an else-form search, adds one branch but scores better); registers differ and
 // the frame is 0x3A8 here, 0x388 in the original. m2c's temporaries are pooled (one variable per chain of
 // non-overlapping values) and the declarations are ordered so sp364/sp360 and spC4 sit where the original has
@@ -2125,7 +2125,7 @@ void func_8005790C(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 // numerator and two constants are respelled (the original keeps differently spelled constants apart; respelling
 // searches); the unkFC direction's x is summed in two statements (a sum-split search), and about ten products
 // read their fields again in place of the copies (read-through searches); statement order is from statement-move
-// searches (two rounds). Named
+// searches (three rounds) and one block keeps its z factor in sp84 (a name search). Named
 // skeleton entries and rider parts; control flow follows the original: the lean side (unk16B8), the
 // per-entry func_800574E4 placement, the two-bone limb solves (func_800534AC), the unk15B0/unkC70 frame
 // counters and the water-level checks that pick the D_802238DC entry. func_800C1EB8 (audio) takes one s32: the
@@ -2190,8 +2190,8 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     temp_fv0 = rider->unk44.x;
     temp_fs0 = arg1->unkD8.unk0.x - temp_fv0;
     temp_fa0 = rider->unk84;
-    temp_fs1 = arg1->unkD8.unk0.y - rider->unk44.y;
     spB0 = rider->unk78;
+    temp_fs1 = arg1->unkD8.unk0.y - rider->unk44.y;
     temp_fs2 = arg1->unkD8.unk0.z - rider->unk44.z;
     var_fv0 = rider->unk16C0;
     temp_fs4 = (temp_fa0 * temp_fs0) + (temp_fs1 * rider->unk88) + (temp_fs2 * rider->unk8C);
@@ -2535,18 +2535,18 @@ void func_80057B24(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         temp_fa0 = rider->unk6C;
         temp_v0 = &var_s3->unk4[var_s3->unk30[var_t0]];
         temp_fs1 = (f32) temp_v0->unk0 * 0.1f;
-        temp_fs2 = (f32) temp_v0->unk2 * 0.1f;
+        sp84 = (f32) temp_v0->unk2 * 0.1f;
         temp_fs3 = (f32) temp_v0->unk4 * 0.1f;
-        var_fv0 = arg1->unk168.unk0.x - ((temp_fv0 * temp_fs1) + (temp_fs0 * temp_fs2) + (temp_fa0 * temp_fs3));
+        var_fv0 = arg1->unk168.unk0.x - ((temp_fv0 * temp_fs1) + (temp_fs0 * sp84) + (temp_fa0 * temp_fs3));
         spB0 = temp_fs0;
-        temp_fs0 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs1) + (rider->unk7C * temp_fs2) + (rider->unk70 * temp_fs3));
-        sp364 = arg1->unk168.unk0.z - ((rider->unk8C * temp_fs1) + (rider->unk80 * temp_fs2) + (rider->unk74 * temp_fs3));
-        temp_fs2 = (f32) temp_v0->unk6 * 0.00787402f;
+        temp_fs0 = arg1->unk168.unk0.y - ((rider->unk88 * temp_fs1) + (rider->unk7C * sp84) + (rider->unk70 * temp_fs3));
+        sp364 = arg1->unk168.unk0.z - ((rider->unk8C * temp_fs1) + (rider->unk80 * sp84) + (rider->unk74 * temp_fs3));
+        sp84 = (f32) temp_v0->unk6 * 0.00787402f;
         temp_fs1 = (f32) temp_v0->unk7 * 0.00787402f;
         temp_fs3 = (f32) temp_v0->unk8 * 0.00787402f;
-        arg1->unk168.unkC.x = (temp_fv0 * temp_fs2) + (spB0 * temp_fs1) + (temp_fa0 * temp_fs3);
-        arg1->unk168.unkC.y = (rider->unk88 * temp_fs2) + (rider->unk7C * temp_fs1) + (rider->unk70 * temp_fs3);
-        arg1->unk168.unkC.z = (rider->unk8C * temp_fs2) + (rider->unk80 * temp_fs1) + (rider->unk74 * temp_fs3);
+        arg1->unk168.unkC.x = (temp_fv0 * sp84) + (spB0 * temp_fs1) + (temp_fa0 * temp_fs3);
+        arg1->unk168.unkC.y = (rider->unk88 * sp84) + (rider->unk7C * temp_fs1) + (rider->unk70 * temp_fs3);
+        arg1->unk168.unkC.z = (rider->unk8C * sp84) + (rider->unk80 * temp_fs1) + (rider->unk74 * temp_fs3);
         temp_fv0 = (f32) temp_v0->unk9 * 0.00787402f;
         temp_fa0 = (f32) temp_v0->unkA * 0.00787402f;
         temp_fs1 = (f32) temp_v0->unkB * 0.00787402f;
