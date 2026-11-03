@@ -5475,7 +5475,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 2930 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 2625 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5486,7 +5486,9 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 // unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475;
 // unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
 // unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
-// unkC04 and the first part's sums with the doubled term first (operand-order searches): 2930.
+// unkC04 and the first part's sums with the doubled term first (operand-order searches): 2930. point is set before
+// the template loop and the chain loop reads lengths[i] for i = 1..5 (the original loads 0(v1) from lengths + 4 on):
+// 2625.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
@@ -5514,7 +5516,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     } else {
         rider->unkBF0 = rider->unkBF4 = 0.0f;
     }
-    for (point = rider->unk30, tmpl = D_800D4840; tmpl < &D_800D4840[12]; tmpl++, point++) {
+    point = rider->unk30;
+    for (tmpl = D_800D4840; tmpl < &D_800D4840[12]; tmpl++, point++) {
         point->unk0 = tmpl->x;
         point->unk4 = tmpl->y;
         point->unk8 = tmpl->z;
@@ -5660,13 +5663,13 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     for (i = 1; i < 6; i++) {
         x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
         rider->unk1448[i].unkC.x = x;
-        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (x * lengths[i - 1]);
+        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (x * lengths[i]);
         x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
         rider->unk1448[i].unkC.y = x;
-        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (x * lengths[i - 1]);
+        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (x * lengths[i]);
         x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
         rider->unk1448[i].unkC.z = x;
-        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (x * lengths[i - 1]);
+        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (x * lengths[i]);
         rider->unk1448[i].unk14.x = RIDER_C88(rider)[rider->unk1424][7].unk18.x;
         rider->unk1448[i].unk14.y = RIDER_C88(rider)[rider->unk1424][7].unk18.y;
         rider->unk1448[i].unk14.z = RIDER_C88(rider)[rider->unk1424][7].unk18.z;
