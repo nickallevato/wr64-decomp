@@ -357,7 +357,8 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5081 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// Score 5012 of 69300: calls and branches agree (the frame is 0xC0 here, 0xB8 in the original: see Left). The two
+// waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
 // delta computes dz before dx (a name search and an adjacent-swap search); the unk2D0 step is
@@ -365,13 +366,16 @@ void Hud_SetupMatrices(void) {
 // An empty test of node->unk74 in the outer else (FAKE, from the permuter; it compiles to a dead float compare)
 // gives 5240; p->unk44.x read through a pointer in its last two uses (FAKE, permuter): 5111; with it the
 // rider-to-node delta computes dx first again: 5081.
+// cross declared after dist (a declaration search): 5012.
 // The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
 // D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
 // test). The two single-use crosses are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original
 // keeps the sub.s and compares the result with 0.0f, which only this spelling gives (odd spelling, same value).
-// Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift;
-// the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block), and 360 - unk2D4
-// is computed before the cross test (inside it there).
+// Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift
+// and the frame grows; the empty-test FAKE costs 4 instructions (697 vs 693, which moves this object's .bss by 16
+// bytes), but without it IDO hoists the else `show = 0` above the dist test (693 instructions, 5567); 360 - unk2D4
+// is computed before the cross test here (inside it there). Tried without effect: a per-branch table pointer, the
+// stunt loop as a for loop, operand orders of the record test, the loop-top statement orders, inline waypoint deltas.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -395,11 +399,11 @@ void func_801EF504(void) {
     f32 dx;
     f32 dz;
     f32 fwd;
-    f32 cross;
     UnkStruct_801AEE20* rec;
     s32 diff;
     s32 step;
     f32 dist;
+    f32 cross;
     f32 dot;
 
     for (i = 0; i < gPlayers; i++) {
@@ -1308,7 +1312,7 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 4505 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
+// Score 4005 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
 // instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
 // keeps in s0 (the big-digit loop still reads y, which orders its hoisted y << 2 terms as in the original), a stack pad
 // gives the original's 0x2C8 frame, sec is reduced mod 60 before ms is taken, and the paired digit stores are chained
@@ -1322,6 +1326,11 @@ void func_801F23A0(void) {
 // An empty test of time in the style-2 icon position's last arm (FAKE, from a search over empty tests of the
 // parameters) makes IDO spill time on entry to the style 0/2 branch, as the original does: 4505 (it reloads it there
 // too, one reload more than the original).
+// The icon x positions are held in lap (one variable for the lap number and the icon x, which never live at once;
+// a whole-variable merge search): 4465. An empty test of x between the trailing big-digit texture load and its
+// rectangle (FAKE, a search over empty tests of initialised locals and parameters over the whole function) lets IDO
+// keep 0xE7000000 in a3 across the two trailing loads, as the original does: 4005 (the 0xB3000000 of the first
+// rectangle is rematerialised in the second here).
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1356,7 +1365,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
     s32 px;
     s32 lap;
     s32 skip;
-    s32 ix;
+    s32 ix; // unused: its stack slot keeps the frame (the icon x is held in lap, see the note)
     RiderStruct* rider;
     s32 py;
     s32 pad[2]; // stack pad
@@ -1416,6 +1425,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         HUD_LOAD32(gdl, D_103D2D0, 12, 16);
         HUD_RECT(gdl, x + 12, py, 12, 16);
         HUD_LOAD32(gdl, D_103D5D0, 12, 16);
+        if (x) {} // FAKE: an empty test of x (a search over empty tests); see the note
         HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
         gDPPipeSync(gdl++);
@@ -1442,14 +1452,14 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 HUD_LOAD8(gdl, D_10390C0, 8, 8);
             }
             if (skip == 0) {
-                ix = x - 8;
+                lap = x - 8;
             } else if (skip == 1) {
-                ix = x + 4;
+                lap = x + 4;
             } else {
-                ix = x + 10;
+                lap = x + 10;
                 if (time) {} // FAKE: an empty test of time (a search over empty tests); see the note
             }
-            HUD_SCISRECT(gdl, ix, py, 8, 8);
+            HUD_SCISRECT(gdl, lap, py, 8, 8);
         }
         for (i = 0; i < 6; i++) {
             if ((skip == 0) || (i >= skip)) {
@@ -1489,13 +1499,13 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 HUD_LOAD8(gdl, D_103AE08, 16, 12);
             }
             if (skip == 0) {
-                ix = x - 10;
+                lap = x - 10;
             } else if (skip == 1) {
-                ix = x + 5;
+                lap = x + 5;
             } else {
-                ix = x + 16;
+                lap = x + 16;
             }
-            HUD_RECT(gdl, ix, py, 16, 12);
+            HUD_RECT(gdl, lap, py, 16, 12);
         }
         for (i = 0; i < 6; i++) {
             if ((skip == 0) || (i >= skip)) {
@@ -1521,12 +1531,16 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 30074 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 28825 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
-// 2P popup color is written as a default and an if (an else-form search): the original has the if / else branch
-// there, but this form scores far better (the registers from there on). Both popups' 60000 tests and the player
+// 2P popup color is an if / else, as the original's branch shows (with big8's changes it now scores better than a
+// default and an if: 30074 -> 29944, an else-form search). Three empty do-while (0) statements (FAKE, an
+// insertion search) split scheduling blocks: 29284; the 2P popup color held in j (dead there; a per-block rename
+// search): 29174; the RANK zoom's y before its x (a swap search) and x2 declared after k (a declaration
+// search): 29145; the five-mark loop's x position in k (dead there; a relaxed per-block rename search): 28825.
+// Both popups' 60000 tests and the player
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
@@ -1555,8 +1569,8 @@ void func_801F4120(Gfx** gdlp) {
     RiderStruct* rider;
     UnkStruct_80228C30* boost;
     s8* digit;
-    s32 x2;
     s32 k;
+    s32 x2;
     s32 y2;
     Gfx* gdl = *gdlp;
 
@@ -1658,11 +1672,12 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0;
                 }
-                y2 = 2;
                 if (rider->gapRequest == 1) {
-                    y2 = 1;
+                    j = 1;
+                } else {
+                    j = 2;
                 }
-                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, y2);
+                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, j);
             }
         }
     }
@@ -1804,6 +1819,7 @@ void func_801F4120(Gfx** gdlp) {
 
     // RANK: label, position digit (zooming when it changes), "/" and the number of riders.
     if (HUD_GMODES == GMODE_CHAMPIONSHIP) {
+        do {} while (0); // FAKE: splits the scheduling block (an insertion search)
         if (gCourseID != DOLPHIN_PARK) {
             HUD_LOAD32(gdl, D_1032B08, 36, 12);
             HUD_RECT(gdl, D_80228B50 + 0x84, 0x15, 36, 12);
@@ -1815,6 +1831,7 @@ void func_801F4120(Gfx** gdlp) {
                 j = (*(u32*) &D_80228DF8) * 6; // FAKE: D_80228DF8 read as u32 (a type search)
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
+                do {} while (0); // FAKE: splits the scheduling block (an insertion search)
                 gSPTextureRectangle(gdl++, (x - j) << 2, 0x22 << 2, (x + 0x10) << 2, (j + 0x36) << 2,
                                     G_TX_RENDERTILE, 0, 0, 0x4000 / (j + 0x10), 0x5000 / (j + 0x14));
                 gDPPipeSync(gdl++);
@@ -2016,12 +2033,12 @@ void func_801F4120(Gfx** gdlp) {
             if (gPlayers == ONE_PLAYER) {
                 y = 0xCF;
                 n = gRiderRaceState[gPlayer1Rider].unk138;
-                x = D_80228B54 + 0xBC;
+                k = D_80228B54 + 0xBC;
             } else {
                 y = 0x6A;
-                x = 0xBC;
+                k = 0xBC;
                 if (i == 0) {
-                    x = 0xBC;
+                    k = 0xBC;
                     n = gRiderRaceState[gPlayer1Rider].unk138;
                 } else {
                     y = 0xD8;
@@ -2040,8 +2057,8 @@ void func_801F4120(Gfx** gdlp) {
                     color = 0;
                 }
                 HUD_LOAD32(gdl, &D_102EE70[(color + j * 4) * (20 * 8)], 20, 8);
-                HUD_SCISRECT(gdl, x, y, 20, 8);
-                x += 0x16;
+                HUD_SCISRECT(gdl, k, y, 20, 8);
+                k += 0x16;
             }
         }
     }
@@ -2088,8 +2105,8 @@ void func_801F4120(Gfx** gdlp) {
                 y2 = 0;
             }
             color = (y2 * 16) / 300;
-            x = 0x20 - color * 2;
             y = 0x28 - color * 2;
+            x = 0x20 - color * 2;
             if ((x > 0) && (y > 0)) {
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
@@ -2099,6 +2116,7 @@ void func_801F4120(Gfx** gdlp) {
                 gDPLoadTextureBlock(gdl++, &D_802A5E0[n * 0x500], G_IM_FMT_IA, G_IM_SIZ_8b, 32, 40, 0,
                                     G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                     G_TX_NOLOD, G_TX_NOLOD);
+                do {} while (0); // FAKE: splits the scheduling block (an insertion search)
                 gSPTextureRectangle(gdl++, (color + 0x84) << 2, (color + 0x26) << 2, (0xA4 - color) << 2,
                                     (0x4E - color) << 2, G_TX_RENDERTILE, 0, 0, 0x8000 / x, 0xA000 / y);
             }
@@ -2851,21 +2869,35 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 6790 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
-// original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
-// count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
-// x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
+// Score 1685 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
+// digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
+// D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
+// of the popup loop leave one address computation or two instructions more. The digit count is k + 1, as the
+// original's registers show (k's register is reused for the digit-drawing loop); the label's x and y are computed
+// before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a
+// declaration-move search. The popup loop is a do-while ending at D_80228B50, the symbol after D_80228AE0[4] (FAKE):
+// as `p != &D_80228AE0[4]` IDO builds the end as D_80228AE0 + 0x70 (one instruction more), and a for loop through
+// D_80228B50 gets an entry test. The original keeps the unused (2 - D_80228D18) / 2.0f and
 // 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements, register or volatile they stay
 // deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
 // where / 2.0f becomes a multiply.
 // The original reloads each stunt total after adding to it, reading through a register and storing through the
 // symbol; reads through a volatile pointer (FAKE, marked) give the reload. The pointer is formed from the neighbouring
 // total's symbol (&D_801C26D4 - 1 for D_801C26D0, FAKE): through the same symbol IDO also stores through the register.
-// An empty test of count in the second total's case (FAKE, from an empty-test search) gives 6990.
-// p is set at the top, before gdl (the loop's init left empty): 6890.
-// A second empty test (of y, in the third total's case; FAKE, same search): 6790.
-// Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3), and the
-// totals' address register holds the neighbour's address here (lw -4(v0) for the original's lw 0(v0)).
+// An empty test of count in the second total's case (FAKE, from an empty-test search) still helps (5110 without it);
+// the earlier empty test of y now costs (removed).
+// The original loads D_80228D14 before the D_80228D18 test: read into count there (a dead local at that point), it
+// also moves the loop's constant registers (0xE600.., 0xF570.., 0xFD70.., 0xF300..) below the display-list header,
+// where the original sets them up: 4275 -> 3055. The label's x before its y (adjacent-swap search) and four empty
+// do-while (0) statements (FAKE, an insertion search: one after the unk10/unk14 bounce, one after each totals' pointer
+// set-up but the first case's) that split IDO's scheduling blocks there: 2680. D_80228D18 read into n before the
+// f computations, which use it, and its increment after them (an order search over the top statements): IDO then
+// steps gdl for the first two commands above the D_80228D18 test as the original does, and the temporaries from there
+// on are numbered as in the original: 1685.
+// Left: D_80228D14's address and value are in a1/t3 here (a3/a1 in the original) and the first f in f10 (f0), which
+// shifts the temporaries in the top block; the totals' address &D_801C26D0 is built before the p->unk10 >= 0 test in
+// the original (after the bounce here).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2888,17 +2920,18 @@ void func_801FB514(Gfx** gdlp) {
     s32 pad; // stack pad: the original's frame is 0xB8
     s32 count;
     s32 k;
-    s8* digit;
+    s32 pad2; // stack pad (a local declared here keeps the original's slots)
     u8* img;
 
-    p = D_80228AE0;
     gdl = *gdlp;
-    f = (2 - D_80228D18) / (f32) 2;
+    count = D_80228D14; // read before the test, as the original does
+    n = D_80228D18; // read once for the f computations and the increment, as the original does
+    f = (2 - n) / (f32) 2;
     f = 1.0f - f;
     if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
     D_80228D18++;
     if (D_80228D18 >= 2) {
-        D_80228D14++;
+        D_80228D14 = count + 1;
         D_80228D18 = 0;
         D_80228D14 &= 3;
     }
@@ -2912,11 +2945,11 @@ void func_801FB514(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
-    for (; p != &D_80228AE0[4]; p++) {
+    p = D_80228AE0;
+    do {
         if (p->unk0 == 0) {
             continue;
         }
-        k = 0;
         if (p->unk8 < 4) {
             alpha = p->unk8 * 255 / 4;
         } else if (p->unk8 >= 20) {
@@ -2945,22 +2978,21 @@ void func_801FB514(Gfx** gdlp) {
                 gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
                 break;
         }
-        y = p->unk10 + p->unk18 + 116;
         x += p->unkC;
+        y = p->unk10 + p->unk18 + 116;
         gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
                             1 << 10);
         n = p->unk4;
-        digit = &D_80228CF8[4];
+        k = 0;
         for (;;) {
-            *digit = n % 10;
+            D_80228CF8[4 - k] = n % 10;
             n /= 10;
             if (n == 0) {
                 break;
             }
             k++;
-            digit--;
             if (k >= 5) {
                 break;
             }
@@ -2987,12 +3019,14 @@ void func_801FB514(Gfx** gdlp) {
             p->unk14 = -10;
             p->unk10 = 0;
         }
+        do {} while (0); // FAKE: splits the scheduling block (an insertion search)
         if (p->unk14 == -10) {
             p->unkC -= 10;
         }
         p->unk8++;
         if (p->unk8 >= 23) {
             total = &D_801C26D4 - 1; // FAKE: D_801C26D0 through its neighbour's symbol (see the note)
+            do {} while (0); // FAKE: as above
             D_801C26D0 = *total + p->unk4;
             if (*total >= 100000) {
                 D_801C26D0 = 99999;
@@ -3008,7 +3042,7 @@ void func_801FB514(Gfx** gdlp) {
                     break;
                 case 2:
                     total = &D_801C26D8 + 1; // FAKE, as above
-                    if (y) {} // FAKE: an empty test of y (a search over empty tests), for the registers
+                    do {} while (0); // FAKE: as above
                     D_801C26DC = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26DC = 99999;
@@ -3016,6 +3050,7 @@ void func_801FB514(Gfx** gdlp) {
                     break;
                 case 3:
                     total = &D_801C26DC - 1; // FAKE, as above
+                    do {} while (0); // FAKE: as above
                     D_801C26D8 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D8 = 99999;
@@ -3024,7 +3059,7 @@ void func_801FB514(Gfx** gdlp) {
             }
             p->unk0 = 0;
         }
-    }
+    } while (++p != (UnkStruct_80228AE0*) &D_80228B50); // FAKE: the end through the next symbol
     if (D_80228A94 != 0) {
         D_80228A94--;
         gdl = Printer_Print(Printer_Print(gdl, 0, "TIME", 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,

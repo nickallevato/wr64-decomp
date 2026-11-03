@@ -1137,20 +1137,24 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 7904 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// Score 6338 of 127200: calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
-// constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
-// caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
-// the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
+// constants apart, and they decide which values stay in saved registers. The camera direction is held in dx/dz,
+// the variables the TWILIGHT_CITY case uses later (one variable each, as the original's spills show: with their
+// own variables IDO keeps the x component in a saved register; their homes at 0x88/0x84 come from a declaration
+// search), x before z in the squares and the scaling, and vtx is set right after arena (the original builds it in
+// v1 there): 7904 -> 6789. SOUTHERN_ISLAND's unkE0 copy after its unk104 (an adjacent-swap search) and the
+// default case's first sine held in dz, dead there (a per-web rename search): 6473; an empty test of cam at the
+// end (FAKE, a search over empty tests; cam stays live to the end): 6338. Left: the original hoists 360.0f and 4096.0f in the D_800D988C == 1 loop, and there
+// reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 // D_801C4168 is accessed through a cast pointer (FAKE, from a search over access types): 10389 -> 10064.
 // The SOUTHERN_ISLAND case sets unkAC first, as the other cases do (a statement-move search): 8809; SUNSET_BAY
 // and the TWILIGHT_CITY fallback set unk104 right after unkFC: 7924; unkFC/unk104 scaled by 64.0f: 7914;
 // SOUTHERN_ISLAND's unkFC takes COS(angle) first, as its unk104 does: 7904.
 void func_8008E794(void) {
-    s32 padS0[2]; // stack pad
-    f32 dirX;
+    s32 padS0[4]; // stack pad
     camera_unk_1* cam;
     UnkStruct_801C43F8* p;
     Vtx* arena;
@@ -1159,26 +1163,25 @@ void func_8008E794(void) {
     s32 i;
     s32 angle;
     UnkStruct_801CB058* e;
-    f32 dx;
-    f32 dz;
     f32 c;
     f32 s;
-    f32 dirZ;
     f32 pad; // stack pad (the 2P block's scale factor is held in s)
+    f32 dx;
+    f32 dz;
 
     D_800D9914 = (D_800D9914 + 1) & 3;
     p = &D_801C43F8[D_8011F8E0];
     cam = &gCameraPerspective[D_80223930];
-    dirX = cam->unk64;
-    dirZ = cam->unk6C;
+    dx = cam->unk64;
+    dz = cam->unk6C;
     arena = gGfxPool->unk13D68;
-    len = sqrtf((dirZ * dirZ) + (dirX * dirX));
+    vtx = p->unkE0;
+    len = sqrtf((dx * dx) + (dz * dz));
     if (len != 0) {
         len = 4000.0f / len;
-        dirZ *= len;
-        dirX *= len;
+        dx *= len;
+        dz *= len;
     }
-    vtx = p->unkE0;
     vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[0].v.ob[1] = gWaterLevel;
     vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[0].unk18;
@@ -1197,18 +1200,18 @@ void func_8008E794(void) {
     vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[0].unk14;
     vtx[5].v.ob[1] = gWaterLevel;
     vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[0].unk18;
-    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - dirX) - gWaterWindow[0].unk14;
+    vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - dx) - gWaterWindow[0].unk14;
     vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - dirZ) - gWaterWindow[0].unk18;
+    vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - dz) - gWaterWindow[0].unk18;
     if (gPlayers == TWO_PLAYERS) {
         cam = &gCameraPerspective[D_80223934];
-        dirX = cam->unk64;
-        dirZ = cam->unk6C;
+        dx = cam->unk64;
+        dz = cam->unk6C;
         arena = gGfxPool->unk170D8;
         vtx = p->unk150;
-        s = 4000.0f / sqrtf((dirZ * dirZ) + (dirX * dirX));
-        dirZ *= s;
-        dirX *= s;
+        s = 4000.0f / sqrtf((dx * dx) + (dz * dz));
+        dx *= s;
+        dz *= s;
         vtx[0].v.ob[0] = arena[D_80192460[1]].v.ob[0] - gWaterWindow[1].unk18; // unk18, not unk14, as in the original
         vtx[0].v.ob[1] = gWaterLevel;
         vtx[0].v.ob[2] = arena[D_80192460[1]].v.ob[2] - gWaterWindow[1].unk18;
@@ -1227,9 +1230,9 @@ void func_8008E794(void) {
         vtx[5].v.ob[0] = arena[D_80192460[6]].v.ob[0] - gWaterWindow[1].unk14;
         vtx[5].v.ob[1] = gWaterLevel;
         vtx[5].v.ob[2] = arena[D_80192460[6]].v.ob[2] - gWaterWindow[1].unk18;
-        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - dirX) - gWaterWindow[1].unk14;
+        vtx[6].v.ob[0] = (arena[D_80192460[0]].v.ob[0] - dx) - gWaterWindow[1].unk14;
         vtx[6].v.ob[1] = (D_80192498 * 3) + gWaterLevel;
-        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - dirZ) - gWaterWindow[1].unk18;
+        vtx[6].v.ob[2] = (arena[D_80192460[0]].v.ob[2] - dz) - gWaterWindow[1].unk18;
     }
     if (gPlayers == ONE_PLAYER) {
         switch (gCourseID) {
@@ -1344,18 +1347,18 @@ void func_8008E794(void) {
                     e->unkD4 = e->unkEC;
                     e->unkD8 = e->unkF0;
                     e->unkDC = e->unkF4;
-                    e->unkE0 = e->unkF8;
                     e->unk104 = (COS(angle) * cam->unk6C) + (SIN(angle) * cam->unk64);
+                    e->unkE0 = e->unkF8;
                     break;
                 default:
                     if (D_800DAB68 != 0) {
                         angle = ((360 - e->unkA8) << 12) / 360;
                         c = COS(angle);
-                        s = SIN(angle);
-                        e->unkAC = (cam->unk64 * c) - (s * cam->unk6C);
-                        e->unkB4 = (cam->unk64 * s) + (c * cam->unk6C);
-                        e->unkFC = (cam->unk64 * c) - (s * cam->unk6C);
-                        e->unk104 = (cam->unk64 * s) + (c * cam->unk6C);
+                        dz = SIN(angle);
+                        e->unkAC = (cam->unk64 * c) - (dz * cam->unk6C);
+                        e->unkB4 = (cam->unk64 * dz) + (c * cam->unk6C);
+                        e->unkFC = (cam->unk64 * c) - (dz * cam->unk6C);
+                        e->unk104 = (cam->unk64 * dz) + (c * cam->unk6C);
                     } else {
                         angle = (e->unkA8 << 12) / 360;
                         c = COS(angle);
@@ -1386,6 +1389,7 @@ void func_8008E794(void) {
             D_801C4160 = e->unkAC;
         }
     }
+    if (cam) {} // FAKE: an empty test of cam at the end (a search over empty tests), for the registers
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008E794.s")
