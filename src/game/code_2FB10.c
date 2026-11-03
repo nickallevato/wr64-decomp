@@ -1343,10 +1343,15 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 5663 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 4377 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
-// adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663). mid6: the trick-10 flags as one chain
-// (D_801C39F4 = D_801C39F0 = 1, a syntax search); the gate time goes through laps before its checkpointTimes store
+// adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
+// the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
+// e->unk0/e->unk8 spills at 0x20/0x1C, and land in dot and len (no dPos/dPrev locals: two words fewer, with
+// padV gone, keep the frame); the trick-10 flags are two stores (the chain reloads D_801C39F0); unk334 is
+// cleared after the bonus, the time table is indexed gCourseID * 4 first, and D_80228A94 is set before
+// timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move).
+// mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
 // IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
@@ -1381,11 +1386,8 @@ void func_800783AC(s32 arg0) {
     f32 dz;
     f32 len;
     f32 dot;
-    f32 dPos;
-    f32 dPrev;
     RiderStruct* rider;
     UnkStruct_801AEE20* e;
-    s32 padV[2]; // stack pad
 
     if (arg0 != gPlayer1Rider) {
         padZ[0] = 0; // FAKE: a store to a stack pad keeps the original's empty test as a branch
@@ -1634,20 +1636,23 @@ void func_800783AC(s32 arg0) {
             if (cur != D_801BB12C) {
                 D_801C39D8 = D_801C39DC = D_801C39E0 = D_801C39E4 = 0;
             }
-            dPos = (e->unk70 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk74);
-            if (!(dPos >= 0.0f)) {
-                dPos = -dPos;
+            dx = D_801C3780 - e->unk0;
+            dz = D_801C3788 - e->unk8;
+            dot = (e->unk70 * dx) + (dz * e->unk74);
+            if (!(dot >= 0.0f)) {
+                dot = -dot;
             }
-            dPrev = ((D_80192690[arg0].unkBE4 - e->unk0) * e->unk70) +
-                    ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74);
-            if (!(dPrev >= 0.0f)) {
-                dPrev = -dPrev;
+            dx = D_80192690[arg0].unkBE4 - e->unk0;
+            dz = D_80192690[arg0].unkBEC - e->unk8;
+            len = (dx * e->unk70) + (dz * e->unk74);
+            if (!(len >= 0.0f)) {
+                len = -len;
             }
-            frac = (dPos / (dPos + dPrev)) * 50.0f;
-            rider->unk334 = 0;
+            frac = (dot / (dot + len)) * 50.0f;
             laps = rider->raceTime - frac; // the gate's time, held in laps (variable reuse; 8007687C uses time)
             rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = laps;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
+            rider->unk334 = 0;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
                     inGate = 1;
@@ -1660,8 +1665,8 @@ void func_800783AC(s32 arg0) {
                 D_801C39D4 = bonus;
             }
             if (cur != D_801BB12C) {
-                rider->timeLeft = D_800D9280[rider->unk164 + (gCourseID * 4)] * 1000;
                 D_80228A94 = 20;
+                rider->timeLeft = D_800D9280[(gCourseID * 4) + rider->unk164] * 1000;
                 AudioGeneral_PlaySound(0x33, 0);
             }
             rider->unk164++;
@@ -1687,7 +1692,8 @@ void func_800783AC(s32 arg0) {
                                 D_801C39F0 = 1;
                                 break;
                             case 10:
-                                D_801C39F4 = D_801C39F0 = 1;
+                                D_801C39F0 = 1;
+                                D_801C39F4 = 1;
                                 break;
                             case 11:
                                 D_801C39F8 = 1;
