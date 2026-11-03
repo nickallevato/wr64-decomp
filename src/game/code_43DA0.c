@@ -1005,14 +1005,15 @@ Gfx* func_8008D94C(Gfx* gdl) {
 }
 
 #ifdef NON_MATCHING
-// Score 1595 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display lists);
+// Score 1540 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display lists);
 // gDPSetRenderMode and gDPSetCombineLERP share a line (a search over joined lines). Empty tests after gDPLoadSync
 // (FAKE, from the permuter) and after gDPLoadBlock (FAKE, from a search over positions for a second one) split the
 // block: after it the original's gdl pointers alternate registers (addiu a2,a0,8; addiu a0,a2,8; ...), as they do here
 // only with the split. Left: the original computes the first two texture-load commands' pointers (two gdl increments)
 // and their constant words (t4, t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are
 // computed at the commands and the vertex temps rotate through t4-t9. Writing the texture commands before the vertices
-// is far worse (the stores move too). Frame and spill slots match.
+// is far worse (the stores move too). Frame and spill slots match. A third empty test after gDPSetPrimColor (FAKE,
+// from an empty-test search) gives 1540.
 Gfx* func_8008DFD0(Gfx* gdl) {
     camera_unk_1* cam;
     Vtx* vtx;
@@ -1071,6 +1072,7 @@ Gfx* func_8008DFD0(Gfx* gdl) {
                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
     gDPSetTileSize(gdl++, G_TX_RENDERTILE, 0, 0, ((32) - 1) << G_TEXTURE_IMAGE_FRAC, ((32) - 1) << G_TEXTURE_IMAGE_FRAC);
     gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0x00);
+    if (1) {} // FAKE: a third block split (a search over empty tests)
     gSPVertex(gdl++, D_6000310, 4, 0);
     gSP1Triangle(gdl++, 0, 1, 2, 0);
     gSP1Triangle(gdl++, 1, 2, 3, 0);
@@ -1135,13 +1137,17 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 10389 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// Score 7904 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
 // constants apart, and they decide which values stay in saved registers. Left: the original keeps dirX/dirZ in
 // caller-saved registers spilled across sqrtf (dirX lives in a saved register here), hoists 360.0f and 4096.0f in
 // the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
+// D_801C4168 is accessed through a cast pointer (FAKE, from a search over access types): 10389 -> 10064.
+// The SOUTHERN_ISLAND case sets unkAC first, as the other cases do (a statement-move search): 8809; SUNSET_BAY
+// and the TWILIGHT_CITY fallback set unk104 right after unkFC: 7924; unkFC/unk104 scaled by 64.0f: 7914;
+// SOUTHERN_ISLAND's unkFC takes COS(angle) first, as its unk104 does: 7904.
 void func_8008E794(void) {
     s32 padS0[2]; // stack pad
     f32 dirX;
@@ -1247,15 +1253,16 @@ void func_8008E794(void) {
             e->unkB0 = SIN(angle) * 64;
             e->unkB4 = COS(angle) * 64.0f;
             D_801C4160 = e->unkAC;
-            D_801C4168 = e->unkB4;
+            (*(s32*) &D_801C4168) = e->unkB4; // FAKE: D_801C4168 through a cast pointer here and below (see the note)
             D_801C4164 = e->unkB0;
-            len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) + (D_801C4168 * D_801C4168));
+            len = sqrtf((D_801C4160 * D_801C4160) + (D_801C4164 * D_801C4164) +
+                        ((*(s32*) &D_801C4168) * (*(s32*) &D_801C4168)));
             if (len == 0) {
-                D_801C4168 = 120;
+                (*(s32*) &D_801C4168) = 120;
             }
             e->unkAC = (D_801C4160 / len) * 120.0f;
             e->unkB0 = (D_801C4164 / len) * 120.0f;
-            e->unkB4 = (D_801C4168 / len) * 120;
+            e->unkB4 = ((*(s32*) &D_801C4168) / len) * 120;
         }
     } else if (D_800D988C == 2) {
         for (i = 0, e = D_801CB058; i < gPlayers; i++, e++) {
@@ -1269,13 +1276,13 @@ void func_8008E794(void) {
                     e->unkAC = SIN(0x200) * 64.0f;
                     e->unkB4 = SIN(0xE00) * 64.0f;
                     e->unkFC = SIN(0x200) * 64.0f;
+                    e->unk104 = SIN(0xE00) * 64;
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
                     e->unkD4 = e->unkEC;
                     e->unkD8 = e->unkF0;
                     e->unkDC = e->unkF4;
                     e->unkE0 = e->unkF8;
-                    e->unk104 = SIN(0xE00) * 64;
                     break;
                 case TWILIGHT_CITY:
                     e->unkAC = cam->unk64 * -1.0f;
@@ -1318,20 +1325,20 @@ void func_8008E794(void) {
                     } else {
                         D_801C3C58->unk78 = 0;
                         e->unkFC = cam->unk64 * -1.0f;
+                        e->unk104 = cam->unk6C * -1.0f;
                         e->unkCC = e->unkE4;
                         e->unkD0 = e->unkE8;
                         e->unkD4 = e->unkEC;
                         e->unkD8 = e->unkF0;
                         e->unkDC = e->unkF4;
                         e->unkE0 = e->unkF8;
-                        e->unk104 = cam->unk6C * -1.0f;
                     }
                     break;
                 case SOUTHERN_ISLAND:
+                    e->unkAC = -64.0f;
                     angle = (e->unk10C << 12) / 360;
                     e->unkB4 = 0;
-                    e->unkFC = (cam->unk64 * COS(angle)) - (SIN(angle) * cam->unk6C);
-                    e->unkAC = -64.0f;
+                    e->unkFC = (COS(angle) * cam->unk64) - (SIN(angle) * cam->unk6C);
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
                     e->unkD4 = e->unkEC;
@@ -1372,9 +1379,9 @@ void func_8008E794(void) {
             e->unkB4 *= 64.0f;
             Math_Normalize_VectorComponents(&D_801CB058[i].unkFC, &D_801CB058[i].unk104);
             e->unk100 = 64.0f;
-            e->unkFC *= 64;
-            e->unk104 *= 64;
-            D_801C4168 = e->unkB4;
+            e->unkFC *= 64.0f;
+            e->unk104 *= 64.0f;
+            (*(s32*) &D_801C4168) = e->unkB4;
             D_801C4164 = e->unkB0;
             D_801C4160 = e->unkAC;
         }

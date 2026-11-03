@@ -357,8 +357,14 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5831 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// Score 5081 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
+// The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
+// delta computes dz before dx (a name search and an adjacent-swap search); the unk2D0 step is
+// written out as unk2D0 = unk2D0 + ... (a syntax search).
+// An empty test of node->unk74 in the outer else (FAKE, from the permuter; it compiles to a dead float compare)
+// gives 5240; p->unk44.x read through a pointer in its last two uses (FAKE, permuter): 5111; with it the
+// rider-to-node delta computes dx first again: 5081.
 // The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
 // D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
 // test). The two single-use crosses are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original
@@ -385,6 +391,7 @@ void func_801EF504(void) {
     s32 found;
     f32 dirX;
     f32 dirZ;
+    f32* posX; // FAKE (permuter): p->unk44.x read through a pointer in the last two uses
     f32 dx;
     f32 dz;
     f32 fwd;
@@ -431,8 +438,8 @@ void func_801EF504(void) {
                 node = &D_801AEE20[rec->unkA0];
             }
         }
-        dx = node->unk0 - cam->eyeX;
         dz = node->unk8 - cam->eyeZ;
+        dx = node->unk0 - cam->eyeX;
         dist = sqrtf(dx * dx + dz * dz);
         if (dist > 0.0f) {
             dx /= dist;
@@ -448,6 +455,7 @@ void func_801EF504(void) {
             }
         } else {
             show = 0;
+            if (node->unk74 && node->unk74 && node->unk74) {} // FAKE (permuter): keeps this show = 0 a block of its own
         }
         fwd = dirX * dx + dirZ * dz;
         dot = fwd;
@@ -464,7 +472,7 @@ void func_801EF504(void) {
         if (step >= diff) {
             rider->unk2D0 = rider->unk2D4;
         } else {
-            rider->unk2D0 += func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
+            rider->unk2D0 = rider->unk2D0 + func_801ED4E0(rider->unk2D4, rider->unk2D0) * step;
         }
         if ((fwd < 0.7f) && (node->unk9C == 1)) {
             dx = node->unkC - cam->eyeX;
@@ -474,7 +482,7 @@ void func_801EF504(void) {
                 dx /= dist;
                 dz /= dist;
             }
-            cross = dirX * dz - dirZ * dx;
+            fwd = dirX * dz - dirZ * dx;
             dot = dirX * dx + dirZ * dz;
             if (dot < 0.7f) {
                 dx = node->unk18 - cam->eyeX;
@@ -484,7 +492,7 @@ void func_801EF504(void) {
                     dx /= dist;
                     dz /= dist;
                 }
-                if ((cross < 0.0f) && (dirX * dz + -(dirZ * dx) > 0.0f)) {
+                if ((fwd < 0.0f) && (dirX * dz + -(dirZ * dx) > 0.0f)) {
                     dot = 1.0f;
                 } else {
                     dot = dirX * dx + dirZ * dz;
@@ -528,11 +536,12 @@ void func_801EF504(void) {
         if ((rider->unk2F0 != 0) || (rider->unk2E4 != 0) || (rider->unk328 >= 40)) {
             show = 1;
         }
+        posX = &p->unk44.x;
         if ((gGameModes != GMODE_STUNT) && (gCourseID == DOLPHIN_PARK)) {
             show = 0;
         }
         if (show && (D_800DAB68 != 0) && (gCourseID == MARINE_FORTRESS) && (rider->lapCount >= 2)) {
-            dx = p->unk44.x - (-2500.0f);
+            dx = *posX - (-2500.0f);
             dz = p->unk44.z - 2800.0f;
             if (dx * dx + dz * dz < 490000.0f) {
                 show = 0;
@@ -569,7 +578,7 @@ void func_801EF504(void) {
             dirX /= dist;
             dirZ /= dist;
         }
-        dx = node->unk0 - p->unk44.x;
+        dx = node->unk0 - *posX;
         dz = node->unk8 - p->unk44.z;
         dist = sqrtf(dx * dx + dz * dz);
         if (dist > 0.0f) {
@@ -1299,7 +1308,7 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 5400 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
+// Score 4505 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
 // instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
 // keeps in s0 (the big-digit loop still reads y, which orders its hoisted y << 2 terms as in the original), a stack pad
 // gives the original's 0x2C8 frame, sec is reduced mod 60 before ms is taken, and the paired digit stores are chained
@@ -1310,6 +1319,9 @@ void func_801F23A0(void) {
 // counter, merging any two of the int locals (the only lower one, lap into px, is not valid: px is live there), the
 // trailing HUD_LOAD32 lines expanded, adjacent statement swaps, and joining any two lines. An empty test that reads
 // rider (uninitialized) in the time == 0 arm gives 4720; not kept. The permuter cannot compile this file's macros.
+// An empty test of time in the style-2 icon position's last arm (FAKE, from a search over empty tests of the
+// parameters) makes IDO spill time on entry to the style 0/2 branch, as the original does: 4505 (it reloads it there
+// too, one reload more than the original).
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1435,6 +1447,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 ix = x + 4;
             } else {
                 ix = x + 10;
+                if (time) {} // FAKE: an empty test of time (a search over empty tests); see the note
             }
             HUD_SCISRECT(gdl, ix, py, 8, 8);
         }
@@ -2825,7 +2838,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 8370 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 6790 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
 // count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
 // x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
@@ -2833,9 +2846,13 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 // deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
 // where / 2.0f becomes a multiply.
 // The original reloads each stunt total after adding to it, reading through a register and storing through the
-// symbol; reads through a volatile pointer (FAKE, marked) give the reload.
+// symbol; reads through a volatile pointer (FAKE, marked) give the reload. The pointer is formed from the neighbouring
+// total's symbol (&D_801C26D4 - 1 for D_801C26D0, FAKE): through the same symbol IDO also stores through the register.
+// An empty test of count in the second total's case (FAKE, from an empty-test search) gives 6990.
+// p is set at the top, before gdl (the loop's init left empty): 6890.
+// A second empty test (of y, in the third total's case; FAKE, same search): 6790.
 // Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3), and the
-// first store of each total goes through the register here.
+// totals' address register holds the neighbour's address here (lw -4(v0) for the original's lw 0(v0)).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2861,6 +2878,7 @@ void func_801FB514(Gfx** gdlp) {
     s8* digit;
     u8* img;
 
+    p = D_80228AE0;
     gdl = *gdlp;
     f = (2 - D_80228D18) / (f32) 2;
     f = 1.0f - f;
@@ -2881,7 +2899,7 @@ void func_801FB514(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
-    for (p = D_80228AE0; p != &D_80228AE0[4]; p++) {
+    for (; p != &D_80228AE0[4]; p++) {
         if (p->unk0 == 0) {
             continue;
         }
@@ -2961,28 +2979,30 @@ void func_801FB514(Gfx** gdlp) {
         }
         p->unk8++;
         if (p->unk8 >= 23) {
-            total = &D_801C26D0;
+            total = &D_801C26D4 - 1; // FAKE: D_801C26D0 through its neighbour's symbol (see the note)
             D_801C26D0 = *total + p->unk4;
             if (*total >= 100000) {
                 D_801C26D0 = 99999;
             }
             switch (p->unk0) {
                 case 1:
-                    total = &D_801C26D4;
+                    total = &D_801C26D0 + 1; // FAKE, as above
+                    if (count) {} // FAKE: an empty test of count (a search over empty tests), for the registers
                     D_801C26D4 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D4 = 99999;
                     }
                     break;
                 case 2:
-                    total = &D_801C26DC;
+                    total = &D_801C26D8 + 1; // FAKE, as above
+                    if (y) {} // FAKE: an empty test of y (a search over empty tests), for the registers
                     D_801C26DC = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26DC = 99999;
                     }
                     break;
                 case 3:
-                    total = &D_801C26D8;
+                    total = &D_801C26DC - 1; // FAKE, as above
                     D_801C26D8 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D8 = 99999;

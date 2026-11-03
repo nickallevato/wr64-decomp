@@ -1016,12 +1016,15 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 7423 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// Score 6284 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
 // are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. e[2] and
 // c[0] go through len, and the later reads of d go through a pointer pd (three permuter FAKEs, marked): with them IDO
 // uses three saved float registers, as the original.
 // Left: the original's frame is 0x70 (0x68 here); it stores d once (IDO here re-stores it in each block), also stores
 // m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
+// Reading arg3..arg5 through their addresses in m[2], m[1] and the fallback's stores (FAKE, marked) gives the original's
+// reloads of the stacked parameters in place of one load kept in a spilled temporary (7423 -> 6655); the c[0] product
+// (into len) before c[2] and c[1] (adjacent-swap searches): 6284.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1039,18 +1042,18 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     len = SQ(d[2]) + SQ(d[1]) + SQ(d[0]);
     if (!(len < 1e-06)) {
         t = (0.5 / len) * ((arg9 - arg10) + len);
-        m[2] = (t * d[2]) + arg3;
+        m[2] = (t * d[2]) + (&arg3)[0]; // FAKE: arg3..arg5 read through their addresses (see the note)
         e[2] = m[2] - arg3;
         len = e[2]; // FAKE (permuter): e[2] and c[0] through len move the float registers toward the original's
-        m[1] = (t * d[1]) + arg4;
+        m[1] = (t * d[1]) + (&arg4)[0];
         e[1] = m[1] - arg4;
         m[0] = (t * d[0]) + arg5;
         e[0] = m[0] - arg5;
         t = ((arg9 - SQ(len)) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
+            len = (arg11 * pd[1]) - (arg12 * pd[2]); // FAKE (permuter), see above
             c[2] = (arg12 * d[0]) - (arg13 * d[1]);
             c[1] = (arg13 * d[2]) - (arg11 * pd[0]);
-            len = (arg11 * pd[1]) - (arg12 * pd[2]); // FAKE (permuter), see above
             c[0] = len;
             arg11 = (pd[1] * c[0]) - (pd[0] * c[1]);
             arg12 = (pd[0] * c[2]) - (pd[2] * c[0]);
@@ -1067,9 +1070,9 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
     }
     arg9 = sqrtf(arg9);
     t = arg9 / (arg9 + sqrtf(arg10));
-    arg0->unk0.x = (t * pd[2]) + arg3;
-    *arg1 = (t * pd[1]) + arg4;
-    *arg2 = (t * pd[0]) + arg5;
+    arg0->unk0.x = (t * pd[2]) + (&arg3)[0]; // FAKE: through the addresses, as above
+    *arg1 = (t * pd[1]) + (&arg4)[0];
+    *arg2 = (t * pd[0]) + (&arg5)[0];
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_800534AC.s")
@@ -5475,22 +5478,30 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 4970 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 475 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
 // copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
 // stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
-// swap search kept (the gFrameCounter chain earlier, unkC54 = 22 after func_800624CC, which does not read it):
-// 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. The twelve
+// swap search kept (the gFrameCounter chain earlier):
+// 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. unkC7C and
+// unkC82 are set by one chain, unk15D8 = 1 is spelled as an int (searches; a 34.110f spelling then): 3475;
+// unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
+// unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
+// unkC04 and the first part's y and z sums with the doubled term first (operand-order searches): 2930. point is set before
+// the template loop and the chain loop reads lengths[i] for i = 1..5 (the original loads 0(v1) from lengths + 4 on):
+// 2625. unkC20..unkC08 are cleared with 0.0f in field order (the original stores the top's 0.0f, $f20, there) and
+// the unk1520 loop with an int 0 (a separate zero, $f14, in the original): 1855. The six transforms add the
+// translation last ((...) + mf.mf[3][k], an operand-order search; the original's add.s operands): 500; both 34.11f
+// literals spelled alike again: 475.
+// The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
-// original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
-// unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
-// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: the original
-// stores unk16F2/unk1604 and reads them back right after the chain's conversions, before the B58/B56, B5F/B5E and
-// float stores (here after them); constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in
-// registers, this C 0x800, 10 and 22), and float register allocation in the first transform.
+// original multiplies the loaded value without reloading it). The sphere velocities and the parts' unk1C are
+// cleared with an int 0; unk1604 and unk16F2 are zeroed by two
+// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: gFrameCounter is
+// loaded into v0 there (t2 here), and float registers in the unk1448 sums and the lengths loop.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5509,7 +5520,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     } else {
         rider->unkBF0 = rider->unkBF4 = 0.0f;
     }
-    for (point = rider->unk30, tmpl = D_800D4840; tmpl < &D_800D4840[12]; tmpl++, point++) {
+    point = rider->unk30;
+    for (tmpl = D_800D4840; tmpl < &D_800D4840[12]; tmpl++, point++) {
         point->unk0 = tmpl->x;
         point->unk4 = tmpl->y;
         point->unk8 = tmpl->z;
@@ -5519,9 +5531,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     x = rider->unk44.x;
     y = rider->unk44.y;
     z = rider->unk44.z;
-    rider->unk44.x = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
-    rider->unk44.y = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
-    rider->unk44.z = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
+    rider->unk44.x = ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z)) + mf.mf[3][0];
+    rider->unk44.y = ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z)) + mf.mf[3][1];
+    rider->unk44.z = ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z)) + mf.mf[3][2];
     if (arg2 != 0) {
         rider->unkBF0 = rider->unk44.x - rider->unkBE4;
         rider->unkBF4 = rider->unk44.z - rider->unkBEC;
@@ -5530,9 +5542,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         x = rider->unk90[i].unk0;
         y = rider->unk90[i].unk4;
         z = rider->unk90[i].unk8;
-        rider->unk90[i].unk0 = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
-        rider->unk90[i].unk4 = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
-        rider->unk90[i].unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
+        rider->unk90[i].unk0 = ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z)) + mf.mf[3][0];
+        rider->unk90[i].unk4 = ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z)) + mf.mf[3][1];
+        rider->unk90[i].unk8 = ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z)) + mf.mf[3][2];
     }
     rider->unkB90 = rider->unkB94 = rider->unkB78 = rider->unkB7C = rider->unkB80 = rider->unkB84 = rider->unkB88 =
         rider->unkB8C = rider->unkB5E = rider->unkB5F = rider->unkB56 = rider->unkB58 = rider->unkB50.stick_x =
@@ -5541,32 +5553,29 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
                         rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk15FA =
                             rider->unk1444 = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
-    rider->unk1604 = 0;
     rider->unk16F2 = 0;
+    rider->unk1604 = 0;
     rider->unk16F0 = rider->unk16F2;
-    rider->unk15FC = 0x800;
-    rider->unk16C8 = -1;
     rider->unk1446 = 10;
+    rider->unk16C8 = -1;
+    rider->unk15FC = 0x800;
     rider->unk1598 = 0;
     rider->unk16F4 = rider->unk1604;
-    rider->unk15D8 = 1.0f;
+    rider->unk15D8 = 1; // int 1: IDO keeps it apart from the 1.0f constants (a respelling search)
     rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
-    rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
+    rider->unkC74 = rider->unkC70 = rider->unk15B0 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
-    rider->unkC7C = 1;
-    rider->unkC82 = 1;
+    rider->unkC7C = rider->unkC82 = 1;
     rider->unkC78 = 8;
     rider->unk1578 = 1;
     rider->unkC00 = 34.11f;
-    func_800624CC(rider);
     rider->unkC54 = 22;
+    func_800624CC(rider);
     rider->unkBA0 = rider->unk6C;
     rider->unkBA4 = rider->unk70;
     rider->unkBA8 = rider->unk74;
-    rider->unkBAC = 0.0f;
-    rider->unkBB0 = 0.0f;
-    rider->unkBB4 = 0.0f;
+    rider->unkBAC = rider->unkBB0 = rider->unkBB4 = 0.0f;
     x = rider->unk44.x + (2.0f * rider->unk78);
     rider->unkC68 = 1;
     y = rider->unk44.y + (2.0f * rider->unk7C);
@@ -5613,21 +5622,21 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC58 = func_8005CD24(arg0, (UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], rider->unkC54,
                                   rider->unkC58) - 1;
     func_8005D390((UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], (UnkStruct_8005CEF8*) rider->unk660);
-    rider->unkC28 = 0;
-    rider->unkC2C = 0;
-    rider->unkC30 = 0;
-    rider->unkC34 = 0;
-    rider->unkC08 = 0;
-    rider->unkC20 = 0;
-    rider->unkC24 = 0;
+    rider->unkC20 = 0.0f;
+    rider->unkC24 = 0.0f;
+    rider->unkC28 = 0.0f;
+    rider->unkC2C = 0.0f;
+    rider->unkC30 = 0.0f;
+    rider->unkC34 = 0.0f;
+    rider->unkC08 = 0.0f;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
-    // FAKE: unkC1C and unkC0C through the free z and x (a search over routing stores through locals)
+    // FAKE: unkC1C and unkC04 through the free z and x (a search over routing stores through locals)
     z = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
     rider->unkC1C = z;
-    x = rider->unkC04 = 34.11f;
+    x = rider->unkC0C = 34.11f;
     rider->unkC10 = -27.300001f;
-    rider->unkC0C = x;
+    rider->unkC04 = x;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
@@ -5635,11 +5644,11 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
     rider->unk1448[0].unkC.y = x;
     rider->unk1448[0].unk0.y = (x * -2.1f) +
-                               (RIDER_PARTS(rider)[1].unk4.y + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y));
+                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y) + RIDER_PARTS(rider)[1].unk4.y);
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
     rider->unk1448[0].unkC.z = x;
     rider->unk1448[0].unk0.z = (x * -2.1f) +
-                               (RIDER_PARTS(rider)[1].unk4.z + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z));
+                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z) + RIDER_PARTS(rider)[1].unk4.z);
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
@@ -5658,17 +5667,17 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     for (i = 1; i < 6; i++) {
         x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
         rider->unk1448[i].unkC.x = x;
-        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (x * lengths[i - 1]);
+        rider->unk1448[i].unk0.x = rider->unk1448[i - 1].unk0.x - (x * lengths[i]);
         x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
         rider->unk1448[i].unkC.y = x;
-        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (x * lengths[i - 1]);
+        rider->unk1448[i].unk0.y = rider->unk1448[i - 1].unk0.y - (x * lengths[i]);
         x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
         rider->unk1448[i].unkC.z = x;
-        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (x * lengths[i - 1]);
+        rider->unk1448[i].unk0.z = rider->unk1448[i - 1].unk0.z - (x * lengths[i]);
         rider->unk1448[i].unk14.x = RIDER_C88(rider)[rider->unk1424][7].unk18.x;
         rider->unk1448[i].unk14.y = RIDER_C88(rider)[rider->unk1424][7].unk18.y;
         rider->unk1448[i].unk14.z = RIDER_C88(rider)[rider->unk1424][7].unk18.z;
-        rider->unk1520[i].x = rider->unk1520[i].y = rider->unk1520[i].z = 0.0f;
+        rider->unk1520[i].x = rider->unk1520[i].y = rider->unk1520[i].z = 0;
     }
 }
 #else
