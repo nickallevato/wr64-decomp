@@ -1312,8 +1312,16 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 4005 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
-// instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
+// Score 1140 of 174400 (near14: the original keeps all five display-list constants of the two trailing digit draws in
+// registers (0xE7000000, 0xE4000000, 0xB3000000, 0xB2000000, 0x04000400; cc -S showed IDO rebuilding 0xB3000000 for the
+// second rectangle here). The x test moved after the first trailing load and an empty test of time after the first
+// trailing rectangle (both FAKE, a search over empty tests in that block) make IDO keep all five, as the original does:
+// 2425; a second empty test of x after the time test (FAKE, the same search): 1350; an empty test of time in the style
+// 1 digit loop (FAKE, the same search) keeps the li t5, 6 in the style 0/2 branch in place: 1275; an empty do-while
+// (0) at the top of the style 0/2 branch (FAKE, an insertion search): 1140. Left: time is now
+// spilled on entry to the style 1 branch too (one instruction more, which moves the .bss addresses by 0x10), and the
+// five constants' registers differ.) Before, 4005: in the style 1 branch each digit is loaded and drawn on two lines
+// (HUD_LOAD32, HUD_RECT) instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
 // keeps in s0 (the big-digit loop still reads y, which orders its hoisted y << 2 terms as in the original), a stack pad
 // gives the original's 0x2C8 frame, sec is reduced mod 60 before ms is taken, and the paired digit stores are chained
 // assignments. Left: temp registers numbered differently from the style 0/2 branch on. The original stores time to its
@@ -1415,6 +1423,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         for (i = 0; i < 6; i++) {
             HUD_LOAD32(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16);
             HUD_RECT(gdl, px, y, 12, 16);
+            if (time) {} // FAKE: as below (an empty-test search)
             px += 13;
             if (i == 0) {
                 px += 6;
@@ -1423,11 +1432,14 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
             }
         }
         HUD_LOAD32(gdl, D_103D2D0, 12, 16);
+        if (x) {} // FAKE: empty tests of x and time (a search over empty tests); see the note
         HUD_RECT(gdl, x + 12, py, 12, 16);
+        if (time) {} // FAKE: as above
+        if (x) {} // FAKE: as above
         HUD_LOAD32(gdl, D_103D5D0, 12, 16);
-        if (x) {} // FAKE: an empty test of x (a search over empty tests); see the note
         HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
+        do {} while (0); // FAKE: splits IDO's scheduling block here (an insertion search)
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
         if (style == 0) {
@@ -2869,7 +2881,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1685 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 1670 of 68000 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
+// original's div.s into $f0 shows, with 1.0f in $f10 as there (the second f is in $f2, $f0 in the original): 1670.)
+// Before, 1685: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
 // digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
 // D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
@@ -2927,8 +2941,9 @@ void func_801FB514(Gfx** gdlp) {
     count = D_80228D14; // read before the test, as the original does
     n = D_80228D18; // read once for the f computations and the increment, as the original does
     f = (2 - n) / (f32) 2;
+    if (f != f) {} // FAKE: the empty self-compares keep the dead f computations, as the original has them
     f = 1.0f - f;
-    if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
+    if (f != f) {} // FAKE: as above
     D_80228D18++;
     if (D_80228D18 >= 2) {
         D_80228D14 = count + 1;

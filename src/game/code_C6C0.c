@@ -5485,7 +5485,16 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 195 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 80 of 68700 (near14: gFrameCounter read as (u32), so IDO's code generator loads it straight into v0 instead of
+// storing a temporary and reloading the first field (seen in cc -S output); unkC7E and unkC80 zeroed by one chain,
+// whose reload of unkC80 takes the temporary register the original's numbering skips (the assembler then drops it), so
+// 1, 8 and 22 land in t4, t5 and t6 as in the original: 155. unkC1C is stored straight from its sum (in a temporary,
+// $f10, as the original) and read back into the dead z (FAKE): without that read IDO loads the unkC0C/unkC04 34.11f
+// right after the func_8005D390 call instead of after the unkC1C store, and the old z and x routing FAKEs are no longer
+// needed: 150. The x part sum is written (2.0f * unk18.x) + unk4.x, as the y and z ones (an operand-order search): IDO
+// then loads unk4.x first, into the original's $f4: 80. Left: the three final adds take the mul second (first in the
+// original), and the y and z sums' temporaries.) Before, 195: calls, branches and the frame (0x118) agree, and mf sits
+// at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5570,10 +5579,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk1598 = 0;
     rider->unk16F4 = rider->unk1604;
     rider->unk15D8 = 1; // int 1: IDO keeps it apart from the 1.0f constants (a respelling search)
-    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
+    rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = (u32) gFrameCounter;
     rider->unkC74 = rider->unkC70 = rider->unk15B0 = -1;
-    rider->unkC7E = 0;
-    rider->unkC80 = 0;
+    rider->unkC7E = rider->unkC80 = 0;
     rider->unkC7C = rider->unkC82 = 1;
     rider->unkC78 = 8;
     rider->unk1578 = 1;
@@ -5639,16 +5647,15 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC08 = 0.0f;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
-    // FAKE: unkC1C and unkC04 through the free z and x (a search over routing stores through locals)
-    z = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
-    rider->unkC1C = z;
-    x = rider->unkC0C = 34.11f;
+    rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
+    z = rider->unkC1C; // FAKE: a dead read of the stored value (it keeps 34.11f's load after this store)
+    rider->unkC0C = 34.11f;
     rider->unkC10 = -27.300001f;
-    rider->unkC04 = x;
+    rider->unkC04 = 34.11f;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
-                               (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
+                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x) + RIDER_PARTS(rider)[1].unk4.x);
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
     rider->unk1448[0].unkC.y = x;
     rider->unk1448[0].unk0.y = (x * -2.1f) +
