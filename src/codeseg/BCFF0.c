@@ -357,7 +357,8 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5081 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// Score 5012 of 69300: calls and branches agree (the frame is 0xC0 here, 0xB8 in the original: see Left). The two
+// waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
 // delta computes dz before dx (a name search and an adjacent-swap search); the unk2D0 step is
@@ -365,13 +366,16 @@ void Hud_SetupMatrices(void) {
 // An empty test of node->unk74 in the outer else (FAKE, from the permuter; it compiles to a dead float compare)
 // gives 5240; p->unk44.x read through a pointer in its last two uses (FAKE, permuter): 5111; with it the
 // rider-to-node delta computes dx first again: 5081.
+// cross declared after dist (a declaration search): 5012.
 // The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
 // D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
 // test). The two single-use crosses are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original
 // keeps the sub.s and compares the result with 0.0f, which only this spelling gives (odd spelling, same value).
-// Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift;
-// the else `show = 0` is hoisted above the dist test here (the original keeps it as its own block), and 360 - unk2D4
-// is computed before the cross test (inside it there).
+// Left: &D_801AEE20 is hoisted into s8 here (the original rebuilds it in each branch), so the saved registers shift
+// and the frame grows; the empty-test FAKE costs 4 instructions (697 vs 693, which moves this object's .bss by 16
+// bytes), but without it IDO hoists the else `show = 0` above the dist test (693 instructions, 5567); 360 - unk2D4
+// is computed before the cross test here (inside it there). Tried without effect: a per-branch table pointer, the
+// stunt loop as a for loop, operand orders of the record test, the loop-top statement orders, inline waypoint deltas.
 extern s32 D_80223934;
 extern UnkStruct_801BC940 D_801BC940[];
 extern s32 D_801BFA40;
@@ -395,11 +399,11 @@ void func_801EF504(void) {
     f32 dx;
     f32 dz;
     f32 fwd;
-    f32 cross;
     UnkStruct_801AEE20* rec;
     s32 diff;
     s32 step;
     f32 dist;
+    f32 cross;
     f32 dot;
 
     for (i = 0; i < gPlayers; i++) {
