@@ -1523,14 +1523,15 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 29174 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 29145 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
 // 2P popup color is an if / else, as the original's branch shows (with big8's changes it now scores better than a
 // default and an if: 30074 -> 29944, an else-form search). Three empty do-while (0) statements (FAKE, an
 // insertion search) split scheduling blocks: 29284; the 2P popup color held in j (dead there; a per-block rename
-// search): 29174. Both popups' 60000 tests and the player
+// search): 29174; the RANK zoom's y before its x (a swap search) and x2 declared after k (a declaration
+// search): 29145. Both popups' 60000 tests and the player
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
@@ -1559,8 +1560,8 @@ void func_801F4120(Gfx** gdlp) {
     RiderStruct* rider;
     UnkStruct_80228C30* boost;
     s8* digit;
-    s32 x2;
     s32 k;
+    s32 x2;
     s32 y2;
     Gfx* gdl = *gdlp;
 
@@ -2095,8 +2096,8 @@ void func_801F4120(Gfx** gdlp) {
                 y2 = 0;
             }
             color = (y2 * 16) / 300;
-            x = 0x20 - color * 2;
             y = 0x28 - color * 2;
+            x = 0x20 - color * 2;
             if ((x > 0) && (y > 0)) {
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
