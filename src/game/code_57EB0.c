@@ -2069,7 +2069,16 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 4870 of 259500 (mid6: the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
+// Score 555 of 259500 (big7: the unk1C/unk18 eases written as the matched func_800A52D8 writes them, x + (d * 0.1)
+// with no casts, which fixes IDO's operand order and the float temporaries after each one (4870 -> 2230 -> 1550);
+// the speed's ratio as ((180.0f - |a|) / 180.00f) * unk4C, two 180.0f constants and the original's operand order; the
+// probe loops' sums as ((sp4C = F448) + sp48) + CB4: sp4C is register-allocated ($f18) and spilled around the last
+// call, as in the original; the record update stores unkC, unk10, unk14, unk24, unk28, unk2C in that order (separate stores); the opening stores
+// go unk28, unk64, unk68, unk6C. Left: sp48 at 0x4C and sp4C's spill at 0x48 (swapped; no declaration order fixes
+// it); 360.0f reloaded at the join after the 2500.0f test (the original reloads it right after the call); D_801D0754
+// stored after lead->unk14 is read in the three switch arms; best = -1 set before the 1000.0f test (moving it there
+// swaps s3/s4). Earlier (mid6, 4870):
+// the loop's D_801D0774 in one statement, as D_801D076C, stored once as in the
 // original; one D_801D0754 += written out as D_801D0754 = D_801D0754 + and the unk28/unk2C zeroes chained (syntax
 // searches); 5560 before). mid4: the two nearest-record searches index D_801AEE20[i] and D_801B2F20[i] (the original
 // sets the record pointer after the loop guard, a derived induction variable; the pad keeps the old pointer's stack
@@ -2088,20 +2097,19 @@ void func_800A68A4(s32 arg0) {
     s32 angle;
     s32 i;
     s32 best;
-    s32 pad; // stack pad: the slot of a record pointer the searches no longer use
+    f32 sp4C;
     camera_unk_1* cam;
     StructVarS0* lead;
     s32 t;
-    f32 sp4C;
     f32 sp48;
 
     cam = &gCameraPerspective[D_80223930];
     node = (UnkStruct_801CE780_unk4_unk4*) func_8009D6B0(D_801CF060[arg0].unk0, D_801CF060[arg0].unk74,
                                                          D_801CF060[arg0].unk78);
     D_801CF060[arg0].unk28 = (D_801CF060[arg0].unk10 + (node->unk2 * 0.1)) - D_801CF060[arg0].unk68;
-    D_801CF060[arg0].unk6C = D_801CF060[arg0].unk14;
-    D_801CF060[arg0].unk68 = D_801CF060[arg0].unk10 + (node->unk2 * 0.1);
     D_801CF060[arg0].unk64 = D_801CF060[arg0].unkC;
+    D_801CF060[arg0].unk68 = D_801CF060[arg0].unk10 + (node->unk2 * 0.1);
+    D_801CF060[arg0].unk6C = D_801CF060[arg0].unk14;
     if (Water_GetHeight(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) < D_801CF060[arg0].unk68) {
         D_801D0668.unk_5 = 0;
     } else {
@@ -2164,8 +2172,7 @@ void func_800A68A4(s32 arg0) {
                     func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
             }
             D_801CF060[arg0].unk1C = Math_Normalize_Angle(
-                (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                       (f64) D_801CF060[arg0].unk1C));
+                D_801CF060[arg0].unk1C + (Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1));
             if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
@@ -2176,7 +2183,7 @@ void func_800A68A4(s32 arg0) {
             D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
             // 180 as ints here (literal spelling; the original loads 180.0f twice in this block, here it is loaded once)
             D_801D0764 =
-                (f32) (((f64) ((D_801CF060[arg0].unk4C * ((180 - FABS(D_801D0760)) / 180)) - D_801D0768) * 0.15) +
+                (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.00f) * D_801CF060[arg0].unk4C) - D_801D0768) * 0.15) +
                        (f64) D_801D0768);
             angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
             D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
@@ -2186,8 +2193,8 @@ void func_800A68A4(s32 arg0) {
         }
         if (D_801CF060[arg0].unk8 == 1) {
             D_801D0754 = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
-            D_801D0758 = Water_GetHeight(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C) +
-                         (D_801B2F20[D_801CF060[arg0].unk9C].unk4 - 20.0f);
+            D_801D0758 = (D_801B2F20[D_801CF060[arg0].unk9C].unk4 - 20.0f) +
+                         Water_GetHeight(D_801CF060[arg0].unk64, D_801CF060[arg0].unk6C);
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk8;
             if ((D_801D06BC > 0.0f) && (D_801D06C4 < -4000.0f)) {
                 D_801D0754 = 7000.0f;
@@ -2239,8 +2246,7 @@ void func_800A68A4(s32 arg0) {
                     func_8009D3AC(D_801D0754 - D_801CF060[arg0].unkC, -(D_801D075C - D_801CF060[arg0].unk14)));
             }
             D_801CF060[arg0].unk1C = Math_Normalize_Angle(
-                (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                       (f64) D_801CF060[arg0].unk1C));
+                D_801CF060[arg0].unk1C + (Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1));
             if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
@@ -2451,18 +2457,15 @@ void func_800A68A4(s32 arg0) {
                     D_801CF060[arg0].unk78 = 0;
                 }
                 D_801CF060[arg0].unk18 = func_8009D564(
-                    (f32) (((f64) Math_Normalize_Angle(func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC,
+                    D_801CF060[arg0].unk18 + (Math_Normalize_Angle(func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC,
                                                                      -(D_801CF060[arg0].unk14 - D_801D06C4)) -
-                                                       D_801CF060[arg0].unk18) *
-                            0.1) +
-                           (f64) D_801CF060[arg0].unk18));
+                                                       D_801CF060[arg0].unk18) * 0.1));
             } else {
                 D_801CF060[arg0].unk50 = 0;
             }
             if (D_801CF060[arg0].unk74 != 5) {
                 D_801CF060[arg0].unk1C = Math_Normalize_Angle(
-                    (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                           (f64) D_801CF060[arg0].unk1C));
+                    D_801CF060[arg0].unk1C + (Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1));
                 if (D_801CF060[arg0].unk1C > 45.0f) {
                     D_801CF060[arg0].unk1C = 45.0f;
                 }
@@ -2500,15 +2503,15 @@ void func_800A68A4(s32 arg0) {
                     D_801D0754;
                 D_801D0770 = D_801CF060[arg0].unk10 - 10.0f;
                 D_801D0774 =
-                    ((((D_801CF060[arg0].unk38 * 500.0f) + D_801CF060[arg0].unk14) - D_801D075C) * 0.125f * (f32) i) +
+                    (((D_801CF060[arg0].unk14 + (D_801CF060[arg0].unk38 * 500.0f)) - D_801D075C) * 0.125f * (f32) i) +
                     D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
-                    D_801CF060[arg0].unk14 = D_801D075C;
+                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); if ((f64) (((sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768)) + sp48) + func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
-                    D_801CF060[arg0].unk24 = 0.0f;
                     D_801CF060[arg0].unk10 = D_801D0758;
-                    D_801CF060[arg0].unk28 = D_801CF060[arg0].unk2C = 0.0f;
+                    D_801CF060[arg0].unk14 = D_801D075C;
+                    D_801CF060[arg0].unk24 = 0.0f;
+                    D_801CF060[arg0].unk28 = 0.0f;
+                    D_801CF060[arg0].unk2C = 0.0f;
                 }
             }
             func_800A2B24(arg0);
@@ -2559,8 +2562,7 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk18 = func_8009D564(D_801CF060[arg0].unk18 - 10.0f);
             }
             D_801CF060[arg0].unk1C = Math_Normalize_Angle(
-                (f32) (((f64) Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1) +
-                       (f64) D_801CF060[arg0].unk1C));
+                D_801CF060[arg0].unk1C + (Math_Normalize_Angle((D_801D0760 / 3.0f) - D_801CF060[arg0].unk1C) * 0.1));
             if (D_801CF060[arg0].unk1C > 45.0f) {
                 D_801CF060[arg0].unk1C = 45.0f;
             }
@@ -2585,8 +2587,7 @@ void func_800A68A4(s32 arg0) {
             for (i = 0; i < 4; i++) {
                 D_801D0770 = D_801CF060[arg0].unk10 - 20.0f;
                 D_801D076C = ((D_801CF060[arg0].unk14 - D_801D075C) * 0.25f * (f32) i) + D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768);
-                if ((f64) (func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768) + (sp4C + sp48)) > 0.0) {
+                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); if ((f64) (((sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768)) + sp48) + func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
                     D_801CF060[arg0].unk14 = D_801D075C;
