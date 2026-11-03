@@ -5475,7 +5475,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 3475 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 3465 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5483,7 +5483,8 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 // stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
 // swap search kept (the gFrameCounter chain earlier, unkC54 = 22 after func_800624CC, which does not read it):
 // 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. unkC7C and
-// unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475.
+// unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475;
+// unk16F2 is zeroed before unk1604: 3465.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
@@ -5543,8 +5544,8 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
                     rider->unk16D0 = rider->unk16E4 = rider->unk1606 = rider->unk16E2 = rider->unk1608 =
                         rider->unk16E0 = rider->unk160A = rider->unk1602 = rider->unk15F8 = rider->unk15FA =
                             rider->unk1444 = rider->unkB98 = rider->unkBFC = rider->unk142C = 0.0f;
-    rider->unk1604 = 0;
     rider->unk16F2 = 0;
+    rider->unk1604 = 0;
     rider->unk16F0 = rider->unk16F2;
     rider->unk15FC = 0x800;
     rider->unk16C8 = -1;
