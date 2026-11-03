@@ -774,7 +774,7 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 1780 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
+// Score 1755 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
 // v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The second
 // pass sets q first (a permuter find) and its end is p + (N << 1) - i: the original computes it from N << 4 and i << 3
 // apart from q's index (with N * 2 the two share 2N - i). An empty test after the first pair's lookups (FAKE, from a
@@ -789,6 +789,7 @@ void Water_BuildCellLists(void) {
 // loop-closing pairs nor the first). Left: the first pass loads p->unk0 one slot later here; the second pass's q index
 // is built in a1 and added to p after the loop test there (one instruction more: a copy), here before; the damping's
 // reload goes to a1 there (a t register here), and the t registers rotate differently.
+// Searches: the last cell's damping subtracts from a->unk2 (equal to hb there) and the first pass sets q in two steps.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -803,7 +804,8 @@ void func_8004EAA4(void) {
 
     p = gWaterCellOffsets;
     for (i = -gWaterWindowN; i < 0; i++) {
-        q = p + ((gWaterWindowN * 2) + i + 2);
+        q = p; // q in two steps (a search over sum splits)
+        q += ((gWaterWindowN * 2) + i + 2);
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
@@ -898,7 +900,7 @@ void func_8004EAA4(void) {
     }
     hb = a->unk2;
     a->unk0 += hb;
-    a->unk2 = hb - (hb >> D_800D4730);
+    a->unk2 = a->unk2 - (hb >> D_800D4730);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_8004EAA4.s")
