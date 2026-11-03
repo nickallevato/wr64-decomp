@@ -1521,7 +1521,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 34579 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 33689 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1530,9 +1530,9 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
-// index in the championship gaps is kept in y2, the stunt time left in i and its thousandths in y2, the buoy-miss
-// count in color and the rider's in k, the 2P gap color in k (variable-name searches over each block; the original
-// keeps the leader in a saved register). Register
+// index in the championship gaps is kept in y2 and their color in k, the 2P gap color in y2, the RANK zoom in j,
+// the buoy-miss count in color and the rider's in k, the stunt time left in x2 and its thousandths in y2
+// (variable-name searches over each block; the original keeps the leader in a saved register). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
 // the lap-split popup), so the saved and temporary registers of every display-list
@@ -1622,14 +1622,14 @@ void func_801F4120(Gfx** gdlp) {
                 x = pos->x + 0xB0;
                 y = pos->y + 0x3F;
                 if (i == gPlayer1Rider) {
-                    color = 2;
+                    k = 2;
                 } else {
-                    color = 1;
+                    k = 1;
                 }
                 if (i == y2) {
-                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, color);
+                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, k);
                 } else if (rider->unk2F4 != 0) {
-                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime - value, 3, 1, color);
+                    func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime - value, 3, 1, k);
                 }
             }
         }
@@ -1654,11 +1654,11 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0;
                 }
-                k = 2;
+                y2 = 2;
                 if (rider->gapRequest == 1) {
-                    k = 1;
+                    y2 = 1;
                 }
-                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, k);
+                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, y2);
             }
         }
     }
@@ -1808,11 +1808,11 @@ void func_801F4120(Gfx** gdlp) {
             if (D_80228A9C == 0) {
                 HUD_RECT(gdl, x, 0x22, 16, 20);
             } else {
-                color = D_80228DF8 * 6;
+                j = D_80228DF8 * 6;
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
-                gSPTextureRectangle(gdl++, (x - color) << 2, 0x22 << 2, (x + 0x10) << 2, (color + 0x36) << 2,
-                                    G_TX_RENDERTILE, 0, 0, 0x4000 / (color + 0x10), 0x5000 / (color + 0x14));
+                gSPTextureRectangle(gdl++, (x - j) << 2, 0x22 << 2, (x + 0x10) << 2, (j + 0x36) << 2,
+                                    G_TX_RENDERTILE, 0, 0, 0x4000 / (j + 0x10), 0x5000 / (j + 0x14));
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_POINT);
             }
@@ -2061,14 +2061,14 @@ void func_801F4120(Gfx** gdlp) {
         }
     }
 
-    // Stunt mode: the time left (i): n seconds and y2 thousandths; under six seconds the seconds
+    // Stunt mode: the time left (x2): n seconds and y2 thousandths; under six seconds the seconds
     // digit zooms out over each second (color: the shrink, x/y: the drawn size).
     if (gGameModes == GMODE_STUNT) {
         HUD_LOAD32(gdl, D_1032500, 32, 12);
         HUD_RECT(gdl, 0x8D, 0x16, 32, 12);
-        i = gRiderRaceState[gPlayer1Rider].timeLeft;
-        y2 = i % 1000;
-        n = i / 1000;
+        x2 = gRiderRaceState[gPlayer1Rider].timeLeft;
+        y2 = x2 % 1000;
+        n = x2 / 1000;
         HUD_DIGIT(gdl, &D_103B4D0[(y2 / 100) * 0x300], 12, 16, 0xAA, 0x26);
         HUD_DIGIT(gdl, D_103D5D0, 12, 16, 0xA2, 0x23);
         if ((n >= 6) || (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
