@@ -684,7 +684,10 @@ void func_800C1B30(void);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 6906 of 146400: same blocks and calls, frame 0x120. mid6 (searches): the type 8/9 test reads e->unk98 into
+// Score 6691 of 146400: same blocks and calls, frame 0x120. mix1: the gate's two distances are computed in segLen
+// (dead there) and copied to dPos and dPrev, then negated below zero (the original's mov.s / neg.s from one
+// register; 6906 -> 6711); beyond's x term in gz, not dPrev (6691; dPrev is still register-allocated where the
+// original keeps it in its home). mid6 (searches): the type 8/9 test reads e->unk98 into
 // laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference is held in nearLine,
 // beyond's x term goes through dPrev; dPrev's z term reads e->unk74 rather than dirZ; one += written out, and the
 // side test compares with an int 0. The type 8/9 test keeps its two branches through a dead
@@ -956,14 +959,17 @@ void func_8007687C(s32 arg0) {
         // A checkpoint gate: its time, and the gap shown against the time trial record
         // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
-            dPos = (D_801C3780 - e->unk0) * dirX;
-            dPos = dPos + (D_801C3788 - e->unk8) * dirZ;
-            if (!(dPos >= 0.0f)) {
-                dPos = -dPos;
+            // the two distances go through segLen (dead here) and are copied, then negated when below zero
+            segLen = (D_801C3780 - e->unk0) * dirX;
+            segLen = segLen + (D_801C3788 - e->unk8) * dirZ;
+            dPos = segLen;
+            if (!(segLen >= 0.0f)) {
+                dPos = -segLen;
             }
-            dPrev = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
-            if (!(dPrev >= 0.0f)) {
-                dPrev = -dPrev;
+            segLen = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
+            dPrev = segLen;
+            if (!(segLen >= 0.0f)) {
+                dPrev = -segLen;
             }
             frac = (dPos / (dPos + dPrev)) * 50.0f;
             if (e->unk98 == 3) {
@@ -1120,12 +1126,12 @@ void func_8007687C(s32 arg0) {
     // Sunset Bay) moves the lap counter unk320.
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
-    // beyond's x term first (permuter), in dPrev (dead here; a name search)
-    dPrev = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
+    // beyond's x term first (permuter), in gz (dead here; a name search)
+    gz = (D_801C3780 - D_801AEE20[D_801BB12C].unk0) * D_801AEE20[D_801BB12C].unk70;
     ref = D_801AEE20[r2].unkA0;
     time = D_801AEE20[ref].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         dPrev) > 0.0f;
+         gz) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (ref == D_801BB12C) || (time == D_801BB12C);
