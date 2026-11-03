@@ -1312,7 +1312,7 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 4465 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
+// Score 4005 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
 // instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
 // keeps in s0 (the big-digit loop still reads y, which orders its hoisted y << 2 terms as in the original), a stack pad
 // gives the original's 0x2C8 frame, sec is reduced mod 60 before ms is taken, and the paired digit stores are chained
@@ -1327,7 +1327,10 @@ void func_801F23A0(void) {
 // parameters) makes IDO spill time on entry to the style 0/2 branch, as the original does: 4505 (it reloads it there
 // too, one reload more than the original).
 // The icon x positions are held in lap (one variable for the lap number and the icon x, which never live at once;
-// a whole-variable merge search): 4465.
+// a whole-variable merge search): 4465. An empty test of x between the trailing big-digit texture load and its
+// rectangle (FAKE, a search over empty tests of initialised locals and parameters over the whole function) lets IDO
+// keep 0xE7000000 in a3 across the two trailing loads, as the original does: 4005 (the 0xB3000000 of the first
+// rectangle is rematerialised in the second here).
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1422,6 +1425,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         HUD_LOAD32(gdl, D_103D2D0, 12, 16);
         HUD_RECT(gdl, x + 12, py, 12, 16);
         HUD_LOAD32(gdl, D_103D5D0, 12, 16);
+        if (x) {} // FAKE: an empty test of x (a search over empty tests); see the note
         HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
         gDPPipeSync(gdl++);
