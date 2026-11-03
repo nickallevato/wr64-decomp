@@ -917,7 +917,7 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 3349 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// Score 3264 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
 // / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
 // rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
 // products once the divisions are done (two locals fewer give the original's frame). The declaration order is from
@@ -928,7 +928,8 @@ UNUSED void SysUtils_ReadContData(void) {
 // An empty test of nx after the general branch's first t (FAKE, from an empty-test search) gives 3466.
 // mf[0][0] adds the scaled sum to nx * nx (an operand-order search): 3411; three more operand orders: 3396; mix1:
 // mf[1][0] as u + t (an operand-order search): 3391; mf[1][2] recomputes t from the recomputed qy (FAKE,
-// permuter): 3349.
+// permuter): 3349; the z == 0 branch stores mf[2][2] after b and t (a swap search), and the general
+// branch's len is qz * s (an operand-order search): 3264.
 // Left: x is stored to its slot on entry here; z is kept in a saved register (the original reloads it from its slot).
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 b;
@@ -984,9 +985,9 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         t = s * nx;
         arg1->mf[0][2] = t;
         arg1->mf[2][0] = -t;
-        arg1->mf[2][2] = c;
         b = x / len;
         t = s * b;
+        arg1->mf[2][2] = c;
         u = c * nx;
         arg1->mf[1][2] = t;
         arg1->mf[2][1] = -t;
@@ -1033,7 +1034,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         u = ((py * qy) - (qx * px)) * s;
         arg1->mf[1][0] = u + t;
         arg1->mf[0][1] = t - u;
-        len = s * qz;
+        len = qz * s;
         t = (c * qx * qz) + (nx * nz);
         u = len * py;
         arg1->mf[2][0] = t + u;
