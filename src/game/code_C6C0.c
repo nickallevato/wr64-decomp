@@ -5475,7 +5475,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 3345 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 2930 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5485,7 +5485,8 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 // 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. unkC7C and
 // unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475;
 // unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
-// unkBAC..unkBB4 as one chain: 3345.
+// unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
+// unkC04 and the first part's sums with the doubled term first (operand-order searches): 2930.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
@@ -5548,14 +5549,14 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unk16F2 = 0;
     rider->unk1604 = 0;
     rider->unk16F0 = rider->unk16F2;
-    rider->unk15FC = 0x800;
-    rider->unk16C8 = -1;
     rider->unk1446 = 10;
+    rider->unk16C8 = -1;
+    rider->unk15FC = 0x800;
     rider->unk1598 = 0;
     rider->unk16F4 = rider->unk1604;
     rider->unk15D8 = 1; // int 1: IDO keeps it apart from the 1.0f constants (a respelling search)
     rider->unk159C = rider->unk15A0 = rider->unk15A4 = rider->unk15A8 = rider->unk15F0 = gFrameCounter;
-    rider->unk15B0 = rider->unkC70 = rider->unkC74 = -1;
+    rider->unkC74 = rider->unkC70 = rider->unk15B0 = -1;
     rider->unkC7E = 0;
     rider->unkC80 = 0;
     rider->unkC7C = rider->unkC82 = 1;
@@ -5623,24 +5624,24 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC24 = 0;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
-    // FAKE: unkC1C and unkC0C through the free z and x (a search over routing stores through locals)
+    // FAKE: unkC1C and unkC04 through the free z and x (a search over routing stores through locals)
     z = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
     rider->unkC1C = z;
-    x = rider->unkC04 = 34.11f;
+    x = rider->unkC0C = 34.11f;
     rider->unkC10 = -27.300001f;
-    rider->unkC0C = x;
+    rider->unkC04 = x;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
-                               (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
+                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x) + RIDER_PARTS(rider)[1].unk4.x);
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
     rider->unk1448[0].unkC.y = x;
     rider->unk1448[0].unk0.y = (x * -2.1f) +
-                               (RIDER_PARTS(rider)[1].unk4.y + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y));
+                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y) + RIDER_PARTS(rider)[1].unk4.y);
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
     rider->unk1448[0].unkC.z = x;
     rider->unk1448[0].unk0.z = (x * -2.1f) +
-                               (RIDER_PARTS(rider)[1].unk4.z + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z));
+                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z) + RIDER_PARTS(rider)[1].unk4.z);
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
