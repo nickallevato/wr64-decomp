@@ -1268,11 +1268,11 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  */
 
 #ifdef NON_MATCHING
-// Score 7539 of 60500 (mix1: the two outer row loops test end >= e with an if and run the cells as a do-while,
+// Score 7279 of 60500 (mix1: the two outer row loops test end >= e with an if and run the cells as a do-while,
 // with lo and hi set after that test, where the original computes them (8609 -> 7854); the middle loop reads
-// its lower neighbour at e - (2N + 1), as the original subtracts (7539). Left: the original does not share
-// 2N + i between end and lo/hi; registers). Before: the frame, the row loops and both skirt loops match in
-// shape; the second skirt loop compares
+// its lower neighbour at e - (2N + 1), as the original subtracts (7539); the first loop's neighbour offset is
+// held in hA (7279). Left: the original does not share 2N + i between end and lo/hi; registers). Before: the
+// frame, the row loops and both skirt loops match in shape; the second skirt loop compares
 // with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). In the middle row loop hB holds the
 // lower neighbour and hA the upper one (the reverse of the row loops), from a search over the loops' variable names.
 // vtx is stepped before e after the first and last edge cells of two row loops, and the skirt loop takes v before c
@@ -1317,9 +1317,10 @@ void func_80050204(s32 view, Vtx* arena) {
         e++;
         vtx++;
         end = e + ((gWaterWindowN * 2) + i - 2);
+        hA = (gWaterWindowN * 2) + i + 1; // the neighbour rows' offset, in hA (dead here)
         if (end >= e) {
-            lo = e - ((gWaterWindowN * 2) + i + 1);
-            hi = e + ((gWaterWindowN * 2) + i + 1);
+            lo = e - hA;
+            hi = e + hA;
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
                 hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
