@@ -283,11 +283,12 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 445 of 30700: register allocation only. The B test is computed into next before the A branch (the original has
+// Score 430 of 30700: register allocation only. The B test is computed into next before the A branch (the original has
 // it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
 // Three FAKEs from the permuter (powerMisses through i, the menu's unk10 through j, an empty test of D_i0_802C6BCC
 // holding an empty if (1) in case 4) and the idle counter's if/else on one line move the temporaries towards the
-// original's. Left: the B test in a3 (t5 there), D_i0_802C6BCC's value and index swap v0/a2, and the A branch's
+// original's. mid7: the item's next menu stored straight from item->unk0 (not through j as before) is lower (445 -> 430).
+// Left: the B test in a3 (t5 there), D_i0_802C6BCC's value and index swap v0/a2, and the A branch's
 // temporaries one register on.
 void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
@@ -382,8 +383,7 @@ void func_i0_802C63AC(void) {
             AudioGeneral_PlaySound(0x37, 0);
             MainMenu_Leave(next);
         } else {
-            j = item->unk0; // FAKE: through j (a search routing each assignment through a free local)
-            D_i0_802C6EE0 = j;
+            D_i0_802C6EE0 = item->unk0;
             D_i0_802C6EE4 = 0;
             switch (item->unk16) {
                 case 1:

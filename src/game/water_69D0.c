@@ -774,22 +774,20 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 1755 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
-// v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The second
-// pass sets q first (a permuter find) and its end is p + (N << 1) - i: the original computes it from N << 4 and i << 3
-// apart from q's index (with N * 2 the two share 2N - i). An empty test after the first pair's lookups (FAKE, from a
-// search over where an empty test lowers the score) gives the original's order for them. Adding the new velocity to the
-// height in one statement (h += v = ...) gives the original's reload of v after the height store; q set before end in
-// the second pass and end as p + 2N + i in the first follow the original's address arithmetic. The velocity damping
-// reads the velocity into hb first (v -= v >> D_800D4730 as hb = v; v = hb - (hb >> ...)) in the first pass's last
-// cell, the third pass's b and the final cell (from a search over which ones): that removes the extra saved s0 IDO kept
-// here. The first pair of the first pass holds its mean in diff and its difference in mean (a search over each pair's
-// two names). Most pairs compute their difference into whichever of ha and hb is reassigned before its next use (the
-// original puts the difference in that height's register; a greedy search over the ten pairs kept seven, not the
-// loop-closing pairs nor the first). Left: the first pass loads p->unk0 one slot later here; the second pass's q index
-// is built in a1 and added to p after the loop test there (one instruction more: a copy), here before; the damping's
-// reload goes to a1 there (a t register here), and the t registers rotate differently.
-// Searches: the last cell's damping subtracts from a->unk2 (equal to hb there) and the first pass sets q in two steps.
+// Score 750 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
+// v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The first
+// two passes build q's index in a variable before q = p + index (the original computes 2N + i + 2 and (2N - i + 1) << 3
+// in a1 and keeps it there): ha in the first pass, mean in the second. ha also reads the velocity for the damping at the
+// end of the first pass and in the middle of the third. Every pair puts its mean in mean and its difference in ha or hb,
+// as the original's registers show (no diff variable). Found by a coordinate search over which variable holds each
+// index, damping value and pair result: 1755 -> 1050, and the empty test (FAKE) the first pass needed is gone. The first
+// pass looks up a's cell before q = p + index (a permuter find, checked: independent statements): 750. The
+// second pass's end is p + (N << 1) - i: the original computes it from N << 4 and i << 3 apart from q's index. Adding
+// the new velocity to the height in one statement (h += v = ...) gives the original's reload of v after the height
+// store; end as p + 2N + i in the first pass follows the original's address arithmetic.
+// Left: registers. The original gives b a0, the index/damping value a1, a a2, the field base a3, ha t0, q t1, hb t2 and
+// mean t3; here ha (holding the first index) takes a1, q a2, a a3 and the base t0, and the t registers follow. A fifth
+// variable for the indices and dampings (the original's a1) scored 1050 too after the same search, never lower.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -798,24 +796,21 @@ void func_8004EAA4(void) {
     UnkStruct_80162420* b;
     s32 i;
     s32 mean;
-    s32 diff;
     s32 ha;
     s32 hb;
 
     p = gWaterCellOffsets;
     for (i = -gWaterWindowN; i < 0; i++) {
-        q = p; // q in two steps (a search over sum splits)
-        q += ((gWaterWindowN * 2) + i + 2);
+        ha = (gWaterWindowN * 2) + i + 2;
         a = WATER_CELL_AT(p->unk0);
+        q = p + ha;
         ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
-        if (a && a && a) {} // FAKE: an empty test that splits the block (the original loads p->unk0 first)
         hb = b->unk0;
-        // The first pair's mean and difference go through the other variable each (the original's registers).
-        diff = (ha + hb) >> D_800D4724;
-        mean = (hb - ha) >> D_800D472C;
-        a->unk2 = (a->unk2 + mean) - diff;
-        b->unk2 = (b->unk2 - mean) - diff;
+        mean = (ha + hb) >> D_800D4724;
+        hb = (hb - ha) >> D_800D472C;
+        a->unk2 = (a->unk2 + hb) - mean;
+        b->unk2 = (b->unk2 - hb) - mean;
         for (end = p + (gWaterWindowN * 2) + i; p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
@@ -834,9 +829,9 @@ void func_8004EAA4(void) {
             b = WATER_CELL_AT(p[-1].unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
-            diff = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + diff) - mean;
-            b->unk0 += b->unk2 = (b->unk2 - diff) - mean;
+            hb = (hb - ha) >> D_800D472C;
+            a->unk2 = (a->unk2 + hb) - mean;
+            b->unk0 += b->unk2 = (b->unk2 - hb) - mean;
             b->unk2 -= b->unk2 >> D_800D4730;
         }
         b = WATER_CELL_AT(q->unk0);
@@ -846,10 +841,11 @@ void func_8004EAA4(void) {
         hb = (hb - ha) >> D_800D472C;
         a->unk0 += a->unk2 = (a->unk2 + hb) - mean;
         b->unk2 = (b->unk2 - hb) - mean;
-        hb = a->unk2; a->unk2 = hb - (hb >> D_800D4730);
+        ha = a->unk2; a->unk2 = ha - (ha >> D_800D4730);
     }
     for (i = 0; i < gWaterWindowN; i++) {
-        q = p + (((gWaterWindowN * 2) - i) + 1);
+        mean = ((gWaterWindowN * 2) - i) + 1;
+        q = p + mean;
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         for (end = (p + (gWaterWindowN << 1)) - i; p < end;) {
@@ -870,9 +866,9 @@ void func_8004EAA4(void) {
             b = WATER_CELL_AT(p[-1].unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
-            diff = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + diff) - mean;
-            b->unk0 += b->unk2 = (b->unk2 - diff) - mean;
+            hb = (hb - ha) >> D_800D472C;
+            a->unk2 = (a->unk2 + hb) - mean;
+            b->unk0 += b->unk2 = (b->unk2 - hb) - mean;
             b->unk2 -= b->unk2 >> D_800D4730;
         }
         p++;
@@ -889,7 +885,7 @@ void func_8004EAA4(void) {
         ha = (hb - ha) >> D_800D472C;
         a->unk0 += a->unk2 = (a->unk2 + ha) - mean;
         b->unk2 = (b->unk2 - ha) - mean;
-        a->unk2 -= a->unk2 >> D_800D4730;
+        ha = a->unk2; a->unk2 = ha - (ha >> D_800D4730);
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         mean = (ha + hb) >> D_800D4724;
