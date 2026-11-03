@@ -2069,16 +2069,16 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 351 of 259500 (near14: sp48 and sp4C are not variables: both probe loops test
-// ((F448() + FAE4()) + CB4()) and the D_801D075C angle reads -func_8009D3AC(D_801D06C8, D_801D06D0) inline, so IDO
-// keeps the call results in its own temporaries (frame 0x70, FAE4's at 0x48 as in the original), cam at 0x58: 531.
-// The lead rider is read as D_801CF060[D_801CF060[arg0].unk7C] in each statement, not through a pointer local: IDO
-// then marks those loads as not aliasing D_801D0754 (cc -S shows .noalias), so the arms read lead's unk14 before
-// storing D_801D0754 as the original does; each arm's sum is written lead's field + (COS/SIN * r), which IDO
-// evaluates in the original's order: 351. The old pointer's declaration stays as a pad (its slot keeps the frame).
-// Left: F448's temporary at 0x50 (0x4C in the original); 360.0f reloaded at the join after the 2500.0f test (the
-// original keeps it in $f2 across the if and reloads it right after the call); best = -1 set before the 1000.0f
-// test (moving it there swaps s3/s4). Before, 555 (big7: the unk1C/unk18 eases written as the matched func_800A52D8 writes them, x + (d * 0.1)
+// Score 351 of 259500 (near14: sp48 and sp4C are not variables: both probe loops test ((F448() + FAE4()) + CB4()) and
+// the D_801D075C angle reads -func_8009D3AC(D_801D06C8, D_801D06D0) inline, so IDO keeps the call results in its own
+// temporaries (frame 0x70, FAE4's at 0x48 as in the original), cam at 0x58: 531. The lead rider is read as
+// D_801CF060[D_801CF060[arg0].unk7C] in each statement, not through a pointer local: IDO then marks those loads as not
+// aliasing D_801D0754 (cc -S shows .noalias), so the arms read lead's unk14 before storing D_801D0754 as the original
+// does; each arm's sum is written lead's field + (COS/SIN * r), which IDO evaluates in the original's order: 351. The
+// old pointer's declaration stays as a pad (its slot keeps the frame). Left: F448's temporary at 0x50 (0x4C in the
+// original); 360.0f reloaded at the join after the 2500.0f test (the original keeps it in $f2 across the if and reloads
+// it right after the call); best = -1 set before the 1000.0f test (moving it there swaps s3/s4). Before, 555 (big7: the
+// unk1C/unk18 eases written as the matched func_800A52D8 writes them, x + (d * 0.1)
 // with no casts, which fixes IDO's operand order and the float temporaries after each one (4870 -> 2230 -> 1550);
 // the speed's ratio as ((180.0f - |a|) / 180.00f) * unk4C, two 180.0f constants and the original's operand order; the
 // probe loops' sums as ((sp4C = F448) + sp48) + CB4: sp4C is register-allocated ($f18) and spilled around the last

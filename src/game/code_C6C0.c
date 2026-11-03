@@ -5487,9 +5487,10 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 #ifdef NON_MATCHING
 // Score 155 of 68700 (near14: gFrameCounter read as (u32), so IDO's code generator loads it straight into v0 instead of
 // storing a temporary and reloading the first field (seen in cc -S output); unkC7E and unkC80 zeroed by one chain,
-// whose reload of unkC80 takes the temporary register the original's numbering skips (the assembler then drops it),
-// so 1, 8 and 22 land in t4, t5 and t6 as in the original. Left: float temporaries from the unkC1C store through the
-// unk1448[0] sums.) Before, 195: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// whose reload of unkC80 takes the temporary register the original's numbering skips (the assembler then drops it), so
+// 1, 8 and 22 land in t4, t5 and t6 as in the original. Left: float temporaries from the unkC1C store through the
+// unk1448[0] sums.) Before, 195: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0.
+// The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
