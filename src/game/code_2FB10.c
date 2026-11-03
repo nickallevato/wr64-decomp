@@ -1343,14 +1343,15 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 4377 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 4047 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
 // e->unk0/e->unk8 spills at 0x20/0x1C, and land in dot and len (no dPos/dPrev locals: two words fewer, with
 // padV gone, keep the frame); the trick-10 flags are two stores (the chain reloads D_801C39F0); unk334 is
 // cleared after the bonus, the time table is indexed gCourseID * 4 first, and D_80228A94 is set before
-// timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move).
+// timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move:
+// 4377); the gate dot product takes its terms in dx and dz too (4047).
 // mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1587,8 +1588,9 @@ void func_800783AC(s32 arg0) {
     cur = rider->unkC;
     e = &D_801AEE20[cur];
     if (e->unk9C == 1) {
-        dot = e->unk78 * (D_801C3780 - e->unk18);
-        dot += (e->unk7C * (D_801C3788 - e->unk20));
+        dx = D_801C3780 - e->unk18;
+        dz = D_801C3788 - e->unk20;
+        dot = (e->unk78 * dx) + (dz * e->unk7C);
         inGate = (dot >= 0.0f) && (dot <= (2.0f * e->unk8C));
     }
     dx = D_801C3780;
