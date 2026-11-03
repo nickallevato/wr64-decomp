@@ -1328,7 +1328,6 @@ void func_800B4ABC(Gfx** gdl);
 // declared first (a declaration search, 36313).
 void func_8006E674(Gfx** gdl) {
     camera_unk_1* cam;
-    s32 padA[2]; // stack pad
     s32 n;
     s32 slot;
     UnkStruct_80192690* craft;

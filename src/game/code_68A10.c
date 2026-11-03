@@ -1557,14 +1557,16 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 11611 of 124000: same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// Score 9216 of 124000 (big7: the human's remainder triangles set n = 0 just before their loop, which gives the
+// original's strength-reduction start from $zero and its first-loop counter s4; 11611 before): same blocks, display-list commands and loops (calls and branches agree). The stack pads give
 // the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
 // through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
 // D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
 // with the default (the original's table has 7 entries). Left: register allocation and
-// scheduling (the original keeps more command words in saved registers; its first-loop counter is s4 and the
-// D_1048468 address is set after the loop guard).
+// scheduling (the original keeps more command words in saved registers; it does not fold the trail quads' k * 2 * 5
+// into k * 10, it hoists case 6's texture address in the unk1A00 loop and adds 0x8DC0 last there, and computes
+// i + view before the age test in the first loop instead of distributing it).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1727,7 +1729,6 @@ void func_800B305C(Gfx** gdl) {
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        n = 0;
         k = D_800E6D60->unk1C24 / 5;
         if (k != 0) {
             for (j = 0; j < k; j++) {
@@ -1743,6 +1744,7 @@ void func_800B305C(Gfx** gdl) {
         k = D_800E6D60->unk1C24 % 5;
         if (k != 0) {
             gSPVertex(gdlh++, vtx, k * 3, 0);
+            n = 0;
             for (j = 0; j < k; j++) {
                 gSP1Triangle(gdlh++, n, n + 1, n + 2, 0);
                 n += 3;
