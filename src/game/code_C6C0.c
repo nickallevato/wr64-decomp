@@ -621,6 +621,8 @@ void Riders_BuildPartsLists(void);
 void func_8006243C(UnkStruct_80192690* arg0, f32 arg1, f32 arg2, f32 arg3);
 void func_801EE91C(MtxF_t arg0, f32 x, f32 y, f32 z);
 void func_800AC098(UnkStruct_80192540*, s32);
+void func_800AF40C(f32, f32, f32);
+void func_800C3548(void);
 
 #ifdef NON_MATCHING
 // Score 165 of 36800: same instructions; the plane tests branch to the reset loop by goto. Left: registers only (p
@@ -3912,12 +3914,13 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 62037 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 61501 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
 // search (two rounds), operand orders, declaration order, two literal spellings, eleven field reads in place of
-// copies (read-through) and one sum in two statements from searches.
+// copies (read-through) and one sum in two statements from searches. func_800AF40C (code_68A10.c) takes the part's
+// three floats in registers, as the original passes them (m2c's call had four arguments and no prototype).
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4219,7 +4222,7 @@ void func_8005DE24(s32 arg0) {
                         rider->unkC70 = -1;
                     }
                 } else if ((temp_v0_3 == 5) && (rider->unkC58 == 0x1D)) {
-                    func_800AF40C(RIDER_PARTS(rider)[2].unk4.x, RIDER_PARTS(rider)[2].unk4.y, 0x16, RIDER_PARTS(rider)[2].unk4.z);
+                    func_800AF40C(RIDER_PARTS(rider)[2].unk4.x, RIDER_PARTS(rider)[2].unk4.y, RIDER_PARTS(rider)[2].unk4.z);
                 }
             }
         }
