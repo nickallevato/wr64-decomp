@@ -1137,7 +1137,7 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 7924 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
+// Score 7914 of 127200: calls, branches and the frame (0xC8, with a stack pad from a pad search) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1146,7 +1146,7 @@ void func_8008E4B0(void) {
 // the D_800D988C == 1 loop, and there reloads D_801C4160/4/8 after storing them where IDO here reuses the values.
 // D_801C4168 is accessed through a cast pointer (FAKE, from a search over access types): 10389 -> 10064.
 // The SOUTHERN_ISLAND case sets unkAC first, as the other cases do (a statement-move search): 8809; SUNSET_BAY
-// and the TWILIGHT_CITY fallback set unk104 right after unkFC: 7924.
+// and the TWILIGHT_CITY fallback set unk104 right after unkFC: 7924; unkFC/unk104 scaled by 64.0f: 7914.
 void func_8008E794(void) {
     s32 padS0[2]; // stack pad
     f32 dirX;
@@ -1378,8 +1378,8 @@ void func_8008E794(void) {
             e->unkB4 *= 64.0f;
             Math_Normalize_VectorComponents(&D_801CB058[i].unkFC, &D_801CB058[i].unk104);
             e->unk100 = 64.0f;
-            e->unkFC *= 64;
-            e->unk104 *= 64;
+            e->unkFC *= 64.0f;
+            e->unk104 *= 64.0f;
             (*(s32*) &D_801C4168) = e->unkB4;
             D_801C4164 = e->unkB0;
             D_801C4160 = e->unkAC;
