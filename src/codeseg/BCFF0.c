@@ -1302,7 +1302,7 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 5400 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
+// Score 4505 of 174400: in the style 1 branch each digit is loaded and drawn on two lines (HUD_LOAD32, HUD_RECT)
 // instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
 // keeps in s0 (the big-digit loop still reads y, which orders its hoisted y << 2 terms as in the original), a stack pad
 // gives the original's 0x2C8 frame, sec is reduced mod 60 before ms is taken, and the paired digit stores are chained
@@ -1313,6 +1313,9 @@ void func_801F23A0(void) {
 // counter, merging any two of the int locals (the only lower one, lap into px, is not valid: px is live there), the
 // trailing HUD_LOAD32 lines expanded, adjacent statement swaps, and joining any two lines. An empty test that reads
 // rider (uninitialized) in the time == 0 arm gives 4720; not kept. The permuter cannot compile this file's macros.
+// An empty test of time in the style-2 icon position's last arm (FAKE, from a search over empty tests of the
+// parameters) makes IDO spill time on entry to the style 0/2 branch, as the original does: 4505 (it reloads it there
+// too, one reload more than the original).
 extern u8 D_1038D00[];
 extern u8 D_10390C0[];
 extern u8 D_1039100[];
@@ -1438,6 +1441,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 ix = x + 4;
             } else {
                 ix = x + 10;
+                if (time) {} // FAKE: an empty test of time (a search over empty tests); see the note
             }
             HUD_SCISRECT(gdl, ix, py, 8, 8);
         }
