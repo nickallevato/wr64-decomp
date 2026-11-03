@@ -279,9 +279,9 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 33294 of 150300 (big7: the first loop keeps its angle in kind and the list choice its difficulty in angle,
-// a per-loop name search; table B's heading and the edge points' z pass through angle and t (a hold search);
-// 35174 before): same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the default,
+// Score 32404 of 150300 (big7: the first loop keeps its angle in kind and the list choice its difficulty in angle,
+// a per-loop name search; table B's heading, the rings' unk6 and the edge points' z pass through angle, kind
+// and t (a hold search); 35174 before): same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the default,
 // written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
 // (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C, things 0x48, table
 // 0x30; the pad stands for four words above them), which gives its frame (0xA0); table is declared after e (a
@@ -700,7 +700,8 @@ void func_80071E70(void) {
             o->unk24 = rings->x;
             o->unk28 = rings->y;
             o->unk2C = rings->z;
-            o->unk50 = rings->unk6;
+            kind = rings->unk6; // kind (dead here) holds the ring's unk6 (hold search)
+            o->unk50 = kind;
             o->unkC0 = rings->unk8;
             o->unk48 = rings->heading;
             D_801BB134++;
