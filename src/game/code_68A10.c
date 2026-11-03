@@ -867,7 +867,10 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 23805 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// Score 23760 of 216100 (mix2: an empty do-while after the streak alpha (FAKE, insert search): 23805 -> 23760;
+// a velocity length in its own variable instead of sideY drops the original-absent store and gives the original's
+// instruction count, but scores 24560, not kept. big7: the drop loop counts in count and keeps its angle in n, a
+// per-loop name search;
 // the streaks' h and depth and the drops' two random values live in tilt, h, sx and vy (web name searches);
 // lod = 0 follows the distance and n = 0 the angle jitter (swap search); 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
@@ -1031,6 +1034,7 @@ void func_800B08F8(s32 arg0) {
     for (i = 63, D_800E6D64 = &D_800E6D68[63]; i >= 0; i--, D_800E6D64--) {
         if (D_800E6D64->unk38 != 0) {
             alpha = 0xFF - (D_800E6D64->unk3C * 24);
+            do {} while (0); // FAKE (insert search): an empty block that moves later register choices
             if (alpha < 0) {
                 alpha = 0;
             }
