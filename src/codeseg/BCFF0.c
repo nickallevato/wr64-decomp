@@ -1521,7 +1521,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 40559 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 39779 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1530,7 +1530,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
-// index in the championship gaps is kept in y2 (a variable-name search; the original keeps it in a saved register). Register
+// index in the championship gaps is kept in y2 (a variable-name search; the original keeps it in a saved register).
+// The marks test is spelled n - 1 == j (IDO then tests j + 1 against n and steps j from it, as the original does). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
 // the lap-split popup), so the saved and temporary registers of every display-list
@@ -2023,7 +2024,7 @@ void func_801F4120(Gfx** gdlp) {
                 }
             }
             for (j = 0; j < 5; j++) {
-                if (j + 1 == n) {
+                if (n - 1 == j) {
                     color = D_800D4B00 % 6;
                     if (color >= 4) {
                         color = 6 - color;
