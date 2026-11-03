@@ -1016,7 +1016,7 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 6418 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// Score 6284 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
 // are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. e[2] and
 // c[0] go through len, and the later reads of d go through a pointer pd (three permuter FAKEs, marked): with them IDO
 // uses three saved float registers, as the original.
@@ -1024,7 +1024,7 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 // m[0] and c[0] into e[0]'s slot, and the float temps are numbered differently.
 // Reading arg3..arg5 through their addresses in m[2], m[1] and the fallback's stores (FAKE, marked) gives the original's
 // reloads of the stacked parameters in place of one load kept in a spilled temporary (7423 -> 6655); the c[0] product
-// (into len) before c[1] (an adjacent-swap search): 6418.
+// (into len) before c[2] and c[1] (adjacent-swap searches): 6284.
 void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
                    f32 arg8, f32 arg9, f32 arg10, f32 arg11, f32 arg12, f32 arg13) {
     f32 d[3];
@@ -1051,8 +1051,8 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
         e[0] = m[0] - arg5;
         t = ((arg9 - SQ(len)) - SQ(e[1])) - SQ(e[0]);
         if (!(t <= 0.0f)) {
-            c[2] = (arg12 * d[0]) - (arg13 * d[1]);
             len = (arg11 * pd[1]) - (arg12 * pd[2]); // FAKE (permuter), see above
+            c[2] = (arg12 * d[0]) - (arg13 * d[1]);
             c[1] = (arg13 * d[2]) - (arg11 * pd[0]);
             c[0] = len;
             arg11 = (pd[1] * c[0]) - (pd[0] * c[1]);
