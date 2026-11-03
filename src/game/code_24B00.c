@@ -1312,7 +1312,8 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 34072 of 358000 (big7: the visibility loop reads D_801AEE20[i] directly (no e); the stack pad padA was
+// Score 33367 of 358000 (big7: an empty do-while (FAKE) before the D_801C1CE0 render mode; the visibility loop
+// reads D_801AEE20[i] directly (no e); the stack pad padA was
 // spurious (frame 0x5F0 without it, the other homes unchanged);
 // table A's first draw loop, table B's draw loops and the last second layer read the alpha into cur (dead by then;
 // variable reuse) for the test, the copy and the env alpha (IDO still reloads it for the alpha in table B, but the
@@ -1952,6 +1953,7 @@ void func_8006E674(Gfx** gdl) {
         gDPPipeSync(gdlh++);
         gDPSetCycleType(gdlh++, G_CYC_1CYCLE);
         if (D_801C1CE0 != NULL) {
+            do {} while (0); // FAKE (insert search): an empty block that changes the register choices after it
             gDPSetRenderMode(gdlh++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             gSPDisplayList(gdlh++, D_801C1CE0);
         }
