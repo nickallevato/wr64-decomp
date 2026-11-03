@@ -1312,12 +1312,13 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 33052 of 358000 (big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode and the last second
-// layer's display list; the visibility loop
+// Score 32597 of 358000 (mix2: the draw loops' alpha is its own variable, not cur, and the zeroing of cur before
+// the course-point loop is gone: 33052 -> 32597. big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode
+// and the last second layer's display list; the visibility loop
 // reads D_801AEE20[i] directly (no e); the stack pad padA was
 // spurious (frame 0x5F0 without it, the other homes unchanged);
-// table A's first draw loop, table B's draw loops and the last second layer read the alpha into cur (dead by then;
-// variable reuse) for the test, the copy and the env alpha (IDO still reloads it for the alpha in table B, but the
+// table A's first draw loop, table B's draw loops and the last second layer read the alpha into a variable (cur
+// then, alpha now) for the test, the copy and the env alpha (IDO still reloads it for the alpha in table B, but the
 // loops' registers come closer); the table-A loops count in i and slot (per-loop
 // name searches);
 // 36313 before): same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
@@ -1373,7 +1374,8 @@ void func_8006E674(Gfx** gdl) {
     s32 padD[2]; // stack pad
     MtxF mf;
     UnkStruct_801AEE20* rec;
-    s32 padE[4]; // stack pad
+    s32 alpha;
+    s32 padE[3]; // stack pad
 
     gdlh = *gdl;
     if (D_800DAB2C == 0) {
@@ -1470,8 +1472,8 @@ void func_8006E674(Gfx** gdl) {
             D_801C0840[i] = -1;
         }
     }
-    // cur = 0 here and slot = 0 in the next loop: the original zeroes the register then, unused until table A.
-    for (i = 0, cur = 0; i < D_801BC938; i++) {
+    // slot = 0 in the next loop: the original zeroes the register then, unused until table A.
+    for (i = 0; i < D_801BC938; i++) {
         b = &gCoursePoints[i];
         dx = b->unk0 - cam->eyeX;
         dz = b->unk8 - cam->eyeZ;
@@ -1590,11 +1592,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (slot = 0; slot < D_801BC938; slot++) {
         D_801C0640[slot] = -1;
-        if ((gCoursePoints[slot].unk10 == 0) && ((cur = D_801C08C0[slot]) >= 0)) {
-            D_801C0640[slot] = cur;
+        if ((gCoursePoints[slot].unk10 == 0) && ((alpha = D_801C08C0[slot]) >= 0)) {
+            D_801C0640[slot] = alpha;
             gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, alpha);
             gSPDisplayList(gdlh++, dlA);
         }
     }
@@ -1713,11 +1715,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BB120; i++) {
         D_801C05C0[i] = -1;
-        if (((cur = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
-            D_801C05C0[i] = cur;
+        if (((alpha = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = alpha;
             gSPMatrix(gdlh++, &mtx[D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, alpha);
             gSPDisplayList(gdlh++, dlB);
         }
     }
@@ -1736,11 +1738,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BB120; i++) {
         D_801C05C0[i] = -1;
-        if (((cur = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
-            D_801C05C0[i] = cur;
+        if (((alpha = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = alpha;
             gSPMatrix(gdlh++, &mtx[D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, alpha);
             gSPDisplayList(gdlh++, dlB);
         }
     }
@@ -1760,24 +1762,24 @@ void func_8006E674(Gfx** gdl) {
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         for (i = 0; i < D_801BB120; i++) {
             D_801C05C0[i] = -1;
-            if (((cur = D_801C0840[i]) >= 0) &&
+            if (((alpha = D_801C0840[i]) >= 0) &&
                 ((D_801AEE20[i].unk98 == 4) || (D_801AEE20[i].unk98 == 6) || (D_801AEE20[i].unk98 == 10))) {
-                D_801C05C0[i] = cur;
+                D_801C05C0[i] = alpha;
                 gSPMatrix(gdlh++, &mtx[D_801C0B40[i]],
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPPipeSync(gdlh++);
-                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, alpha);
                 gSPDisplayList(gdlh++, dlB);
             }
         }
         gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         for (i = 0; i < D_801BB120; i++) {
-            if ((cur = D_801C05C0[i]) >= 0) {
+            if ((alpha = D_801C05C0[i]) >= 0) {
                 gSPMatrix(gdlh++, &mtx[D_801C0B40[i]],
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPPipeSync(gdlh++);
-                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, alpha);
                 do {} while (0); // FAKE (insert search): an empty block that moves later register choices
                 gSPDisplayList(gdlh++, dlB2);
             }
