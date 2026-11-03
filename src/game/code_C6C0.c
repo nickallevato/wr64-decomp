@@ -5478,7 +5478,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 1855 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 500 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5489,17 +5489,18 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 // unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475;
 // unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
 // unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
-// unkC04 and the first part's sums with the doubled term first (operand-order searches): 2930. point is set before
+// unkC04 and the first part's y and z sums with the doubled term first (operand-order searches): 2930. point is set before
 // the template loop and the chain loop reads lengths[i] for i = 1..5 (the original loads 0(v1) from lengths + 4 on):
 // 2625. unkC20..unkC08 are cleared with 0.0f in field order (the original stores the top's 0.0f, $f20, there) and
-// the unk1520 loop with an int 0 (a separate zero, $f14, in the original): 1855; only registers differ now.
+// the unk1520 loop with an int 0 (a separate zero, $f14, in the original): 1855. The six transforms add the
+// translation last ((...) + mf.mf[3][k], an operand-order search; the original's add.s operands): 500.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
 // original multiplies the loaded value without reloading it). The sphere velocities and the parts' unk1C are
 // cleared with an int 0; unk1604 and unk16F2 are zeroed by two
-// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: float registers
-// from the first transform's sums on (operand order) and temporary registers through the function.
+// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: gFrameCounter is
+// loaded into v0 there (t2 here), and float registers in the unk1448 sums and the lengths loop.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5529,9 +5530,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     x = rider->unk44.x;
     y = rider->unk44.y;
     z = rider->unk44.z;
-    rider->unk44.x = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
-    rider->unk44.y = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
-    rider->unk44.z = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
+    rider->unk44.x = ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z)) + mf.mf[3][0];
+    rider->unk44.y = ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z)) + mf.mf[3][1];
+    rider->unk44.z = ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z)) + mf.mf[3][2];
     if (arg2 != 0) {
         rider->unkBF0 = rider->unk44.x - rider->unkBE4;
         rider->unkBF4 = rider->unk44.z - rider->unkBEC;
@@ -5540,9 +5541,9 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         x = rider->unk90[i].unk0;
         y = rider->unk90[i].unk4;
         z = rider->unk90[i].unk8;
-        rider->unk90[i].unk0 = mf.mf[3][0] + ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z));
-        rider->unk90[i].unk4 = mf.mf[3][1] + ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z));
-        rider->unk90[i].unk8 = mf.mf[3][2] + ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z));
+        rider->unk90[i].unk0 = ((mf.mf[0][0] * x) + (mf.mf[1][0] * y) + (mf.mf[2][0] * z)) + mf.mf[3][0];
+        rider->unk90[i].unk4 = ((mf.mf[0][1] * x) + (mf.mf[1][1] * y) + (mf.mf[2][1] * z)) + mf.mf[3][1];
+        rider->unk90[i].unk8 = ((mf.mf[0][2] * x) + (mf.mf[1][2] * y) + (mf.mf[2][2] * z)) + mf.mf[3][2];
     }
     rider->unkB90 = rider->unkB94 = rider->unkB78 = rider->unkB7C = rider->unkB80 = rider->unkB84 = rider->unkB88 =
         rider->unkB8C = rider->unkB5E = rider->unkB5F = rider->unkB56 = rider->unkB58 = rider->unkB50.stick_x =
@@ -5638,7 +5639,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
-                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x) + RIDER_PARTS(rider)[1].unk4.x);
+                               (RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x));
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
     rider->unk1448[0].unkC.y = x;
     rider->unk1448[0].unk0.y = (x * -2.1f) +
