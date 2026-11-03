@@ -1314,7 +1314,8 @@ void func_800B4ABC(Gfx** gdl);
 #ifdef NON_MATCHING
 // Score 32597 of 358000 (mix2: the draw loops' alpha is its own variable, not cur, and the zeroing of cur before
 // the course-point loop is gone: 33052 -> 32597; seven empty do-whiles (FAKE, a greedy insert search; one before
-// dirZ and one after D_801C0C80 together move the whole function's register choices): 30187.
+// dirZ and one after D_801C0C80 together move the whole function's register choices): 30187; the fog
+// alpha through a u32 view (FAKE, type search): 29932.
 // big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode
 // and the last second layer's display list; the visibility loop
 // reads D_801AEE20[i] directly (no e); the stack pad padA was
@@ -1806,7 +1807,8 @@ void func_8006E674(Gfx** gdl) {
     gDPSetTextureFilter(gdlh++, G_TF_BILERP);
     gDPSetCombineMode(gdlh++, G_CC_MODULATEIDECALA, G_CC_PASS2);
     gDPSetRenderMode(gdlh++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
-    gDPSetFogColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0C80->unk54);
+    // FAKE (type search): the fog alpha read through a u32 view of the s32 field
+    gDPSetFogColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, (*(u32*) &D_801C0C80->unk54));
     gDPSetAlphaCompare(gdlh++, G_AC_NONE);
     if (gCourseID != RIDER_SELECTION) {
         mtx = D_5000000->unk95C0[D_800DAB2C];
