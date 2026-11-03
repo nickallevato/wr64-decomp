@@ -3916,14 +3916,15 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 56136 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 55613 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
 // search (two rounds), operand orders, declaration order, two literal spellings, eleven field reads in place of
 // copies (read-through) and one sum in two statements from searches. func_800AF40C (code_68A10.c) takes the part's
 // three floats in registers, as the original passes them (m2c's call had four arguments and no prototype). The
-// pose-state block walks the parts with a, not part (a name search over each block: 61501 -> 56136).
+// pose-state block walks the parts with a, not part, the part-21 block keeps its z difference in var_ft5 and the
+// unk16C8 pick its table value in spEC (name searches over each block: 61501 -> 55613).
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4016,9 +4017,9 @@ void func_8005DE24(s32 arg0) {
                 if (D_801CB3F8[arg0] == 0) {
                     rider->unk16C8 = 4;
                 } else {
-                    temp_t9 = D_800D4800[temp_v1->unk4];
-                    rider->unk16C8 = temp_t9;
-                    if (temp_t9 == 4) {
+                    spEC = D_800D4800[temp_v1->unk4];
+                    rider->unk16C8 = spEC;
+                    if (spEC == 4) {
                         rider->unk16C8 = 3;
                     }
                 }
@@ -4451,15 +4452,15 @@ void func_8005DE24(s32 arg0) {
         ny = ((P(20).z - P(24).z) * (P(24).x - P(19).x)) - ((P(20).x - P(24).x) * (P(24).z - P(19).z));
         dx = P(21).x - P(20).x;
         dy = P(21).y - P(20).y;
-        dz = P(21).z - P(20).z;
+        var_ft5 = P(21).z - P(20).z;
         if (((dx * (((P(24).y - P(19).y) * nz) - ((P(24).z - P(19).z) * ny))) +
              ((((P(24).z - P(19).z) * nx) - ((P(24).x - P(19).x) * nz)) * dy) +
-             (dz * (((P(24).x - P(19).x) * ny) - ((P(24).y - P(19).y) * nx)))) < 0.0f) {
+             (var_ft5 * (((P(24).x - P(19).x) * ny) - ((P(24).y - P(19).y) * nx)))) < 0.0f) {
             vx = P(24).x - P(19).x;
             vy = P(24).y - P(19).y;
             vz = P(24).z - P(19).z;
             len = 41.071f;
-            if (((dx * vx) + (dy * vy) + (dz * vz)) < 0.0f) {
+            if (((dx * vx) + (dy * vy) + (var_ft5 * vz)) < 0.0f) {
                 len = -41.071f;
             }
         } else {
@@ -4468,14 +4469,14 @@ void func_8005DE24(s32 arg0) {
             ny *= k;
             nz *= k;
             k = nx * dx;
-            k += (nz * dz) + (ny * dy);
-            dz -= k * nz;
+            k += (nz * var_ft5) + (ny * dy);
+            var_ft5 -= k * nz;
             dy -= k * ny;
             P(21).x = P(20).x + (dx - (k * nx));
             P(21).y = P(20).y + dy;
             vx = P(21).x - P(20).x;
             vy = P(21).y - P(20).y;
-            P(21).z = P(20).z + dz;
+            P(21).z = P(20).z + var_ft5;
             len = 41.071f;
             vz = P(21).z - P(20).z;
         }
@@ -4501,13 +4502,13 @@ void func_8005DE24(s32 arg0) {
             ny = rider->unk78;
             dx = part->unk10.y - rider->unk44.y;
             dy = part->unk10.z - rider->unk44.z;
-            dz = (nz * ny) + (dx * rider->unk7C) + (dy * rider->unk80);
-            vx = (f32) ((((f64) dz - 0.1806645) * (f64) rider->unk15D8) + 0.1806645);
-            part->unk10.x = rider->unk44.x + (vx * ny) + (nz - (dz * ny));
+            var_ft5 = (nz * ny) + (dx * rider->unk7C) + (dy * rider->unk80);
+            vx = (f32) ((((f64) var_ft5 - 0.1806645) * (f64) rider->unk15D8) + 0.1806645);
+            part->unk10.x = rider->unk44.x + (vx * ny) + (nz - (var_ft5 * ny));
             nx = rider->unk7C;
-            part->unk10.y = rider->unk44.y + (vx * rider->unk7C) + (dx - (dz * nx));
+            part->unk10.y = rider->unk44.y + (vx * rider->unk7C) + (dx - (var_ft5 * nx));
             nx = rider->unk80;
-            part->unk10.z = rider->unk44.z + (vx * rider->unk80) + (dy - (dz * nx));
+            part->unk10.z = rider->unk44.z + (vx * rider->unk80) + (dy - (var_ft5 * nx));
             part->unk1C.x += D_800D4940 * rider->unk78;
             part->unk1C.y += D_800D4940 * rider->unk7C;
             part->unk1C.z += D_800D4940 * rider->unk80;
