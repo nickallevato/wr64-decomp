@@ -3080,11 +3080,11 @@ void func_8005A280(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Score 30386 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
+// Score 29243 of 154100: calls, branches and compares agree with the original; frame 0x130 here, 0x100 there.
 // The m2c temps are pooled into region-local variables (split where a fresh value starts, merged where live
 // ranges don't overlap, each kept only if the score fell), so names like temp_fs4_5 are just slots. The
 // shoulder/hip vector is v = a*n + b*f with a clamped to <= -0.1 and b to >= 0, as the original computes it.
-// Operand orders, statement moves (three rounds; swaps checked for independence by hand), a line join, a name search and three field reads in place of copies (read-through) are from searches. Left:
+// Operand orders, statement moves (four rounds; swaps checked for independence by hand), a line join, a name search and three field reads in place of copies (read-through) are from searches. Left:
 // registers and scheduling throughout, about six locals too many.
 void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     f32 temp_fs4;
@@ -3200,8 +3200,8 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
         spB4 = &arg1->unk18C;
         RIDER_PARTS(rider)[14].unk10.x = vy - vx;
         vy = (f32) ((f64) arg1->unk21C.unkC.z * 10.135);
-        RIDER_PARTS(rider)[14].unk10.y = temp_ft4 - t_3;
         RIDER_PARTS(rider)[6].unk10.z = vy + sp84;
+        RIDER_PARTS(rider)[14].unk10.y = temp_ft4 - t_3;
         RIDER_PARTS(rider)[14].unk10.z = sp84 - vy;
     } else {
         temp_a2 = &arg1->unk120;
@@ -3301,8 +3301,8 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     } while (pass != 0);
     RIDER_PARTS(rider)[2].unk10.x = (RIDER_PARTS(rider)[2].unk1C.x * D_800D4A1C) + RIDER_PARTS(rider)[2].unk4.x;
     RIDER_PARTS(rider)[2].unk10.y = (RIDER_PARTS(rider)[2].unk1C.y * D_800D4A1C) + RIDER_PARTS(rider)[2].unk4.y + D_800D4A18;
-    t = vy - RIDER_PARTS(rider)[2].unk10.x;
     RIDER_PARTS(rider)[2].unk10.z = (RIDER_PARTS(rider)[2].unk1C.z * D_800D4A1C) + RIDER_PARTS(rider)[2].unk4.z;
+    t = vy - RIDER_PARTS(rider)[2].unk10.x;
     vx = temp_ft5 - RIDER_PARTS(rider)[2].unk10.z;
     t_3 = temp_ft4 - RIDER_PARTS(rider)[2].unk10.y;
     arg1->unk1F8.unk14.x = (f32) ((t_3 * temp_fs5) - (vx * spE0));
@@ -3319,8 +3319,8 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     func_80052A20(&arg1->unk1F8);
     arg1->unk1F8.unk0.x = arg1->unkD8.unk0.x = vy - (12.546404 * arg1->unk1F8.unkC.x);
     arg1->unk1F8.unk0.z = arg1->unkD8.unk0.z = spD0 - (12.546404 * arg1->unk1F8.unkC.z);
-    arg1->unk1F8.unk0.y = arg1->unkD8.unk0.y = temp_ft4 - (12.546404 * arg1->unk1F8.unkC.y);
     arg1->unkFC.unk0.x = vy + (1.936598 * arg1->unk1F8.unkC.x);
+    arg1->unk1F8.unk0.y = arg1->unkD8.unk0.y = temp_ft4 - (12.546404 * arg1->unk1F8.unkC.y);
     arg1->unkFC.unk0.y = temp_ft4 + (1.936598 * arg1->unk1F8.unkC.y);
     arg1->unkFC.unk0.z = spD0 + (1.936598 * arg1->unk1F8.unkC.z);
     arg1->unkFC.unkC.x = (f32) rider->unk1434;
@@ -3340,8 +3340,8 @@ void func_8005B510(s32 arg0, UnkStruct_80052E90_arg1_s* arg1) {
     t = temp_ft4_3 * temp_fs0;
     arg1->unk120.unk0.x = (f32) (RIDER_PARTS(rider)[6].unk10.x - temp_ft5_4);
     arg1->unk120.unkC.y = vy;
-    arg1->unk120.unkC.z = t;
     arg1->unk120.unk0.y = (f32) (RIDER_PARTS(rider)[6].unk10.y - vy);
+    arg1->unk120.unkC.z = t;
     arg1->unk120.unk0.z = (f32) (RIDER_PARTS(rider)[6].unk10.z - t);
     vy = RIDER_PARTS(rider)[14].unk10.x - arg1->unk1D4.unk0.x;
     t = RIDER_PARTS(rider)[14].unk10.y - arg1->unk1D4.unk0.y;
