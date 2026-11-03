@@ -279,9 +279,9 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 32109 of 150300 (big7: the first two loops keep their angles in kind and type and the list choice its
-// difficulty in angle (per-loop name searches); table B's heading, the rings' unk6 and the edge points' z pass
-// through angle, kind and t (a hold search); D_801BB134 is cleared before D_801BFA40 (a swap search); 35174
+// Score 31899 of 150300 (big7: the first two loops keep their angles in kind and type and the list choice its
+// difficulty in angle (per-loop name searches); table B's heading, the rings' 8 and unk6 and the edge points' z
+// pass through angle, n, kind and t (hold searches); D_801BB134 is cleared before D_801BFA40 (a swap search); 35174
 // before): same lists and stores, and the buoy switch is a jump
 // table from 0 (case 0 with the default,
 // written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
@@ -699,7 +699,8 @@ void func_80071E70(void) {
     if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) {
         for (; rings->heading != -1; rings++) {
             o = &D_801BC940[D_801BFA40];
-            o->unk4C = 8;
+            n = 8; // n (dead here) holds the ring kind (hold search)
+            o->unk4C = n;
             o->unk24 = rings->x;
             o->unk28 = rings->y;
             o->unk2C = rings->z;
