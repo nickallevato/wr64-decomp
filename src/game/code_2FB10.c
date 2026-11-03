@@ -683,11 +683,13 @@ extern f32 D_801C39A0[];
 void func_800C1B30(void);
 void func_800C1EB8(s32);
 
+#define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 5391 of 146400: same blocks and calls, frame 0x120. mix2: the checkpoint-gap reference time (gapRef) and
+// Score 5286 of 146400: same blocks and calls, frame 0x120. mix2: the checkpoint-gap reference time (gapRef) and
 // r3/r4 are their own variables, in stack-pad words, not reused ones, and the lap-shift loop counts in laps (dead
 // there): 5581 -> 5401; the type 8/9 test reads e->unk98 directly (same score) and the Marine Fortress cue's
-// second distance takes dz first (a swap search): 5391. mix1: the gate's two distances are computed in segLen
+// second distance takes dz first (a swap search): 5391; unk320 goes through a pointer view (RIDER_UNK320,
+// FAKE, type search): 5286. mix1: the gate's two distances are computed in segLen
 // (dead there) and copied to dPos and dPrev, then negated below zero (the original's mov.s / neg.s from one
 // register; 6906 -> 6711); beyond's x term in gz, not dPrev (6691; dPrev is still register-allocated where the
 // original keeps it in its home); the line record's x read into lineX before r1/r2 and used for beyond and
@@ -875,7 +877,7 @@ void func_8007687C(s32 arg0) {
     rider->unk28 = 0;
     if ((rider->unk20 != 0) && (rider->unk1C >= 0)) {
         type = e->unk98;
-        if (rider->lapCount != rider->unk320) {
+        if (rider->lapCount != RIDER_UNK320) {
             rider->unk20 = 0;
         } else if ((e->unk9C == 1) && !inGate) {
             rider->unk20 = 0;
@@ -1103,7 +1105,7 @@ void func_8007687C(s32 arg0) {
             if ((D_800D8178 == 0) || (rider->lapCount == 0)) {
                 if (rider->lapCount < D_801CE728[0]) {
                     rider->lapCount++;
-                    rider->unk320 = rider->lapCount;
+                    RIDER_UNK320 = rider->lapCount;
                 }
             }
             rider->unk130 = 0;
@@ -1145,11 +1147,11 @@ void func_8007687C(s32 arg0) {
     }
     if (func_80076240(D_801C3780, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
-        if (beyond && (rider->unk324 == 0) && (rider->unk320 < rider->lapCount)) {
-            rider->unk320++;
+        if (beyond && (rider->unk324 == 0) && (RIDER_UNK320 < rider->lapCount)) {
+            RIDER_UNK320++;
         } else if (!beyond && (rider->unk324 != 0)) {
-            if (rider->unk320 >= -49) {
-                rider->unk320--;
+            if (RIDER_UNK320 >= -49) {
+                RIDER_UNK320--;
             }
         }
     }
@@ -1195,13 +1197,14 @@ void func_8007687C(s32 arg0) {
         len = 1.0f;
     }
     if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
-        rider->progress = ((r * 10) + (rider->unk320 * 1000)) + len;
+        rider->progress = ((r * 10) + (RIDER_UNK320 * 1000)) + len;
         D_801C39A0[arg0] = progress;
     }
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_8007687C.s")
 #endif
+#undef RIDER_UNK320
 
 extern s32 D_801C1FD4;
 
