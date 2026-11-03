@@ -1267,14 +1267,21 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
  * D_800D4720 squared in gWaterWindow[view].
  */
 
+#define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 7279 of 60500 (mix1: the two outer row loops test end >= e with an if and run the cells as a do-while,
-// with lo and hi set after that test, where the original computes them (8609 -> 7854); the middle loop reads
+// Score 7179 of 60500 (mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
+// place and use sz >> 7 twice, as the original's registers show (the raw upper cell sits in sz's s0; one move,
+// for hA); 2N is computed again with << 1 for the first loop's hA and the last loop's lo/hi (the original does
+// not share it with end): the instruction count is the original's. Searches then: sx -> oz in the first loop,
+// int 992 in the last loop's divide, the centre's ox/oz statements swapped, and gWaterLevel read through a u32
+// view (WATER_LEVEL_U32, FAKE; constant typing): 7279 -> 7179. mix1: the two outer row loops test end >= e with
+// an if and run the cells as a do-while, with lo and hi set after that test, where the original computes them
+// (8609 -> 7854); the middle loop reads
 // its lower neighbour at e - (2N + 1), as the original subtracts (7539); the first loop's neighbour offset is
-// held in hA (7279). Left: the original does not share 2N + i between end and lo/hi; registers). Before: the
+// held in hA (7279)). Left: registers (v0/v1 and the vtx/lo saved registers swapped). Before: the
 // frame, the row loops and both skirt loops match in shape; the second skirt loop compares
-// with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). In the middle row loop hB holds the
-// lower neighbour and hA the upper one (the reverse of the row loops), from a search over the loops' variable names.
+// with < (sltu, not unrolled) and goes through D_80192464 (FAKE, see there). (mix1's middle row loop held the
+// lower neighbour in hB and the upper one in hA.)
 // vtx is stepped before e after the first and last edge cells of two row loops, and the skirt loop takes v before c
 // (statement-move searches); the window centre sums v before c: 8609.
 // Left: callee-saved register choice (vtx, lo, sx and sz land in other s registers).
@@ -1286,7 +1293,7 @@ void func_80050204(s32 view, Vtx* arena) {
     s32 ox;
     s32 sz;
     s32 sx;
-    s32 hB;
+    s32 hB; // FAKE: unused (the row loops read the cells through hA and sz); it moves register choices
     s32 i;
     s32 hA;
     f32 dz;
@@ -1305,33 +1312,35 @@ void func_80050204(s32 view, Vtx* arena) {
     w = &gWaterWindow[view];
     for (last = &gWaterCellOffsets[gWaterWindowN]; last >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
-        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[1] = WATER_LEVEL_U32;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
     }
     for (i = 1 - gWaterWindowN; i < 0; i++) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
-        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[1] = WATER_LEVEL_U32;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
         end = e + ((gWaterWindowN * 2) + i - 2);
-        hA = (gWaterWindowN * 2) + i + 1; // the neighbour rows' offset, in hA (dead here)
+        // << 1: the original computes 2N again here (not shared with end); the neighbour rows' offset, in hA
+        hA = (gWaterWindowN << 1) + i + 1;
         if (end >= e) {
             lo = e - hA;
             hi = e + hA;
             do {
-                hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
-                hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
-                sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
-                sz = (hA - hB) * 55;
-                k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
+                hA = WATER_CELL_AT(lo->unk0)->unk0;
+                sz = WATER_CELL_AT(hi->unk0)->unk0;
+                hA = hA >> 7;
+                oz = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+                sz = (hA - (sz >> 7)) * 55;
+                k = 992.0f / sqrtf((oz * oz) + (sz * sz) + 0xC00000);
                 e++;
                 vtx++;
-                vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
+                vtx[-1].v.tc[0] = (s32) (oz * k) + 0x400;
                 vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
-                vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + gWaterLevel;
+                vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + WATER_LEVEL_U32;
                 vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
                 vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
                 lo++;
@@ -1339,56 +1348,58 @@ void func_80050204(s32 view, Vtx* arena) {
             } while (end >= e);
         }
         vtx->v.ob[0] = w->unk0 + e->unk4;
-        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[1] = WATER_LEVEL_U32;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         vtx++;
         e++;
     }
     vtx->v.ob[0] = w->unk0 + e->unk4;
-    vtx->v.ob[1] = gWaterLevel;
+    vtx->v.ob[1] = WATER_LEVEL_U32;
     vtx->v.ob[2] = e->unk6 + w->unk4;
     e++;
     vtx++;
     for (end = e + ((gWaterWindowN * 2) - 2); end >= e;) {
-            hB = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0 >> 7;
-            hA = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0 >> 7;
-            sx = (((hB + hA) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
-            sz = (hB - hA) * 55;
+            hA = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0;
+            sz = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0;
+            hA = hA >> 7;
+            sx = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (hA - (sz >> 7)) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
             e++;
             vtx++;
             vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
             vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
-            vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + gWaterLevel;
+            vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + WATER_LEVEL_U32;
             vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
             vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
     }
     vtx->v.ob[0] = w->unk0 + e->unk4;
-    vtx->v.ob[1] = gWaterLevel;
+    vtx->v.ob[1] = WATER_LEVEL_U32;
     vtx->v.ob[2] = e->unk6 + w->unk4;
     e++;
     vtx++;
     for (i = 1; i < gWaterWindowN; i++) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
-        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[1] = WATER_LEVEL_U32;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
         end = e + ((gWaterWindowN * 2) - i - 2);
         if (end >= e) {
-            lo = (e - ((gWaterWindowN * 2) - i)) - 2;
-            hi = e + ((gWaterWindowN * 2) - i);
+            lo = (e - ((gWaterWindowN << 1) - i)) - 2;
+            hi = e + ((gWaterWindowN << 1) - i);
             do {
-                hA = WATER_CELL_AT(lo->unk0)->unk0 >> 7;
-                hB = WATER_CELL_AT(hi->unk0)->unk0 >> 7;
-                sx = (((hA + hB) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
-                sz = (hA - hB) * 55;
-                k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
+                hA = WATER_CELL_AT(lo->unk0)->unk0;
+                sz = WATER_CELL_AT(hi->unk0)->unk0;
+                hA = hA >> 7;
+                sx = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+                sz = (hA - (sz >> 7)) * 55;
+                k = 992 / sqrtf((sx * sx) + (sz * sz) + 0xC00000); // int 992 (respelling search)
                 e++;
                 vtx++;
                 vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
                 vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
-                vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + gWaterLevel;
+                vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + WATER_LEVEL_U32;
                 vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
                 vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
                 lo++;
@@ -1396,14 +1407,14 @@ void func_80050204(s32 view, Vtx* arena) {
             } while (end >= e);
         }
         vtx->v.ob[0] = w->unk0 + e->unk4;
-        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[1] = WATER_LEVEL_U32;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         vtx++;
         e++;
     }
     for (end = &gWaterCellOffsets[D_8019249C - 1]; end >= e;) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
-        vtx->v.ob[1] = gWaterLevel;
+        vtx->v.ob[1] = WATER_LEVEL_U32;
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
@@ -1412,12 +1423,12 @@ void func_80050204(s32 view, Vtx* arena) {
     for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
         v = &arena[idx[6]];
         c = &arena[D_80192460[0]];
-        ox = v->v.ob[0] - c->v.ob[0];
         oz = v->v.ob[2] - c->v.ob[2];
+        ox = v->v.ob[0] - c->v.ob[0];
         v = &arena[*idx];
         v->v.ob[0] = c->v.ob[0] + (s32) (k * ox);
         v->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * oz);
-        v->v.ob[1] = gWaterLevel;
+        v->v.ob[1] = WATER_LEVEL_U32;
     }
     if (w != gWaterWindow) {
         dx = gCameraPerspective[1].unkF0;
@@ -1445,6 +1456,7 @@ void func_80050204(s32 view, Vtx* arena) {
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/water_69D0/func_80050204.s")
 #endif
+#undef WATER_LEVEL_U32
 
 /*
  * Casts the four corner rays of the camera's view onto the plane at gWaterLevel + D_800D49B0, keeps
