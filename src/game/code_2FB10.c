@@ -1343,8 +1343,9 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 5770 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
-// other way round (IDO stores the rightmost first; the original stores D_801C39E4 first). mid6: the trick-10 flags as one chain
+// Score 5663 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
+// adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663). mid6: the trick-10 flags as one chain
 // (D_801C39F4 = D_801C39F0 = 1, a syntax search); the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1434,14 +1435,7 @@ void func_800783AC(s32 arg0) {
     }
     // unk138 follows power one step a frame.
     if (rider->unk138 != rider->power) {
-        if (rider->power - rider->unk138 == 0) {
-            i = 0;
-        } else if (rider->power - rider->unk138 > 0) {
-            i = 1;
-        } else {
-            i = -1;
-        }
-        rider->unk138 += i;
+        rider->unk138 += (rider->power - rider->unk138 == 0) ? 0 : ((rider->power - rider->unk138 > 0) ? 1 : -1);
     }
     // Trick points (D_801C26E4) from the craft's trick state unk1604.
     if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
