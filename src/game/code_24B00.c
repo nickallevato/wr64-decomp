@@ -1312,7 +1312,8 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 34392 of 358000 (big7: the stack pad padA was spurious (frame 0x5F0 without it, the other homes unchanged);
+// Score 34344 of 358000 (big7: the visibility loop reads D_801AEE20[i] directly (no e); the stack pad padA was
+// spurious (frame 0x5F0 without it, the other homes unchanged);
 // table A's first draw loop, table B's draw loops and the last second layer read the alpha into cur (dead by then;
 // variable reuse) for the test, the copy and the env alpha (IDO still reloads it for the alpha in table B, but the
 // loops' registers come closer); the table-A loops count in idx and slot (a per-loop name search);
@@ -1427,20 +1428,19 @@ void func_8006E674(Gfx** gdl) {
     near = D_801C0C80->unkA0;
     far = D_801C0C80->unkA4;
     for (i = 0; i < D_801BB120; i++) {
-        e = &D_801AEE20[i];
-        if (e->unkC0 >= 2) {
+        if (D_801AEE20[i].unkC0 >= 2) {
             if ((D_800D4B04 & 1) || (D_800D5444 == 0)) {
                 D_801C0840[i] = -1;
                 continue;
             }
-        } else if ((e->unkC8 == 0) && (D_800D5448 == 0)) {
+        } else if ((D_801AEE20[i].unkC8 == 0) && (D_800D5448 == 0)) {
             D_801C0840[i] = -1;
             continue;
         }
-        dx = e->unk0 - cam->eyeX;
-        dz = e->unk8 - cam->eyeZ;
+        dx = D_801AEE20[i].unk0 - cam->eyeX;
+        dz = D_801AEE20[i].unk8 - cam->eyeZ;
         d = sqrtf((dx * dx) + (dz * dz));
-        if (e->unk9C == 1) {
+        if (D_801AEE20[i].unk9C == 1) {
             lim = (f32) far + (f32) far;
         } else {
             lim = far;
@@ -1451,7 +1451,7 @@ void func_8006E674(Gfx** gdl) {
                 dz /= d;
             }
             // 1U: odd literal; IDO then keeps only one of the two 1s in a register in this loop
-            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (e->unk9C == 1U) || (e->unk98 == 8) || (e->unk98 == 9)) {
+            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (D_801AEE20[i].unk9C == 1U) || (D_801AEE20[i].unk98 == 8) || (D_801AEE20[i].unk98 == 9)) {
                 if (d <= (f32) near) {
                     D_801C0840[i] = 0;
                 } else {
