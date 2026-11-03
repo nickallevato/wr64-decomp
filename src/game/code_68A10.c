@@ -867,9 +867,9 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 24072 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// Score 23805 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
 // the streaks' h and depth and the drops' two random values live in tilt, h, sx and vy (web name searches);
-// 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// lod = 0 follows the distance and n = 0 the angle jitter (swap search); 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
@@ -943,8 +943,8 @@ void func_800B08F8(s32 arg0) {
     dx = D_801D79BC - D_801D7968->eyeX;
     dy = D_801D79C0 - D_801D7968->eyeY;
     dz = D_801D79C4 - D_801D7968->eyeZ;
-    lod = 0;
     dist = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
+    lod = 0;
     D_800E6D60->unk1C4C = 0;
     if (twoViews) {
         lod = 1;
@@ -1210,8 +1210,8 @@ void func_800B08F8(s32 arg0) {
         } else {
             step = 90.0f;
         }
-        n = 0;
         angle += Math_FloatRand(32.0f) - 16.0f;
+        n = 0;
         rate = left;
         // New unk0 records: count streaks fanned out on both sides.
         for (i = 63, D_800E6D64 = &D_800E6D68[63]; i >= 0; i--, D_800E6D64--) {
