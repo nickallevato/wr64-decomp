@@ -3915,13 +3915,14 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 61501 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 56136 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
 // search (two rounds), operand orders, declaration order, two literal spellings, eleven field reads in place of
 // copies (read-through) and one sum in two statements from searches. func_800AF40C (code_68A10.c) takes the part's
-// three floats in registers, as the original passes them (m2c's call had four arguments and no prototype).
+// three floats in registers, as the original passes them (m2c's call had four arguments and no prototype). The
+// pose-state block walks the parts with a, not part (a name search over each block: 61501 -> 56136).
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4055,11 +4056,11 @@ void func_8005DE24(s32 arg0) {
         rider->unk1608--;
         if (rider->unk1608 == 0) {
             func_80053EAC(arg0, 0x17, 0, 1.0f, 0U);
-            for (part = &RIDER_PARTS(rider)[18]; part >= &RIDER_PARTS(rider)[0]; part--) {
-                part->unk1C.x *= 0.8f;
-                part->unk1C.z *= 0.8f;
-                if ((part->unk1C.y < 0.0f) && (rider->unk7C > 0.6f)) {
-                    part->unk1C.y = 0.0f;
+            for (a = &RIDER_PARTS(rider)[18]; a >= &RIDER_PARTS(rider)[0]; a--) {
+                a->unk1C.x *= 0.8f;
+                a->unk1C.z *= 0.8f;
+                if ((a->unk1C.y < 0.0f) && (rider->unk7C > 0.6f)) {
+                    a->unk1C.y = 0.0f;
                 }
             }
             rider->unkC74 = -1;
@@ -4071,15 +4072,15 @@ void func_8005DE24(s32 arg0) {
             if ((rider->unk16E0 == 0) || (rider->unk1598 != 0)) {
                 func_80053EAC(arg0, 0x18, 0, 1.0f, 1U);
                 first = &RIDER_PARTS(rider)[0];
-                for (part = &RIDER_PARTS(rider)[18]; part >= first; part--) {
-                    part->unk1C.x *= 0.8f;
-                    part->unk1C.z *= 0.8f;
-                    if ((part->unk1C.y < 0) && (rider->unk7C > 0.6f)) {
-                        part->unk1C.y = 0.0f;
+                for (a = &RIDER_PARTS(rider)[18]; a >= first; a--) {
+                    a->unk1C.x *= 0.8f;
+                    a->unk1C.z *= 0.8f;
+                    if ((a->unk1C.y < 0) && (rider->unk7C > 0.6f)) {
+                        a->unk1C.y = 0.0f;
                     }
-                    part->unk1C.x -= rider->unk6C;
-                    part->unk1C.y -= rider->unk70;
-                    part->unk1C.z -= rider->unk74;
+                    a->unk1C.x -= rider->unk6C;
+                    a->unk1C.y -= rider->unk70;
+                    a->unk1C.z -= rider->unk74;
                 }
                 rider->unkC74 = -1;
                 rider->unkC70 = -1;
@@ -4199,14 +4200,14 @@ void func_8005DE24(s32 arg0) {
                             rider->unkC74 = 0;
                         }
                     } else {
-                        part = &RIDER_PARTS(rider)[18];
+                        a = &RIDER_PARTS(rider)[18];
                         temp_a1_2 = temp_t9 + D_800D4994;
                         rider->unkC74 = temp_a1_2;
                         if ((temp_a1_2 >= 0x64) || ((temp_a1_2 >= D_800D4990) && (rider->unkC78 >= 8) && (rider->unk7C > 0.9f) && (rider->unkB90 < 8.333334f))) {
-                            for (; part >= &RIDER_PARTS(rider)[0]; part--) {
-                                part->unk1C.z = 0.00f; // odd literal: a separate zero to IDO (respelling search)
-                                part->unk1C.y = 0.0f;
-                                part->unk1C.x = 0.0f;
+                            for (; a >= &RIDER_PARTS(rider)[0]; a--) {
+                                a->unk1C.z = 0.00f; // odd literal: a separate zero to IDO (respelling search)
+                                a->unk1C.y = 0.0f;
+                                a->unk1C.x = 0.0f;
                             }
                             rider->unk157C = 0;
                             if (func_80053EAC(arg0, 7, 0, 1.0f, 0U) == 0) {
