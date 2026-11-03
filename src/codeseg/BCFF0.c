@@ -1521,7 +1521,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 35569 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 34579 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1531,7 +1531,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
 // D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
 // index in the championship gaps is kept in y2, the stunt time left in i and its thousandths in y2, the buoy-miss
-// count in color (variable-name searches over each block; the original keeps the leader in a saved register). Register
+// count in color and the rider's in k, the 2P gap color in k (variable-name searches over each block; the original
+// keeps the leader in a saved register). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
 // the lap-split popup), so the saved and temporary registers of every display-list
@@ -1653,11 +1654,11 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     x = 0;
                 }
-                color = 2;
+                k = 2;
                 if (rider->gapRequest == 1) {
-                    color = 1;
+                    k = 1;
                 }
-                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, color);
+                func_801F25E0(&gdl, x + 0x80, y, value, 3, rider->gapRequest, k);
             }
         }
     }
@@ -1934,7 +1935,7 @@ void func_801F4120(Gfx** gdlp) {
         HUD_RECT(gdl, 0x114, 0x8C, 24, 12);
     }
 
-    // Buoy marks: the label, color = gBuoyMisses (at most 28) marks D_102E3D8, then the rider's unk134 (n)
+    // Buoy marks: the label, color = gBuoyMisses (at most 28) marks D_102E3D8, then the rider's unk134 (k)
     // marks D_102E620 over the right end of the row (one fewer while gHudMarkers[player].unk0[0].unk18 == 1).
     if ((gGameModes != GMODE_STUNT) && (gCourseID != DOLPHIN_PARK)) {
         if (gPlayers == ONE_PLAYER) {
@@ -1970,22 +1971,22 @@ void func_801F4120(Gfx** gdlp) {
         for (i = 0; i < gPlayers; i++) {
             if (gPlayers == ONE_PLAYER) {
                 y = 0xCD;
-                n = gRiderRaceState[gPlayer1Rider].unk134;
+                k = gRiderRaceState[gPlayer1Rider].unk134;
                 x = D_80228B54 + 0x38;
             } else {
                 x = 0x18;
                 if (i == 0) {
                     y = 0x68;
-                    n = gRiderRaceState[gPlayer1Rider].unk134;
+                    k = gRiderRaceState[gPlayer1Rider].unk134;
                 } else {
                     y = 0xD6;
-                    n = gRiderRaceState[gPlayer2Rider].unk134;
+                    k = gRiderRaceState[gPlayer2Rider].unk134;
                 }
             }
             if (boost->unk0[0].unk18 == 1) {
-                n--;
+                k--;
             }
-            j = color - n;
+            j = color - k;
             if (j < 0) {
                 j = 0;
             }
