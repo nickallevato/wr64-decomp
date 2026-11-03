@@ -357,13 +357,14 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5111 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
+// Score 5081 of 69300: calls, branches and the frame agree. The two waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
-// and rider-to-node deltas compute dz before dx (a name search and an adjacent-swap search); the unk2D0 step is
+// delta computes dz before dx (a name search and an adjacent-swap search); the unk2D0 step is
 // written out as unk2D0 = unk2D0 + ... (a syntax search).
 // An empty test of node->unk74 in the outer else (FAKE, from the permuter; it compiles to a dead float compare)
-// gives 5240; p->unk44.x read through a pointer in its last two uses (FAKE, permuter): 5111.
+// gives 5240; p->unk44.x read through a pointer in its last two uses (FAKE, permuter): 5111; with it the
+// rider-to-node delta computes dx first again: 5081.
 // The angle goes straight into unk2D4 and is mirrored from there. The stunt-object search is a do-while guarded by
 // D_801BFA40 > 0 that skips other kinds with a goto to the increment (the original's skip path jumps to the loop
 // test). The two single-use crosses are spelled `a + -(b)`: IDO folds `a - b > 0.0f` into one compare, the original
@@ -577,8 +578,8 @@ void func_801EF504(void) {
             dirX /= dist;
             dirZ /= dist;
         }
-        dz = node->unk8 - p->unk44.z;
         dx = node->unk0 - *posX;
+        dz = node->unk8 - p->unk44.z;
         dist = sqrtf(dx * dx + dz * dz);
         if (dist > 0.0f) {
             dx /= dist;
