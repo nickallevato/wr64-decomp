@@ -2069,7 +2069,12 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 555 of 259500 (big7: the unk1C/unk18 eases written as the matched func_800A52D8 writes them, x + (d * 0.1)
+// Score 531 of 259500 (near14: sp48 and sp4C are not variables: both probe loops test
+// ((F448() + FAE4()) + CB4()) and the D_801D075C angle reads -func_8009D3AC(D_801D06C8, D_801D06D0) inline, so IDO
+// keeps the call results in its own temporaries (frame 0x70, FAE4's at 0x48 as in the original) and cam goes after
+// lead (cam at 0x58). Left: F448's temporary at 0x50 (0x4C in the original); 360.0f reloaded at the join after the
+// 2500.0f test (the original keeps it in $f2 across the if and reloads it right after the call); D_801D0754 stored
+// after lead->unk14 is read in the three switch arms; best = -1 set before the 1000.0f test. Before, 555 (big7: the unk1C/unk18 eases written as the matched func_800A52D8 writes them, x + (d * 0.1)
 // with no casts, which fixes IDO's operand order and the float temporaries after each one (4870 -> 2230 -> 1550);
 // the speed's ratio as ((180.0f - |a|) / 180.00f) * unk4C, two 180.0f constants and the original's operand order; the
 // probe loops' sums as ((sp4C = F448) + sp48) + CB4: sp4C is register-allocated ($f18) and spilled around the last
@@ -2097,11 +2102,9 @@ void func_800A68A4(s32 arg0) {
     s32 angle;
     s32 i;
     s32 best;
-    f32 sp4C;
-    camera_unk_1* cam;
     StructVarS0* lead;
+    camera_unk_1* cam;
     s32 t;
-    f32 sp48;
 
     cam = &gCameraPerspective[D_80223930];
     node = (UnkStruct_801CE780_unk4_unk4*) func_8009D6B0(D_801CF060[arg0].unk0, D_801CF060[arg0].unk74,
@@ -2331,9 +2334,8 @@ void func_800A68A4(s32 arg0) {
                 }
             }
             func_800A2B24(arg0);
-            sp48 = func_8009D3AC(D_801D06C8, D_801D06D0);
             D_801D075C = Math_Normalize_Angle(
-                -sp48 - func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC, -(D_801CF060[arg0].unk14 - D_801D06C4)));
+                -func_8009D3AC(D_801D06C8, D_801D06D0) - func_8009D3AC(D_801CF060[arg0].unkC - D_801D06BC, -(D_801CF060[arg0].unk14 - D_801D06C4)));
             if ((FABS(D_801D075C) > 120.0f) || (D_801D06D4 < 10.0f) ||
                 (func_8009D4DC(D_801CF060[arg0].unkC - D_801D06BC, D_801CF060[arg0].unk14 - D_801D06C4) > 4000000.0f)) {
                 D_801CF060[arg0].unk8 = 5;
@@ -2505,7 +2507,7 @@ void func_800A68A4(s32 arg0) {
                 D_801D0774 =
                     (((D_801CF060[arg0].unk14 + (D_801CF060[arg0].unk38 * 500.0f)) - D_801D075C) * 0.125f * (f32) i) +
                     D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); if ((f64) (((sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768)) + sp48) + func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768)) > 0.0) {
+                if ((f64) ((func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768) + func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768)) + func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
                     D_801CF060[arg0].unk14 = D_801D075C;
@@ -2587,7 +2589,7 @@ void func_800A68A4(s32 arg0) {
             for (i = 0; i < 4; i++) {
                 D_801D0770 = D_801CF060[arg0].unk10 - 20.0f;
                 D_801D076C = ((D_801CF060[arg0].unk14 - D_801D075C) * 0.25f * (f32) i) + D_801D075C;
-                sp48 = func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768); if ((f64) (((sp4C = func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768)) + sp48) + func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768)) > 0.0) {
+                if ((f64) ((func_8007F448(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768) + func_8007FAE4(D_801D076C, D_801D0770, D_801D0774, &D_801D0760, &D_801D0764, &D_801D0768)) + func_80051CB4(D_801D076C, D_801D0774, &D_801D0760, &D_801D0768)) > 0.0) {
                     D_801CF060[arg0].unkC = D_801D0754;
                     D_801CF060[arg0].unk10 = D_801D0758;
                     D_801CF060[arg0].unk14 = D_801D075C;
