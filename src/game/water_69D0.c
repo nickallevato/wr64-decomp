@@ -774,13 +774,14 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 1050 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
+// Score 750 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
 // v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The first
 // two passes build q's index in a variable before q = p + index (the original computes 2N + i + 2 and (2N - i + 1) << 3
 // in a1 and keeps it there): ha in the first pass, mean in the second. ha also reads the velocity for the damping at the
 // end of the first pass and in the middle of the third. Every pair puts its mean in mean and its difference in ha or hb,
 // as the original's registers show (no diff variable). Found by a coordinate search over which variable holds each
-// index, damping value and pair result: 1755 -> 1050, and the empty test (FAKE) the first pass needed is gone. The
+// index, damping value and pair result: 1755 -> 1050, and the empty test (FAKE) the first pass needed is gone. The first
+// pass looks up a's cell before q = p + index (a permuter find, checked: independent statements): 750. The
 // second pass's end is p + (N << 1) - i: the original computes it from N << 4 and i << 3 apart from q's index. Adding
 // the new velocity to the height in one statement (h += v = ...) gives the original's reload of v after the height
 // store; end as p + 2N + i in the first pass follows the original's address arithmetic.
@@ -801,8 +802,8 @@ void func_8004EAA4(void) {
     p = gWaterCellOffsets;
     for (i = -gWaterWindowN; i < 0; i++) {
         ha = (gWaterWindowN * 2) + i + 2;
-        q = p + ha;
         a = WATER_CELL_AT(p->unk0);
+        q = p + ha;
         ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
         hb = b->unk0;
