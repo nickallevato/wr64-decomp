@@ -2181,7 +2181,7 @@ void func_800A68A4(s32 arg0) {
             }
             D_801CF060[arg0].unk1C = func_8009D564(D_801CF060[arg0].unk1C);
             D_801D0768 = func_8009D4A8(D_801CF060[arg0].unk24, D_801CF060[arg0].unk2C);
-            // 180 as ints here (literal spelling; the original loads 180.0f twice in this block, here it is loaded once)
+            // 180.00f: a second spelling, so IDO keeps two 180.0 constants as the original loads it twice
             D_801D0764 =
                 (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.00f) * D_801CF060[arg0].unk4C) - D_801D0768) * 0.15) +
                        (f64) D_801D0768);
