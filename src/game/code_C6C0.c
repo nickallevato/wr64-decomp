@@ -5475,16 +5475,17 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 3465 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 3345 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
 // copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
 // stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
-// swap search kept (the gFrameCounter chain earlier, unkC54 = 22 after func_800624CC, which does not read it):
+// swap search kept (the gFrameCounter chain earlier):
 // 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. unkC7C and
 // unkC82 are set by one chain, unk15D8 = 1 is spelled as an int and the first 34.11f as 34.110f (searches): 3475;
-// unk16F2 is zeroed before unk1604: 3465.
+// unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
+// unkBAC..unkBB4 as one chain: 3345.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
@@ -5561,14 +5562,12 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC78 = 8;
     rider->unk1578 = 1;
     rider->unkC00 = 34.110f; // odd spelling of 34.11f: a separate constant to IDO (a respelling search)
-    func_800624CC(rider);
     rider->unkC54 = 22;
+    func_800624CC(rider);
     rider->unkBA0 = rider->unk6C;
     rider->unkBA4 = rider->unk70;
     rider->unkBA8 = rider->unk74;
-    rider->unkBAC = 0.0f;
-    rider->unkBB0 = 0.0f;
-    rider->unkBB4 = 0.0f;
+    rider->unkBAC = rider->unkBB0 = rider->unkBB4 = 0.0f;
     x = rider->unk44.x + (2.0f * rider->unk78);
     rider->unkC68 = 1;
     y = rider->unk44.y + (2.0f * rider->unk7C);
