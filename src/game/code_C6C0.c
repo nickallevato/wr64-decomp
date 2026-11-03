@@ -5475,7 +5475,7 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 2625 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
+// Score 1855 of 68700: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5488,16 +5488,15 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 // unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
 // unkC04 and the first part's sums with the doubled term first (operand-order searches): 2930. point is set before
 // the template loop and the chain loop reads lengths[i] for i = 1..5 (the original loads 0(v1) from lengths + 4 on):
-// 2625.
+// 2625. unkC20..unkC08 are cleared with 0.0f in field order (the original stores the top's 0.0f, $f20, there) and
+// the unk1520 loop with an int 0 (a separate zero, $f14, in the original): 1855; only registers differ now.
 // The twelve
 // points are transformed by
 // index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
-// original multiplies the loaded value without reloading it). The sphere velocities, the parts' unk1C and
-// unkC20-unkC34/unkC08 are cleared with an int 0 (0.0f there costs 5000); unk1604 and unk16F2 are zeroed by two
-// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: the original
-// stores unk16F2/unk1604 and reads them back right after the chain's conversions, before the B58/B56, B5F/B5E and
-// float stores (here after them); constant hoisting around the clear chain (the original keeps 10, 0x800 and 1 in
-// registers, this C 0x800, 10 and 22), and float register allocation in the first transform.
+// original multiplies the loaded value without reloading it). The sphere velocities and the parts' unk1C are
+// cleared with an int 0; unk1604 and unk16F2 are zeroed by two
+// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: float registers
+// from the first transform's sums on (operand order) and temporary registers through the function.
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5618,13 +5617,13 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC58 = func_8005CD24(arg0, (UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], rider->unkC54,
                                   rider->unkC58) - 1;
     func_8005D390((UnkStruct_80052E90_arg1_s*) RIDER_C88(rider)[rider->unk1424], (UnkStruct_8005CEF8*) rider->unk660);
-    rider->unkC28 = 0;
-    rider->unkC2C = 0;
-    rider->unkC30 = 0;
-    rider->unkC34 = 0;
-    rider->unkC08 = 0;
-    rider->unkC20 = 0;
-    rider->unkC24 = 0;
+    rider->unkC20 = 0.0f;
+    rider->unkC24 = 0.0f;
+    rider->unkC28 = 0.0f;
+    rider->unkC2C = 0.0f;
+    rider->unkC30 = 0.0f;
+    rider->unkC34 = 0.0f;
+    rider->unkC08 = 0.0f;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
     // FAKE: unkC1C and unkC04 through the free z and x (a search over routing stores through locals)
@@ -5673,7 +5672,7 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unk1448[i].unk14.x = RIDER_C88(rider)[rider->unk1424][7].unk18.x;
         rider->unk1448[i].unk14.y = RIDER_C88(rider)[rider->unk1424][7].unk18.y;
         rider->unk1448[i].unk14.z = RIDER_C88(rider)[rider->unk1424][7].unk18.z;
-        rider->unk1520[i].x = rider->unk1520[i].y = rider->unk1520[i].z = 0.0f;
+        rider->unk1520[i].x = rider->unk1520[i].y = rider->unk1520[i].z = 0;
     }
 }
 #else
