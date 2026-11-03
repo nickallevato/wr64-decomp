@@ -1521,7 +1521,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 43527 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 40559 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1529,7 +1529,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // there, but this form scores far better (the registers from there on). Both popups' 60000 tests and the player
 // popup's call read rider->checkpointGap again rather than value (a read-through search). The lap-split digit counts
 // in its own variable (i = k + 1, i++; the original keeps it in a saved register) and D_80228B54 is read through
-// D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). Register
+// D_80228B50's address there, so IDO reloads its address in the loop as the original does (FAKE). The leader's
+// index in the championship gaps is kept in y2 (a variable-name search; the original keeps it in a saved register). Register
 // allocation and scheduling differ throughout:
 // IDO hoists constants and global addresses into saved registers here that the original reloads (the constant 1 in
 // the lap-split popup), so the saved and temporary registers of every display-list
@@ -1538,8 +1539,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 // marks, the boost meter, the stunt score and the best times.
 void func_801F4120(Gfx** gdlp) {
     s32 i;
-    s32 j;
     s32 x;
+    s32 j;
     s32 y;
     s32 n;
     PortraitPos* pos;
@@ -1602,15 +1603,16 @@ void func_801F4120(Gfx** gdlp) {
     // Championship: the leader's time and the others' gaps to it, beside the portrait column.
     // k: the leader, value: the leader's time.
     if ((gGameModes == GMODE_CHAMPIONSHIP) && (gCourseID != DOLPHIN_PARK) && (D_801C1FDC >= 0x28)) {
-        for (k = 0; k < gRiders; k++) {
-            if ((gRiderRaceState[k].unk2F4 != 0) && (gRiderRaceState[k].racePosition == 0)) {
+        // y2 holds the leader's index here (variable reuse: k gives other registers)
+        for (y2 = 0; y2 < gRiders; y2++) {
+            if ((gRiderRaceState[y2].unk2F4 != 0) && (gRiderRaceState[y2].racePosition == 0)) {
                 break;
             }
         }
-        if (k >= gRiders) {
-            k = 0;
+        if (y2 >= gRiders) {
+            y2 = 0;
         }
-        value = gRiderRaceState[k].raceTime;
+        value = gRiderRaceState[y2].raceTime;
         for (i = 0; i < gRiders; i++) {
             rider = &gRiderRaceState[i];
             if (D_801C1FDC >= (rider->racePosition * 10) + 0x28) {
@@ -1622,7 +1624,7 @@ void func_801F4120(Gfx** gdlp) {
                 } else {
                     color = 1;
                 }
-                if (i == k) {
+                if (i == y2) {
                     func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime, 3, 3, color);
                 } else if (rider->unk2F4 != 0) {
                     func_801F25E0(&gdl, x + D_80228B50, y, rider->raceTime - value, 3, 1, color);
