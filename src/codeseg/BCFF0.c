@@ -1312,12 +1312,13 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 1275 of 174400 (near14: the original keeps all five display-list constants of the two trailing digit draws in
+// Score 1140 of 174400 (near14: the original keeps all five display-list constants of the two trailing digit draws in
 // registers (0xE7000000, 0xE4000000, 0xB3000000, 0xB2000000, 0x04000400; cc -S showed IDO rebuilding 0xB3000000 for the
 // second rectangle here). The x test moved after the first trailing load and an empty test of time after the first
 // trailing rectangle (both FAKE, a search over empty tests in that block) make IDO keep all five, as the original does:
 // 2425; a second empty test of x after the time test (FAKE, the same search): 1350; an empty test of time in the style
-// 1 digit loop (FAKE, the same search) keeps the li t5, 6 in the style 0/2 branch in place: 1275. Left: time is now
+// 1 digit loop (FAKE, the same search) keeps the li t5, 6 in the style 0/2 branch in place: 1275; an empty do-while
+// (0) at the top of the style 0/2 branch (FAKE, an insertion search): 1140. Left: time is now
 // spilled on entry to the style 1 branch too (one instruction more, which moves the .bss addresses by 0x10), and the
 // five constants' registers differ.) Before, 4005: in the style 1 branch each digit is loaded and drawn on two lines
 // (HUD_LOAD32, HUD_RECT) instead of one HUD_DIGIT line, since IDO schedules by source line. y is copied into a local (py), which the original
@@ -1438,6 +1439,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         HUD_LOAD32(gdl, D_103D5D0, 12, 16);
         HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
+        do {} while (0); // FAKE: splits IDO's scheduling block here (an insertion search)
         gDPPipeSync(gdl++);
         gDPSetPrimColor(gdl++, 0, 0, 255, 255, 255, 255);
         if (style == 0) {
