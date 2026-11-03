@@ -1312,7 +1312,8 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 33367 of 358000 (big7: an empty do-while (FAKE) before the D_801C1CE0 render mode; the visibility loop
+// Score 33052 of 358000 (big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode and the last second
+// layer's display list; the visibility loop
 // reads D_801AEE20[i] directly (no e); the stack pad padA was
 // spurious (frame 0x5F0 without it, the other homes unchanged);
 // table A's first draw loop, table B's draw loops and the last second layer read the alpha into cur (dead by then;
@@ -1777,6 +1778,7 @@ void func_8006E674(Gfx** gdl) {
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPPipeSync(gdlh++);
                 gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+                do {} while (0); // FAKE (insert search): an empty block that moves later register choices
                 gSPDisplayList(gdlh++, dlB2);
             }
         }
