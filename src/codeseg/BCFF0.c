@@ -2851,21 +2851,28 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 6790 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
-// original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
-// count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
-// x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
+// Score 4275 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
+// digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
+// D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
+// of the popup loop leave one address computation or two instructions more. The digit count is k + 1, as the
+// original's registers show (k's register is reused for the digit-drawing loop); the label's x and y are computed
+// before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a
+// declaration-move search. The popup loop is a do-while ending at D_80228B50, the symbol after D_80228AE0[4] (FAKE):
+// as `p != &D_80228AE0[4]` IDO builds the end as D_80228AE0 + 0x70 (one instruction more), and a for loop through
+// D_80228B50 gets an entry test. The original keeps the unused (2 - D_80228D18) / 2.0f and
 // 1.0f - f, both in f0: IDO deletes them (as dead stores, expression statements, register or volatile they stay
 // deleted or turn into stores) unless an empty `if (f != f) {}` follows (FAKE, marked); f / (f32) 2 stays a div.s
 // where / 2.0f becomes a multiply.
 // The original reloads each stunt total after adding to it, reading through a register and storing through the
 // symbol; reads through a volatile pointer (FAKE, marked) give the reload. The pointer is formed from the neighbouring
 // total's symbol (&D_801C26D4 - 1 for D_801C26D0, FAKE): through the same symbol IDO also stores through the register.
-// An empty test of count in the second total's case (FAKE, from an empty-test search) gives 6990.
-// p is set at the top, before gdl (the loop's init left empty): 6890.
-// A second empty test (of y, in the third total's case; FAKE, same search): 6790.
-// Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3), and the
-// totals' address register holds the neighbour's address here (lw -4(v0) for the original's lw 0(v0)).
+// An empty test of count in the second total's case (FAKE, from an empty-test search) still helps (5110 without it);
+// the earlier empty test of y now costs (removed).
+// Left: the original builds D_80228D14/18's addresses in a2/a3 and loads D_80228D14 before the D_80228D18 test; it
+// sets up the loop's constant registers (0xE600.., 0xF570.., 0xFD70.., 0xF300..) after the display-list header,
+// where IDO here hoists them above the D_80228D18 test; temps renumbered from there; the totals' address register
+// holds the neighbour's address here (lw -4(v0) for the original's lw 0(v0)).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2888,10 +2895,9 @@ void func_801FB514(Gfx** gdlp) {
     s32 pad; // stack pad: the original's frame is 0xB8
     s32 count;
     s32 k;
-    s8* digit;
+    s32 pad2; // stack pad (a local declared here keeps the original's slots)
     u8* img;
 
-    p = D_80228AE0;
     gdl = *gdlp;
     f = (2 - D_80228D18) / (f32) 2;
     f = 1.0f - f;
@@ -2912,11 +2918,11 @@ void func_801FB514(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
-    for (; p != &D_80228AE0[4]; p++) {
+    p = D_80228AE0;
+    do {
         if (p->unk0 == 0) {
             continue;
         }
-        k = 0;
         if (p->unk8 < 4) {
             alpha = p->unk8 * 255 / 4;
         } else if (p->unk8 >= 20) {
@@ -2952,15 +2958,14 @@ void func_801FB514(Gfx** gdlp) {
         gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
                             1 << 10);
         n = p->unk4;
-        digit = &D_80228CF8[4];
+        k = 0;
         for (;;) {
-            *digit = n % 10;
+            D_80228CF8[4 - k] = n % 10;
             n /= 10;
             if (n == 0) {
                 break;
             }
             k++;
-            digit--;
             if (k >= 5) {
                 break;
             }
@@ -3008,7 +3013,6 @@ void func_801FB514(Gfx** gdlp) {
                     break;
                 case 2:
                     total = &D_801C26D8 + 1; // FAKE, as above
-                    if (y) {} // FAKE: an empty test of y (a search over empty tests), for the registers
                     D_801C26DC = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26DC = 99999;
@@ -3024,7 +3028,7 @@ void func_801FB514(Gfx** gdlp) {
             }
             p->unk0 = 0;
         }
-    }
+    } while (++p != (UnkStruct_80228AE0*) &D_80228B50); // FAKE: the end through the next symbol
     if (D_80228A94 != 0) {
         D_80228A94--;
         gdl = Printer_Print(Printer_Print(gdl, 0, "TIME", 80, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0,
