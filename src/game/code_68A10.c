@@ -867,8 +867,8 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 24262 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
-// the streaks' h and depth and the drops' first random value live in tilt, dist and sx, a web name search;
+// Score 24072 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// the streaks' h and depth and the drops' two random values live in tilt, h, sx and vy (web name searches);
 // 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
@@ -1220,7 +1220,7 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk3C = 0;
                 half = count / 2;
                 f = 1.0f - lean;
-                // tilt, dist and sx below hold new values: variable reuse the original shows (web name search)
+                // tilt, h, sx and vy below hold new values: variable reuse the original shows (web name search)
                 tilt = (rate / 1.6f) * 3.2f;
                 vy = (f * 8.0f * 0.5f) + -6.0f;
                 r = (1.0f - absCos) * rate * 0.5f;
@@ -1234,7 +1234,7 @@ void func_800B08F8(s32 arg0) {
                 len = (2.0f * ((((f32) a / (half - 1)) - 1.0f) * len)) + 1.0f;
                 D_800E6D64->unk30 = ((len + 0.5f) * rate) + 2.0f;
                 D_800E6D64->unk34 = rate * 1.2f;
-                dist = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
+                h = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
                 if (n < half) {
                     side = -1;
                 } else {
@@ -1252,9 +1252,9 @@ void func_800B08F8(s32 arg0) {
                 if (special) {
                     D_800E6D64->unk30 += 14.0f;
                     D_800E6D64->unk34 = rate;
-                    dist -= 4.0f;
+                    h -= 4.0f;
                 }
-                D_800E6D64->unk20 = dist;
+                D_800E6D64->unk20 = h;
                 D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk0 =
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
@@ -1371,8 +1371,8 @@ void func_800B08F8(s32 arg0) {
                 depth = -36.0f;
                 height = 4.0f;
             } else {
-                g = Math_FloatRand(12.0f);
-                width = (Math_FloatRand(4.0f) + (12.0f + ((8.0f - g) * f))) - 2.0f;
+                vy = Math_FloatRand(12.0f);
+                width = (Math_FloatRand(4.0f) + (12.0f + ((8.0f - vy) * f))) - 2.0f;
                 if (n >= 2) {
                     width = -width;
                 }
