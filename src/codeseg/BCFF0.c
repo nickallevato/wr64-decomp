@@ -2828,7 +2828,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 6990 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 6890 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8. The digit loop counts in k (cleared at the top of the popup loop) and the digit
 // count is k + 1, as the original's registers show (k's register is reused for the digit-drawing loop); the label's
 // x and y are computed before its texture load (the original loads unk10/unk18/unkC there); the declaration order is from a declaration-move search. The original keeps the unused (2 - D_80228D18) / 2.0f and
@@ -2839,6 +2839,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 // symbol; reads through a volatile pointer (FAKE, marked) give the reload. The pointer is formed from the neighbouring
 // total's symbol (&D_801C26D4 - 1 for D_801C26D0, FAKE): through the same symbol IDO also stores through the register.
 // An empty test of count in the second total's case (FAKE, from an empty-test search) gives 6990.
+// p is set at the top, before gdl (the loop's init left empty): 6890.
 // Left: every temp after the prologue is renumbered (the original builds D_80228D14/18's addresses in a2/a3), and the
 // totals' address register holds the neighbour's address here (lw -4(v0) for the original's lw 0(v0)).
 extern u8 D_80246D0[];
@@ -2866,6 +2867,7 @@ void func_801FB514(Gfx** gdlp) {
     s8* digit;
     u8* img;
 
+    p = D_80228AE0;
     gdl = *gdlp;
     f = (2 - D_80228D18) / (f32) 2;
     f = 1.0f - f;
@@ -2886,7 +2888,7 @@ void func_801FB514(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
-    for (p = D_80228AE0; p != &D_80228AE0[4]; p++) {
+    for (; p != &D_80228AE0[4]; p++) {
         if (p->unk0 == 0) {
             continue;
         }
