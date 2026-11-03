@@ -1561,7 +1561,8 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 8026 of 124000 (big7: the human's remainder triangles set n = 0 just before their loop, which gives the
+// Score 7616 of 124000 (big7: an empty do-while (FAKE) ahead of the unk1A00 squares' vtx; the human's remainder
+// triangles set n = 0 just before their loop, which gives the
 // original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
 // (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks, display-list commands and loops (calls and branches agree). The stack pads give
 // the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
@@ -1659,6 +1660,7 @@ void func_800B305C(Gfx** gdl) {
         }
         for (j = 0, k = 0; j < 4; j++) {
             if (D_800E6D78[j].unk20 != 0) {
+                do {} while (0); // FAKE (insert search): an empty block that moves the vtx address work
                 vtx = &D_5000000->unk8DC0[i + view][k];
                 switch (D_800E6D78[j].unk24) {
                     case 1:
