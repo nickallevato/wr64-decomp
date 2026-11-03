@@ -2852,7 +2852,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 2680 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 1685 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
 // digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
 // D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
@@ -2874,10 +2874,13 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 // also moves the loop's constant registers (0xE600.., 0xF570.., 0xFD70.., 0xF300..) below the display-list header,
 // where the original sets them up: 4275 -> 3055. The label's x before its y (adjacent-swap search) and four empty
 // do-while (0) statements (FAKE, an insertion search: one after the unk10/unk14 bounce, one after each totals' pointer
-// set-up but the first case's) that split IDO's scheduling blocks there: 2680.
-// Left: the original builds D_80228D14/18's addresses in a2/a3 (v1/a0 here) and steps gdl for the first two commands
-// above the D_80228D18 test; temps renumbered; the totals' address register holds the neighbour's address here
-// (lw -4(v0) for the original's lw 0(v0)).
+// set-up but the first case's) that split IDO's scheduling blocks there: 2680. D_80228D18 read into n before the
+// f computations, which use it, and its increment after them (an order search over the top statements): IDO then
+// steps gdl for the first two commands above the D_80228D18 test as the original does, and the temporaries from there
+// on are numbered as in the original: 1685.
+// Left: D_80228D14's address and value are in a1/t3 here (a3/a1 in the original) and the first f in f10 (f0), which
+// shifts the temporaries in the top block; the totals' address &D_801C26D0 is built before the p->unk10 >= 0 test in
+// the original (after the bounce here).
 extern u8 D_80246D0[];
 extern u8 D_8024858[];
 extern u8 D_8024A40[];
@@ -2904,10 +2907,11 @@ void func_801FB514(Gfx** gdlp) {
     u8* img;
 
     gdl = *gdlp;
-    f = (2 - D_80228D18) / (f32) 2;
+    count = D_80228D14; // read before the test, as the original does
+    n = D_80228D18; // read once for the f computations and the increment, as the original does
+    f = (2 - n) / (f32) 2;
     f = 1.0f - f;
     if (f != f) {} // FAKE: the empty self-compare keeps the dead f computations, as the original has them
-    count = D_80228D14; // read before the test, as the original does
     D_80228D18++;
     if (D_80228D18 >= 2) {
         D_80228D14 = count + 1;
