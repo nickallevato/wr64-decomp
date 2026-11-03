@@ -2851,7 +2851,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 3055 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
+// Score 2680 of 68000: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
 // digit loop indexes D_80228CF8[4 - k] with k cleared just before it (IDO folds 4 - 0 into the original's constant
 // D_80228CFC and strength-reduces the index into its pointer); a pointer variable set there or k cleared at the top
@@ -2871,7 +2871,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 // the earlier empty test of y now costs (removed).
 // The original loads D_80228D14 before the D_80228D18 test: read into count there (a dead local at that point), it
 // also moves the loop's constant registers (0xE600.., 0xF570.., 0xFD70.., 0xF300..) below the display-list header,
-// where the original sets them up: 4275 -> 3055.
+// where the original sets them up: 4275 -> 3055. The label's x before its y (adjacent-swap search) and four empty
+// do-while (0) statements (FAKE, an insertion search: one after the unk10/unk14 bounce, one after each totals' pointer
+// set-up but the first case's) that split IDO's scheduling blocks there: 2680.
 // Left: the original builds D_80228D14/18's addresses in a2/a3 (v1/a0 here) and steps gdl for the first two commands
 // above the D_80228D18 test; temps renumbered; the totals' address register holds the neighbour's address here
 // (lw -4(v0) for the original's lw 0(v0)).
@@ -2954,8 +2956,8 @@ void func_801FB514(Gfx** gdlp) {
                 gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
                 break;
         }
-        y = p->unk10 + p->unk18 + 116;
         x += p->unkC;
+        y = p->unk10 + p->unk18 + 116;
         gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gdl++, x << 2, y << 2, (x + w) << 2, (y + 12) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10,
@@ -2995,12 +2997,14 @@ void func_801FB514(Gfx** gdlp) {
             p->unk14 = -10;
             p->unk10 = 0;
         }
+        do {} while (0); // FAKE: splits the scheduling block (an insertion search)
         if (p->unk14 == -10) {
             p->unkC -= 10;
         }
         p->unk8++;
         if (p->unk8 >= 23) {
             total = &D_801C26D4 - 1; // FAKE: D_801C26D0 through its neighbour's symbol (see the note)
+            do {} while (0); // FAKE: as above
             D_801C26D0 = *total + p->unk4;
             if (*total >= 100000) {
                 D_801C26D0 = 99999;
@@ -3016,6 +3020,7 @@ void func_801FB514(Gfx** gdlp) {
                     break;
                 case 2:
                     total = &D_801C26D8 + 1; // FAKE, as above
+                    do {} while (0); // FAKE: as above
                     D_801C26DC = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26DC = 99999;
@@ -3023,6 +3028,7 @@ void func_801FB514(Gfx** gdlp) {
                     break;
                 case 3:
                     total = &D_801C26DC - 1; // FAKE, as above
+                    do {} while (0); // FAKE: as above
                     D_801C26D8 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D8 = 99999;
