@@ -867,7 +867,8 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 24847 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// Score 24262 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// the streaks' h and depth and the drops' first random value live in tilt, dist and sx, a web name search;
 // 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
@@ -1219,7 +1220,8 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk3C = 0;
                 half = count / 2;
                 f = 1.0f - lean;
-                h = (rate / 1.6f) * 3.2f;
+                // tilt, dist and sx below hold new values: variable reuse the original shows (web name search)
+                tilt = (rate / 1.6f) * 3.2f;
                 vy = (f * 8.0f * 0.5f) + -6.0f;
                 r = (1.0f - absCos) * rate * 0.5f;
                 g = rate / 1.5f;
@@ -1232,7 +1234,7 @@ void func_800B08F8(s32 arg0) {
                 len = (2.0f * ((((f32) a / (half - 1)) - 1.0f) * len)) + 1.0f;
                 D_800E6D64->unk30 = ((len + 0.5f) * rate) + 2.0f;
                 D_800E6D64->unk34 = rate * 1.2f;
-                depth = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
+                dist = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
                 if (n < half) {
                     side = -1;
                 } else {
@@ -1243,23 +1245,23 @@ void func_800B08F8(s32 arg0) {
                     vy += 2.0f;
                 }
                 if (D_800E6D60->unk1C54 != 0) {
-                    h *= 0.03125f;
+                    tilt *= 0.03125f;
                     height /= 6.0f;
                     vy /= 3.0f;
                 }
                 if (special) {
                     D_800E6D64->unk30 += 14.0f;
                     D_800E6D64->unk34 = rate;
-                    depth -= 4.0f;
+                    dist -= 4.0f;
                 }
-                D_800E6D64->unk20 = depth;
+                D_800E6D64->unk20 = dist;
                 D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk0 =
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
                 D_800E6D64->unk8 =
                     (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
                 D_800E6D64->unk4 = (4.0f + D_801D79C0) - rate;
-                D_800E6D64->unk24 = h * side;
+                D_800E6D64->unk24 = tilt * side;
                 D_800E6D64->unk2C = vy * 1.20f; // 1.20f: respelled
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
@@ -1375,8 +1377,8 @@ void func_800B08F8(s32 arg0) {
                     width = -width;
                 }
                 height = (f * 12) + 4.0f;
-                g = Math_FloatRand(16.0f);
-                depth = (Math_FloatRand(4.0f) + (-16.0f - ((8 + g) * f))) - 2.0f;
+                sx = Math_FloatRand(16.0f);
+                depth = (Math_FloatRand(4.0f) + (-16.0f - ((8 + sx) * f))) - 2.0f;
             }
             D_800E6D74->unk0 = (width * D_801D79EC) + D_801D79BC + (depth * D_801D79E0);
             D_800E6D74->unk4 = (width * D_801D79F0) + D_801D79C0 + (depth * D_801D79E4) + height;
