@@ -1312,7 +1312,15 @@ void func_800B4ABC(Gfx** gdl);
 #define BUOY_FADE(d, near, far) ((((d) - (f32) (near)) * 255.0f) / (f32) ((far) - (near)))
 
 #ifdef NON_MATCHING
-// Score 36313 of 358000: same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
+// Score 33052 of 358000 (big7: empty do-whiles (FAKE) before the D_801C1CE0 render mode and the last second
+// layer's display list; the visibility loop
+// reads D_801AEE20[i] directly (no e); the stack pad padA was
+// spurious (frame 0x5F0 without it, the other homes unchanged);
+// table A's first draw loop, table B's draw loops and the last second layer read the alpha into cur (dead by then;
+// variable reuse) for the test, the copy and the env alpha (IDO still reloads it for the alpha in table B, but the
+// loops' registers come closer); the table-A loops count in i and slot (per-loop
+// name searches);
+// 36313 before): same calls and branches (by a structure diff) and frame size (the stack pads place gdlh,
 // dirX/dirZ, slot, the MtxF and rec where the original has them: it had more locals than this C); table B's draw loops
 // reload D_801C0840[i] for the env alpha where the original reuses the loaded value, and constants (G_CULL_BACK, the
 // gate lists) sit in other registers. Each search sets its counter to D_801BB120 (one load, CSE'd into a0 for all
@@ -1328,7 +1336,6 @@ void func_800B4ABC(Gfx** gdl);
 // declared first (a declaration search, 36313).
 void func_8006E674(Gfx** gdl) {
     camera_unk_1* cam;
-    s32 padA[2]; // stack pad
     s32 n;
     s32 slot;
     UnkStruct_80192690* craft;
@@ -1424,20 +1431,19 @@ void func_8006E674(Gfx** gdl) {
     near = D_801C0C80->unkA0;
     far = D_801C0C80->unkA4;
     for (i = 0; i < D_801BB120; i++) {
-        e = &D_801AEE20[i];
-        if (e->unkC0 >= 2) {
+        if (D_801AEE20[i].unkC0 >= 2) {
             if ((D_800D4B04 & 1) || (D_800D5444 == 0)) {
                 D_801C0840[i] = -1;
                 continue;
             }
-        } else if ((e->unkC8 == 0) && (D_800D5448 == 0)) {
+        } else if ((D_801AEE20[i].unkC8 == 0) && (D_800D5448 == 0)) {
             D_801C0840[i] = -1;
             continue;
         }
-        dx = e->unk0 - cam->eyeX;
-        dz = e->unk8 - cam->eyeZ;
+        dx = D_801AEE20[i].unk0 - cam->eyeX;
+        dz = D_801AEE20[i].unk8 - cam->eyeZ;
         d = sqrtf((dx * dx) + (dz * dz));
-        if (e->unk9C == 1) {
+        if (D_801AEE20[i].unk9C == 1) {
             lim = (f32) far + (f32) far;
         } else {
             lim = far;
@@ -1448,7 +1454,7 @@ void func_8006E674(Gfx** gdl) {
                 dz /= d;
             }
             // 1U: odd literal; IDO then keeps only one of the two 1s in a register in this loop
-            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (e->unk9C == 1U) || (e->unk98 == 8) || (e->unk98 == 9)) {
+            if ((((dx * dirX) + (dz * dirZ)) > 0.5f) || (D_801AEE20[i].unk9C == 1U) || (D_801AEE20[i].unk98 == 8) || (D_801AEE20[i].unk98 == 9)) {
                 if (d <= (f32) near) {
                     D_801C0840[i] = 0;
                 } else {
@@ -1464,8 +1470,8 @@ void func_8006E674(Gfx** gdl) {
             D_801C0840[i] = -1;
         }
     }
-    // slot = 0 here and in the next loop: the original zeroes the register then, unused until table A.
-    for (i = 0, slot = 0; i < D_801BC938; i++) {
+    // cur = 0 here and slot = 0 in the next loop: the original zeroes the register then, unused until table A.
+    for (i = 0, cur = 0; i < D_801BC938; i++) {
         b = &gCoursePoints[i];
         dx = b->unk0 - cam->eyeX;
         dz = b->unk8 - cam->eyeZ;
@@ -1582,23 +1588,23 @@ void func_8006E674(Gfx** gdl) {
     gDPLoadTLUT_pal256(gdlh++, D_D4F18);
     gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    for (i = 0; i < D_801BC938; i++) {
-        D_801C0640[i] = -1;
-        if ((gCoursePoints[i].unk10 == 0) && (D_801C08C0[i] >= 0)) {
-            D_801C0640[i] = D_801C08C0[i];
-            gSPMatrix(gdlh++, &mtx[D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    for (slot = 0; slot < D_801BC938; slot++) {
+        D_801C0640[slot] = -1;
+        if ((gCoursePoints[slot].unk10 == 0) && ((cur = D_801C08C0[slot]) >= 0)) {
+            D_801C0640[slot] = cur;
+            gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C08C0[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
             gSPDisplayList(gdlh++, dlA);
         }
     }
     gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    for (i = 0; i < D_801BC938; i++) {
-        if (D_801C0640[i] >= 0) {
-            gSPMatrix(gdlh++, &mtx[D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    for (slot = 0; slot < D_801BC938; slot++) {
+        if (D_801C0640[slot] >= 0) {
+            gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[slot]);
             gSPDisplayList(gdlh++, dlA2);
         }
     }
@@ -1617,11 +1623,11 @@ void func_8006E674(Gfx** gdl) {
     }
     gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    for (i = 0; i < D_801BC938; i++) {
-        if (D_801C0640[i] >= 0) {
-            gSPMatrix(gdlh++, &mtx[D_801C0B80[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    for (slot = 0; slot < D_801BC938; slot++) {
+        if (D_801C0640[slot] >= 0) {
+            gSPMatrix(gdlh++, &mtx[D_801C0B80[slot]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0640[slot]);
             gSPDisplayList(gdlh++, dlA2);
         }
     }
@@ -1707,11 +1713,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BB120; i++) {
         D_801C05C0[i] = -1;
-        if ((D_801C0840[i] >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
-            D_801C05C0[i] = D_801C0840[i];
+        if (((cur = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 0) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = cur;
             gSPMatrix(gdlh++, &mtx[D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
             gSPDisplayList(gdlh++, dlB);
         }
     }
@@ -1730,11 +1736,11 @@ void func_8006E674(Gfx** gdl) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     for (i = 0; i < D_801BB120; i++) {
         D_801C05C0[i] = -1;
-        if ((D_801C0840[i] >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
-            D_801C05C0[i] = D_801C0840[i];
+        if (((cur = D_801C0840[i]) >= 0) && (D_801AEE20[i].unk98 == 1) && ((D_801AEE20[i].unkC8 != 0) || (D_800D5448 != 0))) {
+            D_801C05C0[i] = cur;
             gSPMatrix(gdlh++, &mtx[D_801C0B40[i]], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gDPPipeSync(gdlh++);
-            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+            gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
             gSPDisplayList(gdlh++, dlB);
         }
     }
@@ -1754,24 +1760,25 @@ void func_8006E674(Gfx** gdl) {
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         for (i = 0; i < D_801BB120; i++) {
             D_801C05C0[i] = -1;
-            if ((D_801C0840[i] >= 0) &&
+            if (((cur = D_801C0840[i]) >= 0) &&
                 ((D_801AEE20[i].unk98 == 4) || (D_801AEE20[i].unk98 == 6) || (D_801AEE20[i].unk98 == 10))) {
-                D_801C05C0[i] = D_801C0840[i];
+                D_801C05C0[i] = cur;
                 gSPMatrix(gdlh++, &mtx[D_801C0B40[i]],
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPPipeSync(gdlh++);
-                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C0840[i]);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
                 gSPDisplayList(gdlh++, dlB);
             }
         }
         gDPLoadTextureBlock(gdlh++, tex2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         for (i = 0; i < D_801BB120; i++) {
-            if (D_801C05C0[i] >= 0) {
+            if ((cur = D_801C05C0[i]) >= 0) {
                 gSPMatrix(gdlh++, &mtx[D_801C0B40[i]],
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gDPPipeSync(gdlh++);
-                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, D_801C05C0[i]);
+                gDPSetEnvColor(gdlh++, D_801C0C80->unk48, D_801C0C80->unk4C, D_801C0C80->unk50, cur);
+                do {} while (0); // FAKE (insert search): an empty block that moves later register choices
                 gSPDisplayList(gdlh++, dlB2);
             }
         }
@@ -1948,6 +1955,7 @@ void func_8006E674(Gfx** gdl) {
         gDPPipeSync(gdlh++);
         gDPSetCycleType(gdlh++, G_CYC_1CYCLE);
         if (D_801C1CE0 != NULL) {
+            do {} while (0); // FAKE (insert search): an empty block that changes the register choices after it
             gDPSetRenderMode(gdlh++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             gSPDisplayList(gdlh++, D_801C1CE0);
         }

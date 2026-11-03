@@ -867,7 +867,9 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 25822 of 216100: same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
+// Score 23805 of 216100 (big7: the drop loop counts in count and keeps its angle in n, a per-loop name search;
+// the streaks' h and depth and the drops' two random values live in tilt, h, sx and vy (web name searches);
+// lod = 0 follows the distance and n = 0 the angle jitter (swap search); 25822 before): same blocks, loops and calls (the drop test reads !(absCos < 0.94f), the original's
 // compare; count is chosen by a nested if with its own else for twoViews, the original's block order and extra b).
 // Register allocation differs from the start: isHuman stays in s7 where the original keeps it in its stack slot
 // (forcing that hoists the constant 4 shared by special and unk1C44 into s7 instead), special and count are
@@ -941,8 +943,8 @@ void func_800B08F8(s32 arg0) {
     dx = D_801D79BC - D_801D7968->eyeX;
     dy = D_801D79C0 - D_801D7968->eyeY;
     dz = D_801D79C4 - D_801D7968->eyeZ;
-    lod = 0;
     dist = sqrtf((dx * dx) + (dy * dy) + (dz * dz));
+    lod = 0;
     D_800E6D60->unk1C4C = 0;
     if (twoViews) {
         lod = 1;
@@ -1171,7 +1173,7 @@ void func_800B08F8(s32 arg0) {
     right = 2.0f * (rate * (1.0f - split));
     if ((rate > 0.1f) && spawn && (lod != 0)) {
         if (!twoViews) {
-            if (lod == 3U) { // 3U: not shared with the 3 in "3 - n" below (the original rematerialises both)
+            if (lod == 3U) { // 3U: not shared with the 3 in "3 - count" below (the original rematerialises both)
                 count = 6;
             } else {
                 count = 4;
@@ -1208,8 +1210,8 @@ void func_800B08F8(s32 arg0) {
         } else {
             step = 90.0f;
         }
-        n = 0;
         angle += Math_FloatRand(32.0f) - 16.0f;
+        n = 0;
         rate = left;
         // New unk0 records: count streaks fanned out on both sides.
         for (i = 63, D_800E6D64 = &D_800E6D68[63]; i >= 0; i--, D_800E6D64--) {
@@ -1218,7 +1220,8 @@ void func_800B08F8(s32 arg0) {
                 D_800E6D64->unk3C = 0;
                 half = count / 2;
                 f = 1.0f - lean;
-                h = (rate / 1.6f) * 3.2f;
+                // tilt, h, sx and vy below hold new values: variable reuse the original shows (web name search)
+                tilt = (rate / 1.6f) * 3.2f;
                 vy = (f * 8.0f * 0.5f) + -6.0f;
                 r = (1.0f - absCos) * rate * 0.5f;
                 g = rate / 1.5f;
@@ -1231,7 +1234,7 @@ void func_800B08F8(s32 arg0) {
                 len = (2.0f * ((((f32) a / (half - 1)) - 1.0f) * len)) + 1.0f;
                 D_800E6D64->unk30 = ((len + 0.5f) * rate) + 2.0f;
                 D_800E6D64->unk34 = rate * 1.2f;
-                depth = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
+                h = (32.0f - (len * 16.0f)) - (f * 0.5f * 16.0f);
                 if (n < half) {
                     side = -1;
                 } else {
@@ -1242,23 +1245,23 @@ void func_800B08F8(s32 arg0) {
                     vy += 2.0f;
                 }
                 if (D_800E6D60->unk1C54 != 0) {
-                    h *= 0.03125f;
+                    tilt *= 0.03125f;
                     height /= 6.0f;
                     vy /= 3.0f;
                 }
                 if (special) {
                     D_800E6D64->unk30 += 14.0f;
                     D_800E6D64->unk34 = rate;
-                    depth -= 4.0f;
+                    h -= 4.0f;
                 }
-                D_800E6D64->unk20 = depth;
+                D_800E6D64->unk20 = h;
                 D_800E6D64->unk18 = ((len * 6.0f) + 6.0f) * side;
                 D_800E6D64->unk0 =
                     (D_800E6D64->unk18 * D_801D79EC) + D_801D79BC + (D_800E6D64->unk20 * D_801D79E0);
                 D_800E6D64->unk8 =
                     (D_800E6D64->unk18 * D_801D79F4) + D_801D79C4 + (D_800E6D64->unk20 * D_801D79E8);
                 D_800E6D64->unk4 = (4.0f + D_801D79C0) - rate;
-                D_800E6D64->unk24 = h * side;
+                D_800E6D64->unk24 = tilt * side;
                 D_800E6D64->unk2C = vy * 1.20f; // 1.20f: respelled
                 D_800E6D64->unkC =
                     (D_800E6D64->unk24 * D_801D79EC) + (D_800E6D64->unk2C * 0.5f * D_801D79E0);
@@ -1309,7 +1312,8 @@ void func_800B08F8(s32 arg0) {
                         D_800E6D60->unk1C50 = 24;
                     }
                 } else {
-                    n = 0;
+                    // count (dead here) counts the drops and n holds the angle: the original reuses them (name search)
+                    count = 0;
                     for (i = 63, D_800E6D6C = &D_800E6D70[63]; i >= 0; i--, D_800E6D6C--) {
                         if (D_800E6D6C->unk20 == 0) {
                             D_800E6D6C->unk20 = 1;
@@ -1319,26 +1323,26 @@ void func_800B08F8(s32 arg0) {
                             D_800E6D6C->unk18 = Math_FloatRand(rate / 3.0f) + 1.0f;
                             sz = fwdZ * width;
                             D_800E6D6C->unk1C = 0.0f;
-                            if (n < 4) {
-                                f = 3 - n;
+                            if (count < 4) {
+                                f = 3 - count;
                             } else {
-                                f = n - 4;
+                                f = count - 4;
                             }
                             len = (split < (1.0f - split)) ? split : (1.0f - split);
                             len = (2.0f * (((f / 3) - 1.0f) * len)) + 1.0f;
                             sx = (24.0f + rate) - (len * 8); // int 8 (respelling search)
-                            a = (angle / 360.0f) * 4096.0f;
-                            D_800E6D6C->unk0 = (gSinTable[(a + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
+                            n = (angle / 360.0f) * 4096.0f;
+                            D_800E6D6C->unk0 = (gSinTable[(n + 0x400) & 0xFFF] * sx) + (D_801D79BC - (fwdX * width));
                             D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
-                            D_800E6D6C->unk8 = (gSinTable[a & 0xFFF] * sx) + (D_801D79C4 - sz);
+                            D_800E6D6C->unk8 = (gSinTable[n & 0xFFF] * sx) + (D_801D79C4 - sz);
                             f = Math_FloatRand(r);
-                            n++;
+                            count++;
                             vy = Math_FloatRand(r) + (rate / 1.2);
-                            D_800E6D6C->unkC = (gSinTable[(a + 0x400) & 0xFFF] * f) + (D_801D79C8 * 0.8);
+                            D_800E6D6C->unkC = (gSinTable[(n + 0x400) & 0xFFF] * f) + (D_801D79C8 * 0.8);
                             D_800E6D6C->unk10 = vy;
-                            D_800E6D6C->unk14 = (gSinTable[a & 0xFFF] * f) + (D_801D79D0 * 0.8);
+                            D_800E6D6C->unk14 = (gSinTable[n & 0xFFF] * f) + (D_801D79D0 * 0.8);
                             angle += step;
-                            if (n >= 8) {
+                            if (count >= 8) {
                                 break;
                             }
                         }
@@ -1367,14 +1371,14 @@ void func_800B08F8(s32 arg0) {
                 depth = -36.0f;
                 height = 4.0f;
             } else {
-                g = Math_FloatRand(12.0f);
-                width = (Math_FloatRand(4.0f) + (12.0f + ((8.0f - g) * f))) - 2.0f;
+                vy = Math_FloatRand(12.0f);
+                width = (Math_FloatRand(4.0f) + (12.0f + ((8.0f - vy) * f))) - 2.0f;
                 if (n >= 2) {
                     width = -width;
                 }
                 height = (f * 12) + 4.0f;
-                g = Math_FloatRand(16.0f);
-                depth = (Math_FloatRand(4.0f) + (-16.0f - ((8 + g) * f))) - 2.0f;
+                sx = Math_FloatRand(16.0f);
+                depth = (Math_FloatRand(4.0f) + (-16.0f - ((8 + sx) * f))) - 2.0f;
             }
             D_800E6D74->unk0 = (width * D_801D79EC) + D_801D79BC + (depth * D_801D79E0);
             D_800E6D74->unk4 = (width * D_801D79F0) + D_801D79C0 + (depth * D_801D79E4) + height;
@@ -1557,14 +1561,20 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 11611 of 124000: same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// Score 7616 of 124000 (big7: an empty do-while (FAKE) ahead of the unk1A00 squares' vtx; the human's remainder
+// triangles set n = 0 just before their loop, which gives the
+// original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
+// (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks,
+// display-list commands and loops (calls and branches agree). The stack pads give
 // the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
 // through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
 // D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
 // with the default (the original's table has 7 entries). Left: register allocation and
-// scheduling (the original keeps more command words in saved registers; its first-loop counter is s4 and the
-// D_1048468 address is set after the loop guard).
+// scheduling (the original keeps more command words in saved registers; it does not fold the trail quads' k * 2 * 5
+// into k * 10, it hoists case 6's texture address in the unk1A00 loop and adds 0x8DC0 last there, and computes
+// i + view before the age test in the first loop instead of distributing it; the remainder's vertex word adds
+// (n << 9) and n * 16 where gSPVertex ORs them: an additive gDma1p gives those instructions but scores 8651).
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1606,9 +1616,10 @@ void func_800B305C(Gfx** gdl) {
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        for (k = 1; k != 5; k++) {
-            n = 0;
-            switch (k) {
+        // n picks the texture and k counts the vertices here: the variables the original reuses (a name search)
+        for (n = 1; n != 5; n++) {
+            k = 0;
+            switch (n) {
                 case 1:
                     tex = D_1047C60;
                     break;
@@ -1627,12 +1638,12 @@ void func_800B305C(Gfx** gdl) {
             for (j = 63; j >= 0; j--) {
                 if (D_800E6D68[j].unk38 != 0) {
                     D_800E6D64 = &D_800E6D68[j];
-                    if ((((D_800E6D64->unk3C + j) & 3) + 1) != k) {
-                        n += 3;
+                    if ((((D_800E6D64->unk3C + j) & 3) + 1) != n) {
+                        k += 3;
                     } else {
-                        gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][n], 3, 0);
+                        gSPVertex(gdlh++, &D_5000000->unk51C0[i + view][k], 3, 0);
                         gSP1Triangle(gdlh++, 0, 1, 2, 0);
-                        n += 3;
+                        k += 3;
                     }
                 }
             }
@@ -1648,9 +1659,10 @@ void func_800B305C(Gfx** gdl) {
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        for (j = 0, n = 0; j < 4; j++) {
+        for (j = 0, k = 0; j < 4; j++) {
             if (D_800E6D78[j].unk20 != 0) {
-                vtx = &D_5000000->unk8DC0[i + view][n];
+                do {} while (0); // FAKE (insert search): an empty block that moves the vtx address work
+                vtx = &D_5000000->unk8DC0[i + view][k];
                 switch (D_800E6D78[j].unk24) {
                     case 1:
                         tex = (u8*) &D_1049C80;
@@ -1675,7 +1687,7 @@ void func_800B305C(Gfx** gdl) {
                         tex = (u8*) &D_104CCB0;
                         break;
                 }
-                n += 4;
+                k += 4;
                 gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
                 gSPVertex(gdlh++, vtx, 4, 0);
@@ -1707,8 +1719,8 @@ void func_800B305C(Gfx** gdl) {
             continue;
         }
         gSPVertex(gdlh++, D_5000000->unk91C0[i], 16, 0);
-        for (k = 0; k < 7; k++) {
-            gSP1QuadrangleLP(gdlh++, k * 2, k * 2 + 2, k * 2 + 3, k * 2 + 1);
+        for (j = 0; j < 7; j++) {
+            gSP1QuadrangleLP(gdlh++, j * 2, j * 2 + 2, j * 2 + 3, j * 2 + 1);
         }
     }
     // The unk1000 triangles of the human's entry, 5 to a vertex load.
@@ -1721,13 +1733,12 @@ void func_800B305C(Gfx** gdl) {
             continue;
         }
         D_800E6D60 = &D_801D0798[i];
-        vtx = D_50081C0;
         if (D_800E6D60->unk1C58 != 0) {
             gDPSetEnvColor(gdlh++, 0xEB, 0xE3, 0xD1, 0xFF);
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        n = 0;
+        vtx = D_50081C0;
         k = D_800E6D60->unk1C24 / 5;
         if (k != 0) {
             for (j = 0; j < k; j++) {
@@ -1743,6 +1754,7 @@ void func_800B305C(Gfx** gdl) {
         k = D_800E6D60->unk1C24 % 5;
         if (k != 0) {
             gSPVertex(gdlh++, vtx, k * 3, 0);
+            n = 0;
             for (j = 0; j < k; j++) {
                 gSP1Triangle(gdlh++, n, n + 1, n + 2, 0);
                 n += 3;

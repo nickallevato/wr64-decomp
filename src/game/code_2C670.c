@@ -279,7 +279,12 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 35174 of 150300: same lists and stores, and the buoy switch is a jump table from 0 (case 0 with the default,
+// Score 29836 of 150300 (big7: an empty do-while (FAKE) after the buoys' kind store; the first two loops keep
+// their angles in kind and type and the list choice its difficulty in angle (per-loop name searches); table B's
+// heading, the rings' 8 and unk6 and the edge points' z pass through angle, n, kind and t (hold searches);
+// D_801BB134 is cleared before D_801BFA40 (a swap search); the first loop's cosine is scaled by an int 64
+// (respelling); the zero stores are chained (syntax and grouping searches); 35174 before): same lists and stores,
+// and the buoy switch is a jump table from 0 (case 0 with the default,
 // written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
 // (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C, things 0x48, table
 // 0x30; the pad stands for four words above them), which gives its frame (0xA0); table is declared after e (a
@@ -401,8 +406,7 @@ void func_80071E70(void) {
     D_801C3B40 = params2->unk38;
 
     // D_801BFA48 and D_801BFB70, at most 8 each.
-    D_801BFB68 = 0;
-    D_801BFD70 = 0;
+    D_801BFB68 = D_801BFD70 = 0;
     if (D_801CE638 == 8) {
         src1 = D_800D68FC[gCourseID];
         src2 = D_800D6924[gCourseID];
@@ -416,9 +420,11 @@ void func_80071E70(void) {
     for (p1 = src1; p1->unk4 != -1; p1++) {
         D_801BFA48[D_801BFB68].unk0 = p1->unk0;
         D_801BFA48[D_801BFB68].unk4 = p1->unk2;
-        angle = (p1->unk4 / 360.0f) * 4096.0f;
-        D_801BFA48[D_801BFB68].unk8 = gSinTable[angle & 0xFFF] * 64.0f;
-        D_801BFA48[D_801BFB68].unkC = gSinTable[(angle + 0x400) & 0xFFF] * 64.0f;
+        // kind holds the angle here and angle the difficulty below: the variables the original reuses (name search)
+        kind = (p1->unk4 / 360.0f) * 4096.0f;
+        D_801BFA48[D_801BFB68].unk8 = gSinTable[kind & 0xFFF] * 64.0f;
+        // int 64: odd literal (a respelling search; the same value)
+        D_801BFA48[D_801BFB68].unkC = gSinTable[(kind + 0x400) & 0xFFF] * 64;
         D_801BFA48[D_801BFB68].unk1C = p1->unk6 / 64;
         D_801BFA48[D_801BFB68].unk10 = p1->unk8;
         D_801BFA48[D_801BFB68].unk14 = p1->unkA;
@@ -434,12 +440,13 @@ void func_80071E70(void) {
         }
         D_801BFB70[D_801BFD70].unk0 = src2->unk0;
         D_801BFB70[D_801BFD70].unk4 = src2->unk2;
-        angle = (src2->unk4 / 360.0f) * 4096.0f;
-        D_801BFB70[D_801BFD70].unk10 = gSinTable[angle & 0xFFF] * 64.0f;
-        D_801BFB70[D_801BFD70].unk14 = gSinTable[(angle + 0x400) & 0xFFF] * 64.0f;
-        angle = (src2->unk6 / 360.0f) * 4096.0f;
-        D_801BFB70[D_801BFD70].unk8 = gSinTable[angle & 0xFFF] * 64.0f;
-        D_801BFB70[D_801BFD70].unkC = gSinTable[(angle + 0x400) & 0xFFF] * 64.0f;
+        // type holds the angles here (variable reuse, name search)
+        type = (src2->unk4 / 360.0f) * 4096.0f;
+        D_801BFB70[D_801BFD70].unk10 = gSinTable[type & 0xFFF] * 64.0f;
+        D_801BFB70[D_801BFD70].unk14 = gSinTable[(type + 0x400) & 0xFFF] * 64.0f;
+        type = (src2->unk6 / 360.0f) * 4096.0f;
+        D_801BFB70[D_801BFD70].unk8 = gSinTable[type & 0xFFF] * 64.0f;
+        D_801BFB70[D_801BFD70].unkC = gSinTable[(type + 0x400) & 0xFFF] * 64.0f;
         D_801BFB70[D_801BFD70].unk18 = src2->unk8;
         D_801BFB70[D_801BFD70].unk1C = src2->unkA;
         D_801BFB70[D_801BFD70].unk20 = src2->unkC;
@@ -460,15 +467,9 @@ void func_80071E70(void) {
     if (D_800D8240 != 0) {
         return;
     }
-    D_801BC938 = 0;
-    D_801BB128 = 0;
-    D_801BB12C = 0;
-    D_801BB124 = 0;
-    D_801BB120 = 0;
-    D_801BB130 = 0;
-
-    D_801BFA40 = 0;
-    D_801BB134 = 0;
+    D_801BB12C = D_801BC938 = 0;
+    D_801BB130 = D_801BB120 = D_801BB124 = D_801BB128 = 0;
+    D_801BFA40 = D_801BB134 = 0;
     if (D_801CE638 == 21) {
         return;
     }
@@ -491,7 +492,7 @@ void func_80071E70(void) {
         buoys = D_800D6744[gCourseID];
         objects = D_800D66A4[gCourseID];
     } else {
-        do { if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) { list0 = D_800D653C[gCourseID]; buoys = D_800D676C[gCourseID]; objects = D_800D66CC[gCourseID]; rings = D_800D6884[gCourseID]; list1 = NULL; list2 = NULL; } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) { if (gPlayers == ONE_PLAYER) { list1 = D_800D658C[gCourseID]; list2 = D_800D65B4[gCourseID]; buoys = D_800D66F4[gCourseID]; list0 = D_800D6564[gCourseID]; objects = D_800D6654[gCourseID]; } else { objects = D_800D667C[gCourseID]; list1 = D_800D6604[gCourseID]; list2 = D_800D662C[gCourseID]; buoys = D_800D671C[gCourseID]; list0 = D_800D65DC[gCourseID]; } } else if (gPlayers == TWO_PLAYERS) { if (gDifficulty == DIFFICULTY_NORMAL) { list0 = D_800D649C[gCourseID]; } else if (gDifficulty == DIFFICULTY_HARD) { list0 = D_800D64C4[gCourseID]; } else { list0 = D_800D64EC[gCourseID]; } buoys = D_800D671C[gCourseID]; objects = D_800D667C[gCourseID]; if (gCourseID == RIDER_SELECTION) { list1 = D_800D5700; } else { list1 = NULL; } list2 = NULL; } else { if (D_800D8254 == 0) { difficulty = gDifficulty; } else { difficulty = D_800D8258; } if ((difficulty == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) { list0 = D_800D6334[gCourseID]; list1 = D_800D635C[gCourseID]; list2 = D_800D6384[gCourseID]; } else if (difficulty == DIFFICULTY_HARD) { list0 = D_800D63AC[gCourseID]; list1 = D_800D63D4[gCourseID]; list2 = D_800D63FC[gCourseID]; } else { list0 = D_800D6424[gCourseID]; list1 = D_800D644C[gCourseID]; list2 = D_800D6474[gCourseID]; } buoys = D_800D66F4[gCourseID]; objects = D_800D6654[gCourseID]; } } while (0); // FAKE (permuter): one-line block in a do-while
+        do { if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) { list0 = D_800D653C[gCourseID]; buoys = D_800D676C[gCourseID]; objects = D_800D66CC[gCourseID]; rings = D_800D6884[gCourseID]; list1 = NULL; list2 = NULL; } else if ((D_800DAB68 != 0) || (D_800D8250 != 0)) { if (gPlayers == ONE_PLAYER) { list1 = D_800D658C[gCourseID]; list2 = D_800D65B4[gCourseID]; buoys = D_800D66F4[gCourseID]; list0 = D_800D6564[gCourseID]; objects = D_800D6654[gCourseID]; } else { objects = D_800D667C[gCourseID]; list1 = D_800D6604[gCourseID]; list2 = D_800D662C[gCourseID]; buoys = D_800D671C[gCourseID]; list0 = D_800D65DC[gCourseID]; } } else if (gPlayers == TWO_PLAYERS) { if (gDifficulty == DIFFICULTY_NORMAL) { list0 = D_800D649C[gCourseID]; } else if (gDifficulty == DIFFICULTY_HARD) { list0 = D_800D64C4[gCourseID]; } else { list0 = D_800D64EC[gCourseID]; } buoys = D_800D671C[gCourseID]; objects = D_800D667C[gCourseID]; if (gCourseID == RIDER_SELECTION) { list1 = D_800D5700; } else { list1 = NULL; } list2 = NULL; } else { if (D_800D8254 == 0) { angle = gDifficulty; } else { angle = D_800D8258; } if ((angle == DIFFICULTY_NORMAL) || (gCourseID == DOLPHIN_PARK)) { list0 = D_800D6334[gCourseID]; list1 = D_800D635C[gCourseID]; list2 = D_800D6384[gCourseID]; } else if (angle == DIFFICULTY_HARD) { list0 = D_800D63AC[gCourseID]; list1 = D_800D63D4[gCourseID]; list2 = D_800D63FC[gCourseID]; } else { list0 = D_800D6424[gCourseID]; list1 = D_800D644C[gCourseID]; list2 = D_800D6474[gCourseID]; } buoys = D_800D66F4[gCourseID]; objects = D_800D6654[gCourseID]; } } while (0); // FAKE (permuter): one-line block in a do-while
     }
     if (gPlayers == TWO_PLAYERS) {
         pts = D_800D680C[gCourseID]; things = D_800D685C[gCourseID];
@@ -636,7 +637,8 @@ void func_80071E70(void) {
             if ((gCourseID != DOLPHIN_PARK) && ((type == 26) || (type == 27))) {
                 e->unkC0 = 2;
             }
-            e->unk6C = rec->angle;
+            angle = rec->angle; // the heading passes through angle (hold search)
+            e->unk6C = angle;
             angle = (e->unk6C / 360.0f) * 4096.0f;
             e->unk70 = gSinTable[angle & 0xFFF];
             e->unk74 = gSinTable[(angle + 0x400) & 0xFFF];
@@ -692,11 +694,13 @@ void func_80071E70(void) {
     if ((gGameModes == GMODE_STUNT) || (D_800D824C != 0)) {
         for (; rings->heading != -1; rings++) {
             o = &D_801BC940[D_801BFA40];
-            o->unk4C = 8;
+            n = 8; // n (dead here) holds the ring kind (hold search)
+            o->unk4C = n;
             o->unk24 = rings->x;
             o->unk28 = rings->y;
             o->unk2C = rings->z;
-            o->unk50 = rings->unk6;
+            kind = rings->unk6; // kind (dead here) holds the ring's unk6 (hold search)
+            o->unk50 = kind;
             o->unkC0 = rings->unk8;
             o->unk48 = rings->heading;
             D_801BB134++;
@@ -809,6 +813,7 @@ void func_80071E70(void) {
         }
         a = &gCoursePoints[D_801BC938];
         a->unk10 = kind;
+        do {} while (0); // FAKE (insert search): an empty block that moves later register choices
         a->unk0 = b->x;
         a->unk8 = b->z;
         if (++D_801BC938 >= 256) {
@@ -820,7 +825,8 @@ void func_80071E70(void) {
             a = &gCoursePoints[D_801BC938];
             a->unk10 = 1;
             a->unk0 = edge[n * 2];
-            a->unk8 = edge[n * 2 + 1];
+            t = edge[n * 2 + 1]; // t (dead by now) holds z (hold search)
+            a->unk8 = t;
             if (++D_801BC938 >= 256) {
                 break;
             }
