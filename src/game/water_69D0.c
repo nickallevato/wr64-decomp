@@ -774,21 +774,19 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 1060 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
+// Score 1050 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
 // v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The first
 // two passes build q's index in a variable before q = p + index (the original computes 2N + i + 2 and (2N - i + 1) << 3
-// in a1 and keeps it there); here that variable is ha, which also reads the velocity for the damping at the end of the
-// first pass and in the middle of the third (a search over which variable holds each index and damping value): 1755 ->
-// 1090, and the empty test (FAKE) the first pass needed is gone. The second pass's end is p + (N << 1) - i: the original
-// computes it from N << 4 and i << 3 apart from q's index. Adding the new velocity to the height in one statement (h +=
-// v = ...) gives the original's reload of v after the height store; end as p + 2N + i in the first pass follows the
-// original's address arithmetic. The first pair of the first pass holds its mean in diff and its difference in mean (a
-// search over each pair's two names). Most pairs compute their difference into whichever of ha and hb is reassigned
-// before its next use (the original puts the difference in that height's register; the loops' third pair too, 1060).
+// in a1 and keeps it there): ha in the first pass, mean in the second. ha also reads the velocity for the damping at the
+// end of the first pass and in the middle of the third. Every pair puts its mean in mean and its difference in ha or hb,
+// as the original's registers show (no diff variable). Found by a coordinate search over which variable holds each
+// index, damping value and pair result: 1755 -> 1050, and the empty test (FAKE) the first pass needed is gone. The
+// second pass's end is p + (N << 1) - i: the original computes it from N << 4 and i << 3 apart from q's index. Adding
+// the new velocity to the height in one statement (h += v = ...) gives the original's reload of v after the height
+// store; end as p + 2N + i in the first pass follows the original's address arithmetic.
 // Left: registers. The original gives b a0, the index/damping value a1, a a2, the field base a3, ha t0, q t1, hb t2 and
-// mean t3; here ha (holding the indices) takes a1, q a2, a a3 and the base t0, and the t registers follow. The
-// original's map suggests a fifth variable for the indices and the dampings (in a1) and every pair's difference in ha or
-// hb (no diff): written that way it scores 1260-1720 (the registers are coloured in another order).
+// mean t3; here ha (holding the first index) takes a1, q a2, a a3 and the base t0, and the t registers follow. A fifth
+// variable for the indices and dampings (the original's a1) scored 1050 too after the same search, never lower.
 void func_8004EAA4(void) {
     UnkStruct_80160A98* p;
     UnkStruct_80160A98* q;
@@ -797,7 +795,6 @@ void func_8004EAA4(void) {
     UnkStruct_80162420* b;
     s32 i;
     s32 mean;
-    s32 diff;
     s32 ha;
     s32 hb;
 
@@ -809,11 +806,10 @@ void func_8004EAA4(void) {
         ha = a->unk0;
         b = WATER_CELL_AT(q[-1].unk0);
         hb = b->unk0;
-        // The first pair's mean and difference go through the other variable each (the original's registers).
-        diff = (ha + hb) >> D_800D4724;
-        mean = (hb - ha) >> D_800D472C;
-        a->unk2 = (a->unk2 + mean) - diff;
-        b->unk2 = (b->unk2 - mean) - diff;
+        mean = (ha + hb) >> D_800D4724;
+        hb = (hb - ha) >> D_800D472C;
+        a->unk2 = (a->unk2 + hb) - mean;
+        b->unk2 = (b->unk2 - hb) - mean;
         for (end = p + (gWaterWindowN * 2) + i; p < end;) {
             p++;
             b = WATER_CELL_AT(q->unk0);
@@ -847,8 +843,8 @@ void func_8004EAA4(void) {
         ha = a->unk2; a->unk2 = ha - (ha >> D_800D4730);
     }
     for (i = 0; i < gWaterWindowN; i++) {
-        ha = ((gWaterWindowN * 2) - i) + 1;
-        q = p + ha;
+        mean = ((gWaterWindowN * 2) - i) + 1;
+        q = p + mean;
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         for (end = (p + (gWaterWindowN << 1)) - i; p < end;) {
