@@ -1347,7 +1347,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3489 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 3297 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1356,7 +1356,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // cleared after the bonus, the time table is indexed gCourseID * 4 first, and D_80228A94 is set before
 // timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move:
 // 4377); the gate dot product takes its terms in dx and dz too (4047); permuter finds: passed held in i (dead
-// there; a pad keeps its home: 4002) and a dead copy of rider in the time table read (FAKE: 3489).
+// there; a pad keeps its home: 4002) and a dead copy of rider in the time table read (FAKE: 3489). mix2: that
+// copy goes through sfx (dead there) instead of a new pointer local, so every stack home is the original's again (3297).
 // mid6 (its trick-10 chain is split again above): the gate time goes through laps before its checkpointTimes store
 // (a hold search; 8007687C holds it the same way). The declarations follow the
 // original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
@@ -1376,7 +1377,6 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
-    RiderStruct* rider2; // FAKE (permuter): a dead copy of rider, see the time table read
     s32 sfx;
     s32 padP; // stack pad (FAKE, permuter: the passed flag is held in i, dead there)
     s32 points;
@@ -1674,7 +1674,8 @@ void func_800783AC(s32 arg0) {
             }
             if (cur != D_801BB12C) {
                 D_80228A94 = 20;
-                rider->timeLeft = D_800D9280[(gCourseID * 4) + (rider2 = rider)->unk164] * 1000; // FAKE (permuter)
+                // FAKE: a dead copy of rider through sfx (set again before its next use)
+                rider->timeLeft = D_800D9280[(gCourseID * 4) + ((RiderStruct*) (sfx = (s32) rider))->unk164] * 1000;
                 AudioGeneral_PlaySound(0x33, 0);
             }
             rider->unk164++;
