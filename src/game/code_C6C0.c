@@ -5485,12 +5485,14 @@ void func_800629A8(UnkStruct_80192690* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 155 of 68700 (near14: gFrameCounter read as (u32), so IDO's code generator loads it straight into v0 instead of
+// Score 150 of 68700 (near14: gFrameCounter read as (u32), so IDO's code generator loads it straight into v0 instead of
 // storing a temporary and reloading the first field (seen in cc -S output); unkC7E and unkC80 zeroed by one chain,
 // whose reload of unkC80 takes the temporary register the original's numbering skips (the assembler then drops it), so
-// 1, 8 and 22 land in t4, t5 and t6 as in the original. Left: float temporaries from the unkC1C store through the
-// unk1448[0] sums.) Before, 195: calls, branches and the frame (0x118) agree, and mf sits at the original's sp+0xC0.
-// The
+// 1, 8 and 22 land in t4, t5 and t6 as in the original: 155. unkC1C is stored straight from its sum (in a temporary,
+// $f10, as the original) and read back into the dead z (FAKE): without that read IDO loads the unkC0C/unkC04 34.11f
+// right after the func_8005D390 call instead of after the unkC1C store, and the old z and x routing FAKEs are no longer
+// needed: 150. Left: the unk1448[0] sums' float temporaries.) Before, 195: calls, branches and the frame (0x118) agree,
+// and mf sits at the original's sp+0xC0. The
 // state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
 // into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
 // of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
@@ -5643,12 +5645,11 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC08 = 0.0f;
     rider->unkC14 = rider->unk44.x + (-26.9998535 * rider->unk6C) + (0.1806645 * rider->unk78);
     rider->unkC18 = rider->unk44.y + (-26.9998535 * rider->unk70) + (0.1806645 * rider->unk7C);
-    // FAKE: unkC1C and unkC04 through the free z and x (a search over routing stores through locals)
-    z = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
-    rider->unkC1C = z;
-    x = rider->unkC0C = 34.11f;
+    rider->unkC1C = rider->unk44.z + (-26.9998535 * rider->unk74) + (0.1806645 * rider->unk80);
+    z = rider->unkC1C; // FAKE: a dead read of the stored value (it keeps 34.11f's load after this store)
+    rider->unkC0C = 34.11f;
     rider->unkC10 = -27.300001f;
-    rider->unkC04 = x;
+    rider->unkC04 = 34.11f;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
     rider->unk1448[0].unk0.x = (x * -2.1f) +
