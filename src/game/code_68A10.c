@@ -1564,7 +1564,8 @@ extern Vtx D_50081C0[];
 // Score 7616 of 124000 (big7: an empty do-while (FAKE) ahead of the unk1A00 squares' vtx; the human's remainder
 // triangles set n = 0 just before their loop, which gives the
 // original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
-// (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks, display-list commands and loops (calls and branches agree). The stack pads give
+// (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks,
+// display-list commands and loops (calls and branches agree). The stack pads give
 // the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
 // through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
