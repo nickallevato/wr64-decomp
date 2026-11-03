@@ -3916,7 +3916,7 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 55613 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
+// Score 55543 of 280200: same calls and nearly the same branches as the original (by a structure diff: the first
 // +-41.071f choice as a default and an if, from an else-form search, drops one branch but scores better),
 // registers and scheduling differ and the frame is 0x138 here, 0x100 in the original (the original has about 26
 // locals; this C still has more). Statement order in a few straight-line runs is from a greedy statement-move
@@ -3924,7 +3924,7 @@ s32 func_8005DD04(f32 arg0, f32 arg1, f32 arg2) {
 // copies (read-through) and one sum in two statements from searches. func_800AF40C (code_68A10.c) takes the part's
 // three floats in registers, as the original passes them (m2c's call had four arguments and no prototype). The
 // pose-state block walks the parts with a, not part, the part-21 block keeps its z difference in var_ft5 and the
-// unk16C8 pick its table value in spEC (name searches over each block: 61501 -> 55613).
+// unk16C8 pick its table value in spEC (name searches over each block: 61501 -> 55613); six more read-throughs.
 // m2c's f32 and int temporaries are pooled (one variable per non-overlapping chain of values), so a name
 // such as dx or nx only describes the part-21 block; elsewhere it is a plain temporary. Control flow
 // follows the original: the pose-buffer rotation (unk1420/1424/1428), the unk16C8 choice by game mode, the
@@ -4184,7 +4184,7 @@ void func_8005DE24(s32 arg0) {
                             }
                         }
                     }
-                } else if (temp_v0_3 == 0x18) {
+                } else if (rider->unkC54 == 0x18) {
                     if (((rider->unkC7C != 0) || (rider->unkC4C != 0.0f) || (rider->unkC48 != 0.0f)) &&
                         ((temp_t9 = rider->unk1574 + 1, rider->unk1574 = temp_t9, (temp_t9 >= 0x29)) ||
                          ((temp_t9 >= 0xB) && ((rider->unkC66 == 0) || (rider->unkB90 < 11.111112f))))) {
@@ -4195,7 +4195,7 @@ void func_8005DE24(s32 arg0) {
                             func_80053EAC(arg0, 0x16, 0, 0.075f, 0U);
                         }
                     }
-                } else if (temp_v0_3 == 0x17) {
+                } else if (rider->unkC54 == 0x17) {
                     temp_t9 = rider->unkC74;
                     if (temp_t9 < 0) {
                         if (RIDER_PARTS(rider)[2].unk4.y < (f32) gWaterLevel) {
@@ -4220,12 +4220,12 @@ void func_8005DE24(s32 arg0) {
                             }
                         }
                     }
-                } else if (temp_v0_3 == 0x19) {
+                } else if (rider->unkC54 == 0x19) {
                     if (rider->unk1598 == 0) {
                         func_80053EAC(arg0, 0x16, 0, 0.15f, 0U);
                         rider->unkC70 = -1;
                     }
-                } else if ((temp_v0_3 == 5) && (rider->unkC58 == 0x1D)) {
+                } else if ((rider->unkC54 == 5) && (rider->unkC58 == 0x1D)) {
                     func_800AF40C(RIDER_PARTS(rider)[2].unk4.x, RIDER_PARTS(rider)[2].unk4.y, RIDER_PARTS(rider)[2].unk4.z);
                 }
             }
@@ -4297,7 +4297,7 @@ void func_8005DE24(s32 arg0) {
             }
         } else if (temp_t9 == 0xA) {
             if ((rider->unkB56 != 0) || (temp_v0_7 = rider->unkB5E, (temp_v0_7 >= 0xD)) || (temp_v0_7 < -0xC) ||
-                (temp_v0_7 = rider->unkB5F, (temp_v0_7 >= 0xD)) || (temp_v0_7 < -0xC)) {
+                (temp_v0_7 = rider->unkB5F, (rider->unkB5F >= 0xD)) || (temp_v0_7 < -0xC)) {
                 func_80053EAC(arg0, 0x16, 0, 0.15f, 0U);
             }
             rider->unkC58 = spEC;
@@ -4633,7 +4633,7 @@ void func_8005DE24(s32 arg0) {
                     b->unk1C.z += dz * dx;
                 } else {
                     temp_t9 = b->unk0;
-                    if ((temp_t9 == 0) || (temp_t9 == 2) || (temp_t9 == 3)) {
+                    if ((b->unk0 == 0) || (temp_t9 == 2) || (temp_t9 == 3)) {
                         dz = dy * 2.0f;
                         a->unk1C.x -= dz * nz;
                         a->unk1C.y -= dz * ny;
