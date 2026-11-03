@@ -279,10 +279,11 @@ extern s32 D_800D6C3C[];
 extern void* D_800D6C6C[];
 
 #ifdef NON_MATCHING
-// Score 31899 of 150300 (big7: the first two loops keep their angles in kind and type and the list choice its
+// Score 31794 of 150300 (big7: the first two loops keep their angles in kind and type and the list choice its
 // difficulty in angle (per-loop name searches); table B's heading, the rings' 8 and unk6 and the edge points' z
-// pass through angle, n, kind and t (hold searches); D_801BB134 is cleared before D_801BFA40 (a swap search); 35174
-// before): same lists and stores, and the buoy switch is a jump
+// pass through angle, n, kind and t (hold searches); D_801BB134 is cleared before D_801BFA40 (a swap search);
+// the first loop's cosine is scaled by an int 64 (respelling); 35174 before): same lists and stores, and the
+// buoy switch is a jump
 // table from 0 (case 0 with the default,
 // written first, as the table's entry 0 and its block order show). The declarations follow the original's stack homes
 // (list0..list2 at 0x6C..0x64, rec 0x60, objects 0x5C, rings 0x58, buoys 0x54, edge 0x50, pts 0x4C, things 0x48, table
@@ -423,7 +424,8 @@ void func_80071E70(void) {
         // kind holds the angle here and angle the difficulty below: the variables the original reuses (name search)
         kind = (p1->unk4 / 360.0f) * 4096.0f;
         D_801BFA48[D_801BFB68].unk8 = gSinTable[kind & 0xFFF] * 64.0f;
-        D_801BFA48[D_801BFB68].unkC = gSinTable[(kind + 0x400) & 0xFFF] * 64.0f;
+        // int 64: odd literal (a respelling search; the same value)
+        D_801BFA48[D_801BFB68].unkC = gSinTable[(kind + 0x400) & 0xFFF] * 64;
         D_801BFA48[D_801BFB68].unk1C = p1->unk6 / 64;
         D_801BFA48[D_801BFB68].unk10 = p1->unk8;
         D_801BFA48[D_801BFB68].unk14 = p1->unkA;
