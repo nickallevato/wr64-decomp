@@ -1359,7 +1359,9 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3030 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 3005 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
+// the word above points (the old padP; a per-block rename search), time keeps only the unk1C test: 3030 -> 3005.
+// mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1396,7 +1398,7 @@ void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
     s32 sfx;
-    s32 padP; // stack pad (FAKE, permuter: the passed flag is held in i, dead there)
+    s32 cpTime; // the gate time (in the word the original gives it)
     s32 points;
     s32 frac;
     s32 flag;
@@ -1678,8 +1680,8 @@ void func_800783AC(s32 arg0) {
                 len = -len;
             }
             frac = (dot / (dot + len)) * 50.0f;
-            time = rider->raceTime - frac;
-            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = time;
+            cpTime = rider->raceTime - frac;
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = cpTime;
             rider->unk334 = 0;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
             if (bonus > 0) {
