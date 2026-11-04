@@ -133,12 +133,11 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 155 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
+// Score 145 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
 // the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
 // the extent loops' addresses then take the original's registers): 1305 -> 790; the second count's start is
-// computed before the unk98 == 1 test into a variable of its own, cnt, through a dead copy hold (FAKE; a permuter
-// find and fresh-variable searches): 350; its test spelled (j - 1) >= 0 (FAKE, permuter: the original's bgtzl): 155.
-// Frame 0x88 here (the two new words) against the original's 0x80.
+// computed before the unk98 == 1 test, into left (dead there) through a dead copy in type (FAKE; a permuter find
+// and fresh-variable searches): 350; its test spelled (j - 1) >= 0 (FAKE, permuter: the original's bgtzl): 145.
 // near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
@@ -148,11 +147,9 @@ void func_801EED70(void);
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
 // as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
 // first branch delay slot). The other loop counters' names are from a search over each loop's counter.
-// Left (band17): the frame (0x88, two words over); in the D_801CE638 == 8 search the first count and the record
+// Left (band17): in the D_801CE638 == 8 search the first count and the record
 // pointer swap a0/a2, and the switch value and the unk2C loop counter take v0/v1 where the original has a1.
 void func_80075310(void) {
-    s32 cnt; // the second record count's start, computed before the unk98 == 1 test (permuter)
-    s32 hold; // FAKE (permuter, then a fresh-variable search): a dead copy of D_801BB120 (see cnt)
     f32 x;
     s32 i;
     s32 left; // the records left to walk in the D_801CE638 search's first loop (its own variable)
@@ -410,9 +407,9 @@ void func_80075310(void) {
             }
             rider->unkC = rider->nearestRecord = n;
             n = k;
-            cnt = (hold = D_801BB120) - 1; // FAKE: through hold (dead)
+            left = (type = D_801BB120) - 1; // FAKE: D_801BB120 through type (dead here), for the registers
             if (D_801AEE20[k].unk98 == 1) {
-                for (j = cnt; (j - 1) >= 0; j--) { // FAKE (permuter): j > 0 spelled (j - 1) >= 0 (bgtzl)
+                for (j = left; (j - 1) >= 0; j--) { // FAKE (permuter): j > 0 spelled (j - 1) >= 0 (bgtzl)
                     n = D_801AEE20[n].unkB4;
                     if (D_801AEE20[n].unk98 != 1) {
                         break;
