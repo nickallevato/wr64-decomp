@@ -687,7 +687,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 5286 of 146400: same blocks and calls, frame 0x120. mix2: the checkpoint-gap reference time (gapRef) and
+// Score 4272 of 146400: same blocks and calls, frame 0x120. band17: the point behind the record is an array p
+// (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
+// first one computed took a register and was spilled around sqrtf), both terms spelled alike: 5286 -> 4272. mix2: the checkpoint-gap reference time (gapRef) and
 // r3/r4 are their own variables, in stack-pad words, not reused ones, and the lap-shift loop counts in laps (dead
 // there): 5581 -> 5401; the type 8/9 test reads e->unk98 directly (same score) and the Marine Fortress cue's
 // second distance takes dz first (a swap search): 5391; unk320 goes through a pointer view (RIDER_UNK320,
@@ -754,8 +756,7 @@ void func_8007687C(s32 arg0) {
     s32 r3;
     f32 progress;
     s32 pad[7]; // stack pad
-    f32 px;
-    f32 pz;
+    f32 p[2]; // FAKE: the point's z, x (an array keeps both in their homes 0x6C/0x70, as the original does)
     f32 dirX;
     f32 dirZ;
     f32 gx;
@@ -812,8 +813,8 @@ void func_8007687C(s32 arg0) {
     // whether the rider is between the posts (with D_801C39C4 of slack).
     cur = rider->unkC;
     e = &D_801AEE20[cur];
-    pz = e->unk8 - (e->unk84 * 50.0f * 0.5f);
-    px = e->unk0 - (50.0f * e->unk80 * 0.5f);
+    p[1] = e->unk0 - (e->unk80 * 50.0f * 0.5f);
+    p[0] = e->unk8 - (e->unk84 * 50.0f * 0.5f);
     if (e->unk9C == 1) {
         gz = e->unk14 - e->unk20;
         gx = e->unkC - e->unk18;
@@ -847,8 +848,8 @@ void func_8007687C(s32 arg0) {
     }
     dirX = e->unk70;
     dirZ = e->unk74;
-    dx = D_801C3780 - px;
-    dz = D_801C3788 - pz;
+    dx = D_801C3780 - p[1];
+    dz = D_801C3788 - p[0];
     len = sqrtf((dx * dx) + (dz * dz));
     if (len > 0.0f) {
         dx /= len;
