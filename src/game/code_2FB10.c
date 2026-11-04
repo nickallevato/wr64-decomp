@@ -690,8 +690,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 4202 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
-// variable (cz, in a pad word: 4202); the point behind the record is an array p
+// Score 4147 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
+// variable (cz, in a pad word: 4202); the lap-shift loop counts in time (dead there; a rename search): 4147;
+// the point behind the record is an array p
 // (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
 // first one computed took a register and was spilled around sqrtf), both terms spelled alike, gx before gz as the
 // original computes them, the lap sounds' value held in from (dead there; a per-block rename search): 5286 -> 4217.
@@ -1026,9 +1027,9 @@ void func_8007687C(s32 arg0) {
                         rider->lapTimes[rider->lapCount - 1] = rider->lapTime;
                         rider->lapBuoyMisses[rider->lapCount - 1] = rider->unk130;
                     } else {
-                        for (laps = 0; laps < 8; laps++) {
-                            rider->lapTimes[laps] = rider->lapTimes[laps + 1];
-                            rider->lapBuoyMisses[laps] = rider->lapBuoyMisses[laps + 1];
+                        for (time = 0; time < 8; time++) {
+                            rider->lapTimes[time] = rider->lapTimes[time + 1];
+                            rider->lapBuoyMisses[time] = rider->lapBuoyMisses[time + 1];
                         }
                         rider->lapTimes[8] = rider->lapTime;
                         rider->lapBuoyMisses[8] = rider->unk130;
