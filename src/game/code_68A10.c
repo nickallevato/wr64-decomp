@@ -1565,13 +1565,15 @@ extern Vtx D_50081C0[];
     }
 
 #ifdef NON_MATCHING
-// Score 65 of 124000 (band17: the first loop's D_800E6D60 and D_800E6D68 set in one expression, as the original
+// Score 40 of 124000 (band17: the first loop's D_800E6D60 and D_800E6D68 set in one expression, as the original
 // stores one temporary to both; the age test's texture number held in m (it lives in v0 in the original, with the
-// gdlh load after the test); i + view kept one sum by a (u32) cast (FAKE): 4425 -> 65. mix1: the trail quads take
+// gdlh load after the test); i + view kept one sum by a (u32) cast (FAKE): 4425 -> 65; the unk1A00 squares' vertex
+// address written in the gSPVertex call with k stepped after the quad (IDO computes it above the switch, as the
+// original does; the old vtx copy and its do-while FAKE gone): 40. mix1: the trail quads take
 // k = j * 2 (the original multiplies the doubled index by 5
 // with shifts, not j by 10: 7616 -> 5791); the remainder's vertex word adds its two fields, as the original
 // does (-> 4441); D_801D7B48's sum written out (a syntax search: 4425). Before, big7: an empty do-while (FAKE)
-// ahead of the unk1A00 squares' vtx; the human's remainder
+// ahead of the unk1A00 squares' vtx (gone in band17); the human's remainder
 // triangles set n = 0 just before their loop, which gives the
 // original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
 // (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks,
@@ -1580,8 +1582,8 @@ extern Vtx D_50081C0[];
 // through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
 // command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
 // D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
-// with the default (the original's table has 7 entries). Left: the unk1A00 loop's registers: &D_800E6D78, k and vtx
-// take t0, t1, v1/t2 where the original has t2, t0, t1.
+// with the default (the original's table has 7 entries). Left: in the unk1A00 loop k and the vertex address take
+// t1 and t0 where the original has t0 and t1.
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
@@ -1670,8 +1672,6 @@ void func_800B305C(Gfx** gdl) {
         }
         for (j = 0, k = 0; j < 4; j++) {
             if (D_800E6D78[j].unk20 != 0) {
-                do {} while (0); // FAKE (insert search): an empty block that moves the vtx address work
-                vtx = &D_5000000->unk8DC0[i + view][k];
                 switch (D_800E6D78[j].unk24) {
                     case 1:
                         tex = (u8*) &D_1049C80;
@@ -1696,11 +1696,11 @@ void func_800B305C(Gfx** gdl) {
                         tex = (u8*) &D_104CCB0;
                         break;
                 }
-                k += 4;
                 gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-                gSPVertex(gdlh++, vtx, 4, 0);
+                gSPVertex(gdlh++, &D_5000000->unk8DC0[i + view][k], 4, 0);
                 gSP1QuadrangleLP(gdlh++, 0, 1, 2, 3);
+                k += 4;
             }
         }
     }
