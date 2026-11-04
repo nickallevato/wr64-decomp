@@ -690,8 +690,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 4127 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
-// variable (cz, in a pad word: 4202); the lap-shift and unk2C loops count in time (dead there; rename searches): 4127;
+// Score 4107 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
+// variable (cz, in a pad word: 4202); the lap-shift and unk2C loops count in time and the power step goes through
+// ref (dead there; rename searches): 4107;
 // the point behind the record is an array p
 // (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
 // first one computed took a register and was spilled around sqrtf), both terms spelled alike, gx before gz as the
@@ -726,7 +727,7 @@ void func_800C1EB8(s32);
 // (0xA4; dPrev's home here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f
 // becomes an add.
 void func_8007687C(s32 arg0) {
-    s32 i;
+    s32 i; // unused since band17 (its word keeps the frame)
     s32 time;
     s32 ref;
     s32 sfx;
@@ -1130,8 +1131,8 @@ void func_8007687C(s32 arg0) {
     }
     if (rider->unk138 != rider->power) {
         r = rider->power - rider->unk138; // (permuter: the difference in r, dead here)
-        i = (rider->power - rider->unk138 == 0) ? 0 : ((r > 0) ? 1 : -1);
-        rider->unk138 += i;
+        ref = (rider->power - rider->unk138 == 0) ? 0 : ((r > 0) ? 1 : -1);
+        rider->unk138 += ref;
     }
     if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
         rider->unk8 = 0;
