@@ -1266,7 +1266,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 7179 of 60500 (mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
+// Score 7104 of 60500 (band17: the centre loop works in vtx, hA and i, dead there (a rename search over the
+// loop body): 7179 -> 7104. mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
 // place and use sz >> 7 twice, as the original's registers show (the raw upper cell sits in sz's s0; one move,
 // for hA); 2N is computed again with << 1 for the first loop's hA and the last loop's lo/hi (the original does
 // not share it with end): the instruction count is the original's. Searches then: sx -> oz in the first loop,
@@ -1419,12 +1420,12 @@ void func_80050204(s32 view, Vtx* arena) {
     k = (f32) D_800D4720 / (f32) D_80192498;
     for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
         v = &arena[idx[6]];
-        c = &arena[D_80192460[0]];
-        oz = v->v.ob[2] - c->v.ob[2];
-        ox = v->v.ob[0] - c->v.ob[0];
+        vtx = &arena[D_80192460[0]]; // the centre, the offsets and the scaled moves in vtx, hA, i (dead here)
+        hA = v->v.ob[2] - vtx->v.ob[2];
+        i = v->v.ob[0] - vtx->v.ob[0];
         v = &arena[*idx];
-        v->v.ob[0] = c->v.ob[0] + (s32) (k * ox);
-        v->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * oz);
+        v->v.ob[0] = vtx->v.ob[0] + (s32) (k * i);
+        v->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * hA);
         v->v.ob[1] = WATER_LEVEL_U32;
     }
     if (w != gWaterWindow) {
