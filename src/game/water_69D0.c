@@ -85,7 +85,8 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 470 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
+// Score 375 of 49800 (mid8: the else arm's k and the vertex loop's header on one line, a FAKE from a search over
+// joined line ranges; IDO schedules by source line). Before, 470: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
 // cam->unk9C is read through (no d local; pd keeps its stack word), which gives the d multiplies the original's
 // operand order. The alpha is a signed conversion ((s32) (e + 0.5f)). One f32 (e) serves the corner-ray temps,
 // the alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4). vp declared after
@@ -223,9 +224,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     if (s == 0.0f) {
         k = 1.0f;
     } else {
-        k = (D_800D4750 - cam->eyeY) / s;
-    }
-    for (i = 6; i >= 0; i--) {
+        k = (D_800D4750 - cam->eyeY) / s; } for (i = 6; i >= 0; i--) { // FAKE: one line (a line-join search)
         vp = &vtx[i];
         x = vp->v.ob[0] - cam->eyeX;
         z = vp->v.ob[2] - cam->eyeZ;
