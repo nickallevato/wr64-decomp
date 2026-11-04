@@ -1137,7 +1137,8 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6338 of 127200: calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
+// Score 6323 of 127200 (band17: in the 2P loop the camera-delta x and the cosine trade variables, c and dx, as a
+// swap search over the loop found: 6338 -> 6323): calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1293,9 +1294,9 @@ void func_8008E794(void) {
                     D_801C3C50 = (struct UnkStruct_801C3C50*) &D_80192690[i];
                     D_801C3C58 = &D_801C3C60[i].unk0;
                     D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[gRiderRaceState[i].nearestRecord];
-                    dx = D_801C3C54->unk0 - D_801C3C50->unk44;
+                    c = D_801C3C54->unk0 - D_801C3C50->unk44;
                     dz = D_801C3C54->unk8 - D_801C3C50->unk4C;
-                    len = sqrtf((dx * dx) + (dz * dz));
+                    len = sqrtf((c * c) + (dz * dz));
                     if ((len < 1500.0f) && ((D_801C3C54->unk98 == 1) || (D_801C3C54->unk98 == 0))) {
                         D_801C3C58->unk78 = 1;
                         if (len != 0.00f) { // 0.00f: a separate constant from 0.0f to IDO
@@ -1353,20 +1354,20 @@ void func_8008E794(void) {
                 default:
                     if (D_800DAB68 != 0) {
                         angle = ((360 - e->unkA8) << 12) / 360;
-                        c = COS(angle);
+                        dx = COS(angle);
                         dz = SIN(angle);
-                        e->unkAC = (cam->unk64 * c) - (dz * cam->unk6C);
-                        e->unkB4 = (cam->unk64 * dz) + (c * cam->unk6C);
-                        e->unkFC = (cam->unk64 * c) - (dz * cam->unk6C);
-                        e->unk104 = (cam->unk64 * dz) + (c * cam->unk6C);
+                        e->unkAC = (cam->unk64 * dx) - (dz * cam->unk6C);
+                        e->unkB4 = (cam->unk64 * dz) + (dx * cam->unk6C);
+                        e->unkFC = (cam->unk64 * dx) - (dz * cam->unk6C);
+                        e->unk104 = (cam->unk64 * dz) + (dx * cam->unk6C);
                     } else {
                         angle = (e->unkA8 << 12) / 360;
-                        c = COS(angle);
+                        dx = COS(angle);
                         s = SIN(angle);
-                        e->unkAC = (cam->unk64 * c) - (s * cam->unk6C);
-                        e->unkB4 = (cam->unk64 * s) + (c * cam->unk6C);
-                        e->unkFC = (cam->unk64 * c) - (s * cam->unk6C);
-                        e->unk104 = (cam->unk64 * s) + (c * cam->unk6C);
+                        e->unkAC = (cam->unk64 * dx) - (s * cam->unk6C);
+                        e->unkB4 = (cam->unk64 * s) + (dx * cam->unk6C);
+                        e->unkFC = (cam->unk64 * dx) - (s * cam->unk6C);
+                        e->unk104 = (cam->unk64 * s) + (dx * cam->unk6C);
                     }
                     e->unkCC = e->unkE4;
                     e->unkD0 = e->unkE8;
