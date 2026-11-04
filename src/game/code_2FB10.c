@@ -1362,9 +1362,9 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 2930 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
+// Score 2900 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
 // the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
-// loop's lap count runs in flag (dead there; per-block rename searches): 3030 -> 2930.
+// loop's lap count runs in flag and its counter in laps (dead there; per-block rename searches): 3030 -> 2900.
 // mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
@@ -1389,7 +1389,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
 // flag and the record sound value are if/else assignments (the original hoists the else value above the branch);
 // the cross product and the record score sum are computed into locals first, as the original's order shows;
-// operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps: the
+// operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps then; laps for both since band17: the
 // original's registers for them) come from searches; the gate dot product is summed in two statements (permuter)
 // and dx subtracted in its own statement (a sum-split search).
 // The original keeps an empty arg0 != gPlayer1Rider test as a branch (`beq a0, t7` to the next instruction, arg0's
@@ -1757,8 +1757,8 @@ void func_800783AC(s32 arg0) {
                         flag = 9;
                     }
                     rider->raceTime = 0;
-                    for (sfx = 0; sfx < flag; sfx++) {
-                        rider->raceTime += rider->lapTimes[sfx];
+                    for (laps = 0; laps < flag; laps++) {
+                        rider->raceTime += rider->lapTimes[laps];
                     }
                     D_801C2928 = 0;
                     bonus = D_801C26D0 + D_801C39CC + D_801C39D4;
