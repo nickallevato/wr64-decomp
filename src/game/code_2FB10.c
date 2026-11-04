@@ -1362,8 +1362,9 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3005 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
-// the word above points (the old padP; a per-block rename search), time keeps only the unk1C test: 3030 -> 3005.
+// Score 2930 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
+// the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
+// loop's lap count runs in flag (dead there; per-block rename searches): 3030 -> 2930.
 // mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
@@ -1751,12 +1752,12 @@ void func_800783AC(s32 arg0) {
                         (D_801C39F8 != 0) && (D_801C39FC != 0) && (D_801C3A00 != 0) && (D_801C3A04 != 0)) {
                         D_801C2930 = 1;
                     }
-                    laps = D_801CE728[0];
-                    if (laps >= 10) {
-                        laps = 9;
+                    flag = D_801CE728[0];
+                    if (flag >= 10) {
+                        flag = 9;
                     }
                     rider->raceTime = 0;
-                    for (sfx = 0; sfx < laps; sfx++) {
+                    for (sfx = 0; sfx < flag; sfx++) {
                         rider->raceTime += rider->lapTimes[sfx];
                     }
                     D_801C2928 = 0;
