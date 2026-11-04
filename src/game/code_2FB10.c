@@ -689,10 +689,11 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 4232 of 146400: same blocks and calls, frame 0x120. band17: the point behind the record is an array p
+// Score 4217 of 146400: same blocks and calls, frame 0x120. band17: the point behind the record is an array p
 // (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
 // first one computed took a register and was spilled around sqrtf), both terms spelled alike, gx before gz as the
-// original computes them: 5286 -> 4232. mix2: the checkpoint-gap reference time (gapRef) and
+// original computes them, the lap sounds' value held in from (dead there; a per-block rename search): 5286 -> 4217.
+// mix2: the checkpoint-gap reference time (gapRef) and
 // r3/r4 are their own variables, in stack-pad words, not reused ones, and the lap-shift loop counts in laps (dead
 // there): 5581 -> 5401; the type 8/9 test reads e->unk98 directly (same score) and the Marine Fortress cue's
 // second distance takes dz first (a swap search): 5391; unk320 goes through a pointer view (RIDER_UNK320,
@@ -905,14 +906,14 @@ void func_8007687C(s32 arg0) {
                         rider->unk28 = 1;
                         if (isHuman[0]) {
                             if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
-                                sfx = 0x80;
+                                from = 0x80;
                             } else {
-                                sfx = 0;
+                                from = 0;
                             }
                             if (type == 0) {
-                                AudioGeneral_PlaySound(0x26, sfx);
+                                AudioGeneral_PlaySound(0x26, from);
                             } else {
-                                AudioGeneral_PlaySound(0x27, sfx);
+                                AudioGeneral_PlaySound(0x27, from);
                             }
                         }
                     }
@@ -930,17 +931,17 @@ void func_8007687C(s32 arg0) {
                     }
                     rider->unk28 = 2;
                     if (isHuman[0]) {
-                        sfx = gBuoyMisses - rider->unk134;
-                        if (sfx < 0) {
-                            sfx = 0;
+                        from = gBuoyMisses - rider->unk134;
+                        if (from < 0) {
+                            from = 0;
                         }
                         if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
-                            sfx += 0x80;
+                            from += 0x80;
                         }
                         if (type == 0) {
-                            AudioGeneral_PlaySound(0x29, sfx);
+                            AudioGeneral_PlaySound(0x29, from);
                         } else {
-                            AudioGeneral_PlaySound(0x28, sfx);
+                            AudioGeneral_PlaySound(0x28, from);
                         }
                     }
                 }
