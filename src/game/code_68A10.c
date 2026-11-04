@@ -1564,30 +1564,20 @@ extern Vtx D_50081C0[];
             _SHIFTL((v3) * 5, 24, 8) | _SHIFTL((v0) * 5, 16, 8) | _SHIFTL((v1) * 5, 8, 8) | _SHIFTL((v2) * 5, 0, 8); \
     }
 
-#ifdef NON_MATCHING
-// Score 40 of 124000 (band17: the first loop's D_800E6D60 and D_800E6D68 set in one expression, as the original
-// stores one temporary to both; the age test's texture number held in m (it lives in v0 in the original, with the
-// gdlh load after the test); i + view kept one sum by a (u32) cast (FAKE): 4425 -> 65; the unk1A00 squares' vertex
-// address written in the gSPVertex call with k stepped after the quad (IDO computes it above the switch, as the
-// original does; the old vtx copy and its do-while FAKE gone): 40. mix1: the trail quads take
-// k = j * 2 (the original multiplies the doubled index by 5
-// with shifts, not j by 10: 7616 -> 5791); the remainder's vertex word adds its two fields, as the original
-// does (-> 4441); D_801D7B48's sum written out (a syntax search: 4425). Before, big7: an empty do-while (FAKE)
-// ahead of the unk1A00 squares' vtx (gone in band17); the human's remainder
-// triangles set n = 0 just before their loop, which gives the
-// original's strength-reduction start from $zero and its first-loop counter s4; vtx = D_50081C0 after the env color
-// (not hoisted); which of j, k, n each loop uses is from a per-loop name search; 11611 before): same blocks,
-// display-list commands and loops (calls and branches agree). The stack pads give
-// the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170 (m takes the old pad's word). The first command goes
-// through a local copy of *gdl, stored back after both words, as the original does. gdlh is read after the first
-// command is stored through gdl (the original reloads D_801AE94C there). The unk1A00 loop reads D_800E6D78 through
-// D_800E6D60 (one induction pointer, spilled to 0x68 in the original, 0x64 here); its texture switch has a case 7
-// with the default (the original's table has 7 entries). Left: in the unk1A00 loop k and the vertex address take
-// t1 and t0 where the original has t0 and t1.
+// Draws the effect records into their own display list at D_801AE94C (called from *gdl): the unk0 streaks, the
+// unk1A00 squares, the unk1AA0 trails and the human's unk1000 triangles, then times itself (D_801D7B38..68).
+// Matching notes (milestone 5, last steps band17): the first loop sets D_800E6D60 and D_800E6D68 in one expression
+// (the original stores one temporary to both); the age test's texture number is held in m; i + view is kept one
+// sum by a (u32) cast (FAKE); the squares' vertex address is written in the gSPVertex call (IDO computes it above the
+// switch) and their vertex index is its own variable nv (k there takes the wrong register). The stack pads give
+// the original's frame (0x1A0) and put twoViews, tex and gdlh at 0x194, 0x178 and 0x170. The first command goes
+// through a local copy of *gdl, stored back after both words; gdlh is read after the first command is stored
+// through gdl (the original reloads D_801AE94C there). The trail quads take k = j * 2; the remainder's vertex word
+// adds its two fields where gSPVertex ORs them; the human's remainder triangles set n = 0 just before their loop.
 void func_800B305C(Gfx** gdl) {
     s32 pad[2]; // stack pad
     s32 twoViews;
-    s32 pad2[1]; // stack pad
+    s32 nv; // the unk1A00 squares' vertex index (its own variable, as the original's registers show)
     s32 i;
     s32 j;
     s32 k;
@@ -1670,7 +1660,7 @@ void func_800B305C(Gfx** gdl) {
         } else {
             gDPSetEnvColor(gdlh++, D_800E6D84, D_800E6D88, D_800E6D8C, 0xFF);
         }
-        for (j = 0, k = 0; j < 4; j++) {
+        for (j = 0, nv = 0; j < 4; j++) {
             if (D_800E6D78[j].unk20 != 0) {
                 switch (D_800E6D78[j].unk24) {
                     case 1:
@@ -1698,9 +1688,9 @@ void func_800B305C(Gfx** gdl) {
                 }
                 gDPLoadTextureBlock(gdlh++, tex, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-                gSPVertex(gdlh++, &D_5000000->unk8DC0[i + view][k], 4, 0);
+                gSPVertex(gdlh++, &D_5000000->unk8DC0[i + view][nv], 4, 0);
                 gSP1QuadrangleLP(gdlh++, 0, 1, 2, 3);
-                k += 4;
+                nv += 4;
             }
         }
     }
@@ -1795,9 +1785,6 @@ void func_800B305C(Gfx** gdl) {
         D_801D7B68 = D_801D7B64;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800B305C.s")
-#endif
 
 void func_800B43BC(Gfx** gdl, f32 arg1, f32 arg2, f32 arg3, f32 arg4, u32 arg5) {
     camera_unk_1* temp_t0;
