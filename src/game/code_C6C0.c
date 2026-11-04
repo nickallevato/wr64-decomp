@@ -5723,14 +5723,10 @@ void func_8006390C(s32 arg0, void* arg1) {
     func_80062918((Vec3f*) rider);
 }
 
-#ifdef NON_MATCHING
-// Score 40 of 99300: only gSinTable's address and the angle swap v0/v1 (seven instructions). The FAKE c54 temp moves
-// stats and the constant 1 to a2/a3 as in the original, and tbl gives the original's extra stack slot; f, d and speed
-// are each reused for a second value, as the original's stack homes show (f also holds 1 - speed / 16.666668f); integer
-// literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant loads.
-// Also not lower: no tbl (pad[5]; 40, same), ang as u32/s16/u16 or in a function-level local (88-112, spill slots
-// move), ang in c54 (163), the table pointer held in stats (88), empty ifs (one or three) and empty do-whiles at
-// every line.
+// The FAKE c54 temp moves stats and the constant 1 to a2/a3 as in the original, and tbl gives the original's extra
+// stack slot; f, d and speed are each reused for a second value, as the original's stack homes show (f also holds
+// 1 - speed / 16.666668f); integer literals (f = 1, != 0, < 0) and the double 0.9 give the original's separate constant
+// loads. Five empty blocks after ang (permuter FAKE) give gSinTable's address v0 and the angle v1.
 // Starts a timed stick move (unk1598) for the rider.
 #define MOVE_START(r)          \
     if ((r)->unk16E2 == 0) {    \
@@ -5871,6 +5867,7 @@ void func_80063C88(s32 arg0) {
     {
         f32* tbl = gSinTable;
         s32 ang = DEG_TO_BINANG((((f32) rider->unkB5E * rider->unk1588) / 70.0f));
+        if (1) {} if (1) {} if (1) {} if (1) {} if (1) {} // FAKE (permuter): five empty blocks that swap v0/v1
         rider->unk15E4 = tbl[ang & 0xFFF];
         rider->unk15E0 = tbl[(ang + 0x400) & 0xFFF];
     }
@@ -6043,9 +6040,6 @@ void func_80063C88(s32 arg0) {
 }
 
 #undef MOVE_START
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80063C88.s")
-#endif
 
 void func_80064C0C(s32 arg0) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
