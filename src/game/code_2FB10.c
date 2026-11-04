@@ -133,7 +133,7 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 1330 of 97200 (near16: five empty blocks before the D_801C3790 lap loop, FAKE, 1525 -> 1330): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
+// Score 1305 of 97200 (near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
 // the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
@@ -167,6 +167,7 @@ void func_80075310(void) {
             }
             gBestLaps[i] = D_800D81B0;
             for (n = 0; n < 9; n++) {
+                if (1) {} if (1) {} if (1) {} if (1) {} // FAKE (empty-block search): four empty blocks in the unrolled loop
                 gBestCheckpointTimes[i][n] = -1;
             }
             D_801C23B0[i] = D_800D81B0;
