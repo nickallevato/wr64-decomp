@@ -1266,8 +1266,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 7104 of 60500 (band17: the centre loop works in vtx, hA and i, dead there (a rename search over the
-// loop body): 7179 -> 7104. mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
+// Score 7084 of 60500 (band17: the centre loop works in vtx, hA and i, and the middle row loop's lower cell goes
+// in i (dead there; rename searches over loop bodies): 7179 -> 7084.
+// mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
 // place and use sz >> 7 twice, as the original's registers show (the raw upper cell sits in sz's s0; one move,
 // for hA); 2N is computed again with << 1 for the first loop's hA and the last loop's lo/hi (the original does
 // not share it with end): the instruction count is the original's. Searches then: sx -> oz in the first loop,
@@ -1357,11 +1358,11 @@ void func_80050204(s32 view, Vtx* arena) {
     e++;
     vtx++;
     for (end = e + ((gWaterWindowN * 2) - 2); end >= e;) {
-            hA = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0;
+            i = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0;
             sz = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0;
-            hA = hA >> 7;
-            sx = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
-            sz = (hA - (sz >> 7)) * 55;
+            i = i >> 7;
+            sx = (((i + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sz = (i - (sz >> 7)) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
             e++;
             vtx++;
