@@ -690,8 +690,8 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 4147 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
-// variable (cz, in a pad word: 4202); the lap-shift loop counts in time (dead there; a rename search): 4147;
+// Score 4127 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
+// variable (cz, in a pad word: 4202); the lap-shift and unk2C loops count in time (dead there; rename searches): 4127;
 // the point behind the record is an array p
 // (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
 // first one computed took a register and was spilled around sqrtf), both terms spelled alike, gx before gz as the
@@ -1119,8 +1119,8 @@ void func_8007687C(s32 arg0) {
                 }
             }
             rider->unk130 = 0;
-            for (i = 1; i < D_801BB120; i++) {
-                rider->unk2C[i] = 0;
+            for (time = 1; time < D_801BB120; time++) {
+                rider->unk2C[time] = 0;
             }
             if ((rider->lapCount >= 2) && (rider->unk2F4 == 0)) {
                 rider->unk308 = 1;
