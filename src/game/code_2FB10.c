@@ -133,7 +133,9 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 1305 of 97200 (near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
+// Score 1290 of 97200 (band17: in the D_801CE638 == 8 search the record count runs in depth and the record in n
+// (dead there; a variable-identity search over n, j, k, depth: the original's a1 for the record): 1305 -> 1290.
+// near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
 // the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
@@ -386,7 +388,7 @@ void func_80075310(void) {
                     type = 14;
                     break;
             }
-            n = D_801BB120 - 1;
+            depth = D_801BB120 - 1;
             for (k = 0; k < D_801BB120; k++) {
                 if (type == D_801AEE20[k].unk98) {
                     break;
@@ -397,20 +399,20 @@ void func_80075310(void) {
             } else {
                 k = D_801AEE20[k].unkB4;
             }
-            for (j = k; (D_801AEE20[j].unk98 >= 2) && (n > 0); n--) {
-                j = D_801AEE20[j].unkB4;
+            for (n = k; (D_801AEE20[n].unk98 >= 2) && (depth > 0); depth--) {
+                n = D_801AEE20[n].unkB4;
             }
-            rider->unkC = rider->nearestRecord = j;
-            j = k;
+            rider->unkC = rider->nearestRecord = n;
+            n = k;
             if (D_801AEE20[k].unk98 == 1) {
-                for (n = D_801BB120 - 1; n > 0; n--) {
-                    j = D_801AEE20[j].unkB4;
-                    if (D_801AEE20[j].unk98 != 1) {
+                for (depth = D_801BB120 - 1; depth > 0; depth--) {
+                    n = D_801AEE20[n].unkB4;
+                    if (D_801AEE20[n].unk98 != 1) {
                         break;
                     }
                 }
             }
-            rider->unk10 = j;
+            rider->unk10 = n;
         }
     }
 
