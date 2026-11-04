@@ -1059,17 +1059,12 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 90 of 24200: the column loop's end pointer is a local set on the do line (near15, from a permuter find; 150
-// before). pix is an s32 that also holds the lookup index (the original reuses v0 for it). Left: the original computes
-// &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads entry 62 at 0x7C(s1); here the [62] address is
-// folded into one constant and the lookup adds base + index (index + base there), and the lookup base and the bottom
-// pixel's address take t2 and a0 where the original has a0 and a3. The flag is cleared through pix (a permuter FAKE). A
-// u16* local for the table is constant-propagated (the [62] read becomes an absolute lhu). Tried without effect: no top
-// (col compared directly), the column loop over an index, both table reads spelled as pointer sums, D_80158350 defined
-// in the file, renaming pix/lum/v/i (web search). The bottom pixel's index through pix (as in the column loop) also
-// scores 150. The original's 0x7C(s1) looks like an index folded to 62 after the base was hoisted; the bottom read
-// through *p, prev and lum chained, or the column loop over a constant count (IDO then unrolls it by 4, the remainder
-// first) do not give it.
+// Score 45 of 24200 (about 10 of it the static D_800D4644's address, a scoring artefact): registers only. The bottom
+// pixel takes entry 62 as D_80158350[62] (IDO keeps &D_80158350 in s1 and reads 0x7C(s1) as in the original) and the
+// lookup adds the scaled index to (u32) D_80158350, which gives it its own &D_80158350 (and the index-first add); the
+// old empty test of D_80158350 and the one-line do are gone (the one-line do now scores 290). Left: the lookup base
+// and the bottom pixel's address take t2 and a0 where the original has a0 and a3. Removing the dead prev = lum (160)
+// or the flag clear through pix (165) is worse; the column loop over fb + 311 without end is 350.
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
@@ -1098,23 +1093,21 @@ void func_8004A8B0(u16* fb) {
         D_800D4644 = pix;
     }
 
-    if (!D_80158350) {} // FAKE: found by the permuter; gives the lookup its own copy of &D_80158350
     prev = lum; // FAKE (permuter): a dead store of the still-unset lum; moves the column pointers' registers
     fb += 20 * 320;
     col = fb + 8;
-    end = fb + 311; do { // one line (a permuter find): IDO schedules by source line
+    end = fb + 311;
+    do {
         pix = col[198 * 320];
         prev = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
-        // The bottom pixel is compared with itself: (lum - prev + 16000) >> 8 is entry 62.
-        lum = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
-        col[198 * 320] = D_80158350[((lum - prev) + 16000) >> 8];
+        col[198 * 320] = D_80158350[62];
         p = col + 197 * 320;
         top = col++;
         do {
             pix = *p;
             lum = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
             pix = (lum - prev) + 16000;
-            *p = D_80158350[pix >> 8];
+            *p = *(u16*)((pix >> 8) * 2 + (u32)D_80158350); // FAKE: the (u32) sum gives the lookup its own &D_80158350
             prev = lum;
             p -= 320;
         } while (p >= top);
