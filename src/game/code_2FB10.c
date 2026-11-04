@@ -133,9 +133,10 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 790 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
+// Score 740 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
 // the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
-// the extent loops' addresses then take the original's registers): 1305 -> 790.
+// the extent loops' addresses then take the original's registers): 1305 -> 790; the second count read through
+// depth (FAKE, permuter): 740.
 // near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
@@ -406,7 +407,8 @@ void func_80075310(void) {
             rider->unkC = rider->nearestRecord = n;
             n = k;
             if (D_801AEE20[k].unk98 == 1) {
-                for (j = D_801BB120 - 1; j > 0; j--) {
+                // FAKE (permuter): the count read through depth (dead here)
+                for (j = (depth = D_801BB120) - 1; j > 0; j--) {
                     n = D_801AEE20[n].unkB4;
                     if (D_801AEE20[n].unk98 != 1) {
                         break;
