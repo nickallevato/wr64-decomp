@@ -133,14 +133,15 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 683 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
+// Score 655 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
 // the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
 // the extent loops' addresses then take the original's registers): 1305 -> 790; the second count read through
-// a variable of its own declared first (FAKE, permuter and a fresh-variable search): 683.
+// a variable of its own declared first (FAKE, permuter and a fresh-variable search): 683; the stunt-record row
+// copy (the old FAKE) in its own variable row, declared first: 655.
 // near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
-// the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
+// the original. The stunt-record rows go through a copy (k in mid4, row since band17; FAKE, permuter). The zeroing chains store right
 // to left (the first stores keep their addresses in registers, the leftmost goes through at), as in the original.
 // The D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
@@ -149,6 +150,7 @@ void func_801EED70(void);
 // Left: registers: the first loops' row pointer and counter swap a0/a1, and the extent loops' addresses take a3, t0,
 // t3 where the original has a2, a3, t1.
 void func_80075310(void) {
+    s32 row; // the stunt-record row copy (FAKE, see below), a variable of its own declared first
     s32 hold; // FAKE (permuter, then a fresh-variable search): the second count's D_801BB120 read goes here
     f32 x;
     s32 i;
@@ -178,9 +180,9 @@ void func_80075310(void) {
             D_801C23B0[i] = D_800D81B0;
         }
         for (i = 9; i < 12; i++) {
-            k = i; // FAKE (permuter): the row through a copy, for the later registers
+            row = i; // FAKE (permuter): the row through a copy, for the later registers
             for (n = 0; n < 3; n++) {
-                gStuntRecords[k][n] = D_800D81C4;
+                gStuntRecords[row][n] = D_800D81C4;
             }
         }
         for (i = 0; i < 4; i++) {
