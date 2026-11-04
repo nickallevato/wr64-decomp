@@ -133,8 +133,8 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 1290 of 97200 (band17: in the D_801CE638 == 8 search the record count runs in depth and the record in n
-// (dead there; a variable-identity search over n, j, k, depth: the original's a1 for the record): 1305 -> 1290.
+// Score 1255 of 97200 (band17: in the D_801CE638 == 8 search the record count is its own variable (left, in the
+// old pad's word) and the record runs in n (dead there; variable-identity searches): 1305 -> 1255.
 // near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
@@ -149,7 +149,7 @@ void func_801EED70(void);
 void func_80075310(void) {
     f32 x;
     s32 i;
-    s32 pad[1]; // stack pad: the original's frame is 0x80
+    s32 left; // the records left to walk in the D_801CE638 search (its own variable: the original's registers)
     s32 j;
     s32 k;
     s32 depth;
@@ -388,7 +388,7 @@ void func_80075310(void) {
                     type = 14;
                     break;
             }
-            depth = D_801BB120 - 1;
+            left = D_801BB120 - 1;
             for (k = 0; k < D_801BB120; k++) {
                 if (type == D_801AEE20[k].unk98) {
                     break;
@@ -399,13 +399,13 @@ void func_80075310(void) {
             } else {
                 k = D_801AEE20[k].unkB4;
             }
-            for (n = k; (D_801AEE20[n].unk98 >= 2) && (depth > 0); depth--) {
+            for (n = k; (D_801AEE20[n].unk98 >= 2) && (left > 0); left--) {
                 n = D_801AEE20[n].unkB4;
             }
             rider->unkC = rider->nearestRecord = n;
             n = k;
             if (D_801AEE20[k].unk98 == 1) {
-                for (depth = D_801BB120 - 1; depth > 0; depth--) {
+                for (left = D_801BB120 - 1; left > 0; left--) {
                     n = D_801AEE20[n].unkB4;
                     if (D_801AEE20[n].unk98 != 1) {
                         break;
@@ -689,7 +689,8 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 4217 of 146400: same blocks and calls, frame 0x120. band17: the point behind the record is an array p
+// Score 4202 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
+// variable (cz, in a pad word: 4202); the point behind the record is an array p
 // (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
 // first one computed took a register and was spilled around sqrtf), both terms spelled alike, gx before gz as the
 // original computes them, the lap sounds' value held in from (dead there; a per-block rename search): 5286 -> 4217.
@@ -741,7 +742,7 @@ void func_8007687C(s32 arg0) {
     s32 zoneD;
     s32 sameZone;
     s32 r4;
-    s32 pad2[1]; // stack pad
+    f32 cz; // the Marine Fortress cue's z distance (its own variable, in this word)
     s32 nearLine;
     f32 lineX; // the line record's x, read ahead (permuter)
     s32 gapRef;
@@ -957,13 +958,13 @@ void func_8007687C(s32 arg0) {
                 (((D_800DAB68 == 0) && (e->unk98 == 6)) || (D_800DAB68 != 0))) {
                 D_801C1FC8 = 1;
                 dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].eyeX;
-                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
-                if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                cz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
+                if (((dx * dx) + (cz * cz)) < 1.6e7f) {
                     func_800C1B30();
                 } else if (gPlayers == TWO_PLAYERS) {
-                    dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+                    cz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
                     dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
-                    if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                    if (((dx * dx) + (cz * cz)) < 1.6e7f) {
                         func_800C1B30();
                     }
                 }
