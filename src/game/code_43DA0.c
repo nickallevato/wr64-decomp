@@ -1137,8 +1137,9 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6264 of 127200 (band17: in the 2P loop the cosine goes in dx and the camera delta in its own variables cx,
-// declared last (c's word stays as a pad), and cz (in the old pad word): 6338 -> 6264): calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
+// Score 6254 of 127200 (band17: in the 2P loop the cosine goes in dx and the camera delta in its own variables cx,
+// declared last, and cz (in the old pad word); the D_800D988C == 1 loop's angle is its own variable spin (in c's
+// old word): 6338 -> 6254): calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1164,7 +1165,7 @@ void func_8008E794(void) {
     s32 i;
     s32 angle;
     UnkStruct_801CB058* e;
-    f32 padC; // stack pad
+    s32 spin; // the D_800D988C == 1 loop's angle (its own variable, in this word)
     f32 s;
     f32 cz; // the 2P loop's camera-delta z (its own variable, in this word)
     f32 dx;
@@ -1254,9 +1255,9 @@ void func_8008E794(void) {
         D_800DA8B0 += 5.0f;
         for (i = 0, e = D_801CB058; i < gPlayers; i++, e++) {
             e->unkAC = 0.0f;
-            angle = ANGLE_TO_CUSTOM_UNITS(D_800DA8B0);
-            e->unkB0 = SIN(angle) * 64;
-            e->unkB4 = COS(angle) * 64.0f;
+            spin = ANGLE_TO_CUSTOM_UNITS(D_800DA8B0);
+            e->unkB0 = SIN(spin) * 64;
+            e->unkB4 = COS(spin) * 64.0f;
             D_801C4160 = e->unkAC;
             (*(s32*) &D_801C4168) = e->unkB4; // FAKE: D_801C4168 through a cast pointer here and below (see the note)
             D_801C4164 = e->unkB0;
