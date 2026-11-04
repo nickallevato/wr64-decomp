@@ -1137,8 +1137,8 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6279 of 127200 (band17: in the 2P loop the cosine goes in dx and the camera-delta x in its own variable cx,
-// declared last (c's word stays as a pad): 6338 -> 6279): calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
+// Score 6264 of 127200 (band17: in the 2P loop the cosine goes in dx and the camera delta in its own variables cx,
+// declared last (c's word stays as a pad), and cz (in the old pad word): 6338 -> 6264): calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
 // first). The literal spellings
 // (64 as an int, 0 and 0.00f in zero tests) came from respelling searches: IDO keeps differently spelled
@@ -1166,7 +1166,7 @@ void func_8008E794(void) {
     UnkStruct_801CB058* e;
     f32 padC; // stack pad
     f32 s;
-    f32 pad; // stack pad (the 2P block's scale factor is held in s)
+    f32 cz; // the 2P loop's camera-delta z (its own variable, in this word)
     f32 dx;
     f32 dz;
     f32 cx; // the 2P loop's camera-delta x: its own variable, declared last (a declaration search)
@@ -1296,8 +1296,8 @@ void func_8008E794(void) {
                     D_801C3C58 = &D_801C3C60[i].unk0;
                     D_801C3C54 = (struct UnkStruct_801C3C54*) &D_801AEE20[gRiderRaceState[i].nearestRecord];
                     cx = D_801C3C54->unk0 - D_801C3C50->unk44;
-                    dz = D_801C3C54->unk8 - D_801C3C50->unk4C;
-                    len = sqrtf((cx * cx) + (dz * dz));
+                    cz = D_801C3C54->unk8 - D_801C3C50->unk4C;
+                    len = sqrtf((cx * cx) + (cz * cz));
                     if ((len < 1500.0f) && ((D_801C3C54->unk98 == 1) || (D_801C3C54->unk98 == 0))) {
                         D_801C3C58->unk78 = 1;
                         if (len != 0.00f) { // 0.00f: a separate constant from 0.0f to IDO
