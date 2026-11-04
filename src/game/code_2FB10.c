@@ -133,7 +133,12 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 1305 of 97200 (near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
+// Score 145 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
+// the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
+// the extent loops' addresses then take the original's registers): 1305 -> 790; the second count's start is
+// computed before the unk98 == 1 test, into left (dead there) through a dead copy in type (FAKE; a permuter find
+// and fresh-variable searches): 350; its test spelled (j - 1) >= 0 (FAKE, permuter: the original's bgtzl): 145.
+// near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
 // the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
@@ -142,12 +147,12 @@ void func_801EED70(void);
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
 // as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
 // first branch delay slot). The other loop counters' names are from a search over each loop's counter.
-// Left: registers: the first loops' row pointer and counter swap a0/a1, and the extent loops' addresses take a3, t0,
-// t3 where the original has a2, a3, t1.
+// Left (band17): in the D_801CE638 == 8 search the first count and the record
+// pointer swap a0/a2, and the switch value and the unk2C loop counter take v0/v1 where the original has a1.
 void func_80075310(void) {
     f32 x;
     s32 i;
-    s32 pad[1]; // stack pad: the original's frame is 0x80
+    s32 left; // the records left to walk in the D_801CE638 search's first loop (its own variable)
     s32 j;
     s32 k;
     s32 depth;
@@ -386,7 +391,7 @@ void func_80075310(void) {
                     type = 14;
                     break;
             }
-            n = D_801BB120 - 1;
+            left = D_801BB120 - 1;
             for (k = 0; k < D_801BB120; k++) {
                 if (type == D_801AEE20[k].unk98) {
                     break;
@@ -397,20 +402,21 @@ void func_80075310(void) {
             } else {
                 k = D_801AEE20[k].unkB4;
             }
-            for (j = k; (D_801AEE20[j].unk98 >= 2) && (n > 0); n--) {
-                j = D_801AEE20[j].unkB4;
+            for (n = k; (D_801AEE20[n].unk98 >= 2) && (left > 0); left--) {
+                n = D_801AEE20[n].unkB4;
             }
-            rider->unkC = rider->nearestRecord = j;
-            j = k;
+            rider->unkC = rider->nearestRecord = n;
+            n = k;
+            left = (type = D_801BB120) - 1; // FAKE: D_801BB120 through type (dead here), for the registers
             if (D_801AEE20[k].unk98 == 1) {
-                for (n = D_801BB120 - 1; n > 0; n--) {
-                    j = D_801AEE20[j].unkB4;
-                    if (D_801AEE20[j].unk98 != 1) {
+                for (j = left; (j - 1) >= 0; j--) { // FAKE (permuter): j > 0 spelled (j - 1) >= 0 (bgtzl)
+                    n = D_801AEE20[n].unkB4;
+                    if (D_801AEE20[n].unk98 != 1) {
                         break;
                     }
                 }
             }
-            rider->unk10 = j;
+            rider->unk10 = n;
         }
     }
 
@@ -687,7 +693,14 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 5286 of 146400: same blocks and calls, frame 0x120. mix2: the checkpoint-gap reference time (gapRef) and
+// Score 4107 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
+// variable (cz, in a pad word: 4202); the lap-shift and unk2C loops count in time and the power step goes through
+// ref (dead there; rename searches): 4107;
+// the point behind the record is an array p
+// (FAKE: x in p[1], z in p[0], x first), which keeps both values in their homes as the original does (as px/pz the
+// first one computed took a register and was spilled around sqrtf), both terms spelled alike, gx before gz as the
+// original computes them, the lap sounds' value held in from (dead there; a per-block rename search): 5286 -> 4217.
+// mix2: the checkpoint-gap reference time (gapRef) and
 // r3/r4 are their own variables, in stack-pad words, not reused ones, and the lap-shift loop counts in laps (dead
 // there): 5581 -> 5401; the type 8/9 test reads e->unk98 directly (same score) and the Marine Fortress cue's
 // second distance takes dz first (a swap search): 5391; unk320 goes through a pointer view (RIDER_UNK320,
@@ -717,7 +730,7 @@ void func_800C1EB8(s32);
 // (0xA4; dPrev's home here too, but never spilled). unk8C * 2 (an int) keeps the original's mul.s, where * 2.0f
 // becomes an add.
 void func_8007687C(s32 arg0) {
-    s32 i;
+    s32 i; // unused since band17 (its word keeps the frame)
     s32 time;
     s32 ref;
     s32 sfx;
@@ -735,7 +748,7 @@ void func_8007687C(s32 arg0) {
     s32 zoneD;
     s32 sameZone;
     s32 r4;
-    s32 pad2[1]; // stack pad
+    f32 cz; // the Marine Fortress cue's z distance (its own variable, in this word)
     s32 nearLine;
     f32 lineX; // the line record's x, read ahead (permuter)
     s32 gapRef;
@@ -754,8 +767,7 @@ void func_8007687C(s32 arg0) {
     s32 r3;
     f32 progress;
     s32 pad[7]; // stack pad
-    f32 px;
-    f32 pz;
+    f32 p[2]; // FAKE: the point's z, x (an array keeps both in their homes 0x6C/0x70, as the original does)
     f32 dirX;
     f32 dirZ;
     f32 gx;
@@ -812,11 +824,11 @@ void func_8007687C(s32 arg0) {
     // whether the rider is between the posts (with D_801C39C4 of slack).
     cur = rider->unkC;
     e = &D_801AEE20[cur];
-    pz = e->unk8 - (e->unk84 * 50.0f * 0.5f);
-    px = e->unk0 - (50.0f * e->unk80 * 0.5f);
+    p[1] = e->unk0 - (e->unk80 * 50.0f * 0.5f);
+    p[0] = e->unk8 - (e->unk84 * 50.0f * 0.5f);
     if (e->unk9C == 1) {
-        gz = e->unk14 - e->unk20;
         gx = e->unkC - e->unk18;
+        gz = e->unk14 - e->unk20;
         len = sqrtf((gx * gx) + (gz * gz));
         if (len > 0.0f) {
             gx /= len;
@@ -847,8 +859,8 @@ void func_8007687C(s32 arg0) {
     }
     dirX = e->unk70;
     dirZ = e->unk74;
-    dx = D_801C3780 - px;
-    dz = D_801C3788 - pz;
+    dx = D_801C3780 - p[1];
+    dz = D_801C3788 - p[0];
     len = sqrtf((dx * dx) + (dz * dz));
     if (len > 0.0f) {
         dx /= len;
@@ -901,14 +913,14 @@ void func_8007687C(s32 arg0) {
                         rider->unk28 = 1;
                         if (isHuman[0]) {
                             if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
-                                sfx = 0x80;
+                                from = 0x80;
                             } else {
-                                sfx = 0;
+                                from = 0;
                             }
                             if (type == 0) {
-                                AudioGeneral_PlaySound(0x26, sfx);
+                                AudioGeneral_PlaySound(0x26, from);
                             } else {
-                                AudioGeneral_PlaySound(0x27, sfx);
+                                AudioGeneral_PlaySound(0x27, from);
                             }
                         }
                     }
@@ -926,17 +938,17 @@ void func_8007687C(s32 arg0) {
                     }
                     rider->unk28 = 2;
                     if (isHuman[0]) {
-                        sfx = gBuoyMisses - rider->unk134;
-                        if (sfx < 0) {
-                            sfx = 0;
+                        from = gBuoyMisses - rider->unk134;
+                        if (from < 0) {
+                            from = 0;
                         }
                         if ((gPlayers == TWO_PLAYERS) && (arg0 == gPlayer2Rider)) {
-                            sfx += 0x80;
+                            from += 0x80;
                         }
                         if (type == 0) {
-                            AudioGeneral_PlaySound(0x29, sfx);
+                            AudioGeneral_PlaySound(0x29, from);
                         } else {
-                            AudioGeneral_PlaySound(0x28, sfx);
+                            AudioGeneral_PlaySound(0x28, from);
                         }
                     }
                 }
@@ -952,13 +964,13 @@ void func_8007687C(s32 arg0) {
                 (((D_800DAB68 == 0) && (e->unk98 == 6)) || (D_800DAB68 != 0))) {
                 D_801C1FC8 = 1;
                 dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223930].eyeX;
-                dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
-                if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                cz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223930].eyeZ;
+                if (((dx * dx) + (cz * cz)) < 1.6e7f) {
                     func_800C1B30();
                 } else if (gPlayers == TWO_PLAYERS) {
-                    dz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
+                    cz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
                     dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
-                    if (((dx * dx) + (dz * dz)) < 1.6e7f) {
+                    if (((dx * dx) + (cz * cz)) < 1.6e7f) {
                         func_800C1B30();
                     }
                 }
@@ -1019,9 +1031,9 @@ void func_8007687C(s32 arg0) {
                         rider->lapTimes[rider->lapCount - 1] = rider->lapTime;
                         rider->lapBuoyMisses[rider->lapCount - 1] = rider->unk130;
                     } else {
-                        for (laps = 0; laps < 8; laps++) {
-                            rider->lapTimes[laps] = rider->lapTimes[laps + 1];
-                            rider->lapBuoyMisses[laps] = rider->lapBuoyMisses[laps + 1];
+                        for (time = 0; time < 8; time++) {
+                            rider->lapTimes[time] = rider->lapTimes[time + 1];
+                            rider->lapBuoyMisses[time] = rider->lapBuoyMisses[time + 1];
                         }
                         rider->lapTimes[8] = rider->lapTime;
                         rider->lapBuoyMisses[8] = rider->unk130;
@@ -1111,8 +1123,8 @@ void func_8007687C(s32 arg0) {
                 }
             }
             rider->unk130 = 0;
-            for (i = 1; i < D_801BB120; i++) {
-                rider->unk2C[i] = 0;
+            for (time = 1; time < D_801BB120; time++) {
+                rider->unk2C[time] = 0;
             }
             if ((rider->lapCount >= 2) && (rider->unk2F4 == 0)) {
                 rider->unk308 = 1;
@@ -1122,8 +1134,8 @@ void func_8007687C(s32 arg0) {
     }
     if (rider->unk138 != rider->power) {
         r = rider->power - rider->unk138; // (permuter: the difference in r, dead here)
-        i = (rider->power - rider->unk138 == 0) ? 0 : ((r > 0) ? 1 : -1);
-        rider->unk138 += i;
+        ref = (rider->power - rider->unk138 == 0) ? 0 : ((r > 0) ? 1 : -1);
+        rider->unk138 += ref;
     }
     if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
         rider->unk8 = 0;
@@ -1355,7 +1367,11 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 3030 of 111900: same blocks, switches and calls, frame 0xB0. mix1: the four lap-split zeroes chained the
+// Score 2860 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
+// the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
+// loop's lap count runs in flag and its counter in laps, the unk2C loop counts in time (dead there; per-block rename
+// searches): 3030 -> 2860.
+// mix1: the four lap-split zeroes chained the
 // other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
 // adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
 // the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
@@ -1379,7 +1395,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
 // flag and the record sound value are if/else assignments (the original hoists the else value above the branch);
 // the cross product and the record score sum are computed into locals first, as the original's order shows;
-// operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps: the
+// operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps then; laps and time since band17: the
 // original's registers for them) come from searches; the gate dot product is summed in two statements (permuter)
 // and dx subtracted in its own statement (a sum-split search).
 // The original keeps an empty arg0 != gPlayer1Rider test as a branch (`beq a0, t7` to the next instruction, arg0's
@@ -1392,7 +1408,7 @@ void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
     s32 sfx;
-    s32 padP; // stack pad (FAKE, permuter: the passed flag is held in i, dead there)
+    s32 cpTime; // the gate time (in the word the original gives it)
     s32 points;
     s32 frac;
     s32 flag;
@@ -1674,8 +1690,8 @@ void func_800783AC(s32 arg0) {
                 len = -len;
             }
             frac = (dot / (dot + len)) * 50.0f;
-            time = rider->raceTime - frac;
-            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = time;
+            cpTime = rider->raceTime - frac;
+            rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = cpTime;
             rider->unk334 = 0;
             bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
             if (bonus > 0) {
@@ -1742,13 +1758,13 @@ void func_800783AC(s32 arg0) {
                         (D_801C39F8 != 0) && (D_801C39FC != 0) && (D_801C3A00 != 0) && (D_801C3A04 != 0)) {
                         D_801C2930 = 1;
                     }
-                    laps = D_801CE728[0];
-                    if (laps >= 10) {
-                        laps = 9;
+                    flag = D_801CE728[0];
+                    if (flag >= 10) {
+                        flag = 9;
                     }
                     rider->raceTime = 0;
-                    for (sfx = 0; sfx < laps; sfx++) {
-                        rider->raceTime += rider->lapTimes[sfx];
+                    for (laps = 0; laps < flag; laps++) {
+                        rider->raceTime += rider->lapTimes[laps];
                     }
                     D_801C2928 = 0;
                     bonus = D_801C26D0 + D_801C39CC + D_801C39D4;
@@ -1779,8 +1795,8 @@ void func_800783AC(s32 arg0) {
             }
             rider->unk320 = rider->lapCount;
             do {} while (0); // FAKE (insert search): an empty block before the unk2C loop
-            for (laps = 1; laps < D_801BB120; laps++) {
-                rider->unk2C[laps] = 0;
+            for (time = 1; time < D_801BB120; time++) {
+                rider->unk2C[time] = 0;
             }
         }
         rider->unk2C[cur] = 1;
