@@ -1059,16 +1059,17 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
 #endif
 
 #ifdef NON_MATCHING
-// Score 150 of 24200: pix is an s32 that also holds the lookup index (the original reuses v0 for it). Left: the
-// original computes &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads entry 62 at 0x7C(s1);
-// here the [62] address is folded into one constant and the lookup adds base + index (index + base there), and
-// the column pointers and lum take a0/a3/t0/t1/a2 where the original has a3/t0/t1/a2/a3. The flag is cleared
-// through pix (a permuter FAKE). A u16* local for the table is constant-propagated (the [62] read becomes an
-// absolute lhu). Tried without effect: no top (col compared directly), the column loop over an index, both
-// table reads spelled as pointer sums, D_80158350 defined in the file, renaming pix/lum/v/i (web search).
-// The bottom pixel's index through pix (as in the column loop) also scores 150. The original's 0x7C(s1) looks like
-// an index folded to 62 after the base was hoisted; the bottom read through *p, prev and lum chained, or the column
-// loop over a constant count (IDO then unrolls it by 4, the remainder first) do not give it.
+// Score 90 of 24200: the column loop's end pointer is a local set on the do line (near15, from a permuter find; 150
+// before). pix is an s32 that also holds the lookup index (the original reuses v0 for it). Left: the original computes
+// &D_80158350 twice (s1 for the [62] read, a0 for the lookup) and reads entry 62 at 0x7C(s1); here the [62] address is
+// folded into one constant and the lookup adds base + index (index + base there), and the lookup base and the bottom
+// pixel's address take t2 and a0 where the original has a0 and a3. The flag is cleared through pix (a permuter FAKE). A
+// u16* local for the table is constant-propagated (the [62] read becomes an absolute lhu). Tried without effect: no top
+// (col compared directly), the column loop over an index, both table reads spelled as pointer sums, D_80158350 defined
+// in the file, renaming pix/lum/v/i (web search). The bottom pixel's index through pix (as in the column loop) also
+// scores 150. The original's 0x7C(s1) looks like an index folded to 62 after the base was hoisted; the bottom read
+// through *p, prev and lum chained, or the column loop over a constant count (IDO then unrolls it by 4, the remainder
+// first) do not give it.
 extern u16 D_80158350[];
 
 void func_8004A8B0(u16* fb) {
@@ -1081,6 +1082,7 @@ void func_8004A8B0(u16* fb) {
     s32 pix;
     s32 lum;
     s32 prev;
+    u16* end;
 
     if (D_800D4644 != 0) {
         for (i = 0; i < 125; i++) {
@@ -1100,7 +1102,7 @@ void func_8004A8B0(u16* fb) {
     prev = lum; // FAKE (permuter): a dead store of the still-unset lum; moves the column pointers' registers
     fb += 20 * 320;
     col = fb + 8;
-    do {
+    end = fb + 311; do { // one line (a permuter find): IDO schedules by source line
         pix = col[198 * 320];
         prev = (u32) (pix >> 11) * 77 + (u32) ((pix >> 6) & 0x1F) * 151 + (u32) ((pix >> 1) & 0x1F) * 28;
         // The bottom pixel is compared with itself: (lum - prev + 16000) >> 8 is entry 62.
@@ -1116,7 +1118,7 @@ void func_8004A8B0(u16* fb) {
             prev = lum;
             p -= 320;
         } while (p >= top);
-    } while (col < fb + 311);
+    } while (col < end);
 }
 #else
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/sys/sys_utils/func_8004A8B0.s")

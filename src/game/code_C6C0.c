@@ -5484,41 +5484,14 @@ void func_800629A8(UnkStruct_80192690* arg0) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 80 of 68700 (near14: gFrameCounter read as (u32), so IDO's code generator loads it straight into v0 instead of
-// storing a temporary and reloading the first field (seen in cc -S output); unkC7E and unkC80 zeroed by one chain,
-// whose reload of unkC80 takes the temporary register the original's numbering skips (the assembler then drops it), so
-// 1, 8 and 22 land in t4, t5 and t6 as in the original: 155. unkC1C is stored straight from its sum (in a temporary,
-// $f10, as the original) and read back into the dead z (FAKE): without that read IDO loads the unkC0C/unkC04 34.11f
-// right after the func_8005D390 call instead of after the unkC1C store, and the old z and x routing FAKEs are no longer
-// needed: 150. The x part sum is written (2.0f * unk18.x) + unk4.x, as the y and z ones (an operand-order search): IDO
-// then loads unk4.x first, into the original's $f4: 80. Left: the three final adds take the mul second (first in the
-// original), and the y and z sums' temporaries.) Before, 195: calls, branches and the frame (0x118) agree, and mf sits
-// at the original's sp+0xC0. The
-// state is cleared by one long chain in the original's store order (0.0f through three floats, an unsigned conversion
-// into unk1444, then the s16 and s8 narrowings). With unk1444, unk1600 and unk1602 u16 (as the original's lhu loads
-// of unk1600/unk1602 elsewhere show) the converted value is stored unchanged to unk1444 through unk1608 and the s16
-// copy is made only for unk16E2/unk1606, as in the original (the 6575 before came with s16 fields and two wrong
-// stores; the right types make the chain exact). Independent statements after the chain are in the order a greedy
-// swap search kept (the gFrameCounter chain earlier):
-// 7965 -> 5230; a statement-move search moved two more and two stores go through free locals: 4970. unkC7C and
-// unkC82 are set by one chain, unk15D8 = 1 is spelled as an int (searches; a 34.110f spelling then): 3475;
-// unk16F2 is zeroed before unk1604: 3465; unkC54 = 22 before func_800624CC (as the original stores it) with
-// unkBAC..unkBB4 as one chain: 3345. unk1446 before unk15FC, the -1 chain written from unkC74, unkC0C set before
-// unkC04 and the first part's y and z sums with the doubled term first (operand-order searches): 2930. point is set before
-// the template loop and the chain loop reads lengths[i] for i = 1..5 (the original loads 0(v1) from lengths + 4 on):
-// 2625. unkC20..unkC08 are cleared with 0.0f in field order (the original stores the top's 0.0f, $f20, there) and
-// the unk1520 loop with an int 0 (a separate zero, $f14, in the original): 1855. The six transforms add the
-// translation last ((...) + mf.mf[3][k], an operand-order search; the original's add.s operands): 500; both 34.11f
-// literals spelled alike again: 475. The chain loop's sums written -(x * lengths[i]) + prev: IDO then multiplies
-// x by the length in the original's operand order, so the products land in the original's registers: 195.
-// The twelve
-// points are transformed by
-// index, and the C88 entry is re-read through the rider for each component, read once into x and stored from x (the
-// original multiplies the loaded value without reloading it). The sphere velocities and the parts' unk1C are
-// cleared with an int 0; unk1604 and unk16F2 are zeroed by two
-// statements (the original stores zero to both and reads both back for unk16F0/unk16F4). Left: gFrameCounter is
-// loaded into v0 there (t2 here), and float registers from the unkC1C store through the unk1448[0] sums.
+/*
+ * Places a rider: copies the twelve template points, transforms the position and points by arg1 (with arg2 set, the
+ * xz change goes to unkBF0/unkBF4), clears the state, sets the four spheres along unk6C, clears the parts' unk1C,
+ * calls func_80053EAC by mode, and sets the six unk1448 links behind part 1 (lengths per player, as func_800609EC).
+ * The first link's sums are written as func_800609EC's (unk4 + 2 * unk18 + unkC * -2.1, with unkC read back from the
+ * field just stored): IDO then takes the product first in each final add, as the original does. The dead read of
+ * unkC1C into z is a FAKE that keeps the 34.11f loads after the unkC1C store.
+ */
 void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     UnkStruct_80192690* rider = &D_80192690[arg0];
     UnkStruct_8004B0F8_1* point;
@@ -5654,16 +5627,16 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
     rider->unkC04 = 34.11f;
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.x;
     rider->unk1448[0].unkC.x = x;
-    rider->unk1448[0].unk0.x = (x * -2.1f) +
-                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x) + RIDER_PARTS(rider)[1].unk4.x);
+    rider->unk1448[0].unk0.x = RIDER_PARTS(rider)[1].unk4.x + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.x) +
+                               (rider->unk1448[0].unkC.x * -2.1f);
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.y;
     rider->unk1448[0].unkC.y = x;
-    rider->unk1448[0].unk0.y = (x * -2.1f) +
-                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y) + RIDER_PARTS(rider)[1].unk4.y);
+    rider->unk1448[0].unk0.y = RIDER_PARTS(rider)[1].unk4.y + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.y) +
+                               (rider->unk1448[0].unkC.y * -2.1f);
     x = RIDER_C88(rider)[rider->unk1424][7].unkC.z;
     rider->unk1448[0].unkC.z = x;
-    rider->unk1448[0].unk0.z = (x * -2.1f) +
-                               ((2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z) + RIDER_PARTS(rider)[1].unk4.z);
+    rider->unk1448[0].unk0.z = RIDER_PARTS(rider)[1].unk4.z + (2.0f * RIDER_C88(rider)[rider->unk1424][7].unk18.z) +
+                               (rider->unk1448[0].unkC.z * -2.1f);
     if (arg0 == gPlayer1Rider) {
         if (D_801CE6F4[0] != 0) {
             lengths = D_800D48F8;
@@ -5695,9 +5668,6 @@ void func_80062E50(s32 arg0, Mtx* arg1, s32 arg2) {
         rider->unk1520[i].x = rider->unk1520[i].y = rider->unk1520[i].z = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_C6C0/func_80062E50.s")
-#endif
 
 void func_8006390C(s32 arg0, void* arg1) {
     UnkStruct_80192690* rider;

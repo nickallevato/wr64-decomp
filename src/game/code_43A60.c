@@ -88,13 +88,14 @@ void func_80088EA8(void) {
 // entries for unk80[i], colours the vertices at D_801C4698/D_801C46C8 in both frame-buffer blocks, and lists the
 // D_801BC940 entries whose unk4C is 1 in D_801C4118 (count D_801C4110).
 #ifdef NON_MATCHING
-// Score 55 of 18900: register allocation only. In the first loop the D_80192690 step pointer and the unkB64 switch
-// value take each other's registers (v0/v1). The vertex pointers as v = va; v += i put the base first in the adds.
-// In the original the step pointer is coloured before the switch value and the D_801C3C60 pointer after it. The
-// switch value through j (shared with the later j loops) gives the step pointer v0 but moves &D_801C3C50, the
-// D_801C3C60 pointer and the value (125). Not lower: the value in its own local (any type, any declaration place),
-// a product search over the loop counters' and the value's names, if-chains, (void*) casts, empty ifs and empty
-// do-whiles at every line, the permuter (58800 iterations).
+// Score 40 of 18900: register allocation only. An empty test of the switch value in the 0-2 arm (FAKE, a permuter
+// find, near15) gives the switch value v1 as in the original; left: the step pointer in a2 (v0 there) and the constant
+// 2 in a3 (a2 there). Before (55) the step pointer and the unkB64 switch value took each other's registers (v0/v1).
+// The vertex pointers as v = va; v += i put the base first in the adds. In the original the step pointer is coloured
+// before the switch value and the D_801C3C60 pointer after it. The switch value through j (shared with the later j
+// loops) gives the step pointer v0 but moves &D_801C3C50, the D_801C3C60 pointer and the value (125). Not lower: the
+// value in its own local (any type, any declaration place), a product search over the loop counters' and the value's
+// names, if-chains, (void*) casts, empty ifs and empty do-whiles at every line, the permuter (58800 iterations).
 void func_800890B4(void) {
     s32 i;
     s32 j;
@@ -120,6 +121,7 @@ void func_800890B4(void) {
             case 0:
             case 1:
             case 2:
+                if (D_801C3C50->unkB64 && D_801C3C50->unkB64) {} // FAKE (permuter): an empty test, see the note
                 D_801C3C58->unk64 = 32.0f;
                 break;
             case 3:
