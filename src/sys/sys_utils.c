@@ -917,7 +917,7 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 3264 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// Score 3216 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
 // / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
 // rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
 // products once the divisions are done (two locals fewer give the original's frame). The declaration order is from
@@ -929,12 +929,13 @@ UNUSED void SysUtils_ReadContData(void) {
 // mf[0][0] adds the scaled sum to nx * nx (an operand-order search): 3411; three more operand orders: 3396; mix1:
 // mf[1][0] as u + t (an operand-order search): 3391; mf[1][2] recomputes t from the recomputed qy (FAKE,
 // permuter): 3349; the z == 0 branch stores mf[2][2] after b and t (a swap search), and the general
-// branch's len is qz * s (an operand-order search): 3264.
+// branch's len is qz * s (an operand-order search): 3264; band17: qz declared where nz was and nz where qz was (a
+// rename search over the branches; IDO's register choice follows the declaration order): 3216.
 // Left: x is stored to its slot on entry here; z is kept in a saved register (the original reloads it from its slot).
 void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 b;
     f32 ny;
-    f32 nz;
+    f32 qz;
     f32 s;
     f32 t;
     f32 len;
@@ -946,7 +947,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 py;
     f32 qx;
     f32 qy;
-    f32 qz;
+    f32 nz;
     s32 i;
 
     i = (((angle * 4096.0f) / 3.141593f) / 2.0f) + 0.5f;
