@@ -133,25 +133,25 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 655 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
+// Score 350 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
 // the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
-// the extent loops' addresses then take the original's registers): 1305 -> 790; the second count read through
-// a variable of its own declared first (FAKE, permuter and a fresh-variable search): 683; the stunt-record row
-// copy (the old FAKE) in its own variable row, declared first: 655.
+// the extent loops' addresses then take the original's registers): 1305 -> 790; the second count's start is
+// computed before the unk98 == 1 test into a variable of its own, cnt, through a dead copy hold (FAKE; a permuter
+// find and fresh-variable searches): 350. Frame 0x88 here (the two new words) against the original's 0x80.
 // near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
 // unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
 // a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
-// the original. The stunt-record rows go through a copy (k in mid4, row since band17; FAKE, permuter). The zeroing chains store right
+// the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
 // to left (the first stores keep their addresses in registers, the leftmost goes through at), as in the original.
 // The D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
 // as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
 // first branch delay slot). The other loop counters' names are from a search over each loop's counter.
-// Left: registers: the first loops' row pointer and counter swap a0/a1, and the extent loops' addresses take a3, t0,
-// t3 where the original has a2, a3, t1.
+// Left (band17): the frame (0x88, two words over); in the D_801CE638 == 8 search the first count and the record
+// pointer swap a0/a2, and the switch value and the unk2C loop counter take v0/v1 where the original has a1.
 void func_80075310(void) {
-    s32 row; // the stunt-record row copy (FAKE, see below), a variable of its own declared first
-    s32 hold; // FAKE (permuter, then a fresh-variable search): the second count's D_801BB120 read goes here
+    s32 cnt; // the second record count's start, computed before the unk98 == 1 test (permuter)
+    s32 hold; // FAKE (permuter, then a fresh-variable search): a dead copy of D_801BB120 (see cnt)
     f32 x;
     s32 i;
     s32 left; // the records left to walk in the D_801CE638 search's first loop (its own variable)
@@ -180,9 +180,9 @@ void func_80075310(void) {
             D_801C23B0[i] = D_800D81B0;
         }
         for (i = 9; i < 12; i++) {
-            row = i; // FAKE (permuter): the row through a copy, for the later registers
+            k = i; // FAKE (permuter): the row through a copy, for the later registers
             for (n = 0; n < 3; n++) {
-                gStuntRecords[row][n] = D_800D81C4;
+                gStuntRecords[k][n] = D_800D81C4;
             }
         }
         for (i = 0; i < 4; i++) {
@@ -409,9 +409,9 @@ void func_80075310(void) {
             }
             rider->unkC = rider->nearestRecord = n;
             n = k;
+            cnt = (hold = D_801BB120) - 1; // FAKE: through hold (dead)
             if (D_801AEE20[k].unk98 == 1) {
-                // FAKE (permuter): the count read through hold
-                for (j = (hold = D_801BB120) - 1; j > 0; j--) {
+                for (j = cnt; j > 0; j--) {
                     n = D_801AEE20[n].unkB4;
                     if (D_801AEE20[n].unk98 != 1) {
                         break;
