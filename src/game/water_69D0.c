@@ -85,7 +85,8 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 470 of 49800: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
+// Score 375 of 49800 (mid8: the else arm's k and the vertex loop's header on one line, a FAKE from a search over
+// joined line ranges; IDO schedules by source line). Before, 470: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
 // cam->unk9C is read through (no d local; pd keeps its stack word), which gives the d multiplies the original's
 // operand order. The alpha is a signed conversion ((s32) (e + 0.5f)). One f32 (e) serves the corner-ray temps,
 // the alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4). vp declared after
@@ -223,9 +224,7 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
     if (s == 0.0f) {
         k = 1.0f;
     } else {
-        k = (D_800D4750 - cam->eyeY) / s;
-    }
-    for (i = 6; i >= 0; i--) {
+        k = (D_800D4750 - cam->eyeY) / s; } for (i = 6; i >= 0; i--) { // FAKE: one line (a line-join search)
         vp = &vtx[i];
         x = vp->v.ob[0] - cam->eyeX;
         z = vp->v.ob[2] - cam->eyeZ;
@@ -774,7 +773,9 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 750 of 32400: heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
+// Score 710 of 32400 (mid8: the cells behind p and q read as (p - 1)->unk0 and (q - 1)->unk0, and the third pass's
+// first a as p[0].unk0: IDO orders the base and offset adds by the spelling; a greedy spelling search). Before, 750:
+// heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
 // v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The first
 // two passes build q's index in a variable before q = p + index (the original computes 2N + i + 2 and (2N - i + 1) << 3
 // in a1 and keeps it there): ha in the first pass, mean in the second. ha also reads the velocity for the damping at the
@@ -805,7 +806,7 @@ void func_8004EAA4(void) {
         a = WATER_CELL_AT(p->unk0);
         q = p + ha;
         ha = a->unk0;
-        b = WATER_CELL_AT(q[-1].unk0);
+        b = WATER_CELL_AT((q - 1)->unk0);
         hb = b->unk0;
         mean = (ha + hb) >> D_800D4724;
         hb = (hb - ha) >> D_800D472C;
@@ -826,7 +827,7 @@ void func_8004EAA4(void) {
             hb = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + hb) - mean;
             b->unk2 = (b->unk2 - hb) - mean;
-            b = WATER_CELL_AT(p[-1].unk0);
+            b = WATER_CELL_AT((p - 1)->unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
             hb = (hb - ha) >> D_800D472C;
@@ -863,7 +864,7 @@ void func_8004EAA4(void) {
             hb = (hb - ha) >> D_800D472C;
             a->unk2 = (a->unk2 + hb) - mean;
             b->unk2 = (b->unk2 - hb) - mean;
-            b = WATER_CELL_AT(p[-1].unk0);
+            b = WATER_CELL_AT((p - 1)->unk0);
             hb = b->unk0;
             mean = (ha + hb) >> D_800D4724;
             hb = (hb - ha) >> D_800D472C;
@@ -886,7 +887,7 @@ void func_8004EAA4(void) {
         a->unk0 += a->unk2 = (a->unk2 + ha) - mean;
         b->unk2 = (b->unk2 - ha) - mean;
         ha = a->unk2; a->unk2 = ha - (ha >> D_800D4730);
-        a = WATER_CELL_AT(p->unk0);
+        a = WATER_CELL_AT(p[0].unk0);
         ha = a->unk0;
         mean = (ha + hb) >> D_800D4724;
         hb = (hb - ha) >> D_800D472C;

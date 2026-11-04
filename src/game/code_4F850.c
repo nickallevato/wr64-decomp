@@ -981,7 +981,10 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 868 of 134600: the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after the
+// Score 728 of 134600 (mid8: the first loop's i++ written as the body's last statement, for (i = 0; i < count;),
+// moves the D_801CE740 step to the end of the unk2-test block (the beqz delay slot), like joining the loop's lines;
+// a read of D_801CE740[i].rider in the unk2 arm moves it into the copy block as in the original but keeps an lh).
+// Before (868): the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after the
 // D_801CE73C load, with the D_800DABA0 address (lui, addu) after it and the addu in the beq delay slot; here the step
 // follows the rider store and the address is scheduled into the copy (one nop more), and the switch(arg0) temp takes
 // 0x18 (0x1C there). A real pointer (ap stepped after the copy) puts the step in the copy block and the temp at 0x1C,
@@ -1057,7 +1060,7 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
     }
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count;) {
         dst = &D_800DB330[i];
         switch (i % 4) {
             case 0:
@@ -1095,6 +1098,7 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         } else {
             dst->offset = D_800DAB90[i];
         }
+        i++; // the step as the last statement (see the note)
     }
     dst++;
     dst->segRomStart = 0;
