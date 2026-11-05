@@ -1267,7 +1267,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 7079 of 60500 (hi4: the centre's x sum takes c first (an operand-swap search with score.sh): 7084 -> 7079.)
+// Score 6199 of 60500 (hi4: the centre loop's offsets are float variables (dx, dz: the original converts each
+// difference straight after the subtraction and keeps no int copy), the cell pointer is vtx (the original's s3, the
+// vertex pointer of the row loops) and the centre pointer c (v0 there): 7079 -> 6199.)
+// Before, 7079 (hi4: the centre's x sum takes c first (an operand-swap search with score.sh): 7084 -> 7079.)
 // Before, 7084 (band17: the centre loop works in vtx, hA and i, and the middle row loop's lower cell goes
 // in i (dead there; rename searches over loop bodies): 7179 -> 7084.
 // mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
@@ -1422,14 +1425,14 @@ void func_80050204(s32 view, Vtx* arena) {
     }
     k = (f32) D_800D4720 / (f32) D_80192498;
     for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
-        v = &arena[idx[6]];
-        vtx = &arena[D_80192460[0]]; // the centre, the offsets and the scaled moves in vtx, hA, i (dead here)
-        hA = v->v.ob[2] - vtx->v.ob[2];
-        i = v->v.ob[0] - vtx->v.ob[0];
-        v = &arena[*idx];
-        v->v.ob[0] = vtx->v.ob[0] + (s32) (k * i);
-        v->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * hA);
-        v->v.ob[1] = WATER_LEVEL_U32;
+        vtx = &arena[idx[6]];
+        c = &arena[D_80192460[0]]; // the centre in c, the cell in vtx
+        dx = vtx->v.ob[0] - c->v.ob[0];
+        dz = vtx->v.ob[2] - c->v.ob[2];
+        vtx = &arena[*idx];
+        vtx->v.ob[0] = c->v.ob[0] + (s32) (k * dx);
+        vtx->v.ob[2] = arena[D_80192460[0]].v.ob[2] + (s32) (k * dz);
+        vtx->v.ob[1] = WATER_LEVEL_U32;
     }
     if (w != gWaterWindow) {
         dx = gCameraPerspective[1].unkF0;
