@@ -676,7 +676,8 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1854 of 146400 (hi4: the first gate test's z delta in gx too, and the type 8/9 test an else-if (a search
+// Score 1834 of 146400 (hi4: the cue's second distance takes x first again (a swap search with score.sh): 1854 -> 1834.)
+// Before, 1854 (hi4: the first gate test's z delta in gx too, and the type 8/9 test an else-if (a search
 // with score.sh over the delta and sum variables of both gate blocks, the cue and the progress loop): 1864 -> 1854.)
 // Before, 1864 (hi4: the 8/9 dot product takes each delta first; the side tests compare with 0.0f, as
 // the original's one zero in f18 shows (int 0 is a separate constant to IDO); the cross is spelled a + -(b), which keeps
@@ -963,8 +964,8 @@ void func_8007687C(s32 arg0) {
                 if (((dx * dx) + (cz * cz)) < 1.6e7f) {
                     func_800C1B30();
                 } else if (gPlayers == TWO_PLAYERS) {
-                    cz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
                     dx = D_801BC940[D_801C39C0].unk0 - gCameraPerspective[D_80223934].eyeX;
+                    cz = D_801BC940[D_801C39C0].unk8 - gCameraPerspective[D_80223934].eyeZ;
                     if (((dx * dx) + (cz * cz)) < 1.6e7f) {
                         func_800C1B30();
                     }
