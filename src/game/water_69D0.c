@@ -774,7 +774,13 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 710 of 32400 (mid8: the cells behind p and q read as (p - 1)->unk0 and (q - 1)->unk0, and the third pass's
+// Score 495 of 32400 (hi5: the second pass computes its row offset in k, a fifth variable (the original's a1),
+// scaled to bytes before the entry test (sll/or into a1 there), and enters its loop through an explicit test and
+// do-while with q set after the test, as the original does; this gives the original's instruction count (324, one
+// more). k also holds the first pass's index and the first and third passes' damping values (a1 there). Two FAKEs
+// from an insertion search with score.sh: 710 -> 495. Left: b and hb swap a0/t2, the first pass's q add operand
+// order.)
+// Before, 710 (mid8: the cells behind p and q read as (p - 1)->unk0 and (q - 1)->unk0, and the third pass's
 // first a as p[0].unk0: IDO orders the base and offset adds by the spelling; a greedy spelling search). Before, 750:
 // heights held in ha/hb as the original keeps them in registers. The two-statement damping (hb =
 // v; v = hb - (hb >> D_800D4730)) is on one line (IDO schedules by source line; a search over joined lines). The first
@@ -800,14 +806,16 @@ void func_8004EAA4(void) {
     s32 mean;
     s32 ha;
     s32 hb;
+    s32 k;
 
     p = gWaterCellOffsets;
     for (i = -gWaterWindowN; i < 0; i++) {
-        ha = (gWaterWindowN * 2) + i + 2;
+        k = (gWaterWindowN * 2) + i + 2;
         a = WATER_CELL_AT(p->unk0);
-        q = p + ha;
         ha = a->unk0;
+        q = p + k;
         b = WATER_CELL_AT((q - 1)->unk0);
+        do {} while (0); // FAKE: an empty block (an insertion search with score.sh)
         hb = b->unk0;
         mean = (ha + hb) >> D_800D4724;
         hb = (hb - ha) >> D_800D472C;
@@ -843,35 +851,40 @@ void func_8004EAA4(void) {
         hb = (hb - ha) >> D_800D472C;
         a->unk0 += a->unk2 = (a->unk2 + hb) - mean;
         b->unk2 = (b->unk2 - hb) - mean;
-        ha = a->unk2; a->unk2 = ha - (ha >> D_800D4730);
+        k = a->unk2; a->unk2 = k - (k >> D_800D4730);
     }
     for (i = 0; i < gWaterWindowN; i++) {
-        mean = ((gWaterWindowN * 2) - i) + 1;
-        q = p + mean;
+        k = ((gWaterWindowN * 2) - i) + 1;
+        k <<= 3; // the row offset in bytes: the original scales k in its own register before the entry test
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
-        for (end = (p + (gWaterWindowN << 1)) - i; p < end;) {
-            p++;
-            b = WATER_CELL_AT(q->unk0);
-            hb = b->unk0;
-            mean = (ha + hb) >> D_800D4724;
-            ha = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + ha) - mean;
-            q++;
-            b->unk2 = (b->unk2 - ha) - mean;
-            a = WATER_CELL_AT(p->unk0);
-            ha = a->unk0;
-            mean = (ha + hb) >> D_800D4724;
-            hb = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + hb) - mean;
-            b->unk2 = (b->unk2 - hb) - mean;
-            b = WATER_CELL_AT((p - 1)->unk0);
-            hb = b->unk0;
-            mean = (ha + hb) >> D_800D4724;
-            hb = (hb - ha) >> D_800D472C;
-            a->unk2 = (a->unk2 + hb) - mean;
-            b->unk0 += b->unk2 = (b->unk2 - hb) - mean;
-            b->unk2 -= b->unk2 >> D_800D4730;
+        end = (p + (gWaterWindowN << 1)) - i;
+        if (p < end) {
+            q = (UnkStruct_80160A98*) ((u8*) p + k);
+            if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: a dead self-compare (no code; an insertion search)
+            do {
+                p++;
+                b = WATER_CELL_AT(q->unk0);
+                hb = b->unk0;
+                mean = (ha + hb) >> D_800D4724;
+                ha = (hb - ha) >> D_800D472C;
+                a->unk2 = (a->unk2 + ha) - mean;
+                q++;
+                b->unk2 = (b->unk2 - ha) - mean;
+                a = WATER_CELL_AT(p->unk0);
+                ha = a->unk0;
+                mean = (ha + hb) >> D_800D4724;
+                hb = (hb - ha) >> D_800D472C;
+                a->unk2 = (a->unk2 + hb) - mean;
+                b->unk2 = (b->unk2 - hb) - mean;
+                b = WATER_CELL_AT((p - 1)->unk0);
+                hb = b->unk0;
+                mean = (ha + hb) >> D_800D4724;
+                hb = (hb - ha) >> D_800D472C;
+                a->unk2 = (a->unk2 + hb) - mean;
+                b->unk0 += b->unk2 = (b->unk2 - hb) - mean;
+                b->unk2 -= b->unk2 >> D_800D4730;
+            } while (p < end);
         }
         p++;
         a->unk0 += a->unk2;
@@ -887,14 +900,14 @@ void func_8004EAA4(void) {
         ha = (hb - ha) >> D_800D472C;
         a->unk0 += a->unk2 = (a->unk2 + ha) - mean;
         b->unk2 = (b->unk2 - ha) - mean;
-        ha = a->unk2; a->unk2 = ha - (ha >> D_800D4730);
+        k = a->unk2; a->unk2 = k - (k >> D_800D4730);
         a = WATER_CELL_AT(p[0].unk0);
         ha = a->unk0;
         mean = (ha + hb) >> D_800D4724;
         hb = (hb - ha) >> D_800D472C;
         a->unk2 = (a->unk2 + hb) - mean;
         b->unk0 += b->unk2 = (b->unk2 - hb) - mean;
-        hb = b->unk2; b->unk2 = hb - (hb >> D_800D4730);
+        k = b->unk2; b->unk2 = k - (k >> D_800D4730);
     }
     hb = a->unk2;
     a->unk0 += hb;
