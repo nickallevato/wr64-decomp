@@ -1267,7 +1267,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 4315 of 60500 (hi4: the first row loop reads the previous cell's x offset as (e - 1)->unk4, the other
+// Score 4235 of 60500 (hi4: the last row loop reads (e - 1)->unk4 too, and the centre scale converts D_80192498
+// into k before the divide (permuter finds, re-scored with score.sh): 4315 -> 4235.)
+// Before, 4315 (hi4: the first row loop reads the previous cell's x offset as (e - 1)->unk4, the other
 // fields as e[-1] (same address; the spelling changes IDO's address arithmetic; from the permuter, re-scored with
 // score.sh): 4520 -> 4315.)
 // Before, 4520 (hi4: the window-shift loop builds its vertex in cell and copies it into v (FAKE, from the
@@ -1419,7 +1421,7 @@ void func_80050204(s32 view, Vtx* arena) {
                 vtx[-1].v.tc[0] = (s32) (ox * k) + 0x400;
                 vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
                 vtx[-1].v.ob[1] = WATER_LEVEL_U32 + (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8);
-                vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
+                vtx[-1].v.ob[0] = w->unk0 + (e - 1)->unk4;
                 vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
                 lo++;
                 hi++;
@@ -1438,7 +1440,8 @@ void func_80050204(s32 view, Vtx* arena) {
         e++;
         vtx++;
     }
-    k = (f32) D_800D4720 / (f32) D_80192498;
+    k = (f32) D_80192498;
+    k = (f32) D_800D4720 / k;
     for (idx = &D_80192460[1]; idx < &D_80192460[7]; idx++) {
         vtx = &arena[idx[6]];
         c = &arena[D_80192460[0]]; // the centre in c, the cell in vtx
