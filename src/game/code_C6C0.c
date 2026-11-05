@@ -1019,7 +1019,8 @@ s32 func_80053268(s32 arg0, UnkStruct_80052E90_arg1_s* arg1, s32 arg2, s32 arg3)
 
 // Fun float functions
 #ifdef NON_MATCHING
-// Score 6284 of 16800: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
+// Score 6279 of 16800 (hi4: an empty do-while after the first cross-product term (FAKE, an insertion search with score.sh):
+// 6284 -> 6279). Before, 6284: d, c, m and e are local arrays (indexed z, y, x = 0, 1, 2, as their stack homes in the original
 // are laid out), d[1] is set before d[2], and px/py/pz reuse arg11..arg13, as the original's fs0-fs2 show. e[2] and
 // c[0] go through len, and the later reads of d go through a pointer pd (three permuter FAKEs, marked): with them IDO
 // uses three saved float registers, as the original.
@@ -1059,6 +1060,7 @@ void func_800534AC(UnkStruct_80052C6C_2* arg0, f32* arg1, f32* arg2, f32 arg3, f
             c[1] = (arg13 * d[2]) - (arg11 * pd[0]);
             c[0] = len;
             arg11 = (pd[1] * c[0]) - (pd[0] * c[1]);
+            do {} while (0); // FAKE: an empty block (an insertion search with score.sh)
             arg12 = (pd[0] * c[2]) - (pd[2] * c[0]);
             arg13 = (pd[2] * c[1]) - (pd[1] * c[2]);
             len = SQ(arg11) + SQ(arg12) + SQ(arg13);

@@ -2867,7 +2867,17 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 675 of 68000 (hi3: one more dead self-compare before the sprintf (FAKE): 685 -> 675; no-op (s32)(s64) casts of the digit x after it is set and in the digit loop (FAKE) each take two
+// Score 280 of 68000 (hi4: two more no-op casts of x in the bounce block (FAKE, an insertion search with score.sh;
+// as at the digit x, the original spends temporaries there that the assembler deletes) and the unk10 step written
+// p->unk14 + p->unk10: 400 -> 280.)
+// Before, 400 (hi4: an empty do-while after the unk10 step (FAKE, an insertion search with score.sh): 485 -> 400.)
+// Before, 485 (hi4: the pointer set-up shares a line with the do, so the assembler schedules its addiu after
+// the loop's first hoisted constant as the original does: 545 -> 485.)
+// Before, 545 (hi4: without the empty test of count in the totals switch, 304 - count * 14 is a temporary
+// as in the original (with it IDO kept the value in a saved register: a bisection by deleting regions found the
+// test), and the first no-op cast of x is dropped: 675 -> 545. Left: the D_80228D18 address in a1 here, a3 there;
+// the D_801C26D0 address set before the unk10 test there; the totals' temporaries.)
+// Before, 675 (hi3: one more dead self-compare before the sprintf (FAKE): 685 -> 675; no-op (s32)(s64) casts of the digit x after it is set and in the digit loop (FAKE) each take two
 // zero-code temporaries: 1070 -> 685; a dead float self-compare through two pointer loads after the first f (FAKE, marked)
 // costs the two temporaries the original spends there with no code (the assembler deletes the loads): from the
 // D_80228D18 increment on the temporaries are numbered as in the original until the digit x (304 - count * 14 is
@@ -2951,8 +2961,7 @@ void func_801FB514(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
-    p = D_80228AE0;
-    do {
+    p = D_80228AE0; do { // one line: the original schedules the pointer set-up with the loop's first constants
         if (p->unk0 == 0) {
             continue;
         }
@@ -3008,7 +3017,6 @@ void func_801FB514(Gfx** gdlp) {
             count = 5;
         }
         x = (304 - count * 14) / 2 + p->unkC + 8;
-        x = (s32) (s64) x; // FAKE: a no-op cast; its 64-bit halves take two temporaries the assembler deletes
         y = p->unk10 + p->unk18 + 128;
         for (k = 0; k < count; k++) {
             gDPLoadTextureBlock(gdl++, &D_80269D0[D_80228CF8[5 - count + k] << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
@@ -3018,12 +3026,15 @@ void func_801FB514(Gfx** gdlp) {
                                 1 << 10);
             x += 14;
         }
-        p->unk10 += p->unk14;
+        p->unk10 = p->unk14 + p->unk10;
+        do {} while (0); // FAKE: splits the scheduling block after the unk10 step (an insertion search with score.sh)
         if (p->unk14 >= -8) {
             p->unk14++;
         }
         if (p->unk10 >= 0) {
             p->unk14 = -10;
+            x = (s32) (s64) x; // FAKE: two more no-op casts, four temporaries the assembler deletes (insertion search)
+            x = (s32) (s64) x; // FAKE: as above
             x = (s32) (s64) x; // FAKE: as above
             p->unk10 = 0;
         }
@@ -3042,7 +3053,6 @@ void func_801FB514(Gfx** gdlp) {
             switch (p->unk0) {
                 case 1:
                     total = &D_801C26D0 + 1; // FAKE, as above
-                    if (count) {} // FAKE: an empty test of count (a search over empty tests), for the registers
                     D_801C26D4 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D4 = 99999;
