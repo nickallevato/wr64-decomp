@@ -1289,7 +1289,8 @@ void func_80085408(void) {
  */
 // Score 30 of 27700: float registers only. The scaled steering values and the float copy of unkB52 reuse cross
 // (dead after its test), from a partition search (155 -> 105); a dead copy of the dot product into var_f0 before the
-// ABS chain (40) and a copy of cross into c in its test (30) are permuter FAKEs, marked. Left: the dot product
+// ABS chain (40, now the plainer var_f0 = var_f12) is a permuter FAKE, marked; the test written cross * var_f0
+// does what the permuter's copy of cross into c did (30), so c is only the stack pad. Left: the dot product
 // (var_f0) and cross swap $f0 and $f16. Upstream's 105 above is decomp.me's scale.
 // The original's registers give the m2c roles: var_f0 ($f0) holds the dot product, both ABS values, the scaled
 // steering value and the float unkB52; var_f12 ($f12) the copy and the difference; cross ($f16) only the cross
@@ -1305,7 +1306,7 @@ void func_80085510(void) {
     f32 var_f12;
     f32 steer;
     f32 cross;
-    f32 c; // FAKE (permuter): a copy of cross in its test; it was the stack pad that puts sp4C at sp+0x4C
+    f32 c; // stack pad: puts sp4C at sp+0x4C
     f32 pad2; // stack pad
 
     if (D_800DAB68 != 0) {
@@ -1339,11 +1340,11 @@ void func_80085510(void) {
     D_801C3C58->unk68 = var_f0;
     cross = (D_801C3C58->unkD4 * sp4C) - (sp48 * D_801C3C58->unkD0);
 
-    if ((var_f0 * (c = cross)) < 0.0f) { // FAKE (permuter): the copy into c
+    if ((cross * var_f0) < 0.0f) {
         sp4C = 0;
         D_801C3C50->unkB53 = 0;
     } else {
-        var_f0 = (sp4C * sp44) + (sp48 * sp40); // FAKE (permuter): dead copy
+        var_f0 = var_f12; // FAKE (permuter): dead copy
         if ((var_f0 = ABS(var_f12)) > 0.5f) {
             if (var_f12 < 0.0f) {
                 sp4C = (s32) steer;

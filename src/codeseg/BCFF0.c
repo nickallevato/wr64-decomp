@@ -1185,16 +1185,10 @@ void Hud_UpdateOffCourseCountdown(void) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 10 of 20800: only the lui before the gPlayer1Rider load differs (t8 here, v0 in the original); the loaded value is
-// in v0 for both index products, as the original. The pointer to gPlayer1Rider and the copy t are FAKEs found by the
-// permuter: they take the extra early temp the original spends. The s32 return type with no return statement (its caller,
-// func_801FC4D4, ignores the result) keeps v0 live to the end, so the assembler moves the load into v0 instead of t8.
-// Without the FAKEs (300) only the temporaries after the load are off by one: the original spends one more
-// temporary in the i == 0 arm. Not lower: casts on the index, chains and comma forms, the pointer set in the arm,
-// a dead copy of gPlayer1Rider, empty ifs and do-whiles at every line, the permuter from the FAKE-free base.
-
-s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
+// FAKE: the entry test `(gPlayers <= 0) == 0` (a for loop's own guard written out, with a do-while) makes IDO compute
+// the test into a temporary that the assembler then folds into the blez; that spends the one temporary the
+// original spends before the first rider arm (the plain `gPlayers > 0` and the for loop do not).
+void func_801F2060(Gfx** gdlp) {
     RiderStruct* rider;
     UnkStruct_80192690* p;
     s32 i;
@@ -1206,56 +1200,53 @@ s32 func_801F2060(Gfx** gdlp) { // FAKE: s32 with no return, see the note above
     s32 g1;
     s32 n;
     s32 x;
-    s32 t; // with x it fills the 0x30 bytes of locals above gdl (a FAKE copy of gPlayer1Rider, see the note)
+    s32 t; // stack pad: unused; it fills the 0x30 bytes of locals above gdl
     Gfx* gdl;
-    s32* new_var; // FAKE: pointer to gPlayer1Rider, see the note above
 
-    new_var = &gPlayer1Rider;
     gdl = *gdlp;
-    for (i = 0; i < gPlayers; i++) {
-        if (i == 0) {
-            t = *new_var; // FAKE: see the note above
-            p = &D_80192690[gPlayer1Rider];
-            rider = &gRiderRaceState[t];
-        } else {
-            p = &D_80192690[gPlayer2Rider];
-            rider = &gRiderRaceState[gPlayer2Rider];
-        }
-        if ((rider->unk2E4 != 0) && (rider->unk2E8 <= D_80228B5C) && (rider->finishState == 0) && (rider->unk2F4 == 0)) {
-            if (gPlayers == ONE_PLAYER) {
-                y = 90;
-            } else if (i == 0) {
-                y = 50;
+    i = 0;
+    if ((gPlayers <= 0) == 0) { // FAKE: see the note above
+        do {
+            if (i == 0) {
+                p = &D_80192690[gPlayer1Rider];
+                rider = &gRiderRaceState[gPlayer1Rider];
             } else {
-                y = 160;
+                p = &D_80192690[gPlayer2Rider];
+                rider = &gRiderRaceState[gPlayer2Rider];
             }
-            if (((rider->unk2E8 % 20) != 0) || (p->unkC54 == 23) || (p->unkC54 == 7)) {
-                mode = 2;
-                r0 = 255;
-                g0 = 0;
-                r1 = 0;
-                g1 = 0;
-            } else {
-                mode = 1;
-                r0 = 128;
-                g0 = 128;
-                r1 = 255;
-                g1 = 255;
+            if ((rider->unk2E4 != 0) && (rider->unk2E8 <= D_80228B5C) && (rider->finishState == 0) && (rider->unk2F4 == 0)) {
+                if (gPlayers == ONE_PLAYER) {
+                    y = 90;
+                } else if (i == 0) {
+                    y = 50;
+                } else {
+                    y = 160;
+                }
+                if (((rider->unk2E8 % 20) != 0) || (p->unkC54 == 23) || (p->unkC54 == 7)) {
+                    mode = 2;
+                    r0 = 255;
+                    g0 = 0;
+                    r1 = 0;
+                    g1 = 0;
+                } else {
+                    mode = 1;
+                    r0 = 128;
+                    g0 = 128;
+                    r1 = 255;
+                    g1 = 255;
+                }
+                gdl = Printer_Print(gdl, 0, "COURSE", 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+                gdl = Printer_Print(gdl, 0, "OUT", 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
+                n = rider->unk2E8 / 20;
+                sprintf((char*) D_80228CF8, "%d", n);
+                x = 223 - (n >= 10) * 5;
+                gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
+                                    255, r1, g1, 255, r1, g1);
             }
-            gdl = Printer_Print(gdl, 0, "COURSE", 68, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
-            gdl = Printer_Print(gdl, 0, "OUT", 164, y, mode, r0, 255, g0, r0, 255, g0, 255, r1, g1, 255, r1, g1);
-            n = rider->unk2E8 / 20;
-            sprintf((char*) D_80228CF8, "%d", n);
-            x = 223 - (n >= 10) * 5;
-            gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, x, y, mode, r0, 255, g0, r0, 255, g0,
-                                255, r1, g1, 255, r1, g1);
-        }
+        } while (++i < gPlayers);
     }
     *gdlp = gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F2060.s")
-#endif
 
 void func_801F23A0(void) {
     s32 i;
@@ -2736,7 +2727,7 @@ extern s32 D_80228D14;
 extern s32 D_80228D18;
 extern s8 D_80228CF8[];
 
-s32 func_801F2060(Gfx**); // void in effect; s32 for its set-aside's FAKE return type (see its note)
+void func_801F2060(Gfx**);
 void func_801FAEB8(Gfx**);
 void func_801FB514(Gfx**);
 void func_801FBFB4(Gfx**);
