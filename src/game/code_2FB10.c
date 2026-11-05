@@ -1349,57 +1349,6 @@ extern s32 D_80228A94;
 
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
-#ifdef NON_MATCHING
-// Score 25 of 111900 (hi4: the bonus flag and the race-time lap count are sfx too, the original's one variable at
-// 0xA4, in a2 there: 50 -> 25; flag's word is a pad now).
-// Before, 50 (hi4, found with the as1 bench and temp rotations: the original spends one temporary in the
-// empty test that the assembler deletes (a float self-compare through arg0, FAKE: 2015 with the next one); the trick
-// state is read through q = &D_80192690[arg0], kept in v0 by a dead self-compare of q->unkB90 (FAKE); dx takes
-// D_801C3780 - e->unk0 in one statement (1735); the second gate distance works in dz, len and dx (the
-// original's fa1/ft5/fv1), the fraction goes through dot, the bonus is timeLeft + frac / 2, then /= 100 and
-// *= D_800D92B8 (each a separate statement, unk334 cleared after), the time-table byte is held in laps (the
-// original's v1) and D_80228A94 = 20 set after the timeLeft store; the case-3 and unk2C-loop do-whiles, the
-// unk1C test held in time and the sfx cast are gone (all FAKEs). Left: &D_801C39D0 in ra here, t2 there (the
-// first if after the empty test).)
-// Before, 2515 (hi3: a no-op (s32)(s64) cast of sfx (FAKE) 2540 -> 2515; the empty test's body is an empty float self-compare of dx instead of the pad store;
-// IDO keeps the test as a branch to the next instruction with arg0's spill in its delay slot, as the original
-// does, and no store). Before, 2860: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
-// the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
-// loop's lap count runs in flag and its counter in laps, the unk2C loop counts in time (dead there; per-block rename
-// searches): 3030 -> 2860.
-// mix1: the four lap-split zeroes chained the
-// other way round (IDO stores the rightmost first; the original stores D_801C39E4 first: 5770); the power step
-// adds a nested conditional, as the sibling 8007687C writes it (the original's move of the inner result: 5663);
-// the gate's two distances take their x and z terms in dx and dz (dead there), which gives the original's
-// e->unk0/e->unk8 spills at 0x20/0x1C, and land in dot and len (no dPos/dPrev locals: two words fewer, with
-// padV gone, keep the frame); the trick-10 flags are two stores (the chain reloads D_801C39F0); unk334 is
-// cleared after the bonus (mix2: before it again), the time table is indexed gCourseID * 4 first, and D_80228A94
-// is set before timeLeft (which keeps the function's size in the original's 16-byte step, so .bss addresses do not move:
-// 4377); the gate dot product takes its terms in dx and dz too (4047); permuter finds: passed held in i (dead
-// there; a pad keeps its home: 4002) and a dead copy of rider in the time table read (FAKE: 3489). mix2: that
-// copy goes through sfx (dead there) instead of a new pointer local, so every stack home is the original's again (3297).
-// The bonus flag for func_801FB488 is its own variable (flag, in padX's slot), not inGate: inGate then stays in its
-// home and is loaded where it is tested, and the gate time takes a0, as in the original (an empty do-while in the
-// trick switch's case 3, FAKE from an insert search, then gives 3150). The gate time has its own variable (time,
-// in a padY word; same score), and a permuter find holds the unk1C == -1 test in it first (FAKE): 3105;
-// unk334 is cleared before the bonus again (a swap search): 3095; an empty do-while before the unk2C loop (FAKE,
-// insert search): 3030.
-// mid6 (its trick-10 chain is split again above): the gate time went through laps before its checkpointTimes store
-// (a hold search; 8007687C holds it the same way). The declarations follow the
-// original's stack homes (sfx at 0xA4, bonus 0x98, frac 0x90, trick 0x8C, cur 0x80, inGate 0x70, dx/dz 0x54/0x50;
-// IDO gives the first declared local the highest home), with stack pads for the words between. The timeLeft test
-// has the out-of-time arm first and returns after Rider_SetFinishState; D_801C26E0 1/2/3 is a switch; the bonus
-// flag and the record sound value are if/else assignments (the original hoists the else value above the branch);
-// the cross product and the record score sum are computed into locals first, as the original's order shows;
-// operand orders, one statement move and the counters of the race-time and unk2C loops (sfx, laps then; laps and time since band17: the
-// original's registers for them) come from searches; the gate dot product is summed in two statements (permuter)
-// and dx subtracted in its own statement (a sum-split search).
-// The original keeps an empty arg0 != gPlayer1Rider test as a branch (`beq a0, t7` to the next instruction, arg0's
-// spill in the delay slot). IDO drops an empty `if` and an `if` whose body is a dead store; a store to a stack pad
-// (FAKE, mid6) keeps the branch with that one store as its body (8670 -> 6630; an if/else of pad stores 6485, a
-// store to frac or trick, read uninitialised later, about the same).
-// Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate block); right
-// after the empty test the original's temporaries are one further on and it loads gCourseID after the rider address.
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
@@ -1469,6 +1418,7 @@ void func_800783AC(s32 arg0) {
             }
         } else {
             rider->unk334 = 0;
+            D_801C39E0 = D_801C39E0; // FAKE (permuter): a self-assignment (no code) that moves register choices
         }
     }
     // unk138 follows power one step a frame.
@@ -1807,9 +1757,6 @@ void func_800783AC(s32 arg0) {
         D_801C2930 = 1;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_800783AC.s")
-#endif
 
 extern s32 D_801C1FD8;
 extern s32 D_801C1FDC;
