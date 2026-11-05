@@ -85,21 +85,22 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 375 of 49800 (mid8: the else arm's k and the vertex loop's header on one line, a FAKE from a search over
+// Score 345 of 49800 (hi2: both texture coordinates written (Round(...) + offset) & 0xFFFF as in the twin
+// func_80050B78, which spends the temporary the original as1 deletes in each and replaces the (s16) hack: 375;
+// mid8: the else arm's k and the vertex loop's header on one line, a FAKE from a search over
 // joined line ranges; IDO schedules by source line). Before, 470: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
 // cam->unk9C is read through (no d local; pd keeps its stack word), which gives the d multiplies the original's
 // operand order. The alpha is a signed conversion ((s32) (e + 0.5f)). One f32 (e) serves the corner-ray temps,
 // the alpha and the far vertex's offset; declared third it gets the original's home (sp+0xE4). vp declared after
 // hiz and padB (a stack pad) give the up-vector products' slots (declaration search). The dist offset spells 0.866
 // as .866f, a separate constant to IDO from the vertices' 0.866f; the ob[1] chain runs from vtx[6]; the ob[0] and
-// ob[2] chains store vtx[1] first. The (s16) on the second texture coordinate's SysUtils_Round takes an extra
-// integer temporary (hack). The do {} while (0) in the first corner ray and the empty test of cam->unkF4 after
+// ob[2] chains store vtx[1] first. The do {} while (0) in the first corner ray and the empty test of cam->unkF4 after
 // the last one are FAKEs (marked; without them the float temporaries rotate from the first instruction on, 4800).
 // The cross product's y through k (FAKE, from a search that routes each assignment through a free local): 485;
 // vtx[0]'s z through x (permuter): 475; unkF0 * dist in the near x (operand swap): 470.
 // Left: the cam->upY CSE takes $f14 (the original's $f24) and the float registers after it rotate (unk6C, unk68,
-// unk64, the 5.0f and dist), 0.866f is loaded later into $f20 (early into $f24 there), and the texture
-// coordinates' sums take t7/t0 (t8/t9 there).
+// unk64, the 5.0f and dist) and 0.866f is loaded later into $f20 (early into $f24 there). Splitting the joined line
+// gives the loop counter's li its original place but scores 440.
 void func_8004C1D0(s32 view, Vtx* vtx) {
     s32 i;
     f32 pd; // stack pad (cam->unk9C is read through, as in func_80050B78)
@@ -236,8 +237,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
         } else {
             vp->v.cn[3] = (s32) (e + 0.5f);
         }
-        vp->v.tc[0] = SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C;
-        vp->v.tc[1] = (s16) SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760; // (s16): see above
+        vp->v.tc[0] = (SysUtils_Round((cam->eyeX + (k * x)) / D_801924C4) + D_800D475C) & 0xFFFF;
+        vp->v.tc[1] = (SysUtils_Round((cam->eyeZ + (k * z)) / D_801924C8) + D_800D4760) & 0xFFFF;
     }
 }
 #else
