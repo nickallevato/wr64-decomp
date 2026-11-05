@@ -1350,7 +1350,16 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 2515 of 111900 (hi3: a no-op (s32)(s64) cast of sfx (FAKE) 2540 -> 2515; the empty test's body is an empty float self-compare of dx instead of the pad store;
+// Score 50 of 111900 (hi4, found with the as1 bench and temp rotations: the original spends one temporary in the
+// empty test that the assembler deletes (a float self-compare through arg0, FAKE: 2015 with the next one); the trick
+// state is read through q = &D_80192690[arg0], kept in v0 by a dead self-compare of q->unkB90 (FAKE); dx takes
+// D_801C3780 - e->unk0 in one statement (1735); the second gate distance works in dz, len and dx (the
+// original's fa1/ft5/fv1), the fraction goes through dot, the bonus is timeLeft + frac / 2, then /= 100 and
+// *= D_800D92B8 (each a separate statement, unk334 cleared after), the time-table byte is held in laps (the
+// original's v1) and D_80228A94 = 20 set after the timeLeft store; the case-3 and unk2C-loop do-whiles, the
+// unk1C test held in time and the sfx cast are gone (all FAKEs). Left: &D_801C39D0 in ra here, t2 there (the
+// first if after the empty test); sfx in a1 here, a2 there, at the end.)
+// Before, 2515 (hi3: a no-op (s32)(s64) cast of sfx (FAKE) 2540 -> 2515; the empty test's body is an empty float self-compare of dx instead of the pad store;
 // IDO keeps the test as a branch to the next instruction with arg0's spill in its delay slot, as the original
 // does, and no store). Before, 2860: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
 // the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
@@ -1400,7 +1409,7 @@ void func_800783AC(s32 arg0) {
     s32 bonus;
     s32 trick;
     s32 time;
-    s32 padY[1]; // stack pad
+    struct UnkStruct_80192690* q; // in the old padY word
     s32 cur;
     s32 padZ[3]; // stack pad
     s32 inGate;
@@ -1413,7 +1422,9 @@ void func_800783AC(s32 arg0) {
     UnkStruct_801AEE20* e;
 
     if (arg0 != gPlayer1Rider) {
-        if (dx != dx) {} // FAKE: a dead float self-compare (no code) keeps the original's empty test as a branch
+        // FAKE: a dead float self-compare through arg0 (no code: the assembler deletes the load) keeps the
+        // original's empty test as a branch and spends the temporary the original spends here
+        if (*(f32*)arg0 != *(f32*)arg0) {}
     }
     rider = &gRiderRaceState[arg0];
     rider->unk314 = 0;
@@ -1465,7 +1476,9 @@ void func_800783AC(s32 arg0) {
     // Trick points (D_801C26E4) from the craft's trick state unk1604.
     if ((rider->unk2F4 == 0) && (rider->finishState == 0)) {
         points = 0;
-        trick = D_80192690[arg0].unk1604;
+        q = &D_80192690[arg0];
+        trick = q->unk1604;
+        if (q->unkB90 != q->unkB90) {} // FAKE: a dead float self-compare (no code) keeps q a register (v0)
         if (trick == 3) {
             D_801C26E0 = 1;
         } else if (trick == 4) {
@@ -1599,7 +1612,6 @@ void func_800783AC(s32 arg0) {
                     D_801C26E4 += D_800D92BC.unk10;
                     break;
                 case 3:
-                    do {} while (0); // FAKE (insert search): an empty block that moves later register choices
                     D_801C26E4 += D_800D92BC.unk14;
                     break;
             }
@@ -1616,8 +1628,7 @@ void func_800783AC(s32 arg0) {
         dot = (e->unk78 * dx) + (dz * e->unk7C);
         inGate = (dot >= 0.0f) && (dot <= (2.0f * e->unk8C));
     }
-    dx = D_801C3780;
-    dx -= e->unk0;
+    dx = D_801C3780 - e->unk0;
     dz = D_801C3788 - e->unk8;
     len = sqrtf((dx * dx) + (dz * dz));
     if (len > 0.0f) {
@@ -1627,8 +1638,7 @@ void func_800783AC(s32 arg0) {
     i = false;
     dot = (e->unk70 * dx) + (e->unk74 * dz);
     len = (e->unk74 * dx) - (e->unk70 * dz);
-    time = rider->unk1C == -1; // FAKE (permuter): the test held in time (dead here)
-    if (time && (dot > 0.0f)) {
+    if ((rider->unk1C == -1) && (dot > 0.0f)) {
         if (len >= 0.0f) {
             rider->unk1C = 1;
         } else {
@@ -1668,17 +1678,20 @@ void func_800783AC(s32 arg0) {
             if (!(dot >= 0.0f)) {
                 dot = -dot;
             }
-            dx = D_80192690[arg0].unkBE4 - e->unk0;
-            dz = D_80192690[arg0].unkBEC - e->unk8;
-            len = (dx * e->unk70) + (dz * e->unk74);
-            if (!(len >= 0.0f)) {
-                len = -len;
+            dz = D_80192690[arg0].unkBE4 - e->unk0;
+            len = D_80192690[arg0].unkBEC - e->unk8;
+            dx = (dz * e->unk70) + (len * e->unk74);
+            if (!(dx >= 0.0f)) {
+                dx = -dx;
             }
-            frac = (dot / (dot + len)) * 50.0f;
+            dot = dot / (dot + dx);
+            frac = dot * 50.0f;
             cpTime = rider->raceTime - frac;
             rider->checkpointTimes[rider->lapCount - 1][rider->unk164] = cpTime;
+            bonus = rider->timeLeft + (frac / 2);
+            bonus /= 100;
+            bonus *= D_800D92B8;
             rider->unk334 = 0;
-            bonus = (((frac / 2) + rider->timeLeft) / 100) * D_800D92B8;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
                     flag = 1;
@@ -1691,9 +1704,9 @@ void func_800783AC(s32 arg0) {
                 D_801C39D4 = bonus;
             }
             if (cur != D_801BB12C) {
+                laps = D_800D9280[(gCourseID * 4) + rider->unk164];
+                rider->timeLeft = laps * 1000;
                 D_80228A94 = 20;
-                // FAKE: a dead copy of rider through sfx (set again before its next use)
-                rider->timeLeft = D_800D9280[(gCourseID * 4) + ((RiderStruct*) (sfx = (s32) rider))->unk164] * 1000;
                 AudioGeneral_PlaySound(0x33, 0);
             }
             rider->unk164++;
@@ -1762,7 +1775,6 @@ void func_800783AC(s32 arg0) {
                         }
                     }
                     if (D_801C2928 == 1) {
-                        sfx = (s32) (s64) sfx; // FAKE: a no-op cast whose 64-bit halves take two temporaries (an insertion search)
                         sfx = 0;
                     } else {
                         sfx = 1;
@@ -1780,7 +1792,7 @@ void func_800783AC(s32 arg0) {
                 }
             }
             rider->unk320 = rider->lapCount;
-            do {} while (0); // FAKE (insert search): an empty block before the unk2C loop
+
             for (time = 1; time < D_801BB120; time++) {
                 rider->unk2C[time] = 0;
             }
