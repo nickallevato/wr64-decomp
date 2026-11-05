@@ -4,9 +4,9 @@
 
 **The Nintendo 64 classic, rebuilt from readable C, byte for byte.**
 
-![functions](https://img.shields.io/badge/functions-1315%20%2F%201348-0b6e63?style=for-the-badge)
-![percent](https://img.shields.io/badge/matched-97.6%25-0b6e63?style=for-the-badge)
-![bytes](https://img.shields.io/badge/code%20bytes-82.6%25-4fc9b8?style=for-the-badge)
+![functions](https://img.shields.io/badge/functions-1318%20%2F%201348-0b6e63?style=for-the-badge)
+![percent](https://img.shields.io/badge/matched-97.8%25-0b6e63?style=for-the-badge)
+![bytes](https://img.shields.io/badge/code%20bytes-84.1%25-4fc9b8?style=for-the-badge)
 ![rom](https://img.shields.io/badge/ROM-SHA--1%20OK-brightgreen?style=for-the-badge)
 
 *US Rev 1 · IDO 5.3 · every build is checked against the original ROM*
@@ -44,18 +44,18 @@ neighbour became its own symbol.
 | `src/libultra` | Nintendo's N64 OS library | 157 / 157 | `████████████████████` 100% |
 | other | handwritten assembly and loose segments | 55 / 55 | `████████████████████` 100% |
 | `src/audio` | sequence and sound playback | 228 / 228 | `████████████████████` 100% |
-| `src/overlays` | courses and menu screens | 149 / 151 | `███████████████████▋` 98.7% |
+| `src/overlays` | courses and menu screens | 150 / 151 | `███████████████████▊` 99.3% |
 | `src/codeseg` | HUD, menus, text printer, popups, fades | 213 / 219 | `███████████████████▍` 97.3% |
 | `src/sys` | boot, threads, memory | 35 / 37 | `██████████████████▉░` 94.6% |
-| `src/game` | race logic, riders, camera, water | 478 / 501 | `███████████████████░` 95.4% |
-| **Total** | | **1315 / 1348** | **97.6%** |
+| `src/game` | race logic, riders, camera, water | 480 / 501 | `███████████████████▏` 95.8% |
+| **Total** | | **1318 / 1348** | **97.8%** |
 
 Every function, sized by its bytes and grouped by area, then by source file (the thin lines). Green is
 matched C, amber is still assembly. Drawn by `tools/fork/progress_map.py` from a full build.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/progress-map-dark.svg">
-  <img alt="Map of all 1348 functions: 1315 matched (green), 33 still assembly (amber)" src="docs/progress-map.svg" width="100%">
+  <img alt="Map of all 1348 functions: 1318 matched (green), 30 still assembly (amber)" src="docs/progress-map.svg" width="100%">
 </picture>
 
 Some functions don't match yet but have a readable C attempt. That attempt is kept beside the
