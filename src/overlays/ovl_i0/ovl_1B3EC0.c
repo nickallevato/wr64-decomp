@@ -283,21 +283,24 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 215 of 30700: register allocation only. The B test is computed into next before the A branch (the original has
+// Score 205 of 30700: register allocation only. The B test is computed into next before the A branch (the original has
 // it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
 // hi2: the item reloaded as item = menu->items; item += D_i0_802C6EE4 loads straight into a0 as the original does; the
 // expression form spent one more temporary and shifted every temporary after it (430 -> 285, and the permuter's
-// powerMisses-through-i FAKE is no longer needed); the B branch reads unk10 through menu, set again (285 -> 215; it
-// replaces the permuter's j FAKE). One FAKE from the permuter is left (an empty test of D_i0_802C6BCC holding an
-// empty if (1) in case 4; 255 and more without it) and the idle counter's if/else on one line.
+// powerMisses-through-i FAKE is no longer needed); the B branch reads unk10 through a pointer to the menu it
+// returns to, cur (285 -> 205; it replaces the permuter's j FAKE; through menu, set again, 215). One FAKE from the
+// permuter is left (an empty test of D_i0_802C6BCC holding an empty if (1) in case 4; 255 and more without it) and
+// the idle counter's if/else on one line.
 // Left: the B test in a3 (t5 there), next in a3 (a2 there), D_i0_802C6BCC's value and index swap v0/a2, the
 // gDifficulty value in t1 (a1 there) and the A-else branch's unk10 address in t8 (v1 there). A separate B-test
-// local (b, or j) gives the same 215; a new pointer local for both unk10 reads gives 205 (not kept: an extra local).
+// local (b, or j) changes nothing; the history stores through a local index, declaration orders and line joins are
+// no lower; the permuter (25 min) found nothing lower.
 void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6E08* menu = &D_i0_802C6E08[D_i0_802C6EE0];
     UnkStruct_i0_802C6C28* items = menu->items;
     s32 idle = 1;
     s32 next;
+    UnkStruct_i0_802C6E08* cur;
     UnkStruct_i0_802C6C28* item;
     s32 i;
     s32 j;
@@ -412,8 +415,8 @@ void func_i0_802C63AC(void) {
                 }
                 D_i0_802C6EE0 = D_i0_802C6EF8[D_i0_802C6BCC];
                 D_i0_802C6EE4 = D_i0_802C6EE8[D_i0_802C6BCC];
-                menu = &D_i0_802C6E08[D_i0_802C6EE0];
-                D_i0_802C6BD0 = menu->unk10;
+                cur = &D_i0_802C6E08[D_i0_802C6EE0];
+                D_i0_802C6BD0 = cur->unk10;
                 AudioGeneral_PlaySound(0x16, 0);
             }
         } else if (D_801CE65A[0].unk0 & U_JPAD) {
