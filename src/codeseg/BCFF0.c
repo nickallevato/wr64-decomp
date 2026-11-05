@@ -1303,7 +1303,9 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 1140 of 174400 (near14: the original keeps all five display-list constants of the two trailing digit draws in
+// Score 1140 of 174400 (hi5: the empty tests of time in the style 1 digit loop and in the style 2 icon position's
+// last arm (FAKEs, see below) are no longer needed: removed together at the same score.)
+// Before, 1140 (near14: the original keeps all five display-list constants of the two trailing digit draws in
 // registers (0xE7000000, 0xE4000000, 0xB3000000, 0xB2000000, 0x04000400; cc -S showed IDO rebuilding 0xB3000000 for the
 // second rectangle here). The x test moved after the first trailing load and an empty test of time after the first
 // trailing rectangle (both FAKE, a search over empty tests in that block) make IDO keep all five, as the original does:
@@ -1414,7 +1416,6 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         for (i = 0; i < 6; i++) {
             HUD_LOAD32(gdl, &((u32*) D_103B4D0)[D_80228CD8[i] * 0xC0], 12, 16);
             HUD_RECT(gdl, px, y, 12, 16);
-            if (time) {} // FAKE: as below (an empty-test search)
             px += 13;
             if (i == 0) {
                 px += 6;
@@ -1460,7 +1461,6 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
                 lap = x + 4;
             } else {
                 lap = x + 10;
-                if (time) {} // FAKE: an empty test of time (a search over empty tests); see the note
             }
             HUD_SCISRECT(gdl, lap, py, 8, 8);
         }
