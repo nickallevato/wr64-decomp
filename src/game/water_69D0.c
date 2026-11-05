@@ -1267,7 +1267,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 5580 of 60500 (hi4, searches with score.sh: the middle row loop bounds its cells with lo, the last row
+// Score 4945 of 60500 (hi4: as1-level: a rotation scan shows the original's temporaries further on from the row
+// loops; no-op (s32)(s64) casts of i in the first two row loops and dead self-compares of gWaterWindowN in the last
+// one and before the window centre (FAKE, an insertion search with score.sh) supply them: 5580 -> 4945.)
+// Before, 5580 (hi4, searches with score.sh: the middle row loop bounds its cells with lo, the last row
 // loop's centre term goes in ox, and three operand orders: 6199 -> 5580.)
 // Before, 6199 (hi4: the centre loop's offsets are float variables (dx, dz: the original converts each
 // difference straight after the subtraction and keeps no int copy), the cell pointer is vtx (the original's s3, the
@@ -1326,6 +1329,7 @@ void func_80050204(s32 view, Vtx* arena) {
     for (i = 1 - gWaterWindowN; i < 0; i++) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = WATER_LEVEL_U32;
+        i = (s32) (s64) i; // FAKE: a no-op cast; its 64-bit halves take temporaries the assembler deletes (insertion search)
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
@@ -1367,6 +1371,7 @@ void func_80050204(s32 view, Vtx* arena) {
     for (lo = e + ((gWaterWindowN * 2) - 2); lo >= e;) {
             i = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0;
             sz = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0;
+            i = (s32) (s64) i; // FAKE: as above
             i = i >> 7;
             sx = (((i + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
             sz = (i - (sz >> 7)) * 55;
@@ -1397,6 +1402,7 @@ void func_80050204(s32 view, Vtx* arena) {
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 sz = WATER_CELL_AT(hi->unk0)->unk0;
+                if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: a dead self-compare (no code; its load is deleted), as above
                 hA = hA >> 7;
                 ox = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
                 sz = (hA - (sz >> 7)) * 55;
@@ -1454,6 +1460,7 @@ void func_80050204(s32 view, Vtx* arena) {
         v->v.ob[2] += oz;
     }
     v = &arena[D_80192460[1]];
+    if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: as above
     c = &arena[D_80192460[4]];
     w->unk8 = ((f32) (v->v.ob[0] + c->v.ob[0]) * 0.5f) - w->unk14;
     w->unkC = ((f32) (c->v.ob[2] + v->v.ob[2]) * 0.5f) - w->unk18;
