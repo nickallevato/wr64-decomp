@@ -630,16 +630,6 @@ extern struct camera_unk_1* D_801D7970;
 
 void func_801EDAE0(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 
-#ifdef NON_MATCHING
-// Score 220 of 84200: same loops, calls, stores and frame. The original has a dead li t0, 0xDF before the last
-// loop: a constant IDO hoisted for a store it then removed. Here it is missing; everything else in the last loop
-// matches except one extra sw of D_800E6D7C. The FAKE `D_800E6D7C += 0` (permuter) reloads the pointer once more,
-// which takes the one temporary the original uses there, so the loop's later temporaries match (without it t7
-// where the original has t9, and so on). A dead store of 0xDF to the vertex's alpha gives the li but the sb stays
-// (330 with the old pointer store, 400 with this one); right before the 0xFF store it is removed with its li.
-// Near miss: `vtx->v.cn[3] = 0xDF; vtx++; vtx[-1].v.cn[3] = 0xFF;` after the first vertex's ob[2] keeps the li in t0
-// and every register as in the original (405): only the dead sb t0 and the extra pointer sw are left.
-// The index j and the pad give the original's frame (0xE8) and its a0 for the index.
 void func_800AFBD0(s32 arg0) {
     s32 i;
     s32 alpha;
@@ -844,7 +834,9 @@ void func_800AFBD0(s32 arg0) {
     for (i = 7; i >= 0; i--) {
         j = (D_800E6D60->unk1C38 + i) % 8;
         D_800E6D7C = &D_800E6D80[j];
-        D_800E6D7C += 0; // FAKE: one more reload of the pointer (permuter), for the temporaries below
+        // FAKE: a dead float self-compare; the record pointer load it costs is deleted by the assembler but
+        // takes the temporary the original spends here
+        if (D_800E6D68->unk0 != D_800E6D68->unk0) {}
         vtx->v.ob[0] = D_800E6D7C->unk0;
         vtx->v.ob[1] = D_800E6D7C->unk4;
         vtx->v.ob[2] = D_800E6D7C->unk8;
@@ -856,11 +848,11 @@ void func_800AFBD0(s32 arg0) {
         vtx->v.cn[3] = 0xFF;
         vtx++;
         D_800E6D7C->unk28++;
+        // FAKE: a dead float self-compare that keeps 0xDF in a register through the loop (the original's
+        // dead li t0, 0xDF) and j live to the end; the assembler deletes its subu and conversion
+        if ((f32)(0xDF - j) != (f32)(0xDF - j)) {}
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_68A10/func_800AFBD0.s")
-#endif
 
 extern RiderStruct gRiderRaceState[];
 extern s32 D_800D4B00;
