@@ -1267,7 +1267,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 4760 of 60500 (hi4: the row loops' centre terms add sz >> 7 first and the last row loop's height takes
+// Score 4520 of 60500 (hi4: the window-shift loop builds its vertex in cell and copies it into v (FAKE, from the
+// permuter, re-scored with score.sh); cell takes the unused hB word, which drops the hB FAKE: 4760 -> 4520.)
+// Before, 4760 (hi4: the row loops' centre terms add sz >> 7 first and the last row loop's height takes
 // the water level first (operand-order searches with score.sh): 4945 -> 4760.)
 // Before, 4945 (hi4: as1-level: a rotation scan shows the original's temporaries further on from the row
 // loops; no-op (s32)(s64) casts of i in the first two row loops and dead self-compares of gWaterWindowN in the last
@@ -1304,7 +1306,7 @@ void func_80050204(s32 view, Vtx* arena) {
     s32 ox;
     s32 sz;
     s32 sx;
-    s32 hB; // FAKE: unused (the row loops read the cells through hA and sz); it moves register choices
+    Vtx* cell; // the last loop's vertex, copied into v (FAKE, permuter), in the old hB word
     s32 i;
     s32 hA;
     f32 dz;
@@ -1457,7 +1459,8 @@ void func_80050204(s32 view, Vtx* arena) {
     // FAKE: D_80192464 is &D_80192460[1]; through that symbol IDO does not carry the first loop's addresses into
     // this loop in saved registers (the original rebuilds both bounds here).
     for (idx = D_80192464; idx < &D_80192464[6]; idx++) {
-        v = &arena[*idx];
+        cell = &arena[*idx];
+        v = cell;
         v->v.ob[0] += ox;
         v->v.ob[2] += oz;
     }
