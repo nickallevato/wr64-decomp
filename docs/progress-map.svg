@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
-<title>1310 of 1348 functions matched</title>
+<title>1313 of 1348 functions matched</title>
 <rect width="1000" height="620" rx="6" fill="#fbfbf9"/>
 <rect x="6.0" y="24.0" width="84.1" height="92.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="6.0" y="116.2" width="84.1" height="81.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -64,7 +64,7 @@
 <rect x="292.1" y="241.9" width="9.7" height="6.3" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="301.9" y="234.2" width="4.4" height="9.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="301.9" y="243.7" width="4.4" height="4.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="306.2" y="24.0" width="106.8" height="67.3" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="306.2" y="24.0" width="106.8" height="67.3" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="413.0" y="24.0" width="104.6" height="67.3" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="306.2" y="91.3" width="48.9" height="66.2" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="306.2" y="157.5" width="48.9" height="49.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -204,7 +204,7 @@
 <rect x="281.3" y="248.2" width="67.1" height="60.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="348.4" y="248.2" width="51.3" height="60.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="281.3" y="308.6" width="45.6" height="62.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="326.9" y="308.6" width="42.9" height="62.7" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="326.9" y="308.6" width="42.9" height="62.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="369.9" y="308.6" width="29.8" height="29.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="369.9" y="338.4" width="29.8" height="18.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="369.9" y="356.4" width="15.3" height="14.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -817,7 +817,7 @@
 <rect x="842.1" y="373.5" width="10.2" height="5.2" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="852.4" y="367.8" width="4.9" height="11.0" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="857.2" y="193.0" width="34.7" height="55.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="891.9" y="193.0" width="36.7" height="27.7" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="891.9" y="193.0" width="36.7" height="27.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="891.9" y="220.7" width="17.7" height="28.1" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="909.6" y="220.7" width="19.0" height="18.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="909.6" y="239.4" width="12.2" height="9.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1531,9 +1531,9 @@
 <rect x="875.6" y="543.0" width="93.7" height="71.0" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="543.0" width="24.7" height="66.9" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="609.9" width="24.7" height="4.1" fill="none" stroke="#fbfbf9" stroke-width="2"/>
-<text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 476/501</text>
+<text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 478/501</text>
 <text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 211/219</text>
-<text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 148/151</text>
+<text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 149/151</text>
 <text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 228/228</text>
 <text x="733.5" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/libultra</text>
 <text x="878.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">other 55/55</text>
