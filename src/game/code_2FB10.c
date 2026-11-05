@@ -133,7 +133,7 @@ u64 D_801C3A08;
 void func_801EED70(void);
 
 #ifdef NON_MATCHING
-// Score 145 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
+// Score 125 of 97200 (mid9: the unk2C and lap loops count in n, as the search after them: 145 -> 125. band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
 // the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
 // the extent loops' addresses then take the original's registers): 1305 -> 790; the second count's start is
 // computed before the unk98 == 1 test, into left (dead there) through a dead copy in type (FAKE; a permuter find
@@ -147,8 +147,8 @@ void func_801EED70(void);
 // constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
 // as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
 // first branch delay slot). The other loop counters' names are from a search over each loop's counter.
-// Left (band17): in the D_801CE638 == 8 search the first count and the record
-// pointer swap a0/a2, and the switch value and the unk2C loop counter take v0/v1 where the original has a1.
+// Left: in the D_801CE638 == 8 search the first count and the record pointer swap a0/a2, the switch value takes v0
+// where the original has a1, and the second count takes v1 (the original a0, its first record from k's v1).
 void func_80075310(void) {
     f32 x;
     s32 i;
@@ -353,19 +353,19 @@ void func_80075310(void) {
         rider->unk2F0 = 0;
         rider->unk2F4 = 0;
         rider->unk304 = 0;
-        for (j = 0; j < D_801BB120; j++) {
-            rider->unk2C[j] = 0;
+        for (n = 0; n < D_801BB120; n++) {
+            rider->unk2C[n] = 0;
         }
         rider->lapTime = 0;
         rider->unk16C = 0;
         rider->raceTime = 0;
         rider->bestLapTime = 599999;
         rider->timeLeft = D_800D9280[gCourseID * 4] * 1000;
-        for (j = 0; j < 9; j++) {
-            rider->lapBuoyMisses[j] = 0;
-            rider->lapTimes[j] = 0;
+        for (n = 0; n < 9; n++) {
+            rider->lapBuoyMisses[n] = 0;
+            rider->lapTimes[n] = 0;
             for (k = 0; k < 8; k++) {
-                rider->checkpointTimes[j][k] = 0;
+                rider->checkpointTimes[n][k] = 0;
             }
         }
         rider->unk330 = 0.0f;
