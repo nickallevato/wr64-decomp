@@ -917,7 +917,9 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 3168 of 31600: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
+// Score 3073 of 31600 (hi5: four operand orders in the general branch and mf[0][2] stored before mf[2][0] (a
+// search over operand and adjacent-statement swaps with score.sh): 3168 -> 3073.)
+// Before, 3168: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
 // / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
 // rounding term); x * x is computed in each branch; len is reused for the third and fourth branches' scratch
 // products once the divisions are done (two locals fewer give the original's frame). The declaration order is from
@@ -1030,16 +1032,16 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[0][0] = (nx * nx) + (((qx * qx) + (py * py)) * c);
         arg1->mf[1][1] = (((qy * qy) + (px * px)) * c) + (ny * ny);
         arg1->mf[2][2] = (c * qz * qz) + (nz * nz);
-        t = (((qx * qy) + (py * px)) * c) + (nx * ny);
+        t = (((px * py) + (qx * qy)) * c) + (nx * ny);
         if (nx) {} // FAKE: an empty test of nx (a search over empty tests), for the float registers
-        u = ((py * qy) - (qx * px)) * s;
+        u = ((py * qy) - (px * qx)) * s;
         arg1->mf[1][0] = u + t;
         arg1->mf[0][1] = t - u;
         len = qz * s;
         t = (c * qx * qz) + (nx * nz);
         u = len * py;
-        arg1->mf[2][0] = t + u;
         arg1->mf[0][2] = t - u;
+        arg1->mf[2][0] = t + u;
         t = (c * qy * qz) + (ny * nz);
         u = len * px;
         arg1->mf[2][1] = t + u;
