@@ -2069,7 +2069,9 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 351 of 259500 (near14: sp48 and sp4C are not variables: both probe loops test ((F448() + FAE4()) + CB4()) and
+// Score 291 of 259500 (mid9: the second search's best = -1 inside the D_801D0754 > 3000.0f block, where it is used;
+// uopt hoists the constant into the 1000.0f test's block as in the original: 351 -> 291. Left: only the 360.0f reload
+// below. near14: sp48 and sp4C are not variables: both probe loops test ((F448() + FAE4()) + CB4()) and
 // the D_801D075C angle reads -func_8009D3AC(D_801D06C8, D_801D06D0) inline, so IDO keeps the call results in its own
 // temporaries (frame 0x70, FAE4's at 0x48 as in the original), cam at 0x58: 531. The lead rider is read as
 // D_801CF060[D_801CF060[arg0].unk7C] in each statement, not through a pointer local: IDO then marks those loads as not
@@ -2077,7 +2079,7 @@ void func_800C1EB8(s32);
 // does; each arm's sum is written lead's field + (COS/SIN * r), which IDO evaluates in the original's order: 351. The
 // old pointer's declaration stays as a pad (its slot keeps the frame). Left: F448's temporary at 0x50 (0x4C in the
 // original); 360.0f reloaded at the join after the 2500.0f test (the original keeps it in $f2 across the if and reloads
-// it right after the call); best = -1 set before the 1000.0f test (moving it there swaps s3/s4). Before, 555 (big7: the
+// it right after the call); best = -1 (since fixed, see above). Before, 555 (big7: the
 // unk1C/unk18 eases written as the matched func_800A52D8 writes them, x + (d * 0.1)
 // with no casts, which fixes IDO's operand order and the float temporaries after each one (4870 -> 2230 -> 1550);
 // the speed's ratio as ((180.0f - |a|) / 180.00f) * unk4C, two 180.0f constants and the original's operand order; the
@@ -2098,7 +2100,7 @@ void func_800C1EB8(s32);
 // Before: registers and scheduling. Two literals are respelled (80 and 180 as ints, commented) where
 // the original loads the same float constant twice; three angle conversions use t and the D_800DAA00 % 9 value
 // uses angle (from a search over the s32 locals' names in each block). The 11.0f compare is single precision
-// (c.lt.s) as in the original; best = -1 is set just before the 3000.0f test. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
+// (c.lt.s) as in the original; best = -1 was set just before the 3000.0f test. cam declared after five locals and sp4C/sp48 last put them at 0x58/0x4C/0x48 as in the original;
 // D_801D0774's offset is stored before it is scaled; statement order from a move search. D_801B2EB4 reads are
 // written as D_801B2F20[unk9C - 1].unk98 (same address).
 void func_800A68A4(s32 arg0) {
@@ -2527,8 +2529,8 @@ void func_800A68A4(s32 arg0) {
                 D_801CF060[arg0].unk9C = D_801B2F20[D_801CF060[arg0].unk9C].unkA0;
                 D_801CF060[arg0].unk50 = 0;
             }
-            best = -1;
             if (D_801D0754 > 3000.0f) {
+                best = -1;
                 D_801D0754 = 2e9f;
                 for (i = 0; i < D_801BB124; i++) {
                     D_801D0758 = func_8009D4DC(D_801D06BC - D_801B2F20[i].unk0, D_801D06C4 - D_801B2F20[i].unk8);
