@@ -2069,9 +2069,11 @@ f32 func_80051CB4(f32, f32, f32*, f32*);
 void func_800C1EB8(s32);
 
 #ifdef NON_MATCHING
-// Score 291 of 259500 (mid9: the second search's best = -1 inside the D_801D0754 > 3000.0f block, where it is used;
-// uopt hoists the constant into the 1000.0f test's block as in the original: 351 -> 291. Left: only the 360.0f reload
-// below. near14: sp48 and sp4C are not variables: both probe loops test ((F448() + FAE4()) + CB4()) and
+// Score 16 of 259500 (mid9: the second search's best = -1 inside the D_801D0754 > 3000.0f block, where it is used;
+// uopt hoists the constant into the 1000.0f test's block as in the original: 351 -> 291. The eight 360.0f literals
+// after the D_801CF060[...].unk7C switch spelled 360.00f, a separate constant to IDO (as the 180.00f below): the
+// switch's 360.0f then stays in $f2 across the 2500.0f test and is reloaded right after the call, as in the
+// original: 16. Left: F448's temporary at 0x50 (0x4C in the original). near14: sp48 and sp4C are not variables: both probe loops test ((F448() + FAE4()) + CB4()) and
 // the D_801D075C angle reads -func_8009D3AC(D_801D06C8, D_801D06D0) inline, so IDO keeps the call results in its own
 // temporaries (frame 0x70, FAE4's at 0x48 as in the original), cam at 0x58: 531. The lead rider is read as
 // D_801CF060[D_801CF060[arg0].unk7C] in each statement, not through a pointer local: IDO then marks those loads as not
@@ -2193,7 +2195,7 @@ void func_800A68A4(s32 arg0) {
             D_801D0764 =
                 (f32) (((f64) ((((180.0f - FABS(D_801D0760)) / 180.00f) * D_801CF060[arg0].unk4C) - D_801D0768) * 0.15) +
                        (f64) D_801D0768);
-            angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+            angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.00f); // 360.00f: see the note
             D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
             D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             func_800A2B24(arg0);
@@ -2282,7 +2284,7 @@ void func_800A68A4(s32 arg0) {
                         0.15) +
                        (f64) D_801D0768);
             if (D_801CF060[arg0].unk68 < Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
-                angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+                angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.00f); // 360.00f: see the note
                 D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
                 D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             } else {
@@ -2367,7 +2369,7 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                t = (s32) ((D_801D0764 / 360.00f) * 4096.0f); // 360.00f: see the note
                 D_801CF060[arg0].unkC = (COS(t) * 200.0f) + cam->eyeX;
                 D_801CF060[arg0].unk14 = (SIN(t) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
@@ -2382,7 +2384,7 @@ void func_800A68A4(s32 arg0) {
             D_801CF060[arg0].unkA4 = 0;
             D_800E62D0 = 0;
             D_801D0764 = func_8009D564(-func_8009D3AC(cam->unkF0, cam->unkF4));
-            t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+            t = (s32) ((D_801D0764 / 360.00f) * 4096.0f); // 360.00f: see the note
             D_801D0754 = (COS(t) * 600.0f) + D_801D06BC;
             D_801D0758 = (SIN(t) * 600.0f) + D_801D06C4;
             D_801D075C = D_801B2F20[D_801CF060[arg0].unk9C].unk0;
@@ -2422,7 +2424,7 @@ void func_800A68A4(s32 arg0) {
             if (Math_Normalize_Angle(D_801D0760 - D_801D0764) < -90.0f) {
                 D_801D0760 = func_8009D564(D_801D0764 - 90.0f);
             }
-            angle = (s32) ((D_801D0760 / 360.0f) * 4096.0f);
+            angle = (s32) ((D_801D0760 / 360.00f) * 4096.0f); // 360.00f: see the note
             D_801D0754 = D_801D0754 + COS(angle) * D_801D0768;
             D_801D075C = (SIN(angle) * D_801D0768) + D_801D0758;
             D_801D0758 = Water_GetHeight(D_801D0754, D_801D075C) - 20.0f;
@@ -2497,7 +2499,7 @@ void func_800A68A4(s32 arg0) {
             D_801D0758 = D_801CF060[arg0].unk10;
             D_801D075C = D_801CF060[arg0].unk14;
             if (D_801CF060[arg0].unk68 < Water_GetHeight(D_801CF060[arg0].unkC, D_801CF060[arg0].unk14)) {
-                angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+                angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.00f); // 360.00f: see the note
                 D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D0764);
                 D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D0764);
             } else {
@@ -2552,7 +2554,7 @@ void func_800A68A4(s32 arg0) {
                 D_801D0754 = D_801CF060[arg0].unkC;
                 D_801D0758 = D_801CF060[arg0].unk14;
                 D_801D0764 = func_8009D564(180.0f - func_8009D3AC(cam->unkF0, cam->unkF4));
-                t = (s32) ((D_801D0764 / 360.0f) * 4096.0f);
+                t = (s32) ((D_801D0764 / 360.00f) * 4096.0f); // 360.00f: see the note
                 D_801CF060[arg0].unkC = (COS(t) * 200.0f) + cam->eyeX;
                 D_801CF060[arg0].unk14 = (SIN(t) * 200.0f) + cam->eyeZ;
                 if (func_800A6684(arg0) != 0) {
@@ -2588,7 +2590,7 @@ void func_800A68A4(s32 arg0) {
             D_801D0754 = D_801CF060[arg0].unkC;
             D_801D0758 = D_801CF060[arg0].unk10;
             D_801D075C = D_801CF060[arg0].unk14;
-            angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.0f);
+            angle = (s32) ((D_801CF060[arg0].unk18 * 4096.0f) / 360.00f); // 360.00f: see the note
             D_801CF060[arg0].unkC += (D_801CF060[arg0].unk24 = COS(angle) * D_801D076C);
             D_801CF060[arg0].unk14 += (D_801CF060[arg0].unk2C = SIN(angle) * D_801D076C);
             for (i = 0; i < 4; i++) {
