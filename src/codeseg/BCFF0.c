@@ -2867,13 +2867,14 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 90 of 68000 (hi5: five FAKEs removed: the three no-op casts of x in the bounce block, the empty do-while
+// Score 75 of 68000 (hi5: an empty do-while after the first case's total pointer too (FAKE, as in the other
+// cases): IDO then builds that pointer as D_801C26D4 itself, not D_801C26D0 with 4 in the loads: 90 -> 75.)
+// Before, 90 (hi5: five FAKEs removed: the three no-op casts of x in the bounce block, the empty do-while
 // after the unk10 step and the one before the unk14 test, and the dead loads before the sprintf. Without the
 // do-while before the test, the unk14 reload is a temporary again (t7, as in the original) instead of a register
 // IDO kept across the bounce block, and the temporaries from there on are numbered as in the original without the
 // casts: 280 -> 90. Left: D_80228D14's address and value in a1/t3 (a3/a1 there) and the second f in f2 (f0 there);
-// p->unk10 and p->unk14 in v0/v1 (v1/v0 there); the first stunt total case reads D_801C26D4 as 4 off
-// D_801C26D0's address.)
+// p->unk10 and p->unk14 in v0/v1 (v1/v0 there).)
 // Before, 280 (hi4: two more no-op casts of x in the bounce block (FAKE, an insertion search with score.sh;
 // as at the digit x, the original spends temporaries there that the assembler deletes) and the unk10 step written
 // p->unk14 + p->unk10: 400 -> 280.)
@@ -3055,6 +3056,7 @@ void func_801FB514(Gfx** gdlp) {
             switch (p->unk0) {
                 case 1:
                     total = &D_801C26D0 + 1; // FAKE, as above
+                    do {} while (0); // FAKE: as above
                     D_801C26D4 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D4 = 99999;
