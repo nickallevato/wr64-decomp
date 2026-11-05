@@ -676,7 +676,11 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 3827 of 146400 (hi4: the gate's two distances written as in the matched sibling 800783AC: x and z deltas
+// Score 3274 of 146400 (hi4: in the first gate test the deltas to the rider are their own statements and the
+// empty dot >= 0 test's body is a dead float self-compare (FAKE, no code) instead of dot = -(-dot); a rename search
+// put the gate direction x in cz (declared in gx's old word, so its spill home is the original's 0x60), the rider's
+// z delta and the dot product in segLen: 3827 -> 3274.)
+// Before, 3827 (hi4: the gate's two distances written as in the matched sibling 800783AC: x and z deltas
 // summed into segLen, its absolute value in dPos (dPrev for the second), the fraction through dPos; then a rename
 // search over the eight roles (the first z delta in dPrev, the second in segLen): 4107 -> 3827.)
 // Before, 4107: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
@@ -734,7 +738,7 @@ void func_8007687C(s32 arg0) {
     s32 zoneD;
     s32 sameZone;
     s32 r4;
-    f32 cz; // the Marine Fortress cue's z distance (its own variable, in this word)
+    f32 gx; // unused (its word keeps the frame)
     s32 nearLine;
     f32 lineX; // the line record's x, read ahead (permuter)
     s32 gapRef;
@@ -756,7 +760,7 @@ void func_8007687C(s32 arg0) {
     f32 p[2]; // FAKE: the point's z, x (an array keeps both in their homes 0x6C/0x70, as the original does)
     f32 dirX;
     f32 dirZ;
-    f32 gx;
+    f32 cz; // the gate direction x, then the Marine Fortress cue's z distance
     f32 gz;
     f32 dx;
     f32 dz;
@@ -813,22 +817,23 @@ void func_8007687C(s32 arg0) {
     p[1] = e->unk0 - (e->unk80 * 50.0f * 0.5f);
     p[0] = e->unk8 - (e->unk84 * 50.0f * 0.5f);
     if (e->unk9C == 1) {
-        gx = e->unkC - e->unk18;
+        cz = e->unkC - e->unk18;
         gz = e->unk14 - e->unk20;
-        len = sqrtf((gx * gx) + (gz * gz));
+        len = sqrtf((cz * cz) + (gz * gz));
         if (len > 0.0f) {
-            gx /= len;
+            cz /= len;
             gz /= len;
         }
-        dot = (D_801C3780 - e->unk18) * gx;
-        dot += (D_801C3788 - e->unk20) * gz;
-        if (dot >= 0.0f) {
-            dot = -(-dot); // FAKE: a no-op body keeps the original's empty test as a branch (IDO drops an empty one)
+        dx = D_801C3780 - e->unk18;
+        segLen = D_801C3788 - e->unk20;
+        segLen = (dx * cz) + (segLen * gz);
+        if (segLen >= 0.0f) {
+            if (e->unk8C != e->unk8C) {} // FAKE: an empty float self-compare (no code) keeps the original's empty test as a branch
         }
         if (D_801C1F90 == 0) {
-            inGate = dot <= ((e->unk8C * 2) + D_801C39C4);
+            inGate = segLen <= ((e->unk8C * 2) + D_801C39C4);
         } else {
-            inGate = -D_801C39C4 <= dot;
+            inGate = -D_801C39C4 <= segLen;
         }
     } else {
         if ((e->unk98 == 8) || (e->unk98 == 9)) {
