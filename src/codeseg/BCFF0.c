@@ -2867,7 +2867,11 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1670 of 68000 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
+// Score 675 of 68000 (hi3: one more dead self-compare before the sprintf (FAKE): 685 -> 675; no-op (s32)(s64) casts of the digit x after it is set and in the digit loop (FAKE) each take two
+// zero-code temporaries: 1070 -> 685; a dead float self-compare through two pointer loads after the first f (FAKE, marked)
+// costs the two temporaries the original spends there with no code (the assembler deletes the loads): from the
+// D_80228D18 increment on the temporaries are numbered as in the original until the digit x (304 - count * 14 is
+// in s1 here, a temporary there). Before, 1670 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
 // original's div.s into $f0 shows, with 1.0f in $f10 as there (the second f is in $f2, $f0 in the original): 1670.)
 // Before, 1685: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
@@ -2928,6 +2932,7 @@ void func_801FB514(Gfx** gdlp) {
     n = D_80228D18; // read once for the f computations and the increment, as the original does
     f = (2 - n) / (f32) 2;
     if (f != f) {} // FAKE: the empty self-compares keep the dead f computations, as the original has them
+    if (**(f32**)D_801CE5F8 != **(f32**)D_801CE5F8 + f) {} // FAKE: two dead loads (see the note)
     f = 1.0f - f;
     if (f != f) {} // FAKE: as above
     D_80228D18++;
@@ -3003,6 +3008,7 @@ void func_801FB514(Gfx** gdlp) {
             count = 5;
         }
         x = (304 - count * 14) / 2 + p->unkC + 8;
+        x = (s32) (s64) x; // FAKE: a no-op cast; its 64-bit halves take two temporaries the assembler deletes
         y = p->unk10 + p->unk18 + 128;
         for (k = 0; k < count; k++) {
             gDPLoadTextureBlock(gdl++, &D_80269D0[D_80228CF8[5 - count + k] << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
@@ -3018,6 +3024,7 @@ void func_801FB514(Gfx** gdlp) {
         }
         if (p->unk10 >= 0) {
             p->unk14 = -10;
+            x = (s32) (s64) x; // FAKE: as above
             p->unk10 = 0;
         }
         do {} while (0); // FAKE: splits the scheduling block (an insertion search)
@@ -3067,6 +3074,7 @@ void func_801FB514(Gfx** gdlp) {
                             "EXTEND", 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     if ((D_80227740 != 0) && (D_801C26E4 != 0)) {
+        if (**(f32**)D_801CE5F8 != **(f32**)D_801CE5F8) {} // FAKE: two dead loads (an insertion search)
         sprintf((char*) D_80228CF8, "%04d", D_801C26E4);
         gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }

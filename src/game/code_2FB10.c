@@ -1350,7 +1350,9 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 2860 of 111900: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
+// Score 2515 of 111900 (hi3: a no-op (s32)(s64) cast of sfx (FAKE) 2540 -> 2515; the empty test's body is an empty float self-compare of dx instead of the pad store;
+// IDO keeps the test as a branch to the next instruction with arg0's spill in its delay slot, as the original
+// does, and no store). Before, 2860: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
 // the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
 // loop's lap count runs in flag and its counter in laps, the unk2C loop counts in time (dead there; per-block rename
 // searches): 3030 -> 2860.
@@ -1385,8 +1387,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // spill in the delay slot). IDO drops an empty `if` and an `if` whose body is a dead store; a store to a stack pad
 // (FAKE, mid6) keeps the branch with that one store as its body (8670 -> 6630; an if/else of pad stores 6485, a
 // store to frac or trick, read uninitialised later, about the same).
-// Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate block) and the
-// pad store in the empty test's body.
+// Left: register allocation (the original also spills e->unk0 and e->unk8 to 0x20/0x1C in the gate block); right
+// after the empty test the original's temporaries are one further on and it loads gCourseID after the rider address.
 void func_800783AC(s32 arg0) {
     s32 laps;
     s32 i;
@@ -1411,7 +1413,7 @@ void func_800783AC(s32 arg0) {
     UnkStruct_801AEE20* e;
 
     if (arg0 != gPlayer1Rider) {
-        padZ[0] = 0; // FAKE: a store to a stack pad keeps the original's empty test as a branch
+        if (dx != dx) {} // FAKE: a dead float self-compare (no code) keeps the original's empty test as a branch
     }
     rider = &gRiderRaceState[arg0];
     rider->unk314 = 0;
@@ -1760,6 +1762,7 @@ void func_800783AC(s32 arg0) {
                         }
                     }
                     if (D_801C2928 == 1) {
+                        sfx = (s32) (s64) sfx; // FAKE: a no-op cast whose 64-bit halves take two temporaries (an insertion search)
                         sfx = 0;
                     } else {
                         sfx = 1;

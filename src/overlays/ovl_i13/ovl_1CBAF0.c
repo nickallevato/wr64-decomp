@@ -685,23 +685,6 @@ void SaveLoad_UpdateMessageBox(void) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 220 of 106000. The original keeps y (the bottom row, 186) as a variable it does not fold:
-// stored at its first use, reloaded for the second panel and for y + 3. Written plainly (y = 186)
-// IDO folds it (score 7011); the two FAKE lines below get most of it back. The selected label's texture and
-// x offset go through two locals (tex, xoff, where the old pad2[2] was): that gives the original's t0 for the
-// D_i13_802C8DB4 load. Left: the first call's 186 ($a3 in the original, stored to y; here t8 for y and its own li
-// for the argument, one instruction more) and one lui t0, 0x600 the original repeats before a display-list block.
-// An empty do {} while (0) at the end of the D_i13_802C8DC8 block (permuter) gives that lui, but with y's extra
-// li still there the function is then one instruction longer (225).
-// What the original does (mid3): y lives in memory, not in a register. With `volatile s32 y` and the x = 0 FAKE
-// moved before the first panel call, plus the do-while above, every register matches (1896): li t8, 186; sw t8, y;
-// ... lw a3, y, where the original's as1 forwards the stored t8 into a3 (li a3; sw a3). Without volatile IDO
-// promotes y (also as y[1], (&y)[0] or *(volatile s32*)&y = x) and gives it a3 directly, one temporary short.
-// `y = 112` before the drawRow1 test and `y += 74` at the join stops the folding (uopt then has y in a3, 3829);
-// x = 112 there and `x += 74; y = x;` gives the original's store order (sw a3, y first) with x in a3, the
-// temporaries one short (3220); with x = 112 before the first gSPMatrix instead, everything from the join on matches
-// (with the do-while), but x's dead def takes t2 there and the flags move to t3..t5/ra (715).
 Gfx* func_i13_802C711C(Gfx* gdl) {
     s32 i;
     s32 y;
@@ -770,15 +753,19 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
         gdl = func_80094338(gdl, 0, 28 + i * 89, 48, 86, 16);
     }
     gdl = func_80094338(gdl, 0, 28, 68, 264, 40);
-    x = 186; // FAKE: y is copied from another variable, so IDO does not fold it
+    x = 112; // the bottom row's y is built in x (112 + 74) and copied, so IDO does not fold it
     if (drawRow1) {
         gdl = func_80094338(gdl, 0, 56, 112, 100, 16);
         gdl = func_80094338(gdl, 0, 164, 112, 100, 16);
-        if (1) {} if (1) {} if (1) {} if (1) {} // FAKE: four empty tests move the register allocation (found with the permuter); any four blocks here do
     }
+    if (1) {} if (1) {} // FAKE: two empty tests move the register allocation (an insertion search)
     if (drawModels) {
         gdl = func_80094338(gdl, 0, 28, 132, 264, 50);
+        // FAKE: a dead float self-compare; the assembler deletes its pointer load, which takes the temporary
+        // the original spends here
+        if (*(f32*)D_801CE5F8 != *(f32*)D_801CE5F8) {}
     }
+    x += 74;
     y = x;
     gdl = func_80094338(gdl, 0, 56, y, 100, 16);
     x = 0; // FAKE: with x redefined here the second panel reloads y too
@@ -847,12 +834,13 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     if (D_801CE640 != 0) {
         gSPDisplayList(gdl++, D_806FCC8);
         gDPSetPrimColor(gdl++, 0, 0, D_i13_802C8EA4, D_i13_802C8EA8, 0, 255);
+        // The arrow's x is held in tex (dead here until the label texture), as the original's registers show.
         if (D_i13_802C8D54 == 0) {
-            x = 24;
+            tex = 24;
         } else {
-            x = 248;
+            tex = 248;
         }
-        gSPTextureRectangle(gdl++, (x + 8) << 2, 72 << 2, (x + 40) << 2, 104 << 2, 0, 0, 0, 1 << 10, 1 << 10);
+        gSPTextureRectangle(gdl++, (tex + 8) << 2, 72 << 2, (tex + 40) << 2, 104 << 2, 0, 0, 0, 1 << 10, 1 << 10);
     }
 
     if (drawModels) {
@@ -972,9 +960,6 @@ Gfx* func_i13_802C711C(Gfx* gdl) {
     }
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i13/ovl_1CBAF0/func_i13_802C711C.s")
-#endif
 
 void SaveLoad_OpenResultMessage(s32 arg0) {
     s32 var_v0;

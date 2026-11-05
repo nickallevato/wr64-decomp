@@ -980,31 +980,6 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 728 of 134600 (mid8: the first loop's i++ written as the body's last statement, for (i = 0; i < count;),
-// moves the D_801CE740 step to the end of the unk2-test block (the beqz delay slot), like joining the loop's lines;
-// a read of D_801CE740[i].rider in the unk2 arm moves it into the copy block as in the original but keeps an lh).
-// Before (868): the first loop places the D_801CE740 pointer step at the end of the struct-copy block, after the
-// D_801CE73C load, with the D_800DABA0 address (lui, addu) after it and the addu in the beq delay slot; here the step
-// follows the rider store and the address is scheduled into the copy (one nop more), and the switch(arg0) temp takes
-// 0x18 (0x1C there). A real pointer (ap stepped after the copy) puts the step in the copy block and the temp at 0x1C,
-// but it is set before the loop guard (the original's after it, a derived induction variable) and the copy's first load
-// moves into a beqzl (1110). With D_801CE740 defined in the file the paired unk2 stores share one lui at; cases 2 and 3
-// clear unk2 in do-while loops (a for loop of four is unrolled with [1] stored before [0], and the loop of eight is
-// unrolled with the first store in the delay slot). The chained D_801CE760 store shares one -1 as in the original.
-// Reading alts[i] through the pointer ap gives the display-list loop's reload after each store, and alts declared after
-// dl puts it at 0x40 as in the original. The order of each chained alts store (alts[1] = alts[2], alts[3] = alts[4],
-// alts[5] = alts[6] in case 0; alts[3] = alts[5] in case 4) gives the original's store order and the registers for the
-// 1. IDO puts a derived induction variable's step right after its last use (with the rider store moved after the copy,
-// as a test, the step lands in the copy block), so the original seems to use D_801CE740[i] or its pointer in that
-// block. Tried, none lower: the store in both arms of the unk2 test, the copy written field by field, dst as an
-// explicit pointer (8898), ap set from &D_801CE740[i] each pass, empty tests at every statement, merging any two of i,
-// count, models, rider and offset, and joining any two lines. The whole loop on one source line gives 728 (IDO
-// schedules by line), which is not kept.
-// mid3: a read of D_801CE740[i] after the copy (rider = D_801CE740[i].rider before the D_801CE73C tests) puts the
-// step in the copy block, after the D_801CE73C load, as in the original, but keeps an lh (1283). A separate local
-// pointer for D_801CE740[i] moves the switch temp to 0x1C but grows the frame by 8 (1244); ap reused for it changes
-// nothing.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
@@ -1013,7 +988,7 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 count;
     s32 models;
     s32 rider;
-    DmaEntry* src;
+    UnkStruct_801CE740* cp;
     s32 offset;
     DmaEntry* dst;
     s32* dl;
@@ -1060,45 +1035,53 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
     }
-    for (i = 0; i < count;) {
-        dst = &D_800DB330[i];
-        switch (i % 4) {
-            case 0:
-                rider = arg1;
-                break;
-            case 1:
-                rider = arg2;
-                break;
-            case 2:
-                rider = arg3;
-                break;
-            case 3:
-                rider = arg4;
-                break;
-        }
-        if (rider < 0) {
-            rider = 0;
-        }
-        src = &D_800DABD0[rider];
-        if (i >= 4) {
-            rider += 4;
-            src += 4;
-        }
-        D_801CE740[i].rider = rider;
-        if (D_801CE740[i].unk2 != 0) {
-            rider += 8;
-            src += 8;
-        }
-        *dst = *src;
-        dst->flag = 4;
-        if ((D_801CE73C == 3) || (D_801CE73C == 2)) {
-            dst->offset = D_800DABA0[i];
-        } else if (D_801CE73C == 4) {
-            dst->offset = D_800DABC0[i];
-        } else {
-            dst->offset = D_800DAB90[i];
-        }
-        i++; // the step as the last statement (see the note)
+    i = 0;
+    if (count > 0) {
+        // FAKE: the #line directives only renumber source lines, which IDO's assembler uses to order ready
+        // instructions: the pointer set-up sorts before the guard and the last offset store before the rider
+        // store, as the original's schedule shows (written in order, the guard's delay slot and the i step
+        // come out differently). An explicit pointer, not cp = &D_801CE740[i], gives the original's spill slot
+        // for the switch value. The numbering is restored after the loop.
+#line 1037
+        cp = D_801CE740; do {
+            dst = &D_800DB330[i];
+            switch (i % 4) {
+                case 0:
+                    rider = arg1;
+                    break;
+                case 1:
+                    rider = arg2;
+                    break;
+                case 2:
+                    rider = arg3;
+                    break;
+                case 3:
+                    rider = arg4;
+                    break;
+            }
+            if (rider < 0) {
+                rider = 0;
+            }
+            if (i >= 4) {
+                rider += 4;
+            }
+            cp->rider = rider;
+            if (cp->unk2 != 0) {
+                rider += 8;
+            }
+            D_800DB330[i] = D_800DABD0[rider];
+            D_800DB330[i].flag = 4;
+            cp++;
+            if ((D_801CE73C == 3) || (D_801CE73C == 2)) {
+                dst->offset = D_800DABA0[i];
+            } else if (D_801CE73C == 4) {
+                dst->offset = D_800DABC0[i];
+            } else {
+#line 1037
+                dst->offset = D_800DAB90[i];
+            }
+#line 1084
+        } while (++i < count);
     }
     dst++;
     dst->segRomStart = 0;
@@ -1318,9 +1301,6 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 #undef MODEL
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096960.s")
-#endif
 
 void func_80097E68(void) {
     DmaTransfer* transfer = D_800DAB38;
