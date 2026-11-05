@@ -1267,7 +1267,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 7084 of 60500 (band17: the centre loop works in vtx, hA and i, and the middle row loop's lower cell goes
+// Score 7079 of 60500 (hi4: the centre's x sum takes c first (an operand-swap search with score.sh): 7084 -> 7079.)
+// Before, 7084 (band17: the centre loop works in vtx, hA and i, and the middle row loop's lower cell goes
 // in i (dead there; rename searches over loop bodies): 7179 -> 7084.
 // mix2: the row loops read the lower cell into hA and the upper cell into sz, shift hA in
 // place and use sz >> 7 twice, as the original's registers show (the raw upper cell sits in sz's s0; one move,
@@ -1449,7 +1450,7 @@ void func_80050204(s32 view, Vtx* arena) {
     }
     v = &arena[D_80192460[1]];
     c = &arena[D_80192460[4]];
-    w->unk8 = ((f32) (v->v.ob[0] + c->v.ob[0]) * 0.5f) - w->unk14;
+    w->unk8 = ((f32) (c->v.ob[0] + v->v.ob[0]) * 0.5f) - w->unk14;
     w->unkC = ((f32) (v->v.ob[2] + c->v.ob[2]) * 0.5f) - w->unk18;
     w->unk10 = D_800D4720 * D_800D4720;
 }
