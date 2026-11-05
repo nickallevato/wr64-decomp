@@ -1004,16 +1004,6 @@ Gfx* func_8008D94C(Gfx* gdl) {
     return gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 1540 of 31200: gDPLoadTextureBlock is written out one command per line (as big3 found for other display lists);
-// gDPSetRenderMode and gDPSetCombineLERP share a line (a search over joined lines). Empty tests after gDPLoadSync
-// (FAKE, from the permuter) and after gDPLoadBlock (FAKE, from a search over positions for a second one) split the
-// block: after it the original's gdl pointers alternate registers (addiu a2,a0,8; addiu a0,a2,8; ...), as they do here
-// only with the split. Left: the original computes the first two texture-load commands' pointers (two gdl increments)
-// and their constant words (t4, t5, t9) before the vertex code, which keeps the vertex temps in t6-t8; here they are
-// computed at the commands and the vertex temps rotate through t4-t9. Writing the texture commands before the vertices
-// is far worse (the stores move too). Frame and spill slots match. A third empty test after gDPSetPrimColor (FAKE,
-// from an empty-test search) gives 1540.
 Gfx* func_8008DFD0(Gfx* gdl) {
     camera_unk_1* cam;
     Vtx* vtx;
@@ -1028,34 +1018,34 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     gSPTexture(gdl++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
     gDPPipeSync(gdl++);
     gDPSetCycleType(gdl++, G_CYC_1CYCLE);
-    // On one line: IDO schedules by source line, and the original's order for these two commands needs them together.
-    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2); gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
+    gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetCombineLERP(gdl++, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0);
     gDPSetTexturePersp(gdl++, G_TP_PERSP);
 
-    cam = &gCameraPerspective[D_80223930];
     p = &D_801C43F8[D_8011F8E0];
+    cam = &gCameraPerspective[D_80223930];
     vtx = p->unk310;
     x = (cam->unk68 * cam->upZ) - (cam->unk6C * cam->upY);
     y = (cam->unk6C * cam->upX) - (cam->unk64 * cam->upZ);
     z = (cam->unk64 * cam->upY) - (cam->unk68 * cam->upX);
-    vtx[0].v.ob[0] = (s32) (((cam->upX * -1.0f) - x) * 48.0f) + D_800D98CC;
-    vtx[0].v.ob[1] = (s32) (((cam->upY * -1.0f) - y) * 48.0f) + D_800D98D0;
-    vtx[0].v.ob[2] = (s32) (((cam->upZ * -1.0f) - z) * 48.0f) + D_800D98D4;
+    vtx[0].v.ob[0] = (s16) (((cam->upX * -1.0f) - x) * 48.0f) + D_800D98CC;
+    vtx[0].v.ob[1] = (s16) (((cam->upY * -1.0f) - y) * 48.0f) + D_800D98D0;
+    vtx[0].v.ob[2] = (s16) (((cam->upZ * -1.0f) - z) * 48.0f) + D_800D98D4;
     vtx[0].v.tc[0] = 0;
     vtx[0].v.tc[1] = 0;
-    vtx[1].v.ob[0] = (s32) ((cam->upX - x) * 48.0f) + D_800D98CC;
-    vtx[1].v.ob[1] = (s32) ((cam->upY - y) * 48.0f) + D_800D98D0;
-    vtx[1].v.ob[2] = (s32) ((cam->upZ - z) * 48.0f) + D_800D98D4;
+    vtx[1].v.ob[0] = (s16) ((cam->upX - x) * 48.0f) + D_800D98CC;
+    vtx[1].v.ob[1] = (s16) ((cam->upY - y) * 48.0f) + D_800D98D0;
+    vtx[1].v.ob[2] = (s16) ((cam->upZ - z) * 48.0f) + D_800D98D4;
     vtx[1].v.tc[0] = 0x800;
     vtx[1].v.tc[1] = 0;
-    vtx[2].v.ob[0] = (s32) (((cam->upX * -1.0f) + x) * 48.0f) + D_800D98CC;
-    vtx[2].v.ob[1] = (s32) (((cam->upY * -1.0f) + y) * 48.0f) + D_800D98D0;
-    vtx[2].v.ob[2] = (s32) (((cam->upZ * -1.0f) + z) * 48.0f) + D_800D98D4;
+    vtx[2].v.ob[0] = (s16) (((cam->upX * -1.0f) + x) * 48.0f) + D_800D98CC;
+    vtx[2].v.ob[1] = (s16) (((cam->upY * -1.0f) + y) * 48.0f) + D_800D98D0;
+    vtx[2].v.ob[2] = (s16) (((cam->upZ * -1.0f) + z) * 48.0f) + D_800D98D4;
     vtx[2].v.tc[0] = 0;
     vtx[2].v.tc[1] = 0x800;
-    vtx[3].v.ob[0] = (s32) ((cam->upX + x) * 48.0f) + D_800D98CC;
-    vtx[3].v.ob[1] = (s32) ((cam->upY + y) * 48.0f) + D_800D98D0;
-    vtx[3].v.ob[2] = (s32) ((cam->upZ + z) * 48.0f) + D_800D98D4;
+    vtx[3].v.ob[0] = (s16) ((cam->upX + x) * 48.0f) + D_800D98CC;
+    vtx[3].v.ob[1] = (s16) ((cam->upY + y) * 48.0f) + D_800D98D0;
+    vtx[3].v.ob[2] = (s16) ((cam->upZ + z) * 48.0f) + D_800D98D4;
     vtx[3].v.tc[0] = 0x800;
     vtx[3].v.tc[1] = 0x800;
 
@@ -1063,24 +1053,18 @@ Gfx* func_8008DFD0(Gfx* gdl) {
     gDPSetTile(gdl++, G_IM_FMT_IA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5,
                G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
     gDPLoadSync(gdl++);
-    if (cam && cam && cam) {} // FAKE (permuter): splits the block, which gives the original's gdl registers after it
     gDPLoadBlock(gdl++, G_TX_LOADTILE, 0, 0, (((32) * (32) + G_IM_SIZ_16b_INCR) >> G_IM_SIZ_16b_SHIFT) - 1,
                  CALC_DXT(32, G_IM_SIZ_16b_BYTES));
-    if (vtx && vtx && vtx) {} // FAKE: a second split, as above
     gDPPipeSync(gdl++);
     gDPSetTile(gdl++, G_IM_FMT_IA, G_IM_SIZ_16b, (((32) * G_IM_SIZ_16b_LINE_BYTES) + 7) >> 3, 0, G_TX_RENDERTILE, 0,
                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD);
     gDPSetTileSize(gdl++, G_TX_RENDERTILE, 0, 0, ((32) - 1) << G_TEXTURE_IMAGE_FRAC, ((32) - 1) << G_TEXTURE_IMAGE_FRAC);
     gDPSetPrimColor(gdl++, 0, 0, 0xFF, 0xFF, 0xFF, 0x00);
-    if (1) {} // FAKE: a third block split (a search over empty tests)
     gSPVertex(gdl++, D_6000310, 4, 0);
     gSP1Triangle(gdl++, 0, 1, 2, 0);
     gSP1Triangle(gdl++, 1, 2, 3, 0);
     return gdl;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008DFD0.s")
-#endif
 
 void func_8008E4B0(void) {
     s32 i;

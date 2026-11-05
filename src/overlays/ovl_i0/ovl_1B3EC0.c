@@ -283,7 +283,12 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 205 of 30700: register allocation only. The B test is computed into next before the A branch (the original has
+// Score 185 of 30700 (hi5: the B test in its own variable b; the A-else branch reads unk10 through cur too, as the B
+// branch does (the original keeps both menu pointers in v1); a dead self-compare there (FAKE, an insertion search)
+// spends the temporary the original spends, and the temporaries after it are numbered as there: 205 -> 185. Left:
+// uopt's colouring: b in v1 (t5 there), D_i0_802C6BCC's value and index swap v0/a2, gDifficulty's value in t1 (a1
+// there), &D_801CB334 in a2 (t1 there), next in a3 (a2 there), the A-else unk16 in v0 (v1 there).)
+// Before, 205: register allocation only. The B test is computed into next before the A branch (the original has
 // it in t5 from the top), and both history stores index with D_i0_802C6BCC, so its * 4 is computed once, as there.
 // hi2: the item reloaded as item = menu->items; item += D_i0_802C6EE4 loads straight into a0 as the original does; the
 // expression form spent one more temporary and shifted every temporary after it (430 -> 285, and the permuter's
@@ -300,12 +305,13 @@ void func_i0_802C63AC(void) {
     UnkStruct_i0_802C6C28* items = menu->items;
     s32 idle = 1;
     s32 next;
+    s32 b;
     UnkStruct_i0_802C6E08* cur;
     UnkStruct_i0_802C6C28* item;
     s32 i;
     s32 j;
 
-    next = D_801CE65A[0].unk0 & B_BUTTON;
+    b = D_801CE65A[0].unk0 & B_BUTTON;
     if (D_801CE65A[0].unk0 & (A_BUTTON | Z_TRIG | START_BUTTON)) {
         D_i0_802C6EE8[D_i0_802C6BCC] = D_i0_802C6EE4;
         D_i0_802C6EF8[D_i0_802C6BCC] = D_i0_802C6EE0;
@@ -403,11 +409,13 @@ void func_i0_802C63AC(void) {
                     }
                     break;
             }
-            D_i0_802C6BD0 = D_i0_802C6E08[D_i0_802C6EE0].unk10;
+            cur = &D_i0_802C6E08[D_i0_802C6EE0];
+            D_i0_802C6BD0 = cur->unk10;
+            if ((f32) D_i0_802C6EE4 != (f32) D_i0_802C6EE4) {} // FAKE: a dead self-compare (no code), for the temporaries
             AudioGeneral_PlaySound(0x11, 0);
         }
     } else {
-        if (next) {
+        if (b) {
             idle = 0;
             if (D_i0_802C6EE0 != 0) {
                 if (D_i0_802C6BCC > 0) {

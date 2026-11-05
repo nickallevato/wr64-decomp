@@ -676,7 +676,11 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1829 of 146400 (hi4: the line test's x term in dx (a rename search with score.sh): 1834 -> 1829.)
+// Score 1526 of 146400 (hi5: D_801C3780 passed to func_80074368 and D_801C3788 in the progress loop read through
+// lineX (dead there; holder searches with score.sh): 1539 -> 1526.)
+// Before, 1539 (hi5: D_801C3780 read into dPrev (dead there) before the line test, and dPrev passed to
+// func_80076240 and used in the beyond term (a holder search with score.sh): 1829 -> 1539.)
+// Before, 1829 (hi4: the line test's x term in dx (a rename search with score.sh): 1834 -> 1829.)
 // Before, 1834 (hi4: the cue's second distance takes x first again (a swap search with score.sh): 1854 -> 1834.)
 // Before, 1854 (hi4: the first gate test's z delta in gx too, and the type 8/9 test an else-if (a search
 // with score.sh over the delta and sum variables of both gate blocks, the cue and the progress loop): 1864 -> 1854.)
@@ -875,7 +879,8 @@ void func_8007687C(s32 arg0) {
     if ((rider->unk20 == 0) && (rider->unk1C == -1)) {
         rider->unk20 = 1;
     }
-    func_80074368(D_801C3780, D_801C3788, &zoneA, &zoneB);
+    lineX = D_801C3780; // read into lineX (dead here; a holder search)
+    func_80074368(lineX, D_801C3788, &zoneA, &zoneB);
     func_80074368(e->unk0, e->unk8, &zoneC, &zoneD);
     if ((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) {
         sameZone = true;
@@ -1146,11 +1151,12 @@ void func_8007687C(s32 arg0) {
 
     // Crossing the line backwards or forwards near it (within one record of it, four on
     // Sunset Bay) moves the lap counter unk320.
+    dPrev = D_801C3780; // read ahead into dPrev (dead here; a holder search)
     lineX = D_801AEE20[D_801BB12C].unk0;
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
     // beyond's x term first (permuter), in dx (dead here; a name search)
-    dx = (D_801C3780 - lineX) * D_801AEE20[D_801BB12C].unk70;
+    dx = (dPrev - lineX) * D_801AEE20[D_801BB12C].unk70;
     r3 = D_801AEE20[r2].unkA0;
     r4 = D_801AEE20[r3].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
@@ -1159,7 +1165,7 @@ void func_8007687C(s32 arg0) {
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (r4 == D_801BB12C);
     }
-    if (func_80076240(D_801C3780, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
+    if (func_80076240(dPrev, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
         if (beyond && (rider->unk324 == 0) && (RIDER_UNK320 < rider->lapCount)) {
             RIDER_UNK320++;
@@ -1179,11 +1185,12 @@ void func_8007687C(s32 arg0) {
     for (i = 0; i < D_801BB120; i++) {
         e = &D_801AEE20[r];
         dx = D_801C3780 - e->unk0;
-        dz = D_801C3788 - e->unk8;
+        lineX = D_801C3788; // read into lineX (dead here; a holder search)
+        dz = lineX - e->unk8;
         if (!(((e->unk74 * dz) + (dx * e->unk70)) <= 0.0f)) {
             next = e->unkA0;
             if ((gCourseID == MARINE_FORTRESS) && (e->unk98 == 4) && (e->unkC0 == 1) &&
-                (func_80074448(D_801C3780, D_801C3788) != 0)) {
+                (func_80074448(D_801C3780, lineX) != 0)) {
                 from = e->unkA8;
             } else {
                 from = r;
