@@ -676,7 +676,10 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 4107 of 146400: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
+// Score 3827 of 146400 (hi4: the gate's two distances written as in the matched sibling 800783AC: x and z deltas
+// summed into segLen, its absolute value in dPos (dPrev for the second), the fraction through dPos; then a rename
+// search over the eight roles (the first z delta in dPrev, the second in segLen): 4107 -> 3827.)
+// Before, 4107: same blocks and calls, frame 0x120. band17: the Marine Fortress cue's z distance is its own
 // variable (cz, in a pad word: 4202); the lap-shift and unk2C loops count in time and the power step goes through
 // ref (dead there; rename searches): 4107;
 // the point behind the record is an array p
@@ -964,19 +967,22 @@ void func_8007687C(s32 arg0) {
         // A checkpoint gate: its time, and the gap shown against the time trial record
         // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
-            // the two distances go through segLen (dead here) and are copied, then negated when below zero
-            segLen = (D_801C3780 - e->unk0) * dirX;
-            segLen = segLen + (D_801C3788 - e->unk8) * dirZ;
+            dx = D_801C3780 - e->unk0;
+            dPrev = D_801C3788 - e->unk8;
+            segLen = (dx * dirX) + (dPrev * dirZ);
             dPos = segLen;
             if (!(segLen >= 0.0f)) {
                 dPos = -segLen;
             }
-            segLen = ((D_80192690[arg0].unkBEC - e->unk8) * e->unk74) + ((D_80192690[arg0].unkBE4 - e->unk0) * dirX);
+            dx = D_80192690[arg0].unkBE4 - e->unk0;
+            segLen = D_80192690[arg0].unkBEC - e->unk8;
+            segLen = (dx * dirX) + (segLen * dirZ);
             dPrev = segLen;
             if (!(segLen >= 0.0f)) {
                 dPrev = -segLen;
             }
-            frac = (dPos / (dPos + dPrev)) * 50.0f;
+            dPos = dPos / (dPos + dPrev);
+            frac = dPos * 50.0f;
             if (e->unk98 == 3) {
                 rider->unk164 = 0;
             }
