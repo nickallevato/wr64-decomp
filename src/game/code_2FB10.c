@@ -132,27 +132,13 @@ u64 D_801C3A08;
 
 void func_801EED70(void);
 
-#ifdef NON_MATCHING
-// Score 145 of 97200 (band17: in the D_801CE638 == 8 search the first record count is its own variable (left, in
-// the old pad's word), the second counts in j and the record runs in n (dead there; variable-identity searches;
-// the extent loops' addresses then take the original's registers): 1305 -> 790; the second count's start is
-// computed before the unk98 == 1 test, into left (dead there) through a dead copy in type (FAKE; a permuter find
-// and fresh-variable searches): 350; its test spelled (j - 1) >= 0 (FAKE, permuter: the original's bgtzl): 145.
-// near16: five empty blocks before the D_801C3790 lap loop and four in the checkpointTimes loop, FAKE, 1525 -> 1305): same blocks, loops and calls, frame 0x80. With code_2FB10's .bss defined in the file the
-// unrolled D_801C26C0 stores share a lui at in pairs, and with each |x| and |z| going through b into a (FAKE: a copy;
-// a variant search over the four sites) the gMapHalfSize stores take lui at while its loads use a register, as in
-// the original. The stunt-record rows go through a copy k (FAKE, permuter, mid4). The zeroing chains store right
-// to left (the first stores keep their addresses in registers, the leftmost goes through at), as in the original.
-// The D_801CE638 == 8 search runs on k and keeps the found record in k (one register, v1, as in the original); k's
-// constant assignment there keeps the 8-step checkpointTimes loop rolled (pattern C), and 8 sits in s0 and 1 in ra
-// as in the original. n is set before the search loop (the original computes D_801BB120 - 1 in the search loop's
-// first branch delay slot). The other loop counters' names are from a search over each loop's counter.
-// Left (band17): in the D_801CE638 == 8 search the first count and the record
-// pointer swap a0/a2, and the switch value and the unk2C loop counter take v0/v1 where the original has a1.
+// With code_2FB10's .bss defined in the file the unrolled D_801C26C0 stores share a lui at in pairs. The stunt-record
+// rows go through a copy k, each |x| and |z| goes through b into a, and five empty blocks precede the lap loop (FAKEs,
+// marked: they give the original's registers). The zeroing chains store right to left, as in the original.
 void func_80075310(void) {
     f32 x;
     s32 i;
-    s32 left; // the records left to walk in the D_801CE638 search's first loop (its own variable)
+    s32 left; // the records left to walk in the D_801CE638 == 8 searches
     s32 j;
     s32 k;
     s32 depth;
@@ -172,7 +158,6 @@ void func_80075310(void) {
             }
             gBestLaps[i] = D_800D81B0;
             for (n = 0; n < 9; n++) {
-                if (1) {} if (1) {} if (1) {} if (1) {} // FAKE (empty-block search): four empty blocks in the unrolled loop
                 gBestCheckpointTimes[i][n] = -1;
             }
             D_801C23B0[i] = D_800D81B0;
@@ -353,19 +338,19 @@ void func_80075310(void) {
         rider->unk2F0 = 0;
         rider->unk2F4 = 0;
         rider->unk304 = 0;
-        for (j = 0; j < D_801BB120; j++) {
-            rider->unk2C[j] = 0;
+        for (n = 0; n < D_801BB120; n++) {
+            rider->unk2C[n] = 0;
         }
         rider->lapTime = 0;
         rider->unk16C = 0;
         rider->raceTime = 0;
         rider->bestLapTime = 599999;
         rider->timeLeft = D_800D9280[gCourseID * 4] * 1000;
-        for (j = 0; j < 9; j++) {
-            rider->lapBuoyMisses[j] = 0;
-            rider->lapTimes[j] = 0;
+        for (n = 0; n < 9; n++) {
+            rider->lapBuoyMisses[n] = 0;
+            rider->lapTimes[n] = 0;
             for (k = 0; k < 8; k++) {
-                rider->checkpointTimes[j][k] = 0;
+                rider->checkpointTimes[n][k] = 0;
             }
         }
         rider->unk330 = 0.0f;
@@ -377,7 +362,8 @@ void func_80075310(void) {
         rider->unk350 = (struct UnkStruct_801C3C54*) D_801AEE20;
         // D_801CE638 8: each rider starts at the record after one of type 11..14.
         if (D_801CE638 == 8) {
-            switch ((i + D_800D5438) & 3) {
+            n = (i + D_800D5438) & 3;
+            switch (n) {
                 case 0:
                     type = 11;
                     break;
@@ -407,9 +393,9 @@ void func_80075310(void) {
             }
             rider->unkC = rider->nearestRecord = n;
             n = k;
-            left = (type = D_801BB120) - 1; // FAKE: D_801BB120 through type (dead here), for the registers
+            left = D_801BB120;
             if (D_801AEE20[k].unk98 == 1) {
-                for (j = left; (j - 1) >= 0; j--) { // FAKE (permuter): j > 0 spelled (j - 1) >= 0 (bgtzl)
+                while (--left > 0) {
                     n = D_801AEE20[n].unkB4;
                     if (D_801AEE20[n].unk98 != 1) {
                         break;
@@ -506,9 +492,6 @@ void func_80075310(void) {
     }
     func_801EED70();
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_2FB10/func_80075310.s")
-#endif
 
 s32 func_80076240(f32 arg0, f32 arg1, f32 arg2, f32 arg3) {
     s32 sp24;
