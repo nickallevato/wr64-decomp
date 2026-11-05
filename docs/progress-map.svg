@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
-<title>1318 of 1348 functions matched</title>
+<title>1319 of 1348 functions matched</title>
 <rect width="1000" height="620" rx="6" fill="#fbfbf9"/>
 <rect x="6.0" y="24.0" width="84.1" height="92.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="6.0" y="116.2" width="84.1" height="81.2" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -202,7 +202,7 @@
 <rect x="264.7" y="591.6" width="16.6" height="13.9" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="264.7" y="605.5" width="16.6" height="8.5" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="281.3" y="248.2" width="67.1" height="60.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
-<rect x="348.4" y="248.2" width="51.3" height="60.4" fill="#d9893a" stroke="#fbfbf9" stroke-width="0.6"/>
+<rect x="348.4" y="248.2" width="51.3" height="60.4" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="281.3" y="308.6" width="45.6" height="62.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="326.9" y="308.6" width="42.9" height="62.7" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
 <rect x="369.9" y="308.6" width="29.8" height="29.8" fill="#0b6e63" stroke="#fbfbf9" stroke-width="0.6"/>
@@ -1531,7 +1531,7 @@
 <rect x="875.6" y="543.0" width="93.7" height="71.0" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="543.0" width="24.7" height="66.9" fill="none" stroke="#fbfbf9" stroke-width="2"/>
 <rect x="969.3" y="609.9" width="24.7" height="4.1" fill="none" stroke="#fbfbf9" stroke-width="2"/>
-<text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 480/501</text>
+<text x="9.0" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/game 481/501</text>
 <text x="524.6" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/codeseg 213/219</text>
 <text x="788.4" y="19.0" font-size="12" font-weight="600" fill="#1c2421">src/overlays 150/151</text>
 <text x="524.6" y="395.8" font-size="12" font-weight="600" fill="#1c2421">src/audio 228/228</text>
