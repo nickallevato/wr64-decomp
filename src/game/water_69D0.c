@@ -1286,7 +1286,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 3170 of 60500 (hi5: gWaterWindowN read into hA (dead there) for the third row loop's bounds, and the
+// Score 2945 of 60500 (hi5: the first row loop's offset also stored to a new dead local n, and the window
+// centre's first index to oz (dead there): FAKEs from the permuter, re-applied in our formatting and re-scored
+// with score.sh: 3170 -> 2945.)
+// Before, 3170 (hi5: gWaterWindowN read into hA (dead there) for the third row loop's bounds, and the
 // window centre's dead self-compare through oz (dead there; holder searches with score.sh): 3200 -> 3170.)
 // Before, 3200 (hi4: the last row loop's centre term adds hA first again (an operand-order search): 3205 -> 3200.)
 // Before, 3205 (hi4: the window centre's second index is held in sz (dead there; permuter): 3240 -> 3205.)
@@ -1346,6 +1349,7 @@ void func_80050204(s32 view, Vtx* arena) {
     s32 i;
     s32 hA;
     f32 dz;
+    s32 n; // FAKE (permuter): a copy of the row offset (see below)
     UnkStruct_80160A98* hi;
     UnkStruct_80160A98* lo;
     s32* idx;
@@ -1375,7 +1379,7 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx++;
         end = (e + 0) + ((gWaterWindowN * 2) + i - 2); // FAKE (permuter): a no-op + 0
         // << 1: the original computes 2N again here (not shared with end); the neighbour rows' offset, in hA
-        hA = (gWaterWindowN << 1) + i + 1;
+        hA = (n = (gWaterWindowN << 1) + i + 1); // FAKE (permuter): the offset also stored to n (dead)
         if (end >= e) {
             lo = e - hA;
             hi = e + hA;
@@ -1503,7 +1507,7 @@ void func_80050204(s32 view, Vtx* arena) {
         v->v.ob[0] += ox;
         v->v.ob[2] += oz;
     }
-    v = &arena[D_80192460[1]];
+    v = &arena[oz = D_80192460[1]]; // FAKE (permuter): the index also stored to oz (dead here)
     oz = gWaterWindowN; // FAKE: through oz (dead here; a holder search), with the dead self-compare below
     if ((f32)oz != (f32)oz) {} // FAKE: as above
     sz = D_80192460[4];
