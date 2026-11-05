@@ -676,7 +676,11 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 3274 of 146400 (hi4: in the first gate test the deltas to the rider are their own statements and the
+// Score 1864 of 146400 (hi4: the 8/9 dot product takes each delta first; the side tests compare with 0.0f, as
+// the original's one zero in f18 shows (int 0 is a separate constant to IDO); the cross is spelled a + -(b), which keeps
+// its sub.s (odd spelling, same value); a second rename search over the checkpoint distances (the first z delta in
+// dPos, the second in gx): 3274 -> 1864, with the original's instruction count.)
+// Before, 3274 (hi4: in the first gate test the deltas to the rider are their own statements and the
 // empty dot >= 0 test's body is a dead float self-compare (FAKE, no code) instead of dot = -(-dot); a rename search
 // put the gate direction x in cz (declared in gx's old word, so its spill home is the original's 0x60), the rider's
 // z delta and the dot product in segLen: 3827 -> 3274.)
@@ -738,7 +742,7 @@ void func_8007687C(s32 arg0) {
     s32 zoneD;
     s32 sameZone;
     s32 r4;
-    f32 gx; // unused (its word keeps the frame)
+    f32 gx; // the gate's second z delta (in the original's word for it)
     s32 nearLine;
     f32 lineX; // the line record's x, read ahead (permuter)
     s32 gapRef;
@@ -837,7 +841,7 @@ void func_8007687C(s32 arg0) {
         }
     } else {
         if ((e->unk98 == 8) || (e->unk98 == 9)) {
-            dot = (e->unk78 * (D_801C3780 - e->unk0)) + ((D_801C3788 - e->unk8) * e->unk7C);
+            dot = ((D_801C3780 - e->unk0) * e->unk78) + ((D_801C3788 - e->unk8) * e->unk7C);
             if (!(dot >= 0.0f)) {
                 dot = -dot;
             }
@@ -857,13 +861,13 @@ void func_8007687C(s32 arg0) {
         dx /= len;
         dz /= len;
     }
-    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0)) {
-        if (((dirZ * dx) - (dirX * dz)) >= 0.0f) {
+    if ((rider->unk1C == -1) && (((dirX * dx) + (dirZ * dz)) > 0.0f)) {
+        if (((dirZ * dx) + -(dirX * dz)) >= 0.0f) { // odd spelling: keeps the sub.s (see 801EF504)
             rider->unk1C = 1;
         } else {
             rider->unk1C = 0;
         }
-    } else if (((dirX * dx) + (dirZ * dz)) <= 0) {
+    } else if (((dirX * dx) + (dirZ * dz)) <= 0.0f) {
         rider->unk1C = -1;
     }
     if ((rider->unk20 == 0) && (rider->unk1C == -1)) {
@@ -973,15 +977,15 @@ void func_8007687C(s32 arg0) {
         // (gBestCheckpointTimes) or, in a race, asked of func_80079528 (gapRequest 10).
         if ((e->unk9C == 1) && (rider->lapCount > 0)) {
             dx = D_801C3780 - e->unk0;
-            dPrev = D_801C3788 - e->unk8;
-            segLen = (dx * dirX) + (dPrev * dirZ);
+            dPos = D_801C3788 - e->unk8;
+            segLen = (dx * dirX) + (dPos * dirZ);
             dPos = segLen;
             if (!(segLen >= 0.0f)) {
                 dPos = -segLen;
             }
             dx = D_80192690[arg0].unkBE4 - e->unk0;
-            segLen = D_80192690[arg0].unkBEC - e->unk8;
-            segLen = (dx * dirX) + (segLen * dirZ);
+            gx = D_80192690[arg0].unkBEC - e->unk8;
+            segLen = (dx * dirX) + (gx * dirZ);
             dPrev = segLen;
             if (!(segLen >= 0.0f)) {
                 dPrev = -segLen;
