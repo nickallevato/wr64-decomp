@@ -676,7 +676,8 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1834 of 146400 (hi4: the cue's second distance takes x first again (a swap search with score.sh): 1854 -> 1834.)
+// Score 1829 of 146400 (hi4: the line test's x term in dx (a rename search with score.sh): 1834 -> 1829.)
+// Before, 1834 (hi4: the cue's second distance takes x first again (a swap search with score.sh): 1854 -> 1834.)
 // Before, 1854 (hi4: the first gate test's z delta in gx too, and the type 8/9 test an else-if (a search
 // with score.sh over the delta and sum variables of both gate blocks, the cue and the progress loop): 1864 -> 1854.)
 // Before, 1864 (hi4: the 8/9 dot product takes each delta first; the side tests compare with 0.0f, as
@@ -1148,12 +1149,12 @@ void func_8007687C(s32 arg0) {
     lineX = D_801AEE20[D_801BB12C].unk0;
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
-    // beyond's x term first (permuter), in gz (dead here; a name search)
-    gz = (D_801C3780 - lineX) * D_801AEE20[D_801BB12C].unk70;
+    // beyond's x term first (permuter), in dx (dead here; a name search)
+    dx = (D_801C3780 - lineX) * D_801AEE20[D_801BB12C].unk70;
     r3 = D_801AEE20[r2].unkA0;
     r4 = D_801AEE20[r3].unkA0;
     beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         gz) > 0.0f;
+         dx) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (r4 == D_801BB12C);
