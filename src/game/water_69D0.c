@@ -1267,7 +1267,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 3200 of 60500 (hi4: the last row loop's centre term adds hA first again (an operand-order search): 3205 -> 3200.)
+// Score 3170 of 60500 (hi5: gWaterWindowN read into hA (dead there) for the third row loop's bounds, and the
+// window centre's dead self-compare through oz (dead there; holder searches with score.sh): 3200 -> 3170.)
+// Before, 3200 (hi4: the last row loop's centre term adds hA first again (an operand-order search): 3205 -> 3200.)
 // Before, 3205 (hi4: the window centre's second index is held in sz (dead there; permuter): 3240 -> 3205.)
 // Before, 3240 (hi4: before the last row loops vtx steps before e (permuter): 3275 -> 3240.)
 // Before, 3275 (hi4: the middle row loop reads (e - 1)->unk4 as well, and the centre loop holds the centre's x
@@ -1414,10 +1416,11 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        end = e + ((gWaterWindowN * 2) - i - 2);
+        hA = gWaterWindowN; // N read into hA (dead here; a holder search)
+        end = e + ((hA * 2) - i - 2);
         if (end >= e) {
-            lo = (e - ((gWaterWindowN << 1) - i)) - 2;
-            hi = e + ((gWaterWindowN << 1) - i);
+            lo = (e - ((hA << 1) - i)) - 2;
+            hi = e + ((hA << 1) - i);
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 hA = hA >> 7;
@@ -1482,7 +1485,8 @@ void func_80050204(s32 view, Vtx* arena) {
         v->v.ob[2] += oz;
     }
     v = &arena[D_80192460[1]];
-    if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: as above
+    oz = gWaterWindowN; // FAKE: through oz (dead here; a holder search), with the dead self-compare below
+    if ((f32)oz != (f32)oz) {} // FAKE: as above
     sz = D_80192460[4];
     c = &arena[sz];
     dz = (f32) (v->v.ob[0] + c->v.ob[0]);
