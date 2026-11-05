@@ -676,7 +676,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1539 of 146400 (hi5: D_801C3780 read into dPrev (dead there) before the line test, and dPrev passed to
+// Score 1526 of 146400 (hi5: D_801C3780 passed to func_80074368 and D_801C3788 in the progress loop read through
+// lineX (dead there; holder searches with score.sh): 1539 -> 1526.)
+// Before, 1539 (hi5: D_801C3780 read into dPrev (dead there) before the line test, and dPrev passed to
 // func_80076240 and used in the beyond term (a holder search with score.sh): 1829 -> 1539.)
 // Before, 1829 (hi4: the line test's x term in dx (a rename search with score.sh): 1834 -> 1829.)
 // Before, 1834 (hi4: the cue's second distance takes x first again (a swap search with score.sh): 1854 -> 1834.)
@@ -877,7 +879,8 @@ void func_8007687C(s32 arg0) {
     if ((rider->unk20 == 0) && (rider->unk1C == -1)) {
         rider->unk20 = 1;
     }
-    func_80074368(D_801C3780, D_801C3788, &zoneA, &zoneB);
+    lineX = D_801C3780; // read into lineX (dead here; a holder search)
+    func_80074368(lineX, D_801C3788, &zoneA, &zoneB);
     func_80074368(e->unk0, e->unk8, &zoneC, &zoneD);
     if ((zoneA != -1) && ((zoneA == zoneC) || (zoneA == zoneD))) {
         sameZone = true;
@@ -1182,11 +1185,12 @@ void func_8007687C(s32 arg0) {
     for (i = 0; i < D_801BB120; i++) {
         e = &D_801AEE20[r];
         dx = D_801C3780 - e->unk0;
-        dz = D_801C3788 - e->unk8;
+        lineX = D_801C3788; // read into lineX (dead here; a holder search)
+        dz = lineX - e->unk8;
         if (!(((e->unk74 * dz) + (dx * e->unk70)) <= 0.0f)) {
             next = e->unkA0;
             if ((gCourseID == MARINE_FORTRESS) && (e->unk98 == 4) && (e->unkC0 == 1) &&
-                (func_80074448(D_801C3780, D_801C3788) != 0)) {
+                (func_80074448(D_801C3780, lineX) != 0)) {
                 from = e->unkA8;
             } else {
                 from = r;
