@@ -1350,7 +1350,7 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 2540 of 111900 (hi3: the empty test's body is an empty float self-compare of dx instead of the pad store;
+// Score 2515 of 111900 (hi3: a no-op (s32)(s64) cast of sfx (FAKE) 2540 -> 2515; the empty test's body is an empty float self-compare of dx instead of the pad store;
 // IDO keeps the test as a branch to the next instruction with arg0's spill in its delay slot, as the original
 // does, and no store). Before, 2860: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
 // the word above points (the old padP; a per-block rename search), time keeps only the unk1C test, and the race-time
@@ -1762,6 +1762,7 @@ void func_800783AC(s32 arg0) {
                         }
                     }
                     if (D_801C2928 == 1) {
+                        sfx = (s32) (s64) sfx; // FAKE: a no-op cast whose 64-bit halves take two temporaries (an insertion search)
                         sfx = 0;
                     } else {
                         sfx = 1;
