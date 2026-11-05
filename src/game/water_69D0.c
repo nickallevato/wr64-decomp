@@ -774,9 +774,10 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 20 of 32400 (hi5: a dead read k = b->unk2 at the top of the first pass (FAKE, the permuter) keeps b live
-// around that loop, so IDO colours b into a0 and hb into t2 as the original does. Note: on the first row b is
-// uninitialised at that read; IDO deletes the read (no code), but the C reads an indeterminate pointer. The first
+// Score 20 of 32400 (hi5: a dead read k = (s32) b at the top of the first pass (FAKE; the permuter found it as
+// k = b->unk2) keeps b live around that loop, so IDO colours b into a0 and hb into t2 as the original does. Note:
+// on the first row b is uninitialised at that read; IDO deletes it (no code), but the C reads an indeterminate
+// pointer value (no dereference). The first
 // pass's q is formed in bytes (p + (k << 3)) for the original's operand order: 495 -> 20; the first pass's empty
 // do-while (FAKE) is no longer needed (same score). Left: the p->unk0 and
 // k << 3 temporaries swap t8/t9 there (the original's ugen emits the shift first).)
@@ -820,7 +821,7 @@ void func_8004EAA4(void) {
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
         q = (UnkStruct_80160A98*) ((u8*) p + (k << 3)); // in bytes: IDO adds p first, as the original does
-        k = b->unk2; // FAKE (permuter): a dead read of the previous row's b (see the note)
+        k = (s32) b; // FAKE: a dead read of the previous row's b (see the note)
         b = WATER_CELL_AT((q - 1)->unk0);
         hb = b->unk0;
         mean = (ha + hb) >> D_800D4724;
