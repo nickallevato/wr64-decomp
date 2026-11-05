@@ -2867,7 +2867,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1670 of 68000 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
+// Score 1070 of 68000 (hi3: a dead float self-compare through two pointer loads after the first f (FAKE, marked)
+// costs the two temporaries the original spends there with no code (the assembler deletes the loads): from the
+// D_80228D18 increment on the temporaries are numbered as in the original until the digit x (304 - count * 14 is
+// in s1 here, a temporary there). Before, 1670 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
 // original's div.s into $f0 shows, with 1.0f in $f10 as there (the second f is in $f2, $f0 in the original): 1670.)
 // Before, 1685: calls and branches agree (the fade-out alpha is an if / else-if / else chain, giving the
 // original's b-to-next), frame 0xB8, and the instruction count is the original's (so the .bss immediates agree). The
@@ -2928,6 +2931,7 @@ void func_801FB514(Gfx** gdlp) {
     n = D_80228D18; // read once for the f computations and the increment, as the original does
     f = (2 - n) / (f32) 2;
     if (f != f) {} // FAKE: the empty self-compares keep the dead f computations, as the original has them
+    if (**(f32**)D_801CE5F8 != **(f32**)D_801CE5F8 + f) {} // FAKE: two dead loads (see the note)
     f = 1.0f - f;
     if (f != f) {} // FAKE: as above
     D_80228D18++;
