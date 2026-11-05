@@ -2867,7 +2867,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 75 of 68000 (hi5: an empty do-while after the first case's total pointer too (FAKE, as in the other
+// Score 45 of 68000 (hi5: a dead read of p->unk14 into alpha after the colour switch (FAKE, an insertion search):
+// with unk14 read before the label's unk10, IDO gives unk14 v0 and unk10 v1 as in the original, and the unk10 step
+// is written p->unk10 += p->unk14 again: 75 -> 45.)
+// Before, 75 (hi5: an empty do-while after the first case's total pointer too (FAKE, as in the other
 // cases): IDO then builds that pointer as D_801C26D4 itself, not D_801C26D0 with 4 in the loads: 90 -> 75.)
 // Before, 90 (hi5: five FAKEs removed: the three no-op casts of x in the bounce block, the empty do-while
 // after the unk10 step and the one before the unk14 test, and the dead loads before the sprintf. Without the
@@ -3001,6 +3004,7 @@ void func_801FB514(Gfx** gdlp) {
                 gDPSetEnvColor(gdl++, 255, 255, 128, alpha);
                 break;
         }
+        alpha = p->unk14; // FAKE: a dead read of unk14 (alpha is dead here); see the note
         x += p->unkC;
         y = p->unk10 + p->unk18 + 116;
         gDPLoadTextureBlock(gdl++, img, G_IM_FMT_IA, G_IM_SIZ_8b, w, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
@@ -3034,7 +3038,7 @@ void func_801FB514(Gfx** gdlp) {
                                 1 << 10);
             x += 14;
         }
-        p->unk10 = p->unk14 + p->unk10;
+        p->unk10 += p->unk14;
         if (p->unk14 >= -8) {
             p->unk14++;
         }
