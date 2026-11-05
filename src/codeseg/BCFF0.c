@@ -2867,7 +2867,11 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 675 of 68000 (hi3: one more dead self-compare before the sprintf (FAKE): 685 -> 675; no-op (s32)(s64) casts of the digit x after it is set and in the digit loop (FAKE) each take two
+// Score 545 of 68000 (hi4: without the empty test of count in the totals switch, 304 - count * 14 is a temporary
+// as in the original (with it IDO kept the value in a saved register: a bisection by deleting regions found the
+// test), and the first no-op cast of x is dropped: 675 -> 545. Left: the D_80228D18 address in a1 here, a3 there;
+// the D_801C26D0 address set before the unk10 test there; the totals' temporaries.)
+// Before, 675 (hi3: one more dead self-compare before the sprintf (FAKE): 685 -> 675; no-op (s32)(s64) casts of the digit x after it is set and in the digit loop (FAKE) each take two
 // zero-code temporaries: 1070 -> 685; a dead float self-compare through two pointer loads after the first f (FAKE, marked)
 // costs the two temporaries the original spends there with no code (the assembler deletes the loads): from the
 // D_80228D18 increment on the temporaries are numbered as in the original until the digit x (304 - count * 14 is
@@ -3008,7 +3012,6 @@ void func_801FB514(Gfx** gdlp) {
             count = 5;
         }
         x = (304 - count * 14) / 2 + p->unkC + 8;
-        x = (s32) (s64) x; // FAKE: a no-op cast; its 64-bit halves take two temporaries the assembler deletes
         y = p->unk10 + p->unk18 + 128;
         for (k = 0; k < count; k++) {
             gDPLoadTextureBlock(gdl++, &D_80269D0[D_80228CF8[5 - count + k] << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
@@ -3042,7 +3045,6 @@ void func_801FB514(Gfx** gdlp) {
             switch (p->unk0) {
                 case 1:
                     total = &D_801C26D0 + 1; // FAKE, as above
-                    if (count) {} // FAKE: an empty test of count (a search over empty tests), for the registers
                     D_801C26D4 = *total + p->unk4;
                     if (*total >= 100000) {
                         D_801C26D4 = 99999;
