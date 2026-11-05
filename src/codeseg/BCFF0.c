@@ -2867,7 +2867,9 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 545 of 68000 (hi4: without the empty test of count in the totals switch, 304 - count * 14 is a temporary
+// Score 485 of 68000 (hi4: the pointer set-up shares a line with the do, so the assembler schedules its addiu after
+// the loop's first hoisted constant as the original does: 545 -> 485.)
+// Before, 545 (hi4: without the empty test of count in the totals switch, 304 - count * 14 is a temporary
 // as in the original (with it IDO kept the value in a saved register: a bisection by deleting regions found the
 // test), and the first no-op cast of x is dropped: 675 -> 545. Left: the D_80228D18 address in a1 here, a3 there;
 // the D_801C26D0 address set before the unk10 test there; the totals' temporaries.)
@@ -2955,8 +2957,7 @@ void func_801FB514(Gfx** gdlp) {
     gDPSetCombineMode(gdl++, G_CC_FADEA, G_CC_FADEA);
     gDPSetRenderMode(gdl++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetAlphaCompare(gdl++, G_AC_NONE);
-    p = D_80228AE0;
-    do {
+    p = D_80228AE0; do { // one line: the original schedules the pointer set-up with the loop's first constants
         if (p->unk0 == 0) {
             continue;
         }
