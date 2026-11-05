@@ -2425,17 +2425,6 @@ void func_801F9520(Gfx** gdlp) {
     *gdlp = gdl;
 }
 
-#ifdef NON_MATCHING
-// Score 120 of 32800: side is computed first, then the forward dot product (copied to fwd); the direction is
-// normalised in place (dx /= dist); dot holds side / scale once the angle test is done, and a holds the clamped fwd
-// before it holds the angle (with these the saved FP registers are coloured as in the original). The zero tests of
-// a use the integer literal 0. A differently spelled zero is a separate constant here (0.f, 0.00f and 0e0f all
-// work; 0.0F does not): sgn's 0.f is its own, while written 0.0f it shares aa > 0.0f's zero, which is then loaded in
-// both arms of sgn instead of once at the top. Left: the
-// lui of gRiders' address is scheduled two instructions later than in the original (after the b->unk4 store).
-// In the block after the oy/ox join the original fills the mtc1 stall with the lui and the b->unk10 store and puts
-// the b->unk4 store after the mul; here both stores go first and the lui after the mul. Not moved by: all 24 orders
-// of the four stores with every set of line joins (192), D_80228B88[i][j] in place of b, goto in place of continue.
 extern s32 D_80223934;
 extern f32 gSinTable[0x1000];
 
@@ -2443,6 +2432,14 @@ f32 func_801ED090(f32 arg0);
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 // Place each rider ahead of the player on the radar: side offset, distance and heading.
+// Side is computed first, then the forward dot product (copied to fwd); the direction is normalised in place
+// (dx /= dist); dot holds side / scale once the angle test is done, and a holds the clamped fwd before it holds the
+// angle (this colours the saved FP registers as in the original). The zero tests of a use the integer literal 0. A
+// differently spelled zero is a separate constant (0.f, 0.00f and 0e0f all work; 0.0F does not): sgn's 0.f is its own,
+// while written 0.0f it shares aa > 0.0f's zero, which is then loaded in both arms of sgn instead of once at the top.
+// The rider test is an early continue and b->unk10 = 1 is stored before b->unk4: IDO schedules by source line, and
+// with the stores at the loop body's top level the gRiders reload for the loop test keeps the for statement's line,
+// so its lui fills the mtc1 stall ahead of the stores, as in the original.
 void func_801F9EA0(void) {
     s32 pad; // stack pad
     s32 i;
@@ -2488,67 +2485,65 @@ void func_801F9EA0(void) {
         for (j = 0; j < gRiders; j++) {
             b = &D_80228B88[i][j];
             b->unk10 = 0;
-            if ((j != me) && (gRiderRaceState[j].racePosition >= gRiderRaceState[me].racePosition)) {
-                p = &D_80192690[j];
-                dx = p->unk44.x - camX;
-                dz = p->unk44.z - camZ;
-                side = dx * dirZ + dz * -dirX;
-                dot = dx * dirX + dz * dirZ;
-                fwd = dot;
-                dist = sqrtf(dx * dx + dz * dz);
-                if (dist > 0.0f) {
-                    dx /= dist;
-                    dz /= dist;
-                    dot = dx * dirX + dz * dirZ;
-                }
-                dot = func_801ED090(dot);
-                if ((dist > 1024.0f) || (dot > 135.0f)) {
-                    continue;
-                }
-                a = fwd;
-                if (fwd < 0.0f) {
-                    a = 0.0f;
-                }
-                scale = a * 0.0009765625f * 1024.0f + 60.0f;
-                dot = side / scale;
-                sx = dot;
-                if (dot > 1.0f) {
-                    a = func_801ED154(dot - 1.0f, fwd / scale);
-                    sx = 1.0f;
-                } else if (dot < -1.0f) {
-                    a = func_801ED154(dot + 1.0f, fwd / scale);
-                    sx = -1.0f;
-                } else {
-                    a = 0; // integer literal: with 0.0f the zero is shared with the other tests
-                }
-                if (a > 180.0f) {
-                    a -= 360.0f;
-                }
-                aa = (a >= 0) ? a : -a;
-                sgn = (a == 0) ? 0.f : ((a > 0) ? 1 : -1); // odd literal: 0.f, not 0.0f (see the note)
-                if (aa > 0.0f) {
-                    aa *= 0.6666667f;
-                    if (aa > 90.0f) {
-                        aa = 90.0f;
-                    }
-                    k = (aa / 360.0f) * 4096.0f;
-                    ox = gSinTable[k & 0xFFF] * sgn * 32.0f;
-                    oy = -(1.0f - gSinTable[(k + 0x400) & 0xFFF]) * 24.0f;
-                } else {
-                    oy = 0.0f;
-                    ox = 0.0f;
-                }
-                b->unk4 = oy;
-                b->unk10 = 1;
-                b->unk8 = sgn * aa;
-                b->unk0 = sx * 94.0f + ox;
+            if ((j == me) || (gRiderRaceState[j].racePosition < gRiderRaceState[me].racePosition)) {
+                continue;
             }
+            p = &D_80192690[j];
+            dx = p->unk44.x - camX;
+            dz = p->unk44.z - camZ;
+            side = dx * dirZ + dz * -dirX;
+            dot = dx * dirX + dz * dirZ;
+            fwd = dot;
+            dist = sqrtf(dx * dx + dz * dz);
+            if (dist > 0.0f) {
+                dx /= dist;
+                dz /= dist;
+                dot = dx * dirX + dz * dirZ;
+            }
+            dot = func_801ED090(dot);
+            if ((dist > 1024.0f) || (dot > 135.0f)) {
+                continue;
+            }
+            a = fwd;
+            if (fwd < 0.0f) {
+                a = 0.0f;
+            }
+            scale = a * 0.0009765625f * 1024.0f + 60.0f;
+            dot = side / scale;
+            sx = dot;
+            if (dot > 1.0f) {
+                a = func_801ED154(dot - 1.0f, fwd / scale);
+                sx = 1.0f;
+            } else if (dot < -1.0f) {
+                a = func_801ED154(dot + 1.0f, fwd / scale);
+                sx = -1.0f;
+            } else {
+                a = 0; // integer literal: with 0.0f the zero is shared with the other tests
+            }
+            if (a > 180.0f) {
+                a -= 360.0f;
+            }
+            aa = (a >= 0) ? a : -a;
+            sgn = (a == 0) ? 0.f : ((a > 0) ? 1 : -1); // odd literal: 0.f, not 0.0f (see the note)
+            if (aa > 0.0f) {
+                aa *= 0.6666667f;
+                if (aa > 90.0f) {
+                    aa = 90.0f;
+                }
+                k = (aa / 360.0f) * 4096.0f;
+                ox = gSinTable[k & 0xFFF] * sgn * 32.0f;
+                oy = -(1.0f - gSinTable[(k + 0x400) & 0xFFF]) * 24.0f;
+            } else {
+                oy = 0.0f;
+                ox = 0.0f;
+            }
+            b->unk10 = 1;
+            b->unk4 = oy;
+            b->unk8 = sgn * aa;
+            b->unk0 = sx * 94.0f + ox;
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/BCFF0/func_801F9EA0.s")
-#endif
 
 // The three rider loops share the counter k and skip a cleared slot with `continue`: with an if around the body
 // IDO keeps k as the loop counter, with continue it replaces it by a 0x14-step offset tested against gRiders * 20,
