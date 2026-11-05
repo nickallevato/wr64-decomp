@@ -2867,8 +2867,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 800 of 68000 (hi3: a no-op (s32)(s64) cast of the digit x (FAKE) takes two more zero-code temporaries
-// after it: 1070 -> 800; a dead float self-compare through two pointer loads after the first f (FAKE, marked)
+// Score 685 of 68000 (hi3: no-op (s32)(s64) casts of the digit x after it is set and in the digit loop (FAKE) each take two
+// zero-code temporaries: 1070 -> 685; a dead float self-compare through two pointer loads after the first f (FAKE, marked)
 // costs the two temporaries the original spends there with no code (the assembler deletes the loads): from the
 // D_80228D18 increment on the temporaries are numbered as in the original until the digit x (304 - count * 14 is
 // in s1 here, a temporary there). Before, 1670 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
@@ -3024,6 +3024,7 @@ void func_801FB514(Gfx** gdlp) {
         }
         if (p->unk10 >= 0) {
             p->unk14 = -10;
+            x = (s32) (s64) x; // FAKE: as above
             p->unk10 = 0;
         }
         do {} while (0); // FAKE: splits the scheduling block (an insertion search)
