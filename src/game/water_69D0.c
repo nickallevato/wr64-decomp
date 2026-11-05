@@ -1267,7 +1267,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 4015 of 60500 (hi4: the first row loop's end pointer adds a no-op + 0 to e (FAKE, permuter): 4155 -> 4015.)
+// Score 3530 of 60500 (hi4: the last row loop shifts hA right after reading it (a permuter find, re-scored with
+// score.sh): 4015 -> 3530.)
+// Before, 4015 (hi4: the first row loop's end pointer adds a no-op + 0 to e (FAKE, permuter): 4155 -> 4015.)
 // Before, 4155 (hi4: the last row loop steps hi before its z store, and the window centre's x sum goes
 // through dz (dead there) before the scale (permuter finds, re-scored with score.sh): 4235 -> 4155.)
 // Before, 4235 (hi4: the last row loop reads (e - 1)->unk4 too, and the centre scale converts D_80192498
@@ -1413,9 +1415,9 @@ void func_80050204(s32 view, Vtx* arena) {
             hi = e + ((gWaterWindowN << 1) - i);
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
+                hA = hA >> 7;
                 sz = WATER_CELL_AT(hi->unk0)->unk0;
                 if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: a dead self-compare (no code; its load is deleted), as above
-                hA = hA >> 7;
                 ox = ((((sz >> 7) + hA) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
                 sz = (hA - (sz >> 7)) * 55;
                 k = 992 / sqrtf((ox * ox) + (sz * sz) + 0xC00000); // int 992 (respelling search)
