@@ -1267,7 +1267,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 3275 of 60500 (hi4: the middle row loop reads (e - 1)->unk4 as well, and the centre loop holds the centre's x
+// Score 3240 of 60500 (hi4: before the last row loops vtx steps before e (permuter): 3275 -> 3240.)
+// Before, 3275 (hi4: the middle row loop reads (e - 1)->unk4 as well, and the centre loop holds the centre's x
 // in sz (dead there) before the difference (permuter finds, re-scored with score.sh): 3530 -> 3275.)
 // Before, 3530 (hi4: the last row loop shifts hA right after reading it (a permuter find, re-scored with
 // score.sh): 4015 -> 3530.)
@@ -1403,8 +1404,8 @@ void func_80050204(s32 view, Vtx* arena) {
     vtx->v.ob[0] = w->unk0 + e->unk4;
     vtx->v.ob[1] = WATER_LEVEL_U32;
     vtx->v.ob[2] = e->unk6 + w->unk4;
-    e++;
     vtx++;
+    e++;
     for (i = 1; i < gWaterWindowN; i++) {
         vtx->v.ob[0] = w->unk0 + e->unk4;
         vtx->v.ob[1] = WATER_LEVEL_U32;
