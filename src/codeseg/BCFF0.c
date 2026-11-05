@@ -2867,7 +2867,10 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 400 of 68000 (hi4: an empty do-while after the digit loop (FAKE, an insertion search with score.sh): 485 -> 400.)
+// Score 280 of 68000 (hi4: two more no-op casts of x in the bounce block (FAKE, an insertion search with score.sh;
+// as at the digit x, the original spends temporaries there that the assembler deletes) and the unk10 step written
+// p->unk14 + p->unk10: 400 -> 280.)
+// Before, 400 (hi4: an empty do-while after the unk10 step (FAKE, an insertion search with score.sh): 485 -> 400.)
 // Before, 485 (hi4: the pointer set-up shares a line with the do, so the assembler schedules its addiu after
 // the loop's first hoisted constant as the original does: 545 -> 485.)
 // Before, 545 (hi4: without the empty test of count in the totals switch, 304 - count * 14 is a temporary
@@ -3023,13 +3026,15 @@ void func_801FB514(Gfx** gdlp) {
                                 1 << 10);
             x += 14;
         }
-        p->unk10 += p->unk14;
-        do {} while (0); // FAKE: splits the scheduling block after the digit loop (an insertion search with score.sh)
+        p->unk10 = p->unk14 + p->unk10;
+        do {} while (0); // FAKE: splits the scheduling block after the unk10 step (an insertion search with score.sh)
         if (p->unk14 >= -8) {
             p->unk14++;
         }
         if (p->unk10 >= 0) {
             p->unk14 = -10;
+            x = (s32) (s64) x; // FAKE: two more no-op casts, four temporaries the assembler deletes (insertion search)
+            x = (s32) (s64) x; // FAKE: as above
             x = (s32) (s64) x; // FAKE: as above
             p->unk10 = 0;
         }
