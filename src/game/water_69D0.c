@@ -1267,7 +1267,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 6199 of 60500 (hi4: the centre loop's offsets are float variables (dx, dz: the original converts each
+// Score 5580 of 60500 (hi4, searches with score.sh: the middle row loop bounds its cells with lo, the last row
+// loop's centre term goes in ox, and three operand orders: 6199 -> 5580.)
+// Before, 6199 (hi4: the centre loop's offsets are float variables (dx, dz: the original converts each
 // difference straight after the subtraction and keeps no int copy), the cell pointer is vtx (the original's s3, the
 // vertex pointer of the row loops) and the centre pointer c (v0 there): 7079 -> 6199.)
 // Before, 7079 (hi4: the centre's x sum takes c first (an operand-swap search with score.sh): 7084 -> 7079.)
@@ -1362,7 +1364,7 @@ void func_80050204(s32 view, Vtx* arena) {
     vtx->v.ob[2] = e->unk6 + w->unk4;
     e++;
     vtx++;
-    for (end = e + ((gWaterWindowN * 2) - 2); end >= e;) {
+    for (lo = e + ((gWaterWindowN * 2) - 2); lo >= e;) {
             i = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0;
             sz = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0;
             i = i >> 7;
@@ -1373,7 +1375,7 @@ void func_80050204(s32 view, Vtx* arena) {
             vtx++;
             vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
             vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
-            vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + WATER_LEVEL_U32;
+            vtx[-1].v.ob[1] = WATER_LEVEL_U32 + (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8);
             vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
             vtx[-1].v.ob[2] = e[-1].unk6 + w->unk4;
     }
@@ -1396,12 +1398,12 @@ void func_80050204(s32 view, Vtx* arena) {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 sz = WATER_CELL_AT(hi->unk0)->unk0;
                 hA = hA >> 7;
-                sx = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+                ox = (((hA + (sz >> 7)) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
                 sz = (hA - (sz >> 7)) * 55;
-                k = 992 / sqrtf((sx * sx) + (sz * sz) + 0xC00000); // int 992 (respelling search)
+                k = 992 / sqrtf((ox * ox) + (sz * sz) + 0xC00000); // int 992 (respelling search)
                 e++;
                 vtx++;
-                vtx[-1].v.tc[0] = (s32) (sx * k) + 0x400;
+                vtx[-1].v.tc[0] = (s32) (ox * k) + 0x400;
                 vtx[-1].v.tc[1] = (s32) (sz * k) + 0x400;
                 vtx[-1].v.ob[1] = (WATER_CELL_AT(e[-1].unk0)->unk0 >> 8) + WATER_LEVEL_U32;
                 vtx[-1].v.ob[0] = w->unk0 + e[-1].unk4;
@@ -1453,8 +1455,8 @@ void func_80050204(s32 view, Vtx* arena) {
     }
     v = &arena[D_80192460[1]];
     c = &arena[D_80192460[4]];
-    w->unk8 = ((f32) (c->v.ob[0] + v->v.ob[0]) * 0.5f) - w->unk14;
-    w->unkC = ((f32) (v->v.ob[2] + c->v.ob[2]) * 0.5f) - w->unk18;
+    w->unk8 = ((f32) (v->v.ob[0] + c->v.ob[0]) * 0.5f) - w->unk14;
+    w->unkC = ((f32) (c->v.ob[2] + v->v.ob[2]) * 0.5f) - w->unk18;
     w->unk10 = D_800D4720 * D_800D4720;
 }
 #else
