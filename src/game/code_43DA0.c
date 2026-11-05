@@ -1137,7 +1137,9 @@ void func_8008E4B0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 6254 of 127200 (band17: in the 2P loop the cosine goes in dx and the camera delta in its own variables cx,
+// Score 6234 of 127200 (hi4: SUNSET_BAY's unk104 takes the sine term first (an operand-swap search with
+// score.sh): 6254 -> 6234.)
+// Before, 6254 (band17: in the 2P loop the cosine goes in dx and the camera delta in its own variables cx,
 // declared last, and cz (in the old pad word); the D_800D988C == 1 loop's angle is its own variable spin (in c's
 // old word): 6338 -> 6254): calls, branches and the frame (0xC8, with stack pads from pad searches) agree. The unk98
 // test is a switch with case 1 first (the original tests 0 with beql, then 1 with bnel, and lays out the case-1 body
@@ -1350,7 +1352,7 @@ void func_8008E794(void) {
                     e->unkD4 = e->unkEC;
                     e->unkD8 = e->unkF0;
                     e->unkDC = e->unkF4;
-                    e->unk104 = (COS(angle) * cam->unk6C) + (SIN(angle) * cam->unk64);
+                    e->unk104 = (SIN(angle) * cam->unk64) + (COS(angle) * cam->unk6C);
                     e->unkE0 = e->unkF8;
                     break;
                 default:
