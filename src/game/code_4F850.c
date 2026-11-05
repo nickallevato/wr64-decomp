@@ -980,14 +980,6 @@ void func_8009684C(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-#ifdef NON_MATCHING
-// Score 8 of 134600 (hi3): only the switch(arg0) temp's spill slot is left (0x18 here, 0x1C in the original).
-// The first loop copies through D_800DB330[i] (not dst), so IDO fills the unk2 test's delay slot with the flag's li 4
-// as the original does (through dst the copy's first load goes into a beql); i++ in the for header puts the i step
-// before the rider store; cp = &D_801CE740[i] each pass gives the original's registers (D_801CE740[i] written out
-// moves most of the function's registers). An explicit pointer stepped after the flag store (set before the loop or
-// inside an if (count > 0) guard with a do-while) gives the 0x1C slot but sets the pointer before the guard, or puts
-// the i step after the rider store; an unused local or pad moves the alts slots.
 // D_800DACD0's entries have UnkStruct_80227A60's layout (17 display lists).
 #define MODEL(i) (*(UnkStruct_80227A60*) &D_800DACD0[i])
 
@@ -1043,42 +1035,53 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             D_801CE740[0].unk2 = D_801CE740[1].unk2;
             break;
     }
-    for (i = 0; i < count; i++) {
-        cp = &D_801CE740[i];
-        dst = &D_800DB330[i];
-        switch (i % 4) {
-            case 0:
-                rider = arg1;
-                break;
-            case 1:
-                rider = arg2;
-                break;
-            case 2:
-                rider = arg3;
-                break;
-            case 3:
-                rider = arg4;
-                break;
-        }
-        if (rider < 0) {
-            rider = 0;
-        }
-        if (i >= 4) {
-            rider += 4;
-        }
-        cp->rider = rider;
-        if (cp->unk2 != 0) {
-            rider += 8;
-        }
-        D_800DB330[i] = D_800DABD0[rider];
-        D_800DB330[i].flag = 4;
-        if ((D_801CE73C == 3) || (D_801CE73C == 2)) {
-            dst->offset = D_800DABA0[i];
-        } else if (D_801CE73C == 4) {
-            dst->offset = D_800DABC0[i];
-        } else {
-            dst->offset = D_800DAB90[i];
-        }
+    i = 0;
+    if (count > 0) {
+        // FAKE: the #line directives only renumber source lines, which IDO's assembler uses to order ready
+        // instructions: the pointer set-up sorts before the guard and the last offset store before the rider
+        // store, as the original's schedule shows (written in order, the guard's delay slot and the i step
+        // come out differently). An explicit pointer, not cp = &D_801CE740[i], gives the original's spill slot
+        // for the switch value. The numbering is restored after the loop.
+#line 1037
+        cp = D_801CE740; do {
+            dst = &D_800DB330[i];
+            switch (i % 4) {
+                case 0:
+                    rider = arg1;
+                    break;
+                case 1:
+                    rider = arg2;
+                    break;
+                case 2:
+                    rider = arg3;
+                    break;
+                case 3:
+                    rider = arg4;
+                    break;
+            }
+            if (rider < 0) {
+                rider = 0;
+            }
+            if (i >= 4) {
+                rider += 4;
+            }
+            cp->rider = rider;
+            if (cp->unk2 != 0) {
+                rider += 8;
+            }
+            D_800DB330[i] = D_800DABD0[rider];
+            D_800DB330[i].flag = 4;
+            cp++;
+            if ((D_801CE73C == 3) || (D_801CE73C == 2)) {
+                dst->offset = D_800DABA0[i];
+            } else if (D_801CE73C == 4) {
+                dst->offset = D_800DABC0[i];
+            } else {
+#line 1037
+                dst->offset = D_800DAB90[i];
+            }
+#line 1084
+        } while (++i < count);
     }
     dst++;
     dst->segRomStart = 0;
@@ -1298,9 +1301,6 @@ void func_80096960(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 #undef MODEL
-#else
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_4F850/func_80096960.s")
-#endif
 
 void func_80097E68(void) {
     DmaTransfer* transfer = D_800DAB38;
