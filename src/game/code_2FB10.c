@@ -676,7 +676,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1864 of 146400 (hi4: the 8/9 dot product takes each delta first; the side tests compare with 0.0f, as
+// Score 1854 of 146400 (hi4: the first gate test's z delta in gx too, and the type 8/9 test an else-if (a search
+// with score.sh over the delta and sum variables of both gate blocks, the cue and the progress loop): 1864 -> 1854.)
+// Before, 1864 (hi4: the 8/9 dot product takes each delta first; the side tests compare with 0.0f, as
 // the original's one zero in f18 shows (int 0 is a separate constant to IDO); the cross is spelled a + -(b), which keeps
 // its sub.s (odd spelling, same value); a second rename search over the checkpoint distances (the first z delta in
 // dPos, the second in gx): 3274 -> 1864, with the original's instruction count.)
@@ -742,7 +744,7 @@ void func_8007687C(s32 arg0) {
     s32 zoneD;
     s32 sameZone;
     s32 r4;
-    f32 gx; // the gate's second z delta (in the original's word for it)
+    f32 gx; // the gate deltas' z
     s32 nearLine;
     f32 lineX; // the line record's x, read ahead (permuter)
     s32 gapRef;
@@ -829,8 +831,8 @@ void func_8007687C(s32 arg0) {
             gz /= len;
         }
         dx = D_801C3780 - e->unk18;
-        segLen = D_801C3788 - e->unk20;
-        segLen = (dx * cz) + (segLen * gz);
+        gx = D_801C3788 - e->unk20;
+        segLen = (dx * cz) + (gx * gz);
         if (segLen >= 0.0f) {
             if (e->unk8C != e->unk8C) {} // FAKE: an empty float self-compare (no code) keeps the original's empty test as a branch
         }
@@ -839,17 +841,15 @@ void func_8007687C(s32 arg0) {
         } else {
             inGate = -D_801C39C4 <= segLen;
         }
-    } else {
-        if ((e->unk98 == 8) || (e->unk98 == 9)) {
-            dot = ((D_801C3780 - e->unk0) * e->unk78) + ((D_801C3788 - e->unk8) * e->unk7C);
-            if (!(dot >= 0.0f)) {
-                dot = -dot;
-            }
-            if (dot <= e->unk8C) {
-                ref = true; // FAKE: dead, keeps the original's branches
-            } else {
-                sfx = false;
-            }
+    } else if ((e->unk98 == 8) || (e->unk98 == 9)) {
+        dot = ((D_801C3780 - e->unk0) * e->unk78) + ((D_801C3788 - e->unk8) * e->unk7C);
+        if (!(dot >= 0.0f)) {
+            dot = -dot;
+        }
+        if (dot <= e->unk8C) {
+            ref = true; // FAKE: dead, keeps the original's branches
+        } else {
+            sfx = false;
         }
     }
     dirX = e->unk70;
