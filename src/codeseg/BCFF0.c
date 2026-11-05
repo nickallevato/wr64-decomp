@@ -2867,7 +2867,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 485 of 68000 (hi4: the pointer set-up shares a line with the do, so the assembler schedules its addiu after
+// Score 400 of 68000 (hi4: an empty do-while after the digit loop (FAKE, an insertion search with score.sh): 485 -> 400.)
+// Before, 485 (hi4: the pointer set-up shares a line with the do, so the assembler schedules its addiu after
 // the loop's first hoisted constant as the original does: 545 -> 485.)
 // Before, 545 (hi4: without the empty test of count in the totals switch, 304 - count * 14 is a temporary
 // as in the original (with it IDO kept the value in a saved register: a bisection by deleting regions found the
@@ -3023,6 +3024,7 @@ void func_801FB514(Gfx** gdlp) {
             x += 14;
         }
         p->unk10 += p->unk14;
+        do {} while (0); // FAKE: splits the scheduling block after the digit loop (an insertion search with score.sh)
         if (p->unk14 >= -8) {
             p->unk14++;
         }
