@@ -1303,7 +1303,11 @@ void func_801F23A0(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 1140 of 174400 (hi5: the empty tests of time in the style 1 digit loop and in the style 2 icon position's
+// Score 1115 of 174400 (hi5: a dead read ix = (s32) rider between the two trailing big-digit draws (FAKE, a
+// dead-read search): rider is then live into the style 1 branch, which moves IDO's colouring there. Note: rider is
+// not set on that path, so the C reads an indeterminate pointer value (no dereference; IDO deletes the read):
+// 1140 -> 1115.)
+// Before, 1140 (hi5: the empty tests of time in the style 1 digit loop and in the style 2 icon position's
 // last arm (FAKEs, see below) are no longer needed: removed together at the same score.)
 // Before, 1140 (near14: the original keeps all five display-list constants of the two trailing digit draws in
 // registers (0xE7000000, 0xE4000000, 0xB3000000, 0xB2000000, 0x04000400; cc -S showed IDO rebuilding 0xB3000000 for the
@@ -1428,6 +1432,7 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
         HUD_RECT(gdl, x + 12, py, 12, 16);
         if (time) {} // FAKE: as above
         if (x) {} // FAKE: as above
+        ix = (s32) rider; // FAKE: a dead read of rider (see the note)
         HUD_LOAD32(gdl, D_103D5D0, 12, 16);
         HUD_RECT(gdl, x + 44, py, 12, 16);
     } else if ((style == 0) || (style == 2)) {
