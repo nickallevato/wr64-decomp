@@ -2867,7 +2867,8 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 1070 of 68000 (hi3: a dead float self-compare through two pointer loads after the first f (FAKE, marked)
+// Score 800 of 68000 (hi3: a no-op (s32)(s64) cast of the digit x (FAKE) takes two more zero-code temporaries
+// after it: 1070 -> 800; a dead float self-compare through two pointer loads after the first f (FAKE, marked)
 // costs the two temporaries the original spends there with no code (the assembler deletes the loads): from the
 // D_80228D18 increment on the temporaries are numbered as in the original until the digit x (304 - count * 14 is
 // in s1 here, a temporary there). Before, 1670 (near14: a second empty self-compare, after the first f, keeps the first f in a variable as the
@@ -3007,6 +3008,7 @@ void func_801FB514(Gfx** gdlp) {
             count = 5;
         }
         x = (304 - count * 14) / 2 + p->unkC + 8;
+        x = (s32) (s64) x; // FAKE: a no-op cast; its 64-bit halves take two temporaries the assembler deletes
         y = p->unk10 + p->unk18 + 128;
         for (k = 0; k < count; k++) {
             gDPLoadTextureBlock(gdl++, &D_80269D0[D_80228CF8[5 - count + k] << 8], G_IM_FMT_IA, G_IM_SIZ_8b, 16, 16, 0,
