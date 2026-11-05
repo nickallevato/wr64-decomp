@@ -201,31 +201,25 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 290 of 38000. The control flow and arithmetic match. The order of the stores and chains is from a greedy
-// search: the 255 value (D_i3_802C6F6C/78) is set before the 170 value (D_i3_802C6F70/7C) everywhere. Case 0
-// clears the four values in separate statements, in the original's store order (no chain order gives it). A search
-// over a local n (the incremented counter in each case, n for each product) gives 320 with case 0's counter in n,
-// case 1's two scaled values through n (FAKE, marked) and case 3's counter and state cleared in one chain (the
-// counter in n in cases 0 and 2 alone: 455). mid5 (permuter): case 2 clears D_i3_802C6F74 and the counter in one chain
-// and case 3's chain goes through n (FAKE): 290. Left: the global registers: &D_i3_802C6F64, &D_i3_802C6F74, 255 and
-// 170 take t1, t2, a2, a3 here and t2, a2, a3, t1 in the original (-S: the original colours 170 first), and the
-// temporaries after.
+// Score 200 of 38000 (mid9: no FAKEs now. Case 0 increments the counter as its own statement and tests it re-read
+// (D_i3_802C6F68++; if (D_i3_802C6F68 >= 5)), with its two zero stores chained: the temporaries as1 deletes there put
+// case 1's temporaries on the original's (t5 on); the products are plain (D_i3_802C6F68 * 255 / 10), case 3 clears
+// the state in one chain (D_i3_802C6F68 = D_i3_802C6F64 = 0), and greedy chain and statement searches did the rest:
+// 290 -> 200). The control flow and arithmetic match. Left: &D_i3_802C6F64, 255 and 170 take a3, t1, t2 here and
+// t2, a3, t1 in the original, and case 3's temporaries are one register on (t9 where the original has t4).
 Gfx* func_i3_802C5D54(Gfx* gdl) {
     TexLabel* label;
-    s32 n;
 
     switch (D_i3_802C6F64) {
         case 0:
-            n = ++D_i3_802C6F68;
-            if (n >= 5) {
+            D_i3_802C6F68++;
+            if (D_i3_802C6F68 >= 5) {
                 D_i3_802C6F64 = 1;
-                D_i3_802C6F74 = 0;
-                D_i3_802C6F68 = 0;
+                D_i3_802C6F68 = D_i3_802C6F74 = 0;
             }
             D_i3_802C6F78 = 0;
             D_i3_802C6F6C = 0;
-            D_i3_802C6F70 = 0;
-            D_i3_802C6F7C = 0;
+            D_i3_802C6F70 = D_i3_802C6F7C = 0;
             break;
 
         case 1:
@@ -236,10 +230,8 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F6C = 255;
                 D_i3_802C6F70 = 170;
             } else {
-                n = D_i3_802C6F68 * 255; // FAKE: the products through n (a search over n uses)
-                D_i3_802C6F6C = n / 10;
-                n = D_i3_802C6F68 * 170;
-                D_i3_802C6F70 = n / 10;
+                D_i3_802C6F6C = D_i3_802C6F68 * 255 / 10;
+                D_i3_802C6F70 = D_i3_802C6F68 * 170 / 10;
             }
             if (D_i3_802C6F74 >= 10) {
                 D_i3_802C6F78 = 255;
@@ -252,15 +244,15 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
                 D_i3_802C6F64 = 2;
                 D_i3_802C6F6C = D_i3_802C6F78 = 255;
                 D_i3_802C6F70 = D_i3_802C6F7C = 170;
-                D_i3_802C6F68 = 0;
-                D_i3_802C6F74 = 0;
+                D_i3_802C6F68 = D_i3_802C6F74 = 0;
             }
             break;
 
         case 2:
             if (++D_i3_802C6F68 >= 25) {
                 D_i3_802C6F64 = 3;
-                D_i3_802C6F74 = D_i3_802C6F68 = 0;
+                D_i3_802C6F74 = 0;
+                D_i3_802C6F68 = 0;
             }
             D_i3_802C6F6C = D_i3_802C6F78 = 255;
             D_i3_802C6F70 = D_i3_802C6F7C = 170;
@@ -268,8 +260,7 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
 
         case 3:
             if (++D_i3_802C6F68 >= 10) {
-                n = D_i3_802C6F64 = 0; // FAKE (permuter)
-                D_i3_802C6F68 = n;
+                D_i3_802C6F68 = D_i3_802C6F64 = 0;
                 D_i3_802C6F6C = 0;
                 D_i3_802C6F70 = 0;
                 D_i3_802C7028 = 1;
