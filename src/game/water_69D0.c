@@ -1267,7 +1267,8 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 4155 of 60500 (hi4: the last row loop steps hi before its z store, and the window centre's x sum goes
+// Score 4015 of 60500 (hi4: the first row loop's end pointer adds a no-op + 0 to e (FAKE, permuter): 4155 -> 4015.)
+// Before, 4155 (hi4: the last row loop steps hi before its z store, and the window centre's x sum goes
 // through dz (dead there) before the scale (permuter finds, re-scored with score.sh): 4235 -> 4155.)
 // Before, 4235 (hi4: the last row loop reads (e - 1)->unk4 too, and the centre scale converts D_80192498
 // into k before the divide (permuter finds, re-scored with score.sh): 4315 -> 4235.)
@@ -1344,7 +1345,7 @@ void func_80050204(s32 view, Vtx* arena) {
         vtx->v.ob[2] = e->unk6 + w->unk4;
         e++;
         vtx++;
-        end = e + ((gWaterWindowN * 2) + i - 2);
+        end = (e + 0) + ((gWaterWindowN * 2) + i - 2); // FAKE (permuter): a no-op + 0
         // << 1: the original computes 2N again here (not shared with end); the neighbour rows' offset, in hA
         hA = (gWaterWindowN << 1) + i + 1;
         if (end >= e) {
