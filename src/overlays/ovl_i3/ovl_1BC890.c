@@ -201,12 +201,13 @@ Gfx* CourseOverview_Draw(Gfx* arg0) {
 }
 
 #ifdef NON_MATCHING
-// Score 200 of 38000 (mid9: no FAKEs now. Case 0 increments the counter as its own statement and tests it re-read
+// Score 30 of 38000 (mid9: case 3's counter test inside an if (1) block (FAKE, permuter) puts &D_i3_802C6F64, 255
+// and 170 in the original's t2, a3, t1: 200 -> 30. Before that, with no FAKEs: Case 0 increments the counter as its own statement and tests it re-read
 // (D_i3_802C6F68++; if (D_i3_802C6F68 >= 5)), with its two zero stores chained: the temporaries as1 deletes there put
 // case 1's temporaries on the original's (t5 on); the products are plain (D_i3_802C6F68 * 255 / 10), case 3 clears
 // the state in one chain (D_i3_802C6F68 = D_i3_802C6F64 = 0), and greedy chain and statement searches did the rest:
-// 290 -> 200). The control flow and arithmetic match. Left: &D_i3_802C6F64, 255 and 170 take a3, t1, t2 here and
-// t2, a3, t1 in the original, and case 3's temporaries are one register on (t9 where the original has t4).
+// 290 -> 200). The control flow and arithmetic match. Left: case 3's temporaries are one register on (t9 where the
+// original has t4).
 Gfx* func_i3_802C5D54(Gfx* gdl) {
     TexLabel* label;
 
@@ -259,14 +260,16 @@ Gfx* func_i3_802C5D54(Gfx* gdl) {
             break;
 
         case 3:
-            if (++D_i3_802C6F68 >= 10) {
-                D_i3_802C6F68 = D_i3_802C6F64 = 0;
-                D_i3_802C6F6C = 0;
-                D_i3_802C6F70 = 0;
-                D_i3_802C7028 = 1;
-            } else {
-                D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
-                D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
+            if (1) { // FAKE (permuter): a block around the counter test, for the registers
+                if (++D_i3_802C6F68 >= 10) {
+                    D_i3_802C6F68 = D_i3_802C6F64 = 0;
+                    D_i3_802C6F6C = 0;
+                    D_i3_802C6F70 = 0;
+                    D_i3_802C7028 = 1;
+                } else {
+                    D_i3_802C6F6C = (10 - D_i3_802C6F68) * 255 / 10;
+                    D_i3_802C6F70 = (10 - D_i3_802C6F68) * 170 / 10;
+                }
             }
             D_i3_802C6F78 = D_i3_802C6F6C;
             D_i3_802C6F7C = D_i3_802C6F70;
