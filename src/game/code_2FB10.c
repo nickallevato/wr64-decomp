@@ -1350,7 +1350,9 @@ extern s32 D_80228A94;
 void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-// Score 50 of 111900 (hi4, found with the as1 bench and temp rotations: the original spends one temporary in the
+// Score 25 of 111900 (hi4: the bonus flag and the race-time lap count are sfx too, the original's one variable at
+// 0xA4, in a2 there: 50 -> 25; flag's word is a pad now).
+// Before, 50 (hi4, found with the as1 bench and temp rotations: the original spends one temporary in the
 // empty test that the assembler deletes (a float self-compare through arg0, FAKE: 2015 with the next one); the trick
 // state is read through q = &D_80192690[arg0], kept in v0 by a dead self-compare of q->unkB90 (FAKE); dx takes
 // D_801C3780 - e->unk0 in one statement (1735); the second gate distance works in dz, len and dx (the
@@ -1358,7 +1360,7 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2);
 // *= D_800D92B8 (each a separate statement, unk334 cleared after), the time-table byte is held in laps (the
 // original's v1) and D_80228A94 = 20 set after the timeLeft store; the case-3 and unk2C-loop do-whiles, the
 // unk1C test held in time and the sfx cast are gone (all FAKEs). Left: &D_801C39D0 in ra here, t2 there (the
-// first if after the empty test); sfx in a1 here, a2 there, at the end.)
+// first if after the empty test).)
 // Before, 2515 (hi3: a no-op (s32)(s64) cast of sfx (FAKE) 2540 -> 2515; the empty test's body is an empty float self-compare of dx instead of the pad store;
 // IDO keeps the test as a branch to the next instruction with arg0's spill in its delay slot, as the original
 // does, and no store). Before, 2860: same blocks, switches and calls, frame 0xB0. band17: the gate time is its own variable in
@@ -1405,7 +1407,7 @@ void func_800783AC(s32 arg0) {
     s32 cpTime; // the gate time (in the word the original gives it)
     s32 points;
     s32 frac;
-    s32 flag;
+    s32 pad; // stack pad (unused: the bonus flag and the lap count are in sfx)
     s32 bonus;
     s32 trick;
     s32 time;
@@ -1694,11 +1696,11 @@ void func_800783AC(s32 arg0) {
             rider->unk334 = 0;
             if (bonus > 0) {
                 if (cur == D_801BB12C) {
-                    flag = 1;
+                    sfx = 1;
                 } else {
-                    flag = 0;
+                    sfx = 0;
                 }
-                func_801FB488(1, bonus, flag);
+                func_801FB488(1, bonus, sfx);
             }
             if (cur == D_801BB12C) {
                 D_801C39D4 = bonus;
@@ -1756,12 +1758,12 @@ void func_800783AC(s32 arg0) {
                         (D_801C39F8 != 0) && (D_801C39FC != 0) && (D_801C3A00 != 0) && (D_801C3A04 != 0)) {
                         D_801C2930 = 1;
                     }
-                    flag = D_801CE728[0];
-                    if (flag >= 10) {
-                        flag = 9;
+                    sfx = D_801CE728[0];
+                    if (sfx >= 10) {
+                        sfx = 9;
                     }
                     rider->raceTime = 0;
-                    for (laps = 0; laps < flag; laps++) {
+                    for (laps = 0; laps < sfx; laps++) {
                         rider->raceTime += rider->lapTimes[laps];
                     }
                     D_801C2928 = 0;
