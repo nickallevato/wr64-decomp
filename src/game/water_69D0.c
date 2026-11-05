@@ -774,7 +774,12 @@ void Water_BuildCellLists(void) {
  */
 
 #ifdef NON_MATCHING
-// Score 495 of 32400 (hi5: the second pass computes its row offset in k, a fifth variable (the original's a1),
+// Score 20 of 32400 (hi5: a dead read k = b->unk2 at the top of the first pass (FAKE, the permuter) keeps b live
+// around that loop, so IDO colours b into a0 and hb into t2 as the original does. Note: on the first row b is
+// uninitialised at that read; IDO deletes the read (no code), but the C reads an indeterminate pointer. The first
+// pass's q is formed in bytes (p + (k << 3)) for the original's operand order: 495 -> 20. Left: the p->unk0 and
+// k << 3 temporaries swap t8/t9 there (the original's ugen emits the shift first).)
+// Before, 495 (hi5: the second pass computes its row offset in k, a fifth variable (the original's a1),
 // scaled to bytes before the entry test (sll/or into a1 there), and enters its loop through an explicit test and
 // do-while with q set after the test, as the original does; this gives the original's instruction count (324, one
 // more). k also holds the first pass's index and the first and third passes' damping values (a1 there). Two FAKEs
@@ -813,9 +818,10 @@ void func_8004EAA4(void) {
         k = (gWaterWindowN * 2) + i + 2;
         a = WATER_CELL_AT(p->unk0);
         ha = a->unk0;
-        q = p + k;
+        q = (UnkStruct_80160A98*) ((u8*) p + (k << 3)); // in bytes: IDO adds p first, as the original does
+        k = b->unk2; // FAKE (permuter): a dead read of the previous row's b (see the note)
         b = WATER_CELL_AT((q - 1)->unk0);
-        do {} while (0); // FAKE: an empty block (an insertion search with score.sh)
+        do {} while (0); // FAKE: a block boundary (an insertion search); the temporaries after it as in the original
         hb = b->unk0;
         mean = (ha + hb) >> D_800D4724;
         hb = (hb - ha) >> D_800D472C;
@@ -861,7 +867,7 @@ void func_8004EAA4(void) {
         end = (p + (gWaterWindowN << 1)) - i;
         if (p < end) {
             q = (UnkStruct_80160A98*) ((u8*) p + k);
-            if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: a dead self-compare (no code; an insertion search)
+            if ((f32)gWaterWindowN != (f32)gWaterWindowN) {} // FAKE: a dead self-compare (no code), as in the other water loops
             do {
                 p++;
                 b = WATER_CELL_AT(q->unk0);
