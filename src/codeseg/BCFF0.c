@@ -2867,7 +2867,14 @@ void func_801FB488(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 #ifdef NON_MATCHING
-// Score 280 of 68000 (hi4: two more no-op casts of x in the bounce block (FAKE, an insertion search with score.sh;
+// Score 90 of 68000 (hi5: five FAKEs removed: the three no-op casts of x in the bounce block, the empty do-while
+// after the unk10 step and the one before the unk14 test, and the dead loads before the sprintf. Without the
+// do-while before the test, the unk14 reload is a temporary again (t7, as in the original) instead of a register
+// IDO kept across the bounce block, and the temporaries from there on are numbered as in the original without the
+// casts: 280 -> 90. Left: D_80228D14's address and value in a1/t3 (a3/a1 there) and the second f in f2 (f0 there);
+// p->unk10 and p->unk14 in v0/v1 (v1/v0 there); the first stunt total case reads D_801C26D4 as 4 off
+// D_801C26D0's address.)
+// Before, 280 (hi4: two more no-op casts of x in the bounce block (FAKE, an insertion search with score.sh;
 // as at the digit x, the original spends temporaries there that the assembler deletes) and the unk10 step written
 // p->unk14 + p->unk10: 400 -> 280.)
 // Before, 400 (hi4: an empty do-while after the unk10 step (FAKE, an insertion search with score.sh): 485 -> 400.)
@@ -3027,18 +3034,13 @@ void func_801FB514(Gfx** gdlp) {
             x += 14;
         }
         p->unk10 = p->unk14 + p->unk10;
-        do {} while (0); // FAKE: splits the scheduling block after the unk10 step (an insertion search with score.sh)
         if (p->unk14 >= -8) {
             p->unk14++;
         }
         if (p->unk10 >= 0) {
             p->unk14 = -10;
-            x = (s32) (s64) x; // FAKE: two more no-op casts, four temporaries the assembler deletes (insertion search)
-            x = (s32) (s64) x; // FAKE: as above
-            x = (s32) (s64) x; // FAKE: as above
             p->unk10 = 0;
         }
-        do {} while (0); // FAKE: splits the scheduling block (an insertion search)
         if (p->unk14 == -10) {
             p->unkC -= 10;
         }
@@ -3084,7 +3086,6 @@ void func_801FB514(Gfx** gdlp) {
                             "EXTEND", 153, 60, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     if ((D_80227740 != 0) && (D_801C26E4 != 0)) {
-        if (**(f32**)D_801CE5F8 != **(f32**)D_801CE5F8) {} // FAKE: two dead loads (an insertion search)
         sprintf((char*) D_80228CF8, "%04d", D_801C26E4);
         gdl = Printer_Print(gdl, 0, (char*) D_80228CF8, 224, 188, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
