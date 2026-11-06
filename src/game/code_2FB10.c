@@ -676,7 +676,10 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1476 of 146400 (hi5: the power step's sign is taken from r, the difference, in both tests (the
+// Score 1466 of 146400 (hi5: unk320 read and written directly everywhere but the progress line, which keeps the
+// RIDER_UNK320 pointer view (FAKE); the lap test then loads unk320 before lapCount, as the original does: 1476 ->
+// 1466.)
+// Before, 1476 (hi5: the power step's sign is taken from r, the difference, in both tests (the
 // permuter's second spelling of the difference dropped; same score).)
 // Before, 1476 (hi5: the progress loop's segment x reads the next record first (into dirX) and subtracts
 // the from record's x, as the original orders the two records' address computations: 1501 -> 1476.)
@@ -899,7 +902,7 @@ void func_8007687C(s32 arg0) {
     rider->unk28 = 0;
     if ((rider->unk20 != 0) && (rider->unk1C >= 0)) {
         type = e->unk98;
-        if (rider->lapCount != RIDER_UNK320) {
+        if (rider->lapCount != rider->unk320) {
             rider->unk20 = 0;
         } else if ((e->unk9C == 1) && !inGate) {
             rider->unk20 = 0;
@@ -1130,7 +1133,7 @@ void func_8007687C(s32 arg0) {
             if ((D_800D8178 == 0) || (rider->lapCount == 0)) {
                 if (rider->lapCount < D_801CE728[0]) {
                     rider->lapCount++;
-                    RIDER_UNK320 = rider->lapCount;
+                    rider->unk320 = rider->lapCount;
                 }
             }
             rider->unk130 = 0;
@@ -1172,11 +1175,11 @@ void func_8007687C(s32 arg0) {
     }
     if (func_80076240(dPrev, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
-        if (beyond && (rider->unk324 == 0) && (RIDER_UNK320 < rider->lapCount)) {
-            RIDER_UNK320++;
+        if (beyond && (rider->unk324 == 0) && (rider->unk320 < rider->lapCount)) {
+            rider->unk320++;
         } else if (!beyond && (rider->unk324 != 0)) {
-            if (RIDER_UNK320 >= -49) {
-                RIDER_UNK320--;
+            if (rider->unk320 >= -49) {
+                rider->unk320--;
             }
         }
     }
