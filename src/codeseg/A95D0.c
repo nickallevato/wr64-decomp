@@ -1593,12 +1593,18 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 975 of 32100 (mid5; 985 mid4): the projection factor is y and the new d[0] is held in x and squared from x for
+// Score 965 of 32100 (mid10: the last blend is written (x * x) * (unk44 - unk40), as the original orders the
+// multiply's operands, and the last block reads p->unk0[p->unk74[2]] directly instead of through y: with both the
+// last block's float temporaries and everything after the second sqrtf match the original, and the projection
+// factor y lands in $f0 as there (1135; the first ease update's operand order follows the other two, as in the
+// original). The temporaries before the second sqrtf are numbered differently: the original keeps the new d[0] in a
+// temporary (ours: x, $f2). One p[0].unk44 spelling (FAKE, from a respelling search) shifts them: 1135 -> 965.)
+// Before, 975 (mid5; 985 mid4): the projection factor is y and the new d[0] is held in x and squared from x for
 // the second sqrtf (the original keeps it in a register; reading d[0] back reloaded it): from the projection on the
 // float registers match. Left: the factor in $f14 ($f0 in the original), the v[1] spill reload one instruction
 // early, and the float temporaries numbered differently up to there (first ease update on).
-// The rate first in the unk48[0] ease is from an operand-order search; the last blend is (unk44 - unk40) * (x * x)
-// (the original squares x first), which leaves its float temporaries one register on, as everywhere else.
+// (mid5: the rate first in the unk48[0] ease, from an operand-order search; the last blend was (unk44 - unk40) * (x * x)
+// then, which left its float temporaries one register on, as everywhere else.)
 // Earlier: same instructions but one reload of d[0] (0x40(sp)) before the second sqrtf, and float temp
 // registers numbered differently throughout (from the first ease update on). p and b set at the top (as in
 // func_801DF38C) put obj in s0; b declared before p and the unk24 stores through obj->base (as func_801DDEDC writes
@@ -1619,7 +1625,7 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     f32 x;
     f32 y;
 
-    p->unk48[0].value += p->unk48[0].rate * (p->unk48[0].target - p->unk48[0].value);
+    p->unk48[0].value += (p->unk48[0].target - p->unk48[0].value) * p->unk48[0].rate;
     p->unk48[2].value += (p->unk48[2].target - p->unk48[2].value) * p->unk48[2].rate;
     p->unk48[1].value += (p->unk48[1].target - p->unk48[1].value) * p->unk48[1].rate;
     d[0] = p->unk18[0] - p->unk0[p->unk74[0]];
@@ -1666,16 +1672,15 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         obj->base.unk24[2] = 0.0f;
         obj->base.unk24[1] = 1.0f;
     }
-    y = p->unk0[p->unk74[2]];
-    if (y <= p->unk10) {
+    if (p->unk0[p->unk74[2]] <= p->unk10) {
         x = p->unk40;
-    } else if (p->unk14 <= y) {
+    } else if (p->unk14 <= p->unk0[p->unk74[2]]) {
         x = p->unk44;
     } else {
-        x = (y - p->unk10) / (p->unk14 - p->unk10);
-        x = (p->unk44 - p->unk40) * (x * x) + p->unk40;
+        x = (p->unk0[p->unk74[2]] - p->unk10) / (p->unk14 - p->unk10);
+        x = (x * x) * (p[0].unk44 - p->unk40) + p->unk40; // FAKE: p[0]. (a respelling search)
     }
-    b->unk0[p->unk74[2]] = (y - p->unkC) * x + p->unkC;
+    b->unk0[p->unk74[2]] = (p->unk0[p->unk74[2]] - p->unkC) * x + p->unkC;
     func_801DEEC4(obj);
 }
 #else
