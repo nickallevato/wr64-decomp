@@ -358,8 +358,9 @@ void Hud_SetupMatrices(void) {
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
 // Score 4976 of 69300 (band18: the outer else's empty test reads node->unk70 instead of node->unk74 (FAKE, a search
-// over that test's operand): 5006 -> 4976; the second waypoint test reads the next record through node itself, without the
-// rec copy (a search over the record-lookup forms): 5012 -> 5006). Before, 5012: calls and branches agree (the frame is 0xC0 here, 0xB8 in the original: see Left). The two
+// over that test's operand): 5006 -> 4976; the second waypoint test reads the next record through node itself, without
+// the rec copy (a search over the record-lookup forms): 5012 -> 5006). Before, 5012: calls and branches agree (the
+// frame is 0xC0 here, 0xB8 in the original: see Left). The two
 // waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
