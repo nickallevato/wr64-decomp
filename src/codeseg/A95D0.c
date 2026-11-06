@@ -1593,7 +1593,11 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 615 of 32100 (mid10: as below, and the last blend reads p[0].unk44 (FAKE, a respelling search; the spelling
+// Score 475 of 32100 (mid10: the second sqrtf's argument is written with d[0]'s square first (through y, dead
+// there; FAKE, permuter): IDO then squares d[1] first and stores d[1] before squaring d[0], as the original does,
+// and every instruction matches the original (765 without y, 850 also without p[0]); what is left is the
+// numbering of the float temporaries (ugen), which follows the whole function: 615 -> 475.)
+// Before, 615 (mid10: as below, and the last blend reads p[0].unk44 (FAKE, a respelling search; the spelling
 // changes the float temporaries' numbering, which then matches the original from the ease update to the second
 // sqrtf): 925 -> 615. Left: the float temporaries from the start to the ease update and after the second sqrtf
 // (two registers swapped in each part), and the d[1] store one instruction late.)
@@ -1662,7 +1666,8 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     y = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[0]) + SQ(d[1]));
     d[0] = (v[0] + d[0] * y) * p->unk2C;
     d[1] = (v[1] + d[1] * y) * p->unk2C;
-    x = sqrtf(SQ(d[1]) + SQ(d[0]));
+    y = d[0]; // FAKE (permuter): the new d[0] held in y (dead here), for the float temporaries
+    x = sqrtf(SQ(y) + SQ(d[1])); // y first: IDO then squares d[1] first, as the original does
     if (p->unk30 < x) {
         x = p->unk30 / x;
         d[0] *= x;
