@@ -917,8 +917,8 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 3065 of 31600 (mid10: the general branch's px is b (b is unused there; a variable-merge search), one
-// local fewer: 3073 -> 3065.)
+// Score 3050 of 31600 (mid10: the general branch's px is b (b is unused there; a variable-merge search), one
+// local fewer: 3073 -> 3065; the z == 0 branch's last store goes through u (dead there; FAKE, a hold search): 3050.)
 // Before, 3073 (hi5: four operand orders in the general branch and mf[0][2] stored before mf[2][0] (a
 // search over operand and adjacent-statement swaps with score.sh): 3168 -> 3073.)
 // Before, 3168: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
@@ -999,7 +999,8 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[1][1] = (c * b * b) + (a * a);
         t = (u * b) + (a * b);
         arg1->mf[1][0] = t;
-        arg1->mf[0][1] = t;
+        u = t; // FAKE: the value held in u (dead here; a hold search)
+        arg1->mf[0][1] = u;
     } else if (x == 0.0f) {
         len = sqrtf((y * y) + (z * z));
         a = z / len;
