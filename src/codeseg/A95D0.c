@@ -1593,7 +1593,12 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 965 of 32100 (mid10: the last blend is written (x * x) * (unk44 - unk40), as the original orders the
+// Score 925 of 32100 (mid10: p->unk18[0] adds d[0] * x to the base (p->unk0[...] + d[0] * x: IDO then emits the
+// product first, as the original does); the new d[0] and d[1] are stored and d[0] is squared from the stored value
+// (forwarded in a temporary, as the original keeps it), each written v[k] + d[k] * y for the same operand order.
+// The p[0].unk44 and x = v[0] FAKEs are gone. From the second sqrtf on the code matches; before it the float
+// temporaries are numbered differently and the d[1] store is scheduled one instruction later: 965 -> 925.)
+// Before, 965 (mid10: the last blend is written (x * x) * (unk44 - unk40), as the original orders the
 // multiply's operands, and the last block reads p->unk0[p->unk74[2]] directly instead of through y: with both the
 // last block's float temporaries and everything after the second sqrtf match the original, and the projection
 // factor y lands in $f0 as there (1135; the first ease update's operand order follows the other two, as in the
@@ -1631,7 +1636,7 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     d[0] = p->unk18[0] - p->unk0[p->unk74[0]];
     d[1] = p->unk18[1] - p->unk0[p->unk74[1]];
     x = p->unk20 / sqrtf(SQ(d[0]) + SQ(d[1]));
-    p->unk18[0] = d[0] * x + p->unk0[p->unk74[0]];
+    p->unk18[0] = p->unk0[p->unk74[0]] + d[0] * x;
     p->unk18[1] = d[1] * x + p->unk0[p->unk74[1]];
     x = p->unk48[1].value + func_801ED154(d[1], d[0]);
     b->unkC[p->unk74[0]] =
@@ -1651,11 +1656,9 @@ void func_801DF744(UnkA95D0_Obj* obj) {
     v[0] = p->unk24[0] * x;
     v[1] = p->unk24[1] * x;
     y = -(d[0] * v[0] + d[1] * v[1]) / (SQ(d[0]) + SQ(d[1]));
-    x = v[0]; // FAKE: x as a temp for the new d[0]
-    x = (d[0] * y + x) * p->unk2C;
-    d[0] = x;
-    d[1] = (d[1] * y + v[1]) * p->unk2C;
-    x = sqrtf(SQ(d[1]) + SQ(x)); // the new d[0] squared from x: the original does not reload d[0]
+    d[0] = (v[0] + d[0] * y) * p->unk2C;
+    d[1] = (v[1] + d[1] * y) * p->unk2C;
+    x = sqrtf(SQ(d[1]) + SQ(d[0]));
     if (p->unk30 < x) {
         x = p->unk30 / x;
         d[0] *= x;
@@ -1678,7 +1681,7 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         x = p->unk44;
     } else {
         x = (p->unk0[p->unk74[2]] - p->unk10) / (p->unk14 - p->unk10);
-        x = (x * x) * (p[0].unk44 - p->unk40) + p->unk40; // FAKE: p[0]. (a respelling search)
+        x = (x * x) * (p->unk44 - p->unk40) + p->unk40;
     }
     b->unk0[p->unk74[2]] = (p->unk0[p->unk74[2]] - p->unkC) * x + p->unkC;
     func_801DEEC4(obj);
