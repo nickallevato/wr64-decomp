@@ -1287,7 +1287,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 2925 of 60500 (mid10: the first two row loops read the next cell's offset as (e + 1)->unk0, not
+// Score 2920 of 60500 (mid10: the last row loops' end pointer adds a no-op + 0 to e as the first loop's does (FAKE),
+// which puts e first in the add as the original does: 2925 -> 2920.)
+// Before, 2925 (mid10: the first two row loops read the next cell's offset as (e + 1)->unk0, not
 // e[1].unk0 (same address; the spelling changes IDO's address arithmetic; a respelling search with score.sh): 2940 -> 2925.)
 // Before, 2940 (hi5: the window centre's x sum takes c first (an operand-order search): 2945 -> 2940.)
 // Before, 2945 (hi5: the first row loop's offset also stored to a new dead local n, and the window
@@ -1444,7 +1446,7 @@ void func_80050204(s32 view, Vtx* arena) {
         e++;
         vtx++;
         hA = gWaterWindowN; // N read into hA (dead here; a holder search)
-        end = e + ((hA * 2) - i - 2);
+        end = (e + 0) + ((hA * 2) - i - 2); // FAKE: a no-op + 0, as in the first row loop
         if (end >= e) {
             lo = (e - ((hA << 1) - i)) - 2;
             hi = e + ((hA << 1) - i);
