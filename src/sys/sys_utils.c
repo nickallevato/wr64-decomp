@@ -917,7 +917,9 @@ UNUSED void SysUtils_ReadContData(void) {
 }
 
 #ifdef NON_MATCHING
-// Score 3073 of 31600 (hi5: four operand orders in the general branch and mf[0][2] stored before mf[2][0] (a
+// Score 3065 of 31600 (mid10: the general branch's px is b (b is unused there; a variable-merge search), one
+// local fewer: 3073 -> 3065.)
+// Before, 3073 (hi5: four operand orders in the general branch and mf[0][2] stored before mf[2][0] (a
 // search over operand and adjacent-statement swaps with score.sh): 3168 -> 3073.)
 // Before, 3168: control flow, arithmetic and the frame (0xB0) follow the original. The angle is halved with
 // / 2.0f, which IDO turns into * 0.5f with its own register (the original loads 0.5 twice: the halving and the
@@ -946,7 +948,6 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
     f32 nx;
     f32 c;
     f32 u;
-    f32 px;
     f32 py;
     f32 qx;
     f32 qy;
@@ -1024,17 +1025,17 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         a = -ny;
         nz = z / len;
         len = sqrtf((a * a) + (nx * nx));
-        px = nx / len;
+        b = nx / len;
         py = a / len;
-        qx = px * nz;
-        qz = ((ny - px) * py) - (px * (nx - py));
+        qx = b * nz;
+        qz = ((ny - b) * py) - (b * (nx - py));
         qy = -py * nz;
         arg1->mf[0][0] = (nx * nx) + (((qx * qx) + (py * py)) * c);
-        arg1->mf[1][1] = (((qy * qy) + (px * px)) * c) + (ny * ny);
+        arg1->mf[1][1] = (((qy * qy) + (b * b)) * c) + (ny * ny);
         arg1->mf[2][2] = (c * qz * qz) + (nz * nz);
-        t = (((px * py) + (qx * qy)) * c) + (nx * ny);
+        t = (((b * py) + (qx * qy)) * c) + (nx * ny);
         if (nx) {} // FAKE: an empty test of nx (a search over empty tests), for the float registers
-        u = ((py * qy) - (px * qx)) * s;
+        u = ((py * qy) - (b * qx)) * s;
         arg1->mf[1][0] = u + t;
         arg1->mf[0][1] = t - u;
         len = qz * s;
@@ -1043,7 +1044,7 @@ void func_8004A3C0(Mtx* arg0, MtxF* arg1, f32 x, f32 y, f32 z, f32 angle) {
         arg1->mf[0][2] = t - u;
         arg1->mf[2][0] = t + u;
         t = (c * qy * qz) + (ny * nz);
-        u = len * px;
+        u = len * b;
         arg1->mf[2][1] = t + u;
         qy = -py * nz; // FAKE (permuter): a dead recomputation of qy that moves the last stores' scheduling
         arg1->mf[1][2] = ((c * qy * qz) + (ny * nz)) - u; // FAKE (permuter): t written out again (same value)
