@@ -859,8 +859,8 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 23700 of 216100 (band18: the drop loop counts in its own variable, drops, in the old stack pad word (a
-// per-block rename search): 23760 -> 23700.)
+// Score 23675 of 216100 (band18: the last three 90.0f spelled 90.00f (a respelling search): 23700 -> 23675; the drop
+// loop counts in its own variable, drops, in the old stack pad word (a per-block rename search): 23760 -> 23700.)
 // Before, 23760 (mix2: an empty do-while after the streak alpha (FAKE, insert search): 23805 -> 23760;
 // a velocity length in its own variable instead of sideY drops the original-absent store and gives the original's
 // instruction count, but scores 24560, not kept. big7: the drop loop counts in count and keeps its angle in n, a
@@ -1199,14 +1199,14 @@ void func_800B08F8(s32 arg0) {
         }
         angle = func_801ED154(D_801D79E8, D_801D79E0);
         if (count >= 3) {
-            angle -= 90.0f;
+            angle -= 90.00f; // 90.00f: a separate constant from the earlier 90.0f to IDO (a respelling search)
         } else {
             angle -= 67.5f;
         }
         if (count >= 3) {
-            step = 90.0f / (count - 2);
+            step = 90.00f / (count - 2);
         } else {
-            step = 90.0f;
+            step = 90.00f;
         }
         angle += Math_FloatRand(32.0f) - 16.0f;
         n = 0;
