@@ -1541,7 +1541,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 28510 of 490800 (band18: two empty if (1) blocks, after the championship gaps and in the 2P gap popups (FAKE,
+// Score 28030 of 490800 (band18: empty if (1) blocks (FAKE, insertion searches): two more (before the D_80228DF8
+// read and in the y2 < 0 else arm), 28510 -> 28030; after the championship gaps and in the 2P gap popups (FAKE,
 // an insertion search): 28820 -> 28510; the second of the three empty do-while (0) FAKEs below dropped: 28825 ->
 // 28820): same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
@@ -1845,6 +1846,7 @@ void func_801F4120(Gfx** gdlp) {
                 j = (*(u32*) &D_80228DF8) * 6; // FAKE: D_80228DF8 read as u32 (a type search)
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
+                if (1) {} // FAKE: an empty block (an insertion search)
                 gSPTextureRectangle(gdl++, (x - j) << 2, 0x22 << 2, (x + 0x10) << 2, (j + 0x36) << 2,
                                     G_TX_RENDERTILE, 0, 0, 0x4000 / (j + 0x10), 0x5000 / (j + 0x14));
                 gDPPipeSync(gdl++);
@@ -2114,6 +2116,7 @@ void func_801F4120(Gfx** gdlp) {
             HUD_DIGIT(gdl, &D_80273D8[(n % 10) * 0x500], 16, 20, x, 0x26);
         } else {
             y2 -= 700;
+            if (1) {} // FAKE: an empty block (an insertion search)
             if (y2 < 0) {
                 y2 = 0;
             }
