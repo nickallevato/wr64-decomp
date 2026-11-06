@@ -676,7 +676,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1526 of 146400 (hi5: D_801C3780 passed to func_80074368 and D_801C3788 in the progress loop read through
+// Score 1501 of 146400 (hi5: the line test's beyond computes its z term first, in dx (dead there), then adds
+// the x term, as the original's loads and products are ordered: 1526 -> 1501.)
+// Before, 1526 (hi5: D_801C3780 passed to func_80074368 and D_801C3788 in the progress loop read through
 // lineX (dead there; holder searches with score.sh): 1539 -> 1526.)
 // Before, 1539 (hi5: D_801C3780 read into dPrev (dead there) before the line test, and dPrev passed to
 // func_80076240 and used in the beyond term (a holder search with score.sh): 1829 -> 1539.)
@@ -1155,12 +1157,11 @@ void func_8007687C(s32 arg0) {
     lineX = D_801AEE20[D_801BB12C].unk0;
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
-    // beyond's x term first (permuter), in dx (dead here; a name search)
-    dx = (dPrev - lineX) * D_801AEE20[D_801BB12C].unk70;
+    // beyond's z term first, in dx (dead here), as the original computes it before the x term
+    dx = D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8);
     r3 = D_801AEE20[r2].unkA0;
     r4 = D_801AEE20[r3].unkA0;
-    beyond = ((D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8)) +
-         dx) > 0.0f;
+    beyond = (dx + ((dPrev - lineX) * D_801AEE20[D_801BB12C].unk70)) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (r4 == D_801BB12C);
