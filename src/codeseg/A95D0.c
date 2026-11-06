@@ -1593,7 +1593,11 @@ void func_801DF668(UnkA95D0_Obj* obj, f32* arg1, f32* arg2, f32* arg3, f32* arg4
 }
 
 #ifdef NON_MATCHING
-// Score 925 of 32100 (mid10: p->unk18[0] adds d[0] * x to the base (p->unk0[...] + d[0] * x: IDO then emits the
+// Score 615 of 32100 (mid10: as below, and the last blend reads p[0].unk44 (FAKE, a respelling search; the spelling
+// changes the float temporaries' numbering, which then matches the original from the ease update to the second
+// sqrtf): 925 -> 615. Left: the float temporaries from the start to the ease update and after the second sqrtf
+// (two registers swapped in each part), and the d[1] store one instruction late.)
+// Before, 925 (mid10: p->unk18[0] adds d[0] * x to the base (p->unk0[...] + d[0] * x: IDO then emits the
 // product first, as the original does); the new d[0] and d[1] are stored and d[0] is squared from the stored value
 // (forwarded in a temporary, as the original keeps it), each written v[k] + d[k] * y for the same operand order.
 // The p[0].unk44 and x = v[0] FAKEs are gone. From the second sqrtf on the code matches; before it the float
@@ -1681,7 +1685,7 @@ void func_801DF744(UnkA95D0_Obj* obj) {
         x = p->unk44;
     } else {
         x = (p->unk0[p->unk74[2]] - p->unk10) / (p->unk14 - p->unk10);
-        x = (x * x) * (p->unk44 - p->unk40) + p->unk40;
+        x = (x * x) * (p[0].unk44 - p->unk40) + p->unk40; // FAKE: p[0]. (a respelling search), for the temporaries
     }
     b->unk0[p->unk74[2]] = (p->unk0[p->unk74[2]] - p->unkC) * x + p->unkC;
     func_801DEEC4(obj);
