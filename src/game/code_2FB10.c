@@ -676,7 +676,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1476 of 146400 (hi5: the progress loop's segment x reads the next record first (into dirX) and subtracts
+// Score 1476 of 146400 (hi5: the power step's sign is taken from r, the difference, in both tests (the
+// permuter's second spelling of the difference dropped; same score).)
+// Before, 1476 (hi5: the progress loop's segment x reads the next record first (into dirX) and subtracts
 // the from record's x, as the original orders the two records' address computations: 1501 -> 1476.)
 // Before, 1501 (hi5: the line test's beyond computes its z term first, in dx (dead there), then adds
 // the x term, as the original's loads and products are ordered: 1526 -> 1501.)
@@ -1142,8 +1144,8 @@ void func_8007687C(s32 arg0) {
         rider->unk2C[cur] = 1;
     }
     if (rider->unk138 != rider->power) {
-        r = rider->power - rider->unk138; // (permuter: the difference in r, dead here)
-        ref = (rider->power - rider->unk138 == 0) ? 0 : ((r > 0) ? 1 : -1);
+        r = rider->power - rider->unk138;
+        ref = (r == 0) ? 0 : ((r > 0) ? 1 : -1);
         rider->unk138 += ref;
     }
     if ((D_801CE638 != 1) || (gCourseID == DOLPHIN_PARK)) {
