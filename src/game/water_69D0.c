@@ -1287,7 +1287,10 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 2895 of 60500 (mid10: the last row loops' end pointer and hi, the first row loop's hi and the middle row
+// Score 2875 of 60500 (mid10: the window centre's two cells are arena + 0 + index (FAKE; arena first in each add,
+// as in the original), the first index read into oz on its own line (it replaces the permuter's v = &arena[oz =
+// ...] FAKE): 2895 -> 2875.)
+// Before, 2895 (mid10: the last row loops' end pointer and hi, the first row loop's hi and the middle row
 // loop's start add a no-op + 0 to e as the first loop's end pointer does (FAKE), which puts e first in each add as
 // the original does (operand-order diffs read off the diff, tried in combination): 2925 -> 2895.)
 // Before, 2925 (mid10: the first two row loops read the next cell's offset as (e + 1)->unk0, not
@@ -1514,11 +1517,12 @@ void func_80050204(s32 view, Vtx* arena) {
         v->v.ob[0] += ox;
         v->v.ob[2] += oz;
     }
-    v = &arena[oz = D_80192460[1]]; // FAKE (permuter): the index also stored to oz (dead here)
+    oz = D_80192460[1]; // the index in oz (dead after)
+    v = (arena + 0) + oz; // FAKE: a no-op + 0 (arena first in the add, as in the original)
     oz = gWaterWindowN; // FAKE: through oz (dead here; a holder search), with the dead self-compare below
     if ((f32)oz != (f32)oz) {} // FAKE: as above
     sz = D_80192460[4];
-    c = &arena[sz];
+    c = (arena + 0) + sz; // FAKE: as above
     dz = (f32) (c->v.ob[0] + v->v.ob[0]);
     w->unk8 = (dz * 0.5f) - w->unk14;
     w->unkC = ((f32) (c->v.ob[2] + v->v.ob[2]) * 0.5f) - w->unk18;
