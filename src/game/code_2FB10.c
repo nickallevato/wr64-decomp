@@ -676,7 +676,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1436 of 146400 (mid10: the line record's x read before the line test goes into len (dead there) rather
+// Score 1406 of 146400 (mid10: the three lap-sound tests read rider[0].lapCount (FAKE: the same
+// field; the spelling gives the original's bne operand order, D_801CE728[0] first; a respelling search): 1436 -> 1406.)
+// Before, 1436 (mid10: the line record's x read before the line test goes into len (dead there) rather
 // than lineX, which now only holds the two D_801C3780/D_801C3788 reads (a web-rename search with score.sh): 1466 -> 1436.)
 // Before, 1466 (hi5: unk320 read and written directly everywhere but the progress line, which keeps the
 // RIDER_UNK320 pointer view (FAKE); the lap test then loads unk320 before lapCount, as the original does: 1476 ->
@@ -1066,7 +1068,7 @@ void func_8007687C(s32 arg0) {
                                 D_80228A98 = 1;
                             }
                             if (rider->lapCount < D_801CE728[0]) {
-                                if (D_801CE728[0] == rider->lapCount + 1) {
+                                if (D_801CE728[0] == rider[0].lapCount + 1) { // FAKE: rider[0]. (a respelling search)
                                     sfx = 0x81;
                                 } else {
                                     sfx = 1;
@@ -1074,7 +1076,7 @@ void func_8007687C(s32 arg0) {
                                 AudioGeneral_PlaySound(0x21, sfx);
                             }
                         } else if (rider->lapCount < D_801CE728[0]) {
-                            if (D_801CE728[0] == rider->lapCount + 1) {
+                            if (D_801CE728[0] == rider[0].lapCount + 1) { // FAKE: rider[0]. (a respelling search)
                                 sfx = 0x80;
                             } else {
                                 sfx = 0;
@@ -1086,7 +1088,7 @@ void func_8007687C(s32 arg0) {
                         }
                     } else if ((gPlayers == TWO_PLAYERS) && isHuman[0]) {
                         if (rider->lapCount < D_801CE728[0]) {
-                            if (D_801CE728[0] == rider->lapCount + 1) {
+                            if (D_801CE728[0] == rider[0].lapCount + 1) { // FAKE: rider[0]. (a respelling search)
                                 sfx = 0x80;
                             } else {
                                 sfx = 0;
