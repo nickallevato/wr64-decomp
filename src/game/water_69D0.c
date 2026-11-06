@@ -1287,7 +1287,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 2940 of 60500 (hi5: the window centre's x sum takes c first (an operand-order search): 2945 -> 2940.)
+// Score 2925 of 60500 (mid10: the first two row loops read the next cell's offset as (e + 1)->unk0, not
+// e[1].unk0 (same address; the spelling changes IDO's address arithmetic; a respelling search with score.sh): 2940 -> 2925.)
+// Before, 2940 (hi5: the window centre's x sum takes c first (an operand-order search): 2945 -> 2940.)
 // Before, 2945 (hi5: the first row loop's offset also stored to a new dead local n, and the window
 // centre's first index to oz (dead there): FAKEs from the permuter, re-applied in our formatting and re-scored
 // with score.sh: 3170 -> 2945.)
@@ -1389,7 +1391,7 @@ void func_80050204(s32 view, Vtx* arena) {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 sz = WATER_CELL_AT(hi->unk0)->unk0;
                 hA = hA >> 7;
-                oz = ((((sz >> 7) + hA) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+                oz = ((((sz >> 7) + hA) >> 1) - (WATER_CELL_AT((e + 1)->unk0)->unk0 >> 7)) << 6;
                 sz = (hA - (sz >> 7)) * 55;
                 k = 992.0f / sqrtf((oz * oz) + (sz * sz) + 0xC00000);
                 e++;
@@ -1419,7 +1421,7 @@ void func_80050204(s32 view, Vtx* arena) {
             sz = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0;
             i = (s32) (s64) i; // FAKE: as above
             i = i >> 7;
-            sx = ((((sz >> 7) + i) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sx = ((((sz >> 7) + i) >> 1) - (WATER_CELL_AT((e + 1)->unk0)->unk0 >> 7)) << 6;
             sz = (i - (sz >> 7)) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
             e++;
