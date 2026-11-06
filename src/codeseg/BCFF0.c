@@ -1541,7 +1541,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 28820 of 490800 (band18: the second of the three empty do-while (0) FAKEs below dropped: 28825 -> 28820):
+// Score 28510 of 490800 (band18: two empty if (1) blocks, after the championship gaps and in the 2P gap popups
+// (FAKE, an insertion search): 28820 -> 28510; the second of the three empty do-while (0) FAKEs below dropped: 28825 -> 28820):
 // same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
@@ -1662,6 +1663,7 @@ void func_801F4120(Gfx** gdlp) {
                 }
             }
         }
+        if (1) {} // FAKE: an empty block at the end of the championship gaps (an insertion search)
     }
 
     // 2P VS: the lap split popups.
@@ -1704,6 +1706,7 @@ void func_801F4120(Gfx** gdlp) {
                 if (rider->gapTimer != 0) {
                     func_801F25E0(&gdl, x, y, rider->checkpointGap, 3, rider->gapRequest, 1);
                 }
+                if (1) {} // FAKE: an empty block (an insertion search)
             }
         }
     }
