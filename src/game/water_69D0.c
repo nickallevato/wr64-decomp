@@ -1287,9 +1287,9 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 2905 of 60500 (mid10: the last row loops' end pointer, the first row loop's hi and the middle row loop's
-// start add a no-op + 0 to e as the first loop's end pointer does (FAKE), which puts e first in each add as the
-// original does (operand-order diffs read off the diff, tried in combination): 2925 -> 2905.)
+// Score 2895 of 60500 (mid10: the last row loops' end pointer and hi, the first row loop's hi and the middle row
+// loop's start add a no-op + 0 to e as the first loop's end pointer does (FAKE), which puts e first in each add as
+// the original does (operand-order diffs read off the diff, tried in combination): 2925 -> 2895.)
 // Before, 2925 (mid10: the first two row loops read the next cell's offset as (e + 1)->unk0, not
 // e[1].unk0 (same address; the spelling changes IDO's address arithmetic; a respelling search with score.sh): 2940 -> 2925.)
 // Before, 2940 (hi5: the window centre's x sum takes c first (an operand-order search): 2945 -> 2940.)
@@ -1450,7 +1450,7 @@ void func_80050204(s32 view, Vtx* arena) {
         end = (e + 0) + ((hA * 2) - i - 2); // FAKE: a no-op + 0, as in the first row loop
         if (end >= e) {
             lo = (e - ((hA << 1) - i)) - 2;
-            hi = e + ((hA << 1) - i);
+            hi = (e + 0) + ((hA << 1) - i); // FAKE: a no-op + 0, as above
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 hA = hA >> 7;
