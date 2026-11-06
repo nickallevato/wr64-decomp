@@ -357,7 +357,8 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5012 of 69300: calls and branches agree (the frame is 0xC0 here, 0xB8 in the original: see Left). The two
+// Score 5006 of 69300 (band18: the second waypoint test reads the next record through node itself, without the
+// rec copy (a search over the record-lookup forms): 5012 -> 5006). Before, 5012: calls and branches agree (the frame is 0xC0 here, 0xB8 in the original: see Left). The two
 // waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
@@ -437,9 +438,8 @@ void func_801EF504(void) {
             node = &D_801AEE20[rider->nearestRecord];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
-            rec = node;
             if (dx * node->unk70 + dz * node->unk74 > -256.0f) {
-                node = &D_801AEE20[rec->unkA0];
+                node = &D_801AEE20[node->unkA0];
             }
         }
         dz = node->unk8 - cam->eyeZ;
