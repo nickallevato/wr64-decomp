@@ -859,7 +859,9 @@ extern s32 D_800D4B00;
 f32 func_801ED154(f32 arg0, f32 arg1);
 
 #ifdef NON_MATCHING
-// Score 23760 of 216100 (mix2: an empty do-while after the streak alpha (FAKE, insert search): 23805 -> 23760;
+// Score 23700 of 216100 (band18: the drop loop counts in its own variable, drops, in the old stack pad word (a
+// per-block rename search): 23760 -> 23700.)
+// Before, 23760 (mix2: an empty do-while after the streak alpha (FAKE, insert search): 23805 -> 23760;
 // a velocity length in its own variable instead of sideY drops the original-absent store and gives the original's
 // instruction count, but scores 24560, not kept. big7: the drop loop counts in count and keeps its angle in n, a
 // per-loop name search;
@@ -892,7 +894,7 @@ void func_800B08F8(s32 arg0) {
     f32 dy;
     s32 isHuman;
     s32 special;
-    s32 padS0; // stack pad
+    s32 drops; // the drop count (in the old stack pad word: band18 per-block rename search)
     f32 dz;
     f32 dist;
     f32 fwdLen[1]; // FAKE: keeps fwdLen in its stack slot across sqrtf, as the original does
@@ -1308,8 +1310,8 @@ void func_800B08F8(s32 arg0) {
                         D_800E6D60->unk1C50 = 24;
                     }
                 } else {
-                    // count (dead here) counts the drops and n holds the angle: the original reuses them (name search)
-                    count = 0;
+                    // drops counts the drops in its own variable and n holds the angle (name searches)
+                    drops = 0;
                     for (i = 63, D_800E6D6C = &D_800E6D70[63]; i >= 0; i--, D_800E6D6C--) {
                         if (D_800E6D6C->unk20 == 0) {
                             D_800E6D6C->unk20 = 1;
@@ -1319,10 +1321,10 @@ void func_800B08F8(s32 arg0) {
                             D_800E6D6C->unk18 = Math_FloatRand(rate / 3.0f) + 1.0f;
                             sz = fwdZ * width;
                             D_800E6D6C->unk1C = 0.0f;
-                            if (count < 4) {
-                                f = 3 - count;
+                            if (drops < 4) {
+                                f = 3 - drops;
                             } else {
-                                f = count - 4;
+                                f = drops - 4;
                             }
                             len = (split < (1.0f - split)) ? split : (1.0f - split);
                             len = (2.0f * (((f / 3) - 1.0f) * len)) + 1.0f;
@@ -1332,13 +1334,13 @@ void func_800B08F8(s32 arg0) {
                             D_800E6D6C->unk4 = Math_FloatRand(rate) + (D_801D79C0 + 8.0f) + (2 * rate);
                             D_800E6D6C->unk8 = (gSinTable[n & 0xFFF] * sx) + (D_801D79C4 - sz);
                             f = Math_FloatRand(r);
-                            count++;
+                            drops++;
                             vy = Math_FloatRand(r) + (rate / 1.2);
                             D_800E6D6C->unkC = (gSinTable[(n + 0x400) & 0xFFF] * f) + (D_801D79C8 * 0.8);
                             D_800E6D6C->unk10 = vy;
                             D_800E6D6C->unk14 = (gSinTable[n & 0xFFF] * f) + (D_801D79D0 * 0.8);
                             angle += step;
-                            if (count >= 8) {
+                            if (drops >= 8) {
                                 break;
                             }
                         }
