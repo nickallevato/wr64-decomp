@@ -676,7 +676,9 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1501 of 146400 (hi5: the line test's beyond computes its z term first, in dx (dead there), then adds
+// Score 1476 of 146400 (hi5: the progress loop's segment x reads the next record first (into dirX) and subtracts
+// the from record's x, as the original orders the two records' address computations: 1501 -> 1476.)
+// Before, 1501 (hi5: the line test's beyond computes its z term first, in dx (dead there), then adds
 // the x term, as the original's loads and products are ordered: 1526 -> 1501.)
 // Before, 1526 (hi5: D_801C3780 passed to func_80074368 and D_801C3788 in the progress loop read through
 // lineX (dead there; holder searches with score.sh): 1539 -> 1526.)
@@ -1196,8 +1198,8 @@ void func_8007687C(s32 arg0) {
             } else {
                 from = r;
             }
-            dirX = D_801AEE20[from].unk0; // (permuter: read ahead into dirX)
-            dirX = D_801AEE20[next].unk0 - dirX;
+            dirX = D_801AEE20[next].unk0; // next record's x read ahead into dirX (the original loads next's first)
+            dirX = dirX - D_801AEE20[from].unk0;
             dirZ = D_801AEE20[next].unk8 - D_801AEE20[from].unk8;
             segLen = sqrtf((dirX * dirX) + (dirZ * dirZ));
             if (segLen > 0.0f) {
