@@ -1541,7 +1541,8 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 28030 of 490800 (band18: empty if (1) blocks (FAKE, insertion searches): two more (before the D_80228DF8
+// Score 27930 of 490800 (band18: empty if (1) blocks (FAKE, insertion searches): one after the D_103D5D0 digit,
+// 28030 -> 27930; two more (before the D_80228DF8
 // read and in the y2 < 0 else arm), 28510 -> 28030; after the championship gaps and in the 2P gap popups (FAKE,
 // an insertion search): 28820 -> 28510; the second of the three empty do-while (0) FAKEs below dropped: 28825 ->
 // 28820): same stack frame and nearly the same branches (structure diff): where the original keeps
@@ -2107,6 +2108,7 @@ void func_801F4120(Gfx** gdlp) {
         n = x2 / 1000;
         HUD_DIGIT(gdl, &D_103B4D0[(y2 / 100) * 0x300], 12, 16, 0xAA, 0x26);
         HUD_DIGIT(gdl, D_103D5D0, 12, 16, 0xA2, 0x23);
+        if (1) {} // FAKE: an empty block (an insertion search)
         if ((n >= 6) || (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
             x = 0x84;
             if (n >= 10) {
