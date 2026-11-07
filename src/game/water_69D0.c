@@ -85,7 +85,11 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 345 of 49800 (hi2: both texture coordinates written (Round(...) + offset) & 0xFFFF as in the twin
+// Score 340 of 49800 (mid10: the cross product's x reads cam->upY through x first (FAKE, permuter; 15 min): 345 -> 340.
+// Tried without gain: insertions of if (1) {} runs (1-6), do {} while (0) and float self-compares at every
+// statement, moving the do {} while (0) FAKE anywhere, web/block renames, declaration orders, operand and compare
+// swaps, ->/[0]. respellings, literal respellings and holds.)
+// Before, 345 (hi2: both texture coordinates written (Round(...) + offset) & 0xFFFF as in the twin
 // func_80050B78, which spends the temporary the original as1 deletes in each and replaces the (s16) hack: 375;
 // mid8: the else arm's k and the vertex loop's header on one line, a FAKE from a search over
 // joined line ranges; IDO schedules by source line). Before, 470: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
@@ -140,7 +144,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
             h = h * 0.5f;
         }
     }
-    x = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
+    x = cam->upY; // FAKE (permuter): cam->upY read through x first
+    x = (x * cam->unk6C) - (cam->upZ * cam->unk68);
     k = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C); // FAKE: the cross product's y through k (a search)
     y = k;
     z = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
