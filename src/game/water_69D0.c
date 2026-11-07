@@ -85,7 +85,11 @@ extern s32 D_80223934;
  */
 
 #ifdef NON_MATCHING
-// Score 345 of 49800 (hi2: both texture coordinates written (Round(...) + offset) & 0xFFFF as in the twin
+// Score 340 of 49800 (mid10: the cross product's x reads cam->upY through x first (FAKE, permuter; 15 min): 345 -> 340.
+// Tried without gain: insertions of if (1) {} runs (1-6), do {} while (0) and float self-compares at every
+// statement, moving the do {} while (0) FAKE anywhere, web/block renames, declaration orders, operand and compare
+// swaps, ->/[0]. respellings, literal respellings and holds.)
+// Before, 345 (hi2: both texture coordinates written (Round(...) + offset) & 0xFFFF as in the twin
 // func_80050B78, which spends the temporary the original as1 deletes in each and replaces the (s16) hack: 375;
 // mid8: the else arm's k and the vertex loop's header on one line, a FAKE from a search over
 // joined line ranges; IDO schedules by source line). Before, 470: calls, branches, the frame (0xF0) and every stack slot agree. As in its twin func_80050B78,
@@ -140,7 +144,8 @@ void func_8004C1D0(s32 view, Vtx* vtx) {
             h = h * 0.5f;
         }
     }
-    x = (cam->upY * cam->unk6C) - (cam->upZ * cam->unk68);
+    x = cam->upY; // FAKE (permuter): cam->upY read through x first
+    x = (x * cam->unk6C) - (cam->upZ * cam->unk68);
     k = (cam->upZ * cam->unk64) - (cam->upX * cam->unk6C); // FAKE: the cross product's y through k (a search)
     y = k;
     z = (cam->upX * cam->unk68) - (cam->upY * cam->unk64);
@@ -1287,7 +1292,15 @@ void func_8004F9E0(s32 waterLevel, s32 amplitude) {
 
 #define WATER_LEVEL_U32 (*(u32*) &gWaterLevel) // FAKE: a u32 view of gWaterLevel (search find)
 #ifdef NON_MATCHING
-// Score 2940 of 60500 (hi5: the window centre's x sum takes c first (an operand-order search): 2945 -> 2940.)
+// Score 2875 of 60500 (mid10: the window centre's two cells are arena + 0 + index (FAKE; arena first in each add,
+// as in the original), the first index read into oz on its own line (it replaces the permuter's v = &arena[oz =
+// ...] FAKE): 2895 -> 2875.)
+// Before, 2895 (mid10: the last row loops' end pointer and hi, the first row loop's hi and the middle row
+// loop's start add a no-op + 0 to e as the first loop's end pointer does (FAKE), which puts e first in each add as
+// the original does (operand-order diffs read off the diff, tried in combination): 2925 -> 2895.)
+// Before, 2925 (mid10: the first two row loops read the next cell's offset as (e + 1)->unk0, not
+// e[1].unk0 (same address; the spelling changes IDO's address arithmetic; a respelling search with score.sh): 2940 -> 2925.)
+// Before, 2940 (hi5: the window centre's x sum takes c first (an operand-order search): 2945 -> 2940.)
 // Before, 2945 (hi5: the first row loop's offset also stored to a new dead local n, and the window
 // centre's first index to oz (dead there): FAKEs from the permuter, re-applied in our formatting and re-scored
 // with score.sh: 3170 -> 2945.)
@@ -1384,12 +1397,12 @@ void func_80050204(s32 view, Vtx* arena) {
         hA = (n = (gWaterWindowN << 1) + i + 1); // FAKE (permuter): the offset also stored to n (dead)
         if (end >= e) {
             lo = e - hA;
-            hi = e + hA;
+            hi = (e + 0) + hA; // FAKE: a no-op + 0 (e first in the add, as in the original)
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 sz = WATER_CELL_AT(hi->unk0)->unk0;
                 hA = hA >> 7;
-                oz = ((((sz >> 7) + hA) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+                oz = ((((sz >> 7) + hA) >> 1) - (WATER_CELL_AT((e + 1)->unk0)->unk0 >> 7)) << 6;
                 sz = (hA - (sz >> 7)) * 55;
                 k = 992.0f / sqrtf((oz * oz) + (sz * sz) + 0xC00000);
                 e++;
@@ -1414,12 +1427,12 @@ void func_80050204(s32 view, Vtx* arena) {
     vtx->v.ob[2] = e->unk6 + w->unk4;
     e++;
     vtx++;
-    for (lo = e + ((gWaterWindowN * 2) - 2); lo >= e;) {
+    for (lo = (e + 0) + ((gWaterWindowN * 2) - 2); lo >= e;) { // FAKE: a no-op + 0, as above
             i = WATER_CELL_AT((e - ((gWaterWindowN * 2) + 1))->unk0)->unk0;
             sz = WATER_CELL_AT((e + (gWaterWindowN * 2))->unk0)->unk0;
             i = (s32) (s64) i; // FAKE: as above
             i = i >> 7;
-            sx = ((((sz >> 7) + i) >> 1) - (WATER_CELL_AT(e[1].unk0)->unk0 >> 7)) << 6;
+            sx = ((((sz >> 7) + i) >> 1) - (WATER_CELL_AT((e + 1)->unk0)->unk0 >> 7)) << 6;
             sz = (i - (sz >> 7)) * 55;
             k = 992.0f / sqrtf((sx * sx) + (sz * sz) + 0xC00000);
             e++;
@@ -1442,10 +1455,10 @@ void func_80050204(s32 view, Vtx* arena) {
         e++;
         vtx++;
         hA = gWaterWindowN; // N read into hA (dead here; a holder search)
-        end = e + ((hA * 2) - i - 2);
+        end = (e + 0) + ((hA * 2) - i - 2); // FAKE: a no-op + 0, as in the first row loop
         if (end >= e) {
             lo = (e - ((hA << 1) - i)) - 2;
-            hi = e + ((hA << 1) - i);
+            hi = (e + 0) + ((hA << 1) - i); // FAKE: a no-op + 0, as above
             do {
                 hA = WATER_CELL_AT(lo->unk0)->unk0;
                 hA = hA >> 7;
@@ -1509,11 +1522,12 @@ void func_80050204(s32 view, Vtx* arena) {
         v->v.ob[0] += ox;
         v->v.ob[2] += oz;
     }
-    v = &arena[oz = D_80192460[1]]; // FAKE (permuter): the index also stored to oz (dead here)
+    oz = D_80192460[1]; // the index in oz (dead after)
+    v = (arena + 0) + oz; // FAKE: a no-op + 0 (arena first in the add, as in the original)
     oz = gWaterWindowN; // FAKE: through oz (dead here; a holder search), with the dead self-compare below
     if ((f32)oz != (f32)oz) {} // FAKE: as above
     sz = D_80192460[4];
-    c = &arena[sz];
+    c = (arena + 0) + sz; // FAKE: as above
     dz = (f32) (c->v.ob[0] + v->v.ob[0]);
     w->unk8 = (dz * 0.5f) - w->unk14;
     w->unkC = ((f32) (c->v.ob[2] + v->v.ob[2]) * 0.5f) - w->unk18;

@@ -676,7 +676,11 @@ void func_800C1EB8(s32);
 
 #define RIDER_UNK320 (*(s32*) &rider->unk320) // FAKE: unk320 read and written through a pointer view (type search)
 #ifdef NON_MATCHING
-// Score 1466 of 146400 (hi5: unk320 read and written directly everywhere but the progress line, which keeps the
+// Score 1406 of 146400 (mid10: the three lap-sound tests read rider[0].lapCount (FAKE: the same
+// field; the spelling gives the original's bne operand order, D_801CE728[0] first; a respelling search): 1436 -> 1406.)
+// Before, 1436 (mid10: the line record's x read before the line test goes into len (dead there) rather
+// than lineX, which now only holds the two D_801C3780/D_801C3788 reads (a web-rename search with score.sh): 1466 -> 1436.)
+// Before, 1466 (hi5: unk320 read and written directly everywhere but the progress line, which keeps the
 // RIDER_UNK320 pointer view (FAKE); the lap test then loads unk320 before lapCount, as the original does: 1476 ->
 // 1466.)
 // Before, 1476 (hi5: the power step's sign is taken from r, the difference, in both tests (the
@@ -718,7 +722,7 @@ void func_800C1EB8(s32);
 // FAKE, type search): 5286. mix1: the gate's two distances are computed in segLen
 // (dead there) and copied to dPos and dPrev, then negated below zero (the original's mov.s / neg.s from one
 // register; 6906 -> 6711); beyond's x term in gz, not dPrev (6691; dPrev is still register-allocated where the
-// original keeps it in its home); the line record's x read into lineX before r1/r2 and used for beyond and
+// original keeps it in its home); the line record's x read into lineX (len since mid10) before r1/r2 and used for beyond and
 // func_80076240 (a permuter find; padE grows by the word pad0 gives up, which keeps the homes): 5581.
 // mid6 (searches): the type 8/9 test read e->unk98 into
 // laps and its dead FAKE if/else sets ref (both dead there), the checkpoint-gap reference was held in nearLine,
@@ -761,7 +765,7 @@ void func_8007687C(s32 arg0) {
     s32 r4;
     f32 gx; // the gate deltas' z
     s32 nearLine;
-    f32 lineX; // the line record's x, read ahead (permuter)
+    f32 lineX; // a holder for D_801C3780 / D_801C3788 (holder searches)
     s32 gapRef;
     s32 beyond;
     s32 r;
@@ -1064,7 +1068,7 @@ void func_8007687C(s32 arg0) {
                                 D_80228A98 = 1;
                             }
                             if (rider->lapCount < D_801CE728[0]) {
-                                if (D_801CE728[0] == rider->lapCount + 1) {
+                                if (D_801CE728[0] == rider[0].lapCount + 1) { // FAKE: rider[0]. (a respelling search)
                                     sfx = 0x81;
                                 } else {
                                     sfx = 1;
@@ -1072,7 +1076,7 @@ void func_8007687C(s32 arg0) {
                                 AudioGeneral_PlaySound(0x21, sfx);
                             }
                         } else if (rider->lapCount < D_801CE728[0]) {
-                            if (D_801CE728[0] == rider->lapCount + 1) {
+                            if (D_801CE728[0] == rider[0].lapCount + 1) { // FAKE: rider[0]. (a respelling search)
                                 sfx = 0x80;
                             } else {
                                 sfx = 0;
@@ -1084,7 +1088,7 @@ void func_8007687C(s32 arg0) {
                         }
                     } else if ((gPlayers == TWO_PLAYERS) && isHuman[0]) {
                         if (rider->lapCount < D_801CE728[0]) {
-                            if (D_801CE728[0] == rider->lapCount + 1) {
+                            if (D_801CE728[0] == rider[0].lapCount + 1) { // FAKE: rider[0]. (a respelling search)
                                 sfx = 0x80;
                             } else {
                                 sfx = 0;
@@ -1161,19 +1165,19 @@ void func_8007687C(s32 arg0) {
     // Crossing the line backwards or forwards near it (within one record of it, four on
     // Sunset Bay) moves the lap counter unk320.
     dPrev = D_801C3780; // read ahead into dPrev (dead here; a holder search)
-    lineX = D_801AEE20[D_801BB12C].unk0;
+    len = D_801AEE20[D_801BB12C].unk0; // the line record's x, read ahead into len (dead here; a rename search)
     r1 = D_801AEE20[rider->nearestRecord].unkA0;
     r2 = D_801AEE20[r1].unkA0;
     // beyond's z term first, in dx (dead here), as the original computes it before the x term
     dx = D_801AEE20[D_801BB12C].unk74 * (D_801C3788 - D_801AEE20[D_801BB12C].unk8);
     r3 = D_801AEE20[r2].unkA0;
     r4 = D_801AEE20[r3].unkA0;
-    beyond = (dx + ((dPrev - lineX) * D_801AEE20[D_801BB12C].unk70)) > 0.0f;
+    beyond = (dx + ((dPrev - len) * D_801AEE20[D_801BB12C].unk70)) > 0.0f;
     nearLine = (D_801BB12C == rider->nearestRecord) || (r1 == D_801BB12C);
     if (gCourseID == SUNSET_BAY) {
         nearLine = nearLine || (r2 == D_801BB12C) || (r3 == D_801BB12C) || (r4 == D_801BB12C);
     }
-    if (func_80076240(dPrev, D_801C3788, lineX, D_801AEE20[D_801BB12C].unk8) &&
+    if (func_80076240(dPrev, D_801C3788, len, D_801AEE20[D_801BB12C].unk8) &&
         nearLine) {
         if (beyond && (rider->unk324 == 0) && (rider->unk320 < rider->lapCount)) {
             rider->unk320++;

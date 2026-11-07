@@ -283,7 +283,12 @@ extern s32 D_i0_802C6EE8[];
 extern s32 D_i0_802C6EF8[];
 
 #ifdef NON_MATCHING
-// Score 185 of 30700 (hi5: the B test in its own variable b; the A-else branch reads unk10 through cur too, as the B
+// Score 160 of 30700 (mid10: the item's unk0 is read once into next and tested and stored from there (the original
+// keeps it in a2 with next's other values), which also puts the case 4 difficulty values in the original's
+// registers and makes the permuter's empty test of D_i0_802C6BCC unnecessary (dropped, 185); an empty if (1) after
+// the gameMode store (FAKE, an insertion search) gives 160. Left: b in v1 (t5 there), and with it &D_i0_802C6BCC,
+// the D_i0_802C6EE4 value, the history index and cur one register off.)
+// Before, 185 (hi5: the B test in its own variable b; the A-else branch reads unk10 through cur too, as the B
 // branch does (the original keeps both menu pointers in v1); a dead self-compare there (FAKE, an insertion search)
 // spends the temporary the original spends, and the temporaries after it are numbered as there: 205 -> 185. Left:
 // uopt's colouring: b in v1 (t5 there), D_i0_802C6BCC's value and index swap v0/a2, gDifficulty's value in t1 (a1
@@ -323,10 +328,12 @@ void func_i0_802C63AC(void) {
             D_800DA9D8 = D_i0_802C6EE4;
         }
         item = &items[D_i0_802C6EE4];
-        if (item->unk0 == -1) {
+        next = item->unk0;
+        if (next == -1) {
             item = menu->items;
             item += D_i0_802C6EE4;
             D_801CE608.gameMode = item->gameMode;
+            if (1) {} // FAKE: an empty block (an insertion search), for the registers
             D_801CE608.player = item->player;
             D_801CE608.rider = item->rider;
             gDifficulty = item->difficulty;
@@ -352,7 +359,6 @@ void func_i0_802C63AC(void) {
                     for (i = 0; i < 4; i++) {
                         D_801CB340[i] = 0;
                     }
-                    if (!D_i0_802C6BCC) { if (1) {} } // FAKE (permuter)
                     D_801CB334 = 0;
                     if (item->unk16 == 2) {
                         D_801CB334 = 1;
@@ -395,7 +401,7 @@ void func_i0_802C63AC(void) {
             AudioGeneral_PlaySound(0x37, 0);
             MainMenu_Leave(next);
         } else {
-            D_i0_802C6EE0 = item->unk0;
+            D_i0_802C6EE0 = next;
             D_i0_802C6EE4 = 0;
             switch (item->unk16) {
                 case 1:
