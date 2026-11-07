@@ -357,7 +357,10 @@ void Hud_SetupMatrices(void) {
 
 // Per-frame update of the guide arrow
 #ifdef NON_MATCHING
-// Score 5012 of 69300: calls and branches agree (the frame is 0xC0 here, 0xB8 in the original: see Left). The two
+// Score 4976 of 69300 (band18: the outer else's empty test reads node->unk70 instead of node->unk74 (FAKE, a search
+// over that test's operand): 5006 -> 4976; the second waypoint test reads the next record through node itself, without
+// the rec copy (a search over the record-lookup forms): 5012 -> 5006). Before, 5012: calls and branches agree (the
+// frame is 0xC0 here, 0xB8 in the original: see Left). The two
 // waypoint tests compute dx/dz first, as the
 // original's operand order shows, and read the next record through rec, a copy of node (the original's move v1,s3).
 // The second marker's side test reuses fwd (the original's register for it; fwd is dead there) and the camera-to-node
@@ -437,9 +440,8 @@ void func_801EF504(void) {
             node = &D_801AEE20[rider->nearestRecord];
             dx = p->unk44.x - node->unk0;
             dz = p->unk44.z - node->unk8;
-            rec = node;
             if (dx * node->unk70 + dz * node->unk74 > -256.0f) {
-                node = &D_801AEE20[rec->unkA0];
+                node = &D_801AEE20[node->unkA0];
             }
         }
         dz = node->unk8 - cam->eyeZ;
@@ -459,7 +461,7 @@ void func_801EF504(void) {
             }
         } else {
             show = 0;
-            if (node->unk74 && node->unk74 && node->unk74) {} // FAKE (permuter): keeps this show = 0 a block of its own
+            if (node->unk70 && node->unk70 && node->unk70) {} // FAKE (permuter): keeps this show = 0 a block of its own
         }
         fwd = dirX * dx + dirZ * dz;
         dot = fwd;
@@ -1539,7 +1541,11 @@ void func_801F25E0(Gfx** gdlp, s32 x, s32 y, s32 time, s32 style, s32 arg5, s32 
 #endif
 
 #ifdef NON_MATCHING
-// Score 28825 of 490800: same stack frame and nearly the same branches (structure diff): where the original keeps
+// Score 27930 of 490800 (band18: empty if (1) blocks (FAKE, insertion searches): one after the D_103D5D0 digit,
+// 28030 -> 27930; two more (before the D_80228DF8
+// read and in the y2 < 0 else arm), 28510 -> 28030; after the championship gaps and in the 2P gap popups (FAKE,
+// an insertion search): 28820 -> 28510; the second of the three empty do-while (0) FAKEs below dropped: 28825 ->
+// 28820): same stack frame and nearly the same branches (structure diff): where the original keeps
 // 6 (and 0xA0) in saved registers in the five-mark D_102EE70 loop it divides with the divide-by-zero checks. The
 // player's popup color and the chevron color are if / else assignments (the original hoists the else value), and
 // both marks loops count in value (the second from j, which gives the original's != loop test). The
@@ -1659,6 +1665,7 @@ void func_801F4120(Gfx** gdlp) {
                 }
             }
         }
+        if (1) {} // FAKE: an empty block at the end of the championship gaps (an insertion search)
     }
 
     // 2P VS: the lap split popups.
@@ -1701,6 +1708,7 @@ void func_801F4120(Gfx** gdlp) {
                 if (rider->gapTimer != 0) {
                     func_801F25E0(&gdl, x, y, rider->checkpointGap, 3, rider->gapRequest, 1);
                 }
+                if (1) {} // FAKE: an empty block (an insertion search)
             }
         }
     }
@@ -1839,7 +1847,7 @@ void func_801F4120(Gfx** gdlp) {
                 j = (*(u32*) &D_80228DF8) * 6; // FAKE: D_80228DF8 read as u32 (a type search)
                 gDPPipeSync(gdl++);
                 gDPSetTextureFilter(gdl++, G_TF_BILERP);
-                do {} while (0); // FAKE: splits the scheduling block (an insertion search)
+                if (1) {} // FAKE: an empty block (an insertion search)
                 gSPTextureRectangle(gdl++, (x - j) << 2, 0x22 << 2, (x + 0x10) << 2, (j + 0x36) << 2,
                                     G_TX_RENDERTILE, 0, 0, 0x4000 / (j + 0x10), 0x5000 / (j + 0x14));
                 gDPPipeSync(gdl++);
@@ -2100,6 +2108,7 @@ void func_801F4120(Gfx** gdlp) {
         n = x2 / 1000;
         HUD_DIGIT(gdl, &D_103B4D0[(y2 / 100) * 0x300], 12, 16, 0xAA, 0x26);
         HUD_DIGIT(gdl, D_103D5D0, 12, 16, 0xA2, 0x23);
+        if (1) {} // FAKE: an empty block (an insertion search)
         if ((n >= 6) || (gRiderRaceState[gPlayer1Rider].unk2F4 != 0) || (gRiderRaceState[gPlayer1Rider].finishState != 0)) {
             x = 0x84;
             if (n >= 10) {
@@ -2109,6 +2118,7 @@ void func_801F4120(Gfx** gdlp) {
             HUD_DIGIT(gdl, &D_80273D8[(n % 10) * 0x500], 16, 20, x, 0x26);
         } else {
             y2 -= 700;
+            if (1) {} // FAKE: an empty block (an insertion search)
             if (y2 < 0) {
                 y2 = 0;
             }
